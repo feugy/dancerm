@@ -1,0 +1,21 @@
+{
+  "name": "dancerm",
+  "version": "0.0.1",
+  "author": "Feugy <damien.feugas@gmail.comQ",
+  "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/feugy/dancerm.git"
+  },
+  "dependencies": {
+    "coffee-script": "1.6.3"
+  },
+  "devDependencies": {
+    "chai": "1.7.2",
+    "grunt": "0.4.1",
+    "grunt-contrib-coffee": "0.7.0",
+    "grunt-bowerful": "0.3.0",
+    "mocha": "1.12.0"
+  },
+  "licence": "LGPL v3"
+}
