@@ -1,4 +1,6 @@
 node_modules
 app/script
 app/vendor
+test/script
+test/vendor
 analysis/ribas.flac

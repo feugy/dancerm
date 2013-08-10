@@ -4,30 +4,72 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
 
-    # Coffee-script compilation
     coffee: 
       options:
         bare: true
-        sourceMap: true
 
-      glob_to_multiple:
+      # coffee-script compilation for application
+      app:
+        options:
+          sourceMap: true
+
         expand: true
         cwd: 'app/src'
         src: ['**/*.coffee']
         dest: 'app/script'
         ext: '.js'
 
-    # bower dependencies
+      # coffee-script compilation for tests
+      test:
+        expand: true
+        cwd: 'test/src'
+        src: ['**/*.coffee']
+        dest: 'test/script'
+        ext: '.js'
+
     bowerful:
-      dist:
+      # bower dependencies for application
+      app:
         store: 'app/vendor'
         packages: 
-          angular: 'PatternConsulting/bower-angular#1.1.5'
+          'angular': 'PatternConsulting/bower-angular#1.1.5'
           'angular-bootstrap': '0.5.0'
-          jquery: '2.0.3'
-          requirejs: '2.1.8'
-          underscore: '1.4.4'
+          'jquery': '2.0.3'
+          'moment': '2.1.0'
+          'requirejs': '2.1.8'
+          'underscore': '1.5.1'
           'underscore.string': '2.3.2'
+
+      # bower dependenvies for tests
+      test:
+        store: 'test/vendor'
+        packages: 
+          'chai': '1.7.2'
+          'jquery': '2.0.3'
+          'mocha': '1.12.0'
+          'moment': '2.1.0'
+          'requirejs': '2.1.8'
+          'underscore': '1.5.1'
+          'underscore.string': '2.3.2'
+
+    # copy app file into test script to allow testing
+    copy:
+      app:
+        files: [{
+          expand: true 
+          cwd: 'app/script', 
+          src: ['**/*.js']
+          dest: 'test/script/'
+        }]
+
+    # compile when a coffee file has changed
+    watch:
+      app:
+        files: 'app/src/**/*.coffee'
+        tasks: ['coffee:app', 'copy:app']
+      test:
+        files: 'test/src/**/*.coffee'
+        tasks: 'coffee:test'
 
     # Chrome package app generation (To be done with valid key)
     ###crx:
@@ -37,9 +79,11 @@ module.exports = (grunt) ->
         privateKey: 'chrome-key.pem'###
 
   # Load different plugins
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-bowerful'
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks 'grunt-contrib-watch'
   #grunt.loadNpmTasks 'grunt-crx'
 
   # Default task(s).
-  grunt.registerTask 'default', ['coffee']
+  grunt.registerTask 'default', ['watch']

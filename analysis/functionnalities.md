@@ -44,3 +44,7 @@ Dancer information (4'00)
 
 [OCR webservice](http://www.onlineocr.net/support/OCRWebServices.aspx)
 [list of OCR libraries](http://en.wikipedia.org/wiki/Comparison_of_optical_character_recognition_software)
+
+Needed (53'00)
+- An invoice
+- The current file
