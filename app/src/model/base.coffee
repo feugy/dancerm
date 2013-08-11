@@ -25,5 +25,10 @@ define [
     toJSON: =>
       raw = {} 
       for attr, value of @ when not _.isFunction value
-        raw[attr] = if value?.toJSON? then value = value.toJSON() else value
+        if _.isArray value
+          raw[attr] = []
+          for val, i in value
+            raw[attr][i] = if val?.toJSON? then val.toJSON() else val
+        else
+          raw[attr] = if value?.toJSON? then value.toJSON() else value
       raw

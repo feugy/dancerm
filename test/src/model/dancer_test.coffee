@@ -44,7 +44,7 @@ define [
           zipcode: 69100
           city: 'Villeurbanne'
         registrations: [
-          classId: 1
+          danceclassId: 1
           charged: 300
           balance: 200
           payments: [
@@ -67,7 +67,7 @@ define [
             receipt: moment().toJSON()
           ]
         ,
-          classId: 2
+          danceclassId: 2
           charged: 300
           balance: 300
           payments: [

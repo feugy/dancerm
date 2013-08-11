@@ -66,10 +66,10 @@ module.exports = (grunt) ->
     watch:
       app:
         files: 'app/src/**/*.coffee'
-        tasks: ['coffee:app', 'copy:app']
+        tasks: ['coffee', 'copy:app']
       test:
         files: 'test/src/**/*.coffee'
-        tasks: 'coffee:test'
+        tasks: 'coffee'
 
     # Chrome package app generation (To be done with valid key)
     ###crx:

@@ -40,7 +40,9 @@ require [
 
   # get test and run them
   require [
+    'service/storage_test'
     'model/dancer_test'
+    'model/danceclass_test'
     'util/common_test'
   ], ->
     mocha.checkLeaks()

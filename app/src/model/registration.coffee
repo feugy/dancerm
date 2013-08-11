@@ -9,8 +9,8 @@ define [
   #
   class Registration extends Base
 
-    # id of the concerned class
-    classId: null
+    # id of the concerned dance class
+    danceclassId: null
 
     # price awaited and account balance
     charged: 0
@@ -25,7 +25,7 @@ define [
     constructor: (raw = {}) ->
       # set default values
       _.defaults raw, 
-        classId: null
+        danceclassId: null
         charged: 0
         balance: 0
         payments: []
