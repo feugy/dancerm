@@ -1,0 +1,33 @@
+<div class="dancer">
+
+  <div class="row-fluid horizontal-form">
+    <a href="" class="btn pull-right" data-ng-click="onNewDancer()">{{i18n.btn.newDancer}}</a>
+  </div>
+
+  <!-- dancer displayal -->
+  <article>
+    <h2>{{i18n.ttl.civilities}}</h2>
+    <div class="row-fluid">
+      <span class="span6"><label>{{i18n.lbl.firstname}}</label><input type="text" name="firstname"  data-ng-model="dancer.firstname"/></span>
+      <span class="span6"><label>{{i18n.lbl.lastname}}</label><input type="text" name="lastname" data-ng-model="dancer.lastname"/></span>
+    </div>
+  </article>
+  <article>
+    <h2>{{i18n.ttl.address}}</h2>
+    <div class="row-fluid">
+      <span class="span1"><label>{{i18n.lbl.street}}</label></span>
+      <span class="span11"><textarea data-ng-model="dancer.address.street"/></span>
+    </div>
+    <div class="row-fluid">
+      <span class="span6"><label>{{i18n.lbl.zipcode}}</label><input type="text" name="zipcode" data-ng-model="dancer.address.zipcode"/></span>
+      <span class="span6"><label>{{i18n.lbl.city}}</label><input type="text" name="city" data-ng-model="dancer.address.city"/></span>
+    </div>
+  </article>
+  <article>
+    <h2>{{i18n.ttl.contact}}</h2>
+    <div class="row-fluid">
+      <span class="span6"><label>{{i18n.lbl.email}}</label><input type="email" name="email"  data-ng-model="dancer.email"/></span>
+      <span class="span6"><label>{{i18n.lbl.phone}}</label><input type="text" name="phone" data-ng-model="dancer.phone"/></span>
+    </div>
+  </article>
+</div>

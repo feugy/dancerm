@@ -1,0 +1,46 @@
+@import 'vendor/bootstrap-2.3.1-min.css'
+@import 'mixins'
+
+html
+  height 100%
+  overflow auto
+  background #fafafa
+
+body 
+  margin 10px
+  background transparent
+
+.dancer
+  
+  h2
+    color #aaa
+    font-size 1.2em
+    line-height 1.2em
+    font-weight normal
+    font-style italic
+    margin 0.5em
+
+  label
+    display inline-block
+    cursor default
+    vertical-align top
+    margin 5px 0 0
+
+  input
+    margin-bottom 0
+    margin-left 5px
+
+  textarea
+    margin 0
+    resize none
+    height 5em
+    width 100%
+    display inline-block
+    box-sizing border-box
+
+  input:not(:hover):not(:focus)
+  textarea:not(:hover):not(:focus)
+    background transparent
+    border-color transparent
+    box-shadow none
+    -webkit-box-shadow none

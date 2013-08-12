@@ -27,6 +27,15 @@ module.exports = (grunt) ->
         dest: 'test/script'
         ext: '.js'
 
+    # compile stylus stylesheet
+    stylus:
+      compile:
+        expand: true
+        cwd: 'app/style'
+        src: ['**/*.styl']
+        dest: 'app/style'
+        ext: '.css'
+        
     bowerful:
       # bower dependencies for application
       app:
@@ -37,6 +46,7 @@ module.exports = (grunt) ->
           'jquery': '2.0.3'
           'moment': '2.1.0'
           'requirejs': '2.1.8'
+          'requirejs-i18n': '2.0.3'
           'underscore': '1.5.1'
           'underscore.string': '2.3.2'
 
@@ -62,7 +72,7 @@ module.exports = (grunt) ->
           dest: 'test/script/'
         }]
 
-    # compile when a coffee file has changed
+    # compile when a coffee/stylus file has changed
     watch:
       app:
         files: 'app/src/**/*.coffee'
@@ -70,6 +80,9 @@ module.exports = (grunt) ->
       test:
         files: 'test/src/**/*.coffee'
         tasks: 'coffee'
+      style:
+        files: 'app/style/**/*.styl'
+        tasks: 'stylus'
 
     # Chrome package app generation (To be done with valid key)
     ###crx:
@@ -81,7 +94,8 @@ module.exports = (grunt) ->
   # Load different plugins
   grunt.loadNpmTasks 'grunt-bowerful'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks 'grunt-contrib-copy'
+  grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   #grunt.loadNpmTasks 'grunt-crx'
 

@@ -7,6 +7,8 @@ requirejs.config
     'jquery': '../vendor/jquery/jquery'
     'ui.bootstrap': '../vendor/angular-bootstrap/ui-bootstrap-tpls'
     'moment': '../vendor/moment/moment'
+    'nls': 'labels'
+    'i18n': '../vendor/requirejs-i18n/i18n'
     'underscore': '../vendor/underscore/underscore'
     'underscore.string': '../vendor/underscore.string/lib/underscore.string'
     
@@ -29,19 +31,19 @@ require [
   'jquery'
   'angular'
   'underscore'
+  'service/storage'
   'controller/home'
-  'controller/about'
+  'controller/dancer'
   # unwired
   'underscore.string'
   'ui.bootstrap'
-], ($, angular, _, HomeCtrl, AboutCtrl) ->
+], ($, angular, _, StorageService, HomeCtrl, DancerCtrl) ->
 
   # merge underscore and underscore string functions
   _.mixin _.str.exports()
 
   # declare main module that configures routing
   app = angular.module 'app', ['ui.bootstrap']
-
   app.config ['$locationProvider', '$routeProvider', (location, route) ->
     # use push state
     location.html5Mode true
@@ -50,15 +52,18 @@ require [
       name: 'home'
       templateUrl: 'home.html'
       controller: HomeCtrl
-    route.when "/about",
-      name: 'about'
-      templateUrl: 'about.html'
-      controller: AboutCtrl
+    route.when "/dancer",
+      name: 'dancer'
+      templateUrl: 'dancer.html'
+      controller: DancerCtrl
     route.otherwise 
-      redirectTo: "/home"
+      redirectTo: "/dancer"
   ]
+
+  # make storage an Angular service
+  app.service 'storage', StorageService
 
   # starts the application !
   angular.bootstrap $('body'), ['app']
   
-  
+  app
