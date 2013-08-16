@@ -3,6 +3,7 @@ requirejs.config
 
   # paths to vendor libs
   paths:
+    'async': '../vendor/async/lib/async'
     'chai': '../vendor/chai/chai'
     'mocha': '../vendor/mocha/mocha'
     'moment': '../vendor/moment/moment'
@@ -43,6 +44,7 @@ require [
     'service/storage_test'
     'model/dancer_test'
     'model/danceclass_test'
+    'model/planning_test'
     'util/common_test'
   ], ->
     mocha.checkLeaks()

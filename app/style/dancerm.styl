@@ -1,24 +1,55 @@
 @import 'vendor/bootstrap-2.3.1-min.css'
 @import 'mixins'
+@import 'directive'
 
 html
   height 100%
   overflow auto
   background #fafafa
 
+.btn > .caret
+  display inline-block
+  margin-left 5px
+
 body 
   margin 10px
   background transparent
 
+  .registration
+    overflow-y visible
+
+for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
+  .color{i+1}
+    background-color color
+    color #fff
+
+.home
+  
+  .planning
+    width 650px
+    height 450px
+    font-size 10px
+
 .dancer
+
+  article
+    border 1px solid #ccc
+    border-radius 3px
+    margin 10px 0
+    padding 0 1em 1em
   
   h2
     color #aaa
     font-size 1.2em
-    line-height 1.2em
+    line-height 10px
     font-weight normal
     font-style italic
-    margin 0.5em
+    background #fafafa
+    position relative
+    display inline
+    top -10px
+    left 25px
+    padding 0 5px
 
   label
     display inline-block
@@ -33,7 +64,7 @@ body
   textarea
     margin 0
     resize none
-    height 5em
+    height 3.6em
     width 100%
     display inline-block
     box-sizing border-box
@@ -44,3 +75,14 @@ body
     border-color transparent
     box-shadow none
     -webkit-box-shadow none
+
+  .registration-bar
+    text-align center
+
+.register
+
+  .planning
+    width 100%
+    height 400px
+    margin-top 15px
+    font-size 10px

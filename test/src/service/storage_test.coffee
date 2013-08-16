@@ -1,47 +1,67 @@
 define [
-  '../model/dancer'
-  '../model/registration'
-  '../model/payment'
-  '../model/danceclass'
+  '../model/dancer/dancer'
+  '../model/dancer/registration'
+  '../model/dancer/payment'
+  '../model/planning/planning'
   './storage'
-], (Dancer, Registration, Payment, DanceClass, Storage) -> 
+], (Dancer, Registration, Payment, Planning, Storage) -> 
 
   describe 'Storage service tests', ->
     
     tested = null
 
-    before (done) ->
+    beforeEach (done) ->
       tested = new Storage()
       tested.removeAll Dancer, (err) ->
         return done err if err?
-        tested.removeAll DanceClass, done
+        tested.removeAll Planning, done
 
     # TODO test different error cases
     # TODO test multiple models isolation
 
-    it 'should model and its submodels be saved and retrieved', (done) ->
+    it 'should Dancer model and its submodels be saved and retrieved', (done) ->
       # given a new dancer model and its submodels
       payment = new Payment type: 'card', value: 150
       registration = new Registration danceclassId: 1, charged: 200, payments: [payment]
       dancer = new Dancer firstname: 'Jean', lastname: 'Dujardin', registrations: [registration]
       # when saving it
-      tested.push dancer, (err) ->
+      tested.add dancer, (err) ->
         return done err if err?
         # then the dancer can be retrieved
-        tested.pop dancer.id, Dancer, (err, retrieved) ->
+        tested.get dancer.id, Dancer, (err, retrieved) ->
           return done err if err?
           expect(retrieved).to.exist
           expect(retrieved).to.be.an.instanceOf Dancer
           expect(retrieved.toJSON()).to.be.deep.equal dancer.toJSON()
           done()
 
+    it 'should Planning model and its submodels be saved and retrieved', (done) ->
+      # given a planning for year 2013
+      planning = new Planning
+        year: 2013
+        danceClasses: [
+          {kind: 'Toutes danses', level: 'débutant', start: 'Wed 19:45', end: 'Wed 20:45', hall: 'Gratte-ciel'}
+          {kind: 'Toutes danses', level: 'intermédiaire', start: 'Thu 20:00', end: 'Thu 21:00', hall: 'Gratte-ciel'}
+          {kind: 'Toutes danses', level: 'confirmé', start: 'Mon 20:30', end: 'Mon 21:30', hall: 'Gratte-ciel'}
+        ]
+      # when saving it
+      tested.add planning, (err) ->
+        return done err if err?
+        # then the dancer can be retrieved
+        tested.get planning.id, Planning, (err, retrieved) ->
+          return done err if err?
+          expect(retrieved).to.exist
+          expect(retrieved).to.be.an.instanceOf Planning
+          expect(retrieved.toJSON()).to.be.deep.equal planning.toJSON()
+          done()
+
     describe 'given an existing dancer', ->
 
       dancer = null
 
-      before (done) ->
+      beforeEach (done) ->
         dancer = new Dancer firstname: 'Jean', lastname: 'Dujardin'
-        tested.push dancer, done
+        tested.add dancer, done
 
       it 'should dancer be retrieved by key', (done) ->
         # when testing the dancer existence
@@ -51,13 +71,27 @@ define [
           expect(exist).to.be.true
 
           # when requesting the dancer by its key
-          tested.pop dancer.id, Dancer, (err, retrieved) ->
+          tested.get dancer.id, Dancer, (err, retrieved) ->
             return done err if err?
             # then its returned
             expect(retrieved).to.exist
             expect(retrieved).to.be.an.instanceOf Dancer
             expect(retrieved.toJSON()).to.be.deep.equal dancer.toJSON()
             done()
+
+      it 'should dancer be walked', (done) ->
+        length = 0
+        # when walking through dancers
+        tested.walk Dancer, (model, next) ->
+          # then dancer is returned
+          expect(model).to.exist
+          expect(model.toJSON()).to.be.deep.equal dancer.toJSON()
+          length++
+          next()
+        , (err) ->
+          # then only one dancer found
+          expect(length).to.be.equal 1
+          done err
 
       it 'should dancer be removed', (done) ->
         # when removing the dancer

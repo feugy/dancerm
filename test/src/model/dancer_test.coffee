@@ -1,10 +1,10 @@
 define [
   'underscore'
   'moment'
-  './dancer'
-  './address'
-  './registration'
-  './payment'
+  './dancer/dancer'
+  './dancer/address'
+  './dancer/registration'
+  './dancer/payment'
 ], (_, moment, Dancer, Address, Registration, Payment) -> 
 
   describe 'Dancer model tests', ->
@@ -24,6 +24,7 @@ define [
       expect(tested.registrations).to.be.an 'array'
       expect(tested.registrations).to.have.lengthOf 0
       # then all plain attributes have been set to default
+      expect(tested).to.have.property 'title', 'Mme'
       expect(tested).to.have.property 'firstname', ''
       expect(tested).to.have.property 'lastname', ''
       expect(tested).to.have.property 'address', null
@@ -37,6 +38,7 @@ define [
       raw = 
         id: 'anId'
         created: moment().toJSON()
+        title: 'M.'
         firstname: 'Jean'
         lastname: 'Dujardin'
         address:
@@ -44,7 +46,8 @@ define [
           zipcode: 69100
           city: 'Villeurbanne'
         registrations: [
-          danceclassId: 1
+          planningId: 18
+          danceClassIds: [1, 2]
           charged: 300
           balance: 200
           payments: [
@@ -67,7 +70,8 @@ define [
             receipt: moment().toJSON()
           ]
         ,
-          danceclassId: 2
+          planningId: 17
+          danceClassIds: [2]
           charged: 300
           balance: 300
           payments: [
@@ -83,6 +87,7 @@ define [
       tested = new Dancer _.clone raw
       # then all defined attributes have been saved
       expect(tested).to.have.property 'id', raw.id
+      expect(tested).to.have.property 'title', raw.title
       expect(tested).to.have.property 'firstname', raw.firstname
       expect(tested).to.have.property 'lastname', raw.lastname
       # then the address have been enriched
@@ -100,7 +105,7 @@ define [
           expect(payment.toJSON()).to.deep.equal raw.registrations[i].payments[j]
       # then the creation date have been enriched
       expect(tested.created.isSame raw.created).to.be.true
-      expect(_.pick tested.toJSON(), 'id', 'created', 'firstname', 'lastname', 'address').to.deep.equal _.omit raw, 'registrations'
+      expect(_.pick tested.toJSON(), 'id', 'title', 'created', 'firstname', 'lastname', 'address').to.deep.equal _.omit raw, 'registrations'
 
     it 'should dancer not save unallowed values', ->
       # when creating a dancer with unallowed attributes

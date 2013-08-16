@@ -1,6 +1,6 @@
 define [
   'underscore'
-  './base'
+  '../base'
 ], (_, Base) ->
 
   class Address extends Base

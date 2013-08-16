@@ -1,7 +1,7 @@
 define [
   'underscore'
   'moment'
-  './base'
+  '../base'
 ], (_, moment, Base) ->
 
   # Payment of a given registration in a dance class. 

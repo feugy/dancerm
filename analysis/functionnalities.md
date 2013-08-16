@@ -1,4 +1,14 @@
-36'00
+## Questions
+
+- validate the "one registration per year" model
+- how to store years: number or string
+
+# TODO
+
+- display green/orange style regarding the balance
+- remove payment
+- localize dance class's start hour 
+- how dancers knew about the school
 
 ## Functionnal requirements
 

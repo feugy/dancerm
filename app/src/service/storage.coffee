@@ -1,13 +1,15 @@
 define [
   'underscore'
-  '../model/dancer'
-  '../model/danceclass'
-], (_, Dancer, DanceClass) ->
+  '../model/dancer/dancer'
+  '../model/planning/planning'
+  '../model/initializer'
+], (_, Dancer, Planning, modelInit) ->
 
   # supported model classes
-  _supported = [Dancer, DanceClass]
+  _supported = [Dancer, Planning]
 
-  # Storage is a service to store and retrieve models (Dancer and DanceClass).
+
+  # Storage is a service to store and retrieve models (Dancer and Planning).
   # Works as a persistent hashmap.
   class Storage
 
@@ -16,8 +18,11 @@ define [
 
     # Storage constructor
     constructor: () ->
-      @dbName= "dancerm#{if mocha? then '-test' else ''}"
+      test = mocha?
+      @dbName= "dancerm#{if test then '-test' else ''}"
       @db = null
+      # model initialization at startup
+      modelInit @ unless test
 
     # **private**
     # Run a given process function that need database to be initialize.
@@ -41,6 +46,7 @@ define [
       request.onupgradeneeded = =>
         @db = request.result  
         for clazz in _supported
+          # clean existing database @db.deleteObjectStore clazz.name.toLowerCase()
           @db.createObjectStore clazz.name.toLowerCase()
 
     # Check the existence of a given key.
@@ -73,7 +79,7 @@ define [
     # @param model [Base] the stored model
     # @param callback [Function] end callback, invoked with arguments:
     # @option callback err [Error] an Error object, or null if no error occured
-    push: (model, callback) =>
+    add: (model, callback) =>
       return callback new Error "no model provided" unless model?
       unless model.constructor in _supported
         return callback new Error "unsupported model class #{model.constructor?.name}" 
@@ -99,7 +105,7 @@ define [
     # @param callback [Function] end callback, invoked with arguments:
     # @option callback err [Error] an Error object, or null if no error occured
     # @option callback obj [Object] the corresponding stored object, or undefined
-    pop: (key, clazz, callback) =>
+    get: (key, clazz, callback) =>
       return callback new Error "unsupported model class #{clazz?.name}" unless clazz in _supported
       return callback new Error "no key provided" unless _.isString key
 
@@ -114,7 +120,44 @@ define [
 
         # handle errors and success
         tx.onerror = -> callback tx.error
-        tx.oncomplete = -> callback null, new clazz request.result
+        tx.oncomplete = -> 
+          return callback new Error "model #{storeName} with key '#{key}' not found" unless request.result?
+          callback null, new clazz request.result
+      , callback
+
+    # Goes to the whole list of models, ordered by key.
+    # Object callback is invoked has many times has their is a model to retrieved, and you must
+    # invoked the next() method to access to next model.
+    # You can stop the traversal by adding a true parameter to the next method.
+    #
+    # @param clazz [Base] model class of the searched key
+    # @param modelCallback [Function] end callback, invoked with arguments:
+    # @option modelCallback model [Base] the current model object
+    # @option modelCallback next [Function] function to invoke to go to next model, with true as first parameter to stop.
+    # @param callback [Function] end callback, invoked with arguments:
+    # @option callback err [Error] an Error object, or null if no error occured
+    walk: (clazz, modelCallback, callback) =>
+      return callback new Error "unsupported model class #{clazz?.name}" unless clazz in _supported
+
+      # opens datbase before if needed
+      @_runOrOpen =>
+        storeName = clazz.name.toLowerCase()
+        # opens a read-only transaction on the store
+        tx = @db.transaction([storeName])
+        
+        # use a cursor to walk on all models
+        tx.objectStore(storeName).openCursor().onsuccess = (event) ->
+          cursor = event.target.result
+          # no more model
+          return callback null unless cursor?
+          # invoke callback for each model
+          modelCallback new clazz(cursor.value), (quit) ->
+            # abord walk
+            return callback null if quit
+            cursor.continue();
+
+        # handle errors
+        tx.onerror = -> callback tx.error
       , callback
 
     # Removed a model.
@@ -153,8 +196,11 @@ define [
       @_runOrOpen =>
         storeName = clazz.name.toLowerCase()
         # opens a read-only transaction
-        tx = @db.transaction [storeName], 'readwrite'
-        
+        try 
+          tx = @db.transaction [storeName], 'readwrite'
+        catch err
+          return callback if err?.name is 'NotFoundError' then null else err
+
         # get the value of a given key
         request = tx.objectStore(storeName).clear()
 

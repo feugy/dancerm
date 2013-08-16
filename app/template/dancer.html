@@ -6,12 +6,27 @@
 
   <!-- dancer displayal -->
   <article>
-    <h2>{{i18n.ttl.civilities}}</h2>
+    <h2>{{i18n.ttl.generalInfo}}</h2>
     <div class="row-fluid">
-      <span class="span6"><label>{{i18n.lbl.firstname}}</label><input type="text" name="firstname"  data-ng-model="dancer.firstname"/></span>
-      <span class="span6"><label>{{i18n.lbl.lastname}}</label><input type="text" name="lastname" data-ng-model="dancer.lastname"/></span>
+      <span class="span2">
+        <div class="btn-group">
+          <a href="" class="btn dropdown-toggle">{{dancer.title || 'Mme'}}<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li data-ng-repeat="choice in i18n.civilityTitles"><a data-ng-click="onUpdateTitle(choice)">{{choice}}</a></li>
+          </ul>
+        </div>
+      </span>
+      <span class="span5"><label>{{i18n.lbl.firstname}}</label><input type="text" name="firstname"  data-ng-model="dancer.firstname"/></span>
+      <span class="span5"><label>{{i18n.lbl.lastname}}</label><input type="text" name="lastname" data-ng-model="dancer.lastname"/></span>
+    </div>
+    <div class="row-fluid">
+      <span class="span6"><label>{{i18n.lbl.birth}}</label>
+        <input type="text" datepicker-popup="{{i18n.formats.datePicker}}" data-ng-model="birth"/>
+      </span>
+      <span class="span6"><label>{{i18n.lbl.certified}}</label><input type="checkbox" name="certified" data-ng-model="dancer.certified"/></span>
     </div>
   </article>
+
   <article>
     <h2>{{i18n.ttl.address}}</h2>
     <div class="row-fluid">
@@ -23,6 +38,7 @@
       <span class="span6"><label>{{i18n.lbl.city}}</label><input type="text" name="city" data-ng-model="dancer.address.city"/></span>
     </div>
   </article>
+
   <article>
     <h2>{{i18n.ttl.contact}}</h2>
     <div class="row-fluid">
@@ -30,4 +46,19 @@
       <span class="span6"><label>{{i18n.lbl.phone}}</label><input type="text" name="phone" data-ng-model="dancer.phone"/></span>
     </div>
   </article>
+
+  <!-- registrations -->
+  <div class="row-fluid registration-bar">
+    <a href="" class="btn btn-primary" data-ng-click="onRegister()">{{i18n.btn.register}}</a>
+  </div>
+
+  <div data-registration 
+    data-ng-repeat="registration in dancer.registrations" 
+    data-src="registration" 
+    data-on-edit="onRegister(registration)"
+    data-on-remove="onRemoveRegistration(registration)"></div>
+
+  <div class="pull-right btn-bar">
+    <a href="" class="btn btn-primary" data-ng-click="onSave()">{{i18n.btn.save}}</a>
+  </div>
 </div>

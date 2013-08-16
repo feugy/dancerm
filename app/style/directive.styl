@@ -1,0 +1,149 @@
+.registration
+
+  h3
+    font-size 1.2em
+    margin 0
+    font-weight normal
+
+  .danceClasses
+  .payments
+    display -webkit-flex
+    -webkit-flex-flow row wrap
+
+  .danceClass
+  .payment
+    display block
+    padding 5px 10px
+
+  .danceClass
+    > *
+      padding 0.2em 0.5em
+
+    .hour
+      display block
+      font-size 0.8em
+      color #888
+
+  .danceClass:not(:last-child)
+  .payment:not(:last-child)
+    border-right 1px solid #888
+
+  .balance
+
+    .sum
+      margin 0 5px 0 25px
+
+    .input-append
+      line-height 26px
+      margin-bottom 2px
+
+      > *
+        padding 2px 4px
+        font-size 17px
+
+      input
+        width 36px
+        text-align right
+
+.payment
+
+  max-width 150px
+  
+  .type
+    text-align right
+    margin-bottom 3px
+
+    .dropup
+      margin-left 8px
+
+      .dropdown-menu
+        text-align left
+
+  .input-append 
+    display -webkit-flex
+    -webkit-flex-flow row wrap
+    margin-bottom 3px
+    
+    > input
+      -webkit-flex 1
+      margin 0
+      text-align right
+      width auto
+
+  .details 
+    display -webkit-flex
+    -webkit-flex-flow row wrap
+
+    > *
+      font-size 0.7em
+
+    > label
+      line-height 16px
+
+    > input
+      -webkit-flex 1
+      width auto
+      padding 2px 4px
+      height 20px
+
+.planning
+  width 100%
+  height 100%
+  box-sizing border-box
+
+  .time
+    background-color #ccc
+    color #fff
+    text-align right
+    width 6.5%
+    height 4%
+
+    .q0
+      font-size 0.8em
+      line-height 1em
+      padding 0.2em
+      text-align right
+
+  .day 
+  .time
+    box-sizing border-box
+    display inline-block
+    height 100%
+    position relative
+
+  .day:not(:last-child)
+    border-right 1px solid #ccc
+
+  .quarter
+    box-sizing border-box
+
+  .quarter.q0
+    border-top 1px solid #888
+  .quarter.q2
+    border-top 1px dashed #ccc
+
+  .title
+    text-align center
+    background-color #aaa
+    color #fff
+    box-sizing border-box
+
+  .danceClass
+    position absolute
+    overflow hidden
+    white-space nowrap
+    text-overflow ellipsis 
+
+  .danceClass.selected
+    background-color #666
+
+for i in 2..7
+  .planning.days{i} .day
+    // 6.5% for time
+    width unit((100 - 6.5) / i, '%')
+
+for i in 6..20
+  .planning.hours{i} .quarter
+    // 4% for the title
+    height unit((100 - 4) / (i * 4), '%')  
+    

@@ -1,11 +1,12 @@
 define [
-  '../model/dancer'
-], (Dancer) ->
+  '../model/planning/planning'
+], (Planning) ->
   
   class HomeController
               
     # Controller dependencies
-    @$inject: ['$scope', '$location']
+    # Inject storage to ensure that models are properly initialized
+    @$inject: ['$scope', '$location', 'storage']
     
     # Controller scope, injected within constructor
     scope: null
@@ -15,17 +16,14 @@ define [
     # @param scope [Object] Angular current scope
     # @param location [Object] Angular location service
     constructor: (@scope, @location) -> 
-      # bind methods
-      @scope.error = "Hello world !"
-      @scope.closeError = @closeError
-      @scope.navigateTo = @navigateTo
+      # Display first planning TODO
+      Planning.findAll (err, models) =>
+        throw err if err?
+        @scope.$apply =>
+          @scope.planning = models[0]
 
-      d1 = new Dancer firstname: 'damien', lastname: 'feugas'
-      console.log d1
-       
-    # Remove the current error, which hides the alert
-    closeError: =>
-      @scope.error = null
+      # injects public methods into scope
+      @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
     # Navigate to another controller
     #

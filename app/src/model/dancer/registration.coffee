@@ -1,16 +1,18 @@
 define [
   'underscore'
-  './base'
+  '../base'
   './payment'
 ], (_, Base, Payment) ->
 
-  # Registration is for a given class and for one year
+  # Registration is for one or several classes and a given
   # Multiple payment may be used for the same registration: their sum is stored in `balance`
-  #
   class Registration extends Base
 
-    # id of the concerned dance class
-    danceclassId: null
+    # corresponding planning, meaning registration year
+    planningId: null
+
+    # id of the concerned dance classs
+    danceClassIds: []
 
     # price awaited and account balance
     charged: 0
@@ -25,7 +27,8 @@ define [
     constructor: (raw = {}) ->
       # set default values
       _.defaults raw, 
-        danceclassId: null
+        planningId: null
+        danceClassIds: []
         charged: 0
         balance: 0
         payments: []

@@ -43,6 +43,7 @@ module.exports = (grunt) ->
         packages: 
           'angular': 'PatternConsulting/bower-angular#1.1.5'
           'angular-bootstrap': '0.5.0'
+          'async': '0.1.23'
           'jquery': '2.0.3'
           'moment': '2.1.0'
           'requirejs': '2.1.8'
@@ -54,6 +55,7 @@ module.exports = (grunt) ->
       test:
         store: 'test/vendor'
         packages: 
+          'async': '0.1.23'
           'chai': '1.7.2'
           'jquery': '2.0.3'
           'mocha': '1.12.0'

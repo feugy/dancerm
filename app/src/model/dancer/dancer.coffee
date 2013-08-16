@@ -1,10 +1,10 @@
 define [
   'underscore'
   'moment'
-  './base'
+  '../base'
   './address'
   './registration'
-  '../util/common'
+  '../../util/common'
 ], (_, moment, Base, Address, Registration, {generateId}) ->
 
   class Dancer extends Base
@@ -13,7 +13,8 @@ define [
 
     created: null
 
-    # Dancer name
+    # Dancer title (M. Mme Mlle) and name
+    title: 'Mme'
     firstname: ''
     lastname: ''
 
@@ -41,6 +42,7 @@ define [
       _.defaults raw, 
         id: generateId()
         created: moment()
+        title: 'Mme'
         firstname: ''
         lastname: ''
         address: null
@@ -52,5 +54,6 @@ define [
       super(raw)
       # enrich object attributes
       @created = moment @created
+      @birth = moment @birth
       @address = new Address @address if @address?
       @registrations = (new Registration raw for raw in @registrations when raw?)

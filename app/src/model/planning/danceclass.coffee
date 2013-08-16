@@ -1,18 +1,18 @@
 define [
   'underscore'
-  './base'
-  '../util/common'
+  '../base'
+  '../../util/common'
 ], (_, Base, {generateId}) ->
 
   class DanceClass extends Base
 
     id: null
 
-    # current year
-    year: 2013
-
     # Dance kind: ballroom, rock, west coast...
     kind: ''
+
+    # css class used to display inside plannings
+    color: 'color1'
 
     # Dance level: 1,2,3, beginers...
     level: ''
@@ -32,8 +32,8 @@ define [
       # set default values
       _.defaults raw, 
         id: generateId()
-        year: 2013
         kind: ''
+        color: 'color1'
         level: ''
         start: 'Mon 08:00'
         end: 'Mon 09:00'

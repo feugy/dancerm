@@ -1,0 +1,18 @@
+<div class="payment">
+  <div class="type">
+    <span class="created" data-ng-bind="receipt"></span>
+    <span class="btn-group dropup">
+      <a href="" class="btn dropdown-toggle">{{typeLabel}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li data-ng-repeat="(type, label) in i18n.paymentTypes"><a data-ng-click="onUpdateType(type)">{{label}}</a></li>
+      </ul>
+    </span>
+  </div>
+  <div class="input-append">
+    <input type="text" data-ng-model="stringValue" data-ng-keyup="onValueInput($event)"/>
+    <span class="add-on">{{i18n.lbl.currency}}</span>
+  </div>
+  <div class="details">
+    <label>{{i18n.lbl.details}}</label><input type="text" data-ng-model="src.details"/>
+  </div>
+</div>
