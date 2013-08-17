@@ -8,6 +8,7 @@ define root:
     contact: 'Contact'
     newRegistration: 'Nouvelle inscription'
     confirmRemove: 'Confirmation de la suppression'
+    dancerList: 'Liste des danceurs'
 
   # long messages with html
   msg:

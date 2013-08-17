@@ -26,19 +26,28 @@ for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
 .home
   
   .planning
-    width 650px
-    height 450px
+    width 100%
+    height 300px
     font-size 10px
-
-.dancer
-
-  article
-    border 1px solid #ccc
-    border-radius 3px
+    box-sizing border-box
     margin 10px 0
-    padding 0 1em 1em
+
+  > .row-fluid
+    text-align center
+
+  .dancer
+    .lastname
+      font-weight bold
+      padding-left 0.5em
+      cursor pointer
+
+article
+  border 1px solid #ccc
+  border-radius 3px
+  margin 10px 0
+  padding 0 1em 1em
   
-  h2
+  > h2
     color #aaa
     font-size 1.2em
     line-height 10px
@@ -50,6 +59,8 @@ for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
     top -10px
     left 25px
     padding 0 5px
+
+.dancer
 
   label
     display inline-block

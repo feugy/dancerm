@@ -14,13 +14,10 @@ define [
   class DancerController
               
     # Controller dependencies
-    @$inject: ['$scope', 'storage', '$dialog']
+    @$inject: ['$scope', '$routeParams', '$dialog']
     
     # Controller scope, injected within constructor
     scope: null
-
-    # Storage service
-    storage: null
         
     # Link to Angular dialog service
     dialog: null
@@ -28,28 +25,28 @@ define [
     # Controller constructor: bind methods and attributes to current scope
     #
     # @param scope [Object] Angular current scope
-    # @param storage [Storage] Storage service
+    # @param routeParams [Object] invokation route parameters
     # @param dialog [Object] Angular dialog service
-    constructor: (@scope, storage, @dialog) -> 
-      # creates an empty dancer
-      @_displayDancer new Dancer i18n.defaultDancer
+    constructor: (@scope, routeParams, @dialog) -> 
+      if routeParams.id?
+        # load edited dancer
+        Dancer.find routeParams.id, (err, dancer) =>
+          throw err if err?
+          @scope.$apply => @_displayDancer dancer
+      else
+        # creates an empty dancer
+        @_displayDancer new Dancer()
 
       # fill the scope and bind public methods
       @scope.i18n = i18n
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
-    # TODO
-    onNewDancer: =>
-      # TODO check modifications, allow saving, get birth value
-      console.log "previous", @scope.dancer?.toJSON()
-      @_displayDancer new Dancer()
-
     # Save the current values inside storage
     onSave: =>
-      console.log @scope.dancer.toJSON()
-      #@scope.dancer.save (err) =>
-      #  throw err if err?
-      #  console.log 'save done !'
+      console.log '>>> save dancer:', @scope.dancer.toJSON()
+      @scope.dancer.save (err) =>
+        throw err if err?
+        console.log '>>> save done !'
 
     # Invoked by view to update dancer's title according to selected item
     #

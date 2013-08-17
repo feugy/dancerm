@@ -106,4 +106,5 @@ define [
             _.findWhere planning.danceClasses, id: id
         )
         @scope.stringCharged = @scope.src.charged
+        @onPaymentChanged()
         @scope.$apply()

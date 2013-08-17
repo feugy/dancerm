@@ -20,7 +20,10 @@ define [
       # displayed planning
       src: '='
       # array of selected dance class ids
+      # if not provided, dance class cannot be selected 
       selected: '='
+      # event handler for dance class click. Clicked model as 'danceClass' parameter.
+      onClick: '&'
 
   days = i18n.planning.days
   hours = [i18n.planning.earliest..i18n.planning.latest]
@@ -70,6 +73,11 @@ define [
       # bind clicks
       @$el.delegate '.danceClass', 'click', (event) =>
         danceClass = $(event.target).closest '.danceClass'
+        # invoke click handler
+        @scope.onClick danceClass: _.findWhere @scope.src.danceClasses, id:danceClass.data 'id'
+
+        # disabled unless we provide a selected array
+        return unless @scope.selected?
         selected = danceClass.hasClass 'selected'
         danceClass.toggleClass 'selected'
         if selected
@@ -135,5 +143,6 @@ define [
             # mark as rendered to avoid reuse
             _.each overlap, (course) -> course.free = false     
 
-      for id in @scope.selected
-        @$el.find("[data-id='#{id}']").addClass 'selected'
+      if @scope.selected?
+        for id in @scope.selected
+          @$el.find("[data-id='#{id}']").addClass 'selected'

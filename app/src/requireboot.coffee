@@ -5,6 +5,7 @@ requirejs.config
   paths:
     'async': '../vendor/async/lib/async'
     'angular': '../vendor/angular/angular'
+    'angular-route': '../vendor/angular/angular-route'
     'jquery': '../vendor/jquery/jquery'
     'ui.bootstrap': '../vendor/angular-bootstrap/ui-bootstrap-tpls'
     'moment': '../vendor/moment/moment'
@@ -17,6 +18,8 @@ requirejs.config
   shim:
     'angular':
       exports: 'angular'
+    'angular-route':
+      deps: ['angular']
     'jquery': 
       exports: '$'
     'moment': 
@@ -37,6 +40,7 @@ require [
   'ui.bootstrap'
   './app'
   # require directives and filters immediately to allow circular dependencies
+  'angular-route'
   './util/filters'
   './directive/registration'
   './directive/planning'
