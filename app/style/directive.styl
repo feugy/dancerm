@@ -31,7 +31,11 @@
   .balance
 
     .sum
-      margin 0 5px 0 25px
+      margin-left 25px
+    .sum:after
+      content '/'
+      display inline
+      padding-left 5px
 
     .input-append
       line-height 26px
@@ -44,6 +48,14 @@
       input
         width 36px
         text-align right
+
+  .balance-low 
+    .text, .sum, .input-small
+      color #FF952B
+
+  .balance-right 
+    .text, .sum, .input-small
+      color #24B532
 
 .payment
 

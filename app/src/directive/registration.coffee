@@ -44,6 +44,8 @@ define [
     constructor: (@scope, element) ->
       @$el = $(element)
       @scope.i18n = i18n
+      # class use to highlight the balance state
+      @scope.balanceState = ""
       @scope.$watch 'src', @_onDisplayRegistration
       @scope.$watchCollection 'src.danceClassIds', @_onDisplayRegistration
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
@@ -56,6 +58,12 @@ define [
     # Updates the registration balance
     onPaymentChanged: =>
       @scope.src.updateBalance()
+      if @scope.src.balance < @scope.src.charged 
+        @scope.balanceState = 'balance-low' 
+      else if @scope.src.charged isnt 0 
+        @scope.balanceState = 'balance-right'
+      else 
+        @scope.balanceState = ''
 
     # Validates the charged input and only accepts numbers
     #
@@ -64,6 +72,7 @@ define [
       @scope.stringCharged = $(event.target).val().replace /[^\d\.]/g, ''
       # invoke method inheritted from parent scope
       @scope.src.charged = parseFloat @scope.stringCharged
+      @onPaymentChanged()
 
     # **private**
     # When displayed registration changed, refresh rendering by retrieving planning and selected dance classes

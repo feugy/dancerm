@@ -5,7 +5,6 @@
 
 # TODO
 
-- display green/orange style regarding the balance
 - remove payment
 - localize dance class's start hour 
 - how dancers knew about the school
@@ -58,3 +57,18 @@ Dancer information (4'00)
 Needed (53'00)
 - An invoice
 - The current file
+
+# Time
+
+08/08 3h
+09/08 2h
+10/08 3h
+11/08 4h
+12/08 2h
+13/08 6h
+14/08 2h
+15/08 6h
+16/08 5h
+17/08 7-
+
+33h

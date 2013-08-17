@@ -7,8 +7,8 @@
   <div class="danceClasses">
     <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start}}</span></div>
   </div>
-  <h3>{{i18n.lbl.payments}}<span class="balance"><span class="sum" data-ng-bind="src.balance">
-    </span>/<span class="input-append">
+  <h3 class="{{balanceState}}"><span class="text">{{i18n.lbl.payments}}</span><span class="balance"><span class="sum" data-ng-bind="src.balance">
+    </span><span class="input-append">
       <input type="text" class="input-small" data-ng-model="stringCharged" data-ng-keyup="onChargedInput($event)"/>
       <span class="add-on">{{i18n.lbl.currency}}</span>
     </span>
