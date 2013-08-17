@@ -29,19 +29,23 @@ define [
   class RegistrationDirective
                   
     # Controller dependencies
-    @$inject: ['$scope', '$element']
+    @$inject: ['$scope', '$element', '$dialog']
     
     # Controller scope, injected within constructor
     scope: null
     
     # JQuery enriched element for directive root
     $el: null
+
+    # Angular's dialog service
+    dialog: null
     
     # Controller constructor: bind methods and attributes to current scope
     #
     # @param scope [Object] directive scope
     # @param element [DOM] directive root element
-    constructor: (@scope, element) ->
+    # @param dialog [Object] Angular's dialog service
+    constructor: (@scope, element, @dialog) ->
       @$el = $(element)
       @scope.i18n = i18n
       # class use to highlight the balance state
@@ -64,6 +68,21 @@ define [
         @scope.balanceState = 'balance-right'
       else 
         @scope.balanceState = ''
+
+    # Invoked when a payment needs to be removed.
+    # Confirm operation with a modal popup and proceed to the removal
+    #
+    # @param removed [Payment] the removed payment model
+    onRemovePayment: (removed) =>
+      @dialog.messageBox(i18n.ttl.confirmRemove, 
+        _.sprintf(i18n.msg.removePayment, i18n.paymentTypes[removed.type], removed.value), 
+        [
+          {result: false, label: i18n.btn.no}
+          {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
+        ]).open().then (confirm) =>
+          return unless confirm
+          @scope.src.payments.splice @scope.src.payments.indexOf(removed), 1
+          @onPaymentChanged()
 
     # Validates the charged input and only accepts numbers
     #

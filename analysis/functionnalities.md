@@ -5,7 +5,6 @@
 
 # TODO
 
-- remove payment
 - localize dance class's start hour 
 - how dancers knew about the school
 

@@ -90,7 +90,6 @@ define [
             {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
           ]).open().then (confirm) =>
             return unless confirm
-            console.log '>> remove', @scope.dancer.registrations.indexOf(removed)
             @scope.dancer.registrations.splice @scope.dancer.registrations.indexOf(removed), 1
 
     # **private**

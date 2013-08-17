@@ -14,6 +14,6 @@
     </span>
   </span><a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{i18n.btn.addPayment}}</a></h3>
   <div class="payments">
-    <div data-payment data-ng-repeat="payment in src.payments" data-src="payment"></div>
+    <div data-payment data-ng-repeat="payment in src.payments" data-src="payment" data-on-remove="onRemovePayment(payment)"></div>
   </div>
 </article>

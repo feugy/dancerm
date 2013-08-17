@@ -13,6 +13,7 @@ define root:
   msg:
     registrationYear: "Choissiez l'année et le cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
+    removePayment: "Vous allez supprimer le paiement par %s de %.2f €. Voulez-vous vraiment continuer ?"
 
   # buttons
   btn: 

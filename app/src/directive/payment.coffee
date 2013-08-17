@@ -19,6 +19,8 @@ define [
     scope: 
       # displayed payment
       src: '='
+      # ask for removal
+      onRemove: '&'
   
   class PaymentDirective
                   
