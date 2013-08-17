@@ -1,15 +1,15 @@
 <div class="modal-header">
-  <h3>{{i18n.ttl.newRegistration}}</h3>
+  <h3>{{'ttl.newRegistration'|i18n}}</h3>
 </div>
 <div class="modal-body register">
-  <span>{{i18n.msg.registrationYear}}</span><div class="btn-group">
-    <a href="" class="btn dropdown-toggle" >{{year}}<span class="caret"></span></a>
+  <span>{{'msg.registrationYear'|i18n}}</span><div class="btn-group">
+    <a href="" class="btn dropdown-toggle" >{{planning.year}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li data-ng-repeat="year in years"><a data-ng-click="onUpdateYear(year)">{{year}}</a></li>
     </ul>
   </div><span data-planning data-src="planning" data-selected="handled.danceClassIds"></span>
 </div>
 <div class="modal-footer">
-  <a href="" data-ng-click="close(true)" class="btn btn-primary ng-class:disabledClass;">{{i18n.btn.save}}</a>
-  <a href="" data-ng-click="close()" class="btn">{{i18n.btn.cancel}}</a>
+  <a href="" data-ng-click="close(true)" class="btn btn-primary ng-class:disabledClass;">{{'btn.save'|i18n}}</a>
+  <a href="" data-ng-click="close()" class="btn">{{'btn.cancel'|i18n}}</a>
 </div>

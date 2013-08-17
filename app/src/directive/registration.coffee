@@ -47,7 +47,6 @@ define [
     # @param dialog [Object] Angular's dialog service
     constructor: (@scope, element, @dialog) ->
       @$el = $(element)
-      @scope.i18n = i18n
       # class use to highlight the balance state
       @scope.balanceState = ""
       @scope.$watch 'src', @_onDisplayRegistration

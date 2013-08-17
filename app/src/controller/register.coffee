@@ -1,9 +1,8 @@
 define [
   'underscore'
-  'i18n!nls/common'
   '../model/planning/planning'
   '../model/dancer/registration'
-], (_, i18n, Planning, Registration) ->
+], (_, Planning, Registration) ->
   
   # Allow to choose a given dance class (year selection) and creates the corresponding registration.
   # Intended to be used inside a popup: will returned the created Registration object, or null.
@@ -33,7 +32,6 @@ define [
     # @param scope [Object] Angular current scope
     # @param dialog [Object] current dialog instance
     constructor: (@registration, @scope, @_dialog) ->
-      @scope.i18n = i18n
       @scope.disabledClass = 'disabled'
       # creates a temporary registration for work, and initialized it if necessary
       @scope.handled = new Registration()

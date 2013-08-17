@@ -1,18 +1,18 @@
 <article class="registration">
   <h2>{{year}}</h2>
-  <h3>{{i18n.lbl.danceClasses}}<span class="pull-right">
-    <a href="" class="btn" data-ng-click="onEdit()">{{i18n.btn.edit}}</a>
-    <a href="" class="btn btn-warning" data-ng-click="onRemove()">{{i18n.btn.remove}}</a>
+  <h3>{{'lbl.danceClasses'|i18n:{sep:true} }}<span class="pull-right">
+    <a href="" class="btn" data-ng-click="onEdit()">{{'btn.edit'|i18n}}</a>
+    <a href="" class="btn btn-warning" data-ng-click="onRemove()">{{'btn.remove'|i18n}}</a>
   </span></h3>
   <div class="danceClasses">
-    <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start}}</span></div>
+    <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start|classDate}}</span></div>
   </div>
-  <h3 class="{{balanceState}}"><span class="text">{{i18n.lbl.payments}}</span><span class="balance"><span class="sum" data-ng-bind="src.balance">
+  <h3 class="{{balanceState}}"><span class="text">{{'lbl.payments'|i18n:{sep:true} }}</span><span class="balance"><span class="sum" data-ng-bind="src.balance">
     </span><span class="input-append">
       <input type="text" class="input-small" data-ng-model="stringCharged" data-ng-keyup="onChargedInput($event)"/>
-      <span class="add-on">{{i18n.lbl.currency}}</span>
+      <span class="add-on">{{'lbl.currency'|i18n}}</span>
     </span>
-  </span><a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{i18n.btn.addPayment}}</a></h3>
+  </span><a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a></h3>
   <div class="payments">
     <div data-payment data-ng-repeat="payment in src.payments" data-src="payment" data-on-remove="onRemovePayment(payment)"></div>
   </div>

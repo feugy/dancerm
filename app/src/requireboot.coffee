@@ -36,7 +36,8 @@ require [
   'underscore.string'
   'ui.bootstrap'
   './app'
-  # require directive now for circular dependencies
+  # require directives and filters immediately to allow circular dependencies
+  './util/filters'
   './directive/registration'
   './directive/planning'
   './directive/payment'
