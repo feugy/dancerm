@@ -1,14 +1,10 @@
 ## Questions
 
-- validate the "one registration per year" model
-- how to store years: number or string
-
 # TODO
 
 - display hall in planning
 - display planning legend
 - test Dancer.findByClass
-- how dancers knew about the school
 
 ## Functionnal requirements
 
@@ -70,6 +66,4 @@ Needed (53'00)
 14/08 2h
 15/08 6h
 16/08 5h
-17/08 8-9
-
-33h
+17/08 3h

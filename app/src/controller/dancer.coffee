@@ -89,6 +89,13 @@ define [
             return unless confirm
             @scope.dancer.registrations.splice @scope.dancer.registrations.indexOf(removed), 1
 
+    # Invoked when the list of known-by meanings has changed.
+    # Updates the model corresponding array.
+    onUpdateKnownBy: =>
+      @scope.dancer.knownBy = (value for value of i18n.knownByMeanings when @scope.knownBy[value])
+      @scope.dancer.knownBy.push @scope.knownByOther if @scope.knownByOther
+      console.log @scope.dancer.knownBy
+
     # **private**
     # Update rendering with a given dancer
     #
@@ -97,3 +104,8 @@ define [
       @scope.dancer = dancer
       @scope.birth = dancer.birth?.toDate()
       @scope.showBirthPicker = false
+      # translate the "known by" possibilities into a list of boolean
+      @scope.knownBy = {}
+      for value of i18n.knownByMeanings 
+        @scope.knownBy[value] = _.contains dancer.knownBy, value
+      @scope.knownByOther = _.find dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)

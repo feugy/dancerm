@@ -46,6 +46,9 @@ define [
     # has or not a medical certificate for the current year
     certified: false
 
+    # how the dancers has known the school: leaflets, website, pagejaunesFr, searchEngine, directory, biennialAssociations, mouth, other
+    knownBy: []
+
     # list of registration for given dance classes
     registrations: []
 
@@ -66,6 +69,7 @@ define [
         email: null
         certified: false
         registrations: []
+        knownBy: []
       # fill attributes
       super(raw)
       # enrich object attributes

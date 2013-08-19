@@ -44,6 +44,8 @@ define root:
     payments: 'A régler'
     currency: '€'
     details: 'Dét.'
+    knownBy: 'Connu par'
+    other: 'autre'
     Mon: 'Lundi'
     Tue: 'Mardi'
     Wed: 'Mercredi'
@@ -66,6 +68,16 @@ define root:
     cash: 'Espèces'
     card: 'Carte'
     transfer: 'Virement'
+
+  # different ways to learn the school existence
+  knownByMeanings:
+    leaflets: 'tract'
+    website: 'notre site web'
+    pagejaunesFr: 'pagejaunes.fr'
+    searchEngine: 'moteur de recherche'
+    directory: 'annuaire'
+    biennialAssociations: 'biennale des asso.'
+    mouth: 'bouche à oreille'
 
   # planning directive configuration values
   planning:
