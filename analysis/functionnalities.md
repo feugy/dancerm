@@ -2,8 +2,6 @@
 
 # TODO
 
-- display hall in planning
-- display planning legend
 - test Dancer.findByClass
 
 ## Functionnal requirements

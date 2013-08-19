@@ -83,9 +83,7 @@ define root:
   planning:
     # must be same days used in DanceClass's start and end attributes
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-    # earliest and latest displayed hours (included)
-    earliest: 12
-    latest: 21
+    legend: 'Légende :'
     
   # default dancer value for creation
   defaultDancer:

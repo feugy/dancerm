@@ -95,16 +95,19 @@
       height 20px
 
 .planning
+  titleH = 20px
+  hallH = 40px
+
   width 100%
   height 100%
   box-sizing border-box
+  padding-bottom titleH + hallH + 40
 
   .time
     background-color #ccc
     color #fff
     text-align right
     width 6.5%
-    height 4%
 
     .q0
       font-size 0.8em
@@ -112,12 +115,16 @@
       padding 0.2em
       text-align right
 
+    .groups
+      color transparent
+
   .day 
   .time
     box-sizing border-box
     display inline-block
     height 100%
     position relative
+    margin-top 65px
 
   .day:not(:last-child)
     border-right 1px solid #ccc
@@ -135,6 +142,27 @@
     background-color #aaa
     color #fff
     box-sizing border-box
+    height titleH
+    position absolute
+    top -(titleH + hallH)
+    width 100%
+
+  .groups
+    background-color #ccc
+    color #fff
+    display -webkit-flex
+    -webkit-flex-flow row wrap
+    -webkit-flex-line-pack center
+    height hallH
+    position absolute
+    top - hallH
+    width 100%
+
+    > *
+      -webkit-flex 1
+      text-align center
+      overflow hidden
+      margin auto 0
 
   .danceClass
     position absolute
@@ -147,13 +175,29 @@
   .danceClass.selected
     background-color #666
 
+  .legend
+    text-align right
+
+    h2
+      display inline-block
+      line-height 1em
+      height auto
+      font-size 0.9em
+      font-weight normal
+
+    > span
+      font-size 0.9em
+      padding 0 0.4em
+      margin 0 0.4em
+      display inline-block
+
 for i in 2..7
   .planning.days{i} .day
     // 6.5% for time
     width unit((100 - 6.5) / i, '%')
 
 for i in 6..20
-  .planning.hours{i} .quarter
-    // 4% for the title
-    height unit((100 - 4) / (i * 4), '%')  
+  .planning.hours{i} 
+    .quarter
+      height unit(100 / (i * 4), '%')  
     
