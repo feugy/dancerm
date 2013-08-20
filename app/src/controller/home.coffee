@@ -35,6 +35,7 @@ define [
     #
     # @param chosen [DanceClass] the clicked dance class
     onDisplayClass: (chosen) =>
+      debugger
       # find all dancers in this dance class
       Dancer.findByClass chosen.id, (err, dancers) =>
         throw err if err?

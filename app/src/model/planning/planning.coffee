@@ -8,6 +8,9 @@ define [
   # A planning embed dance classes for a given year
   class Planning extends Base
 
+    # In-memory cache, updated by finders. 
+    @_cache = {}
+    
     id: null
 
     year: 2013

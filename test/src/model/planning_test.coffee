@@ -59,6 +59,7 @@ define [
         # given a empty storage bound to the Planning class
         storage = new Storage()
         Planning.bind storage
+        Planning._cache = {}
         storage.removeAll Planning, (err) ->
           return done "Failed to remove existing plannings: #{err.message}" if err?
           # given an existing planning

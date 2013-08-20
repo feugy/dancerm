@@ -1,13 +1,27 @@
 define [
   'underscore'
   'moment'
+  '../service/storage'
   './dancer/dancer'
   './dancer/address'
   './dancer/registration'
   './dancer/payment'
-], (_, moment, Dancer, Address, Registration, Payment) -> 
+  './planning/planning'
+], (_, moment, Storage, Dancer, Address, Registration, Payment, Planning) -> 
 
   describe 'Dancer model tests', ->
+
+    storage = null
+
+    before (done) ->
+      storage = new Storage()
+      Dancer.bind storage
+      Planning.bind storage
+      Dancer._cache = {}
+      storage.removeAll Dancer, (err) ->
+        return done err if err?
+        Planning._cache = {}
+        storage.removeAll Planning, done
     
     it 'should new dancer be created with default values', ->
       # when creating a dancer withou values
@@ -112,3 +126,48 @@ define [
       tested = new Dancer unallowed: 'toto'
       # then the attribute was not reported and the dancer created
       expect(tested).not.to.have.property 'unallowed'
+
+    describe 'given an existing dancer', ->
+
+      existing = null
+
+      beforeEach (done) ->
+        # given no dancer
+        Dancer._cache = {}
+        storage.removeAll Dancer, (err) ->
+          return done err if err?
+          # given a brand new dancer 
+          existing = new Dancer 
+            title: 'Mlle'
+            firstname: 'Lucie'
+            lastname: 'Grandjean'
+            registrations: [
+              planningId: 18
+              danceClassIds: [1, 2]
+            ]
+          existing.save done
+
+      it 'should dancer be found by id', (done) ->
+        Dancer.find existing.id, (err, retrieved) =>
+          return done "Failed to find existing dancer by id: #{err}" if err?
+          expect(retrieved).to.exist
+          expect(retrieved).to.be.an.instanceOf Dancer
+          expect(retrieved.toJSON()).to.be.deep.equal existing.toJSON()
+          done()
+
+      it 'should dancer be found by dance class', (done) ->
+        # given two another dancers
+        dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, danceClassIds: [3]]
+        dancer1.save (err) ->
+          return done "Failed to save first dancer: #{err}" if err?
+          dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, danceClassIds: [1]]
+          dancer2.save (err) ->
+            return done "Failed to save second dancer: #{err}" if err?
+            Dancer.findByClass 1, (err, dancers) =>
+              return done "Failed to find existing dancer by class id: #{err}" if err?
+              expect(dancers).to.exist
+              expect(dancers).to.have.lengthOf 2
+              expect(_.findWhere dancers, firstname: 'Jack').to.exist
+              expect(_.findWhere dancers, firstname: 'Lucie').to.exist
+              expect(_.findWhere dancers, firstname: 'Bob').not.to.exist
+              done()

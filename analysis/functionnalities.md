@@ -2,8 +2,6 @@
 
 # TODO
 
-- test Dancer.findByClass
-
 ## Functionnal requirements
 
 - Have a list of dancers.

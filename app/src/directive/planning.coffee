@@ -129,7 +129,6 @@ define [
         latest = Math.max latest, parseInt(course.end.replace day, '') - (if parseInt(course.end[course.end.indexOf(':')+1..]) > 0 then 0 else 1)
         # extracts dance groups
         @groups[day] = [] unless @groups[day]?
-        console.log course[@groupBy]
         unless course[@groupBy] in @groups[day]
           @groups[day].push course[@groupBy]
           @groups[day].sort()

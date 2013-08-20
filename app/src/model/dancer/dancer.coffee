@@ -9,6 +9,9 @@ define [
 
   class Dancer extends Base
 
+    # In-memory cache, updated by finders. 
+    @_cache = {}
+
     # **static**
     # Find a list of models from the storage provider that have been registered for a given dance class
     #
@@ -22,8 +25,7 @@ define [
         # filter dancers by registrations
         callback null, _.filter dancers, (dancer) ->
           # looks for the first registration that contains the class
-          _.some dancer.registrations, (registration) -> 
-            _.contains registration.danceClassIds, id
+          _.some dancer.registrations, (registration) -> _.contains registration.danceClassIds, id
 
     id: null
 

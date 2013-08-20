@@ -2,9 +2,12 @@ define [
   'underscore'
 ], (_) ->
 
+
   # Abstract base functionnalities of models
   # Persistence facilities are provided out of the box, but requires to bind the model class to a storage provider.
   # This operation (bind()) has to be done only once.
+  #
+  # The _cache static attribute MUST be defined inside subclasses
   class Base
 
     # Creates a model from a set of raw JSON arguments
@@ -29,7 +32,8 @@ define [
       @storage = storage
 
     # **static**
-    # Find a model from the storage provider by it's id
+    # Find a model from the storage provider by it's id.
+    # Use and updates cache if possible.
     # An error will be reported if no existing model matches this id.
     #
     # @param id [String] the searched model's id
@@ -38,19 +42,32 @@ define [
     # @option callback model [Base] the found model
     @find: (id, callback) ->
       return callback(new Error "#{@name} isn't bound to any storage provider") unless @storage?
-      @storage.get id, @, callback
+      # use storage unless we have a cached value
+      if id of @_cache
+        return _.defer => callback null, @_cache[id]
+      @storage.get id, @, (err, model) =>
+        # update cache
+        @_cache[model.id] = model if model?
+        callback err, model 
 
     # **static**
     # Find all existing models from the storage manager.
+    # Use and updates cache if possible.
     #
     # @param callback [Function] end callback, invoked with:
     # @option callback err [Error] an error object, or null if no problem occured
     # @option callback models [Array<Base>] the found models
     @findAll: (callback) ->
       return callback(new Error "#{@name} isn't bound to any storage provider") unless @storage?
+      # use the cache unless no entry
+      unless 0 is _.size @_cache
+        return _.defer => callback null, _.values @_cache
       models = []
-      @storage.walk @, (model, next) ->
+      # walk along the storage procider
+      @storage.walk @, (model, next) =>
         models.push model
+        # store in cache
+        @_cache[model.id] = model
         next()
       , (err) ->
         callback err, models
@@ -61,7 +78,10 @@ define [
     # @option callback err [Error] an error object, or null if no problem occured    
     save: (callback) =>
       return callback(new Error "#{@name} isn't bound to any storage provider") unless @constructor.storage?
-      @constructor.storage.add @, callback
+      @constructor.storage.add @, (err) =>
+        # update cache
+        @constructor._cache[@id] = @ unless err?
+        callback err
 
     # Returns a json representation of the current model.
     # Also operate on sub models
