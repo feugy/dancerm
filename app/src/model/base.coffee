@@ -1,6 +1,7 @@
 define [
   'underscore'
-], (_) ->
+  'async'
+], (_, async) ->
 
 
   # Abstract base functionnalities of models
@@ -71,6 +72,59 @@ define [
         next()
       , (err) ->
         callback err, models
+
+    # **static**
+    # Find a list of models from the storage provider that match given conditions
+    # Condition is an object, whose fields are path within the dancer, with their expected values.
+    # (interpreted in the same order)
+    # In path, dots are supported, and allow diving in sub object or sub array.
+    #
+    # @param conditions [Object] keys define path, values are expected values
+    # @param callback [Function] end callback, invoked with:
+    # @option callback err [Error] an error object, or null if no problem occured
+    # @option callback dancers [Array<Base>] array (that may be empty) of models matching these conditions
+    @findWhere: (conditions, callback) ->
+      @findAll (err, models) =>
+        return callback err if err?
+        # check each conditions
+        async.forEach _.pairs(conditions), ([path, expected], next) =>
+          steps = path.split '.'
+          # restrict the selected models for this condition
+          async.filter models, (model, next) =>
+            @_checkValue model, steps, expected, next
+          , (results) =>
+            # updates the model
+            models = results
+            return next 'end' if models.length is 0
+            next()
+        , (err) =>
+          return callback null, [] if err is 'end'
+          callback null, models
+
+    # **private**
+    # Check the a given path inside an object has the expected value.
+    # steps contains an item per from sub objects to dive in.
+    # If a sub object is an array, all this items are checked, and the method exist at first match
+    #
+    # @param obj [Object] the checked object
+    # @param steps [Array] contains names of each attributes of each sub object
+    # @param expected [Object] the expected value
+    # @param callback [Function] end callback, invoked with arguments:
+    # @option callback match [Boolean] true if the value match, false otherwise.
+    @_checkValue: (obj, steps, expected, callback) ->
+      for step, i in steps
+        obj = obj[step]
+        # step not found: quit immediately
+        return callback false unless obj? 
+        if _.isArray obj
+          return async.detect obj, (value, next) =>
+            # check all array items
+            @_checkValue value, steps[i+1..], expected, next
+          , (item) =>
+            # if one match, will be returned
+            callback item?
+      # simple value: check it
+      callback obj is expected
 
     # Save the current model into the bound storage manager.
     #

@@ -16,7 +16,7 @@ define [
       # then all plain attributes have been set to default
       expect(tested).to.have.property 'start', 'Mon 08:00'
       expect(tested).to.have.property 'end', 'Mon 09:00'
-      expect(tested).to.have.property 'teatcher', null
+      expect(tested).to.have.property 'teacher', null
       expect(tested).to.have.property 'hall', null
       expect(tested).to.have.property 'level', ''
       expect(tested).to.have.property 'kind', ''
@@ -30,7 +30,7 @@ define [
         level: '2'
         start: 'Wed 18:15'
         end: 'Wed 19:15'
-        teatcher: 'Anthony'
+        teacher: 'Anthony'
         hall: 'Gratte-ciel 1'
         color: 'color2'
 
@@ -42,7 +42,7 @@ define [
       expect(tested).to.have.property 'level', raw.level
       expect(tested).to.have.property 'start', raw.start
       expect(tested).to.have.property 'end', raw.end
-      expect(tested).to.have.property 'teatcher', raw.teatcher
+      expect(tested).to.have.property 'teacher', raw.teacher
       expect(tested).to.have.property 'hall', raw.hall
       expect(tested).to.have.property 'color', raw.color
       expect(tested.toJSON()).to.deep.equal raw

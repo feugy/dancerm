@@ -7,7 +7,8 @@ define [
   './dancer/registration'
   './dancer/payment'
   './planning/planning'
-], (_, moment, Storage, Dancer, Address, Registration, Payment, Planning) -> 
+  './planning/danceclass'
+], (_, moment, Storage, Dancer, Address, Registration, Payment, Planning, DanceClass) -> 
 
   describe 'Dancer model tests', ->
 
@@ -155,7 +156,7 @@ define [
           expect(retrieved.toJSON()).to.be.deep.equal existing.toJSON()
           done()
 
-      it 'should dancer be found by dance class', (done) ->
+      it 'should findWhere() found within array', (done) ->
         # given two another dancers
         dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, danceClassIds: [3]]
         dancer1.save (err) ->
@@ -163,7 +164,7 @@ define [
           dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, danceClassIds: [1]]
           dancer2.save (err) ->
             return done "Failed to save second dancer: #{err}" if err?
-            Dancer.findByClass 1, (err, dancers) =>
+            Dancer.findWhere {'registrations.danceClassIds': 1}, (err, dancers) =>
               return done "Failed to find existing dancer by class id: #{err}" if err?
               expect(dancers).to.exist
               expect(dancers).to.have.lengthOf 2
@@ -171,3 +172,68 @@ define [
               expect(_.findWhere dancers, firstname: 'Lucie').to.exist
               expect(_.findWhere dancers, firstname: 'Bob').not.to.exist
               done()
+
+      it 'should findWhere() single value', (done) ->
+        # given two another dancers
+        dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, charged: 100, danceClassIds: [3]]
+        dancer1.save (err) ->
+          return done "Failed to save first dancer: #{err}" if err?
+          dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, charged: 100, danceClassIds: [1]]
+          dancer2.save (err) ->
+            return done "Failed to save second dancer: #{err}" if err?
+            Dancer.findWhere {'registrations.charged': 100}, (err, dancers) =>
+              return done "Failed to find existing dancer by charge: #{err}" if err?
+              expect(dancers).to.exist
+              expect(dancers).to.have.lengthOf 2
+              expect(_.findWhere dancers, firstname: 'Jack').to.exist
+              expect(_.findWhere dancers, firstname: 'Bob').to.exist
+              expect(_.findWhere dancers, firstname: 'Lucie').not.to.exist
+              done()
+
+      it 'should findWhere() use multiple conditions', (done) ->
+        # given two another dancers
+        dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, charged: 100, danceClassIds: [3]]
+        dancer1.save (err) ->
+          return done "Failed to save first dancer: #{err}" if err?
+          dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, charged: 50, danceClassIds: [1]]
+          dancer2.save (err) ->
+            return done "Failed to save second dancer: #{err}" if err?
+            Dancer.findWhere {'registrations.danceClassIds': 1, 'registrations.charged': 50}, (err, dancers) =>
+              return done "Failed to find existing dancer by charge: #{err}" if err?
+              expect(dancers).to.exist
+              expect(dancers).to.have.lengthOf 1
+              expect(_.findWhere dancers, firstname: 'Jack').to.exist
+              expect(_.findWhere dancers, firstname: 'Bob').not.to.exist
+              expect(_.findWhere dancers, firstname: 'Lucie').not.to.exist
+              done()
+
+      it 'should findWhere() resolve plannings and dance classes', (done) ->
+        anthony = 'Anthony'
+        diana = 'Diana'
+        # given two plannings
+        new Planning(id:18, year:2012, danceClasses: [
+          new DanceClass id: 1, teacher: anthony
+          new DanceClass id: 2, teacher: anthony
+          new DanceClass id: 3, teacher: diana
+        ]).save (err) ->
+          return done "Failed to save first planning: #{err}" if err?
+          new Planning(id:19, year:2013, danceClasses: [
+            new DanceClass id: 4, teacher: anthony
+            new DanceClass id: 5, teacher: diana
+          ]).save (err) ->
+            return done "Failed to save second planning: #{err}" if err?
+            # given two another dancers
+            dancer1 = new Dancer firstname: 'Jack', registrations: [planningId: 18, danceClassIds: [3]]
+            dancer1.save (err) ->
+              return done "Failed to save first dancer: #{err}" if err?
+              dancer2 = new Dancer firstname: 'Mitch', registrations: [planningId: 19, danceClassIds: [4]]
+              dancer2.save (err) ->
+                return done "Failed to save second dancer: #{err}" if err?
+                Dancer.findWhere {'registrations.danceClasses.teacher': anthony, 'registrations.planning.year': 2012}, (err, dancers) =>
+                  return done "Failed to find existing dancer by teacher: #{err}" if err?
+                  expect(dancers).to.exist
+                  expect(dancers).to.have.lengthOf 2
+                  expect(_.findWhere dancers, firstname: 'Lucie').to.exist
+                  expect(_.findWhere dancers, firstname: 'Jack').to.exist
+                  expect(_.findWhere dancers, firstname: 'Mitch').not.to.exist
+                  done()

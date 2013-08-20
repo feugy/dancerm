@@ -28,8 +28,8 @@ define [
         id: 'anId'
         year: 2012
         danceClasses: [
-          {id: 'salsa2', kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15', teatcher: 'Anthony', hall: 'Gratte-ciel 1'}
-          {id: 'salsa1', kind: 'salsa', level: '1', start: 'Wed 17:15', end: 'Wed 18:15', teatcher: 'Anthony', hall: 'Croix Luizet'}
+          {id: 'salsa2', kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15', teacher: 'Anthony', hall: 'Gratte-ciel 1'}
+          {id: 'salsa1', kind: 'salsa', level: '1', start: 'Wed 17:15', end: 'Wed 18:15', teacher: 'Anthony', hall: 'Croix Luizet'}
         ]
 
       # when creating a planning with a clone to avoid modifications

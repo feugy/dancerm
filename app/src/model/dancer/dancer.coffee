@@ -1,31 +1,79 @@
 define [
   'underscore'
+  'async'
   'moment'
   '../base'
   './address'
   './registration'
+  '../planning/planning'
   '../../util/common'
-], (_, moment, Base, Address, Registration, {generateId}) ->
+], (_, async, moment, Base, Address, Registration, Planning, {generateId}) ->
 
   class Dancer extends Base
 
     # In-memory cache, updated by finders. 
     @_cache = {}
 
-    # **static**
-    # Find a list of models from the storage provider that have been registered for a given dance class
+    # **private**
+    # Check the a given path inside an object has the expected value.
+    # steps contains an item per from sub objects to dive in.
+    # If a sub object is an array, all this items are checked, and the method exist at first match.
     #
-    # @param id [String] the searched dance class id
+    # Enhance to auto resolve planning values
+    #
+    # @param obj [Object] the checked object
+    # @param steps [Array] contains names of each attributes of each sub object
+    # @param expected [Object] the expected value
+    # @param callback [Function] end callback, invoked with arguments:
+    # @option callback match [Boolean] true if the value match, false otherwise.
+
+    # **static**
+    # Find a list of models from the storage provider that match given conditions
+    # Condition is an object, whose fields are path within the dancer, with their expected values.
+    # (interpreted in the same order)
+    # In path, dots are supported, and allow diving in sub object or sub array.
+    # 
+    # If planning is found within path, the planning corresponding model is automatically retrieved 
+    #
+    # @param conditions [Object] keys define path, values are expected values
     # @param callback [Function] end callback, invoked with:
     # @option callback err [Error] an error object, or null if no problem occured
-    # @option callback dancers [Array<Dancer>] array (that may be empty) of registered dancers for this class
-    @findByClass: (id, callback) =>
-      @findAll (err, dancers) =>
+    # @option callback dancers [Array<Base>] array (that may be empty) of models matching these conditions
+    @findWhere: (conditions, callback) ->
+      @findAll (err, models) =>
         return callback err if err?
-        # filter dancers by registrations
-        callback null, _.filter dancers, (dancer) ->
-          # looks for the first registration that contains the class
-          _.some dancer.registrations, (registration) -> _.contains registration.danceClassIds, id
+        # check each conditions
+        async.forEach _.pairs(conditions), ([path, expected], next) =>
+          steps = path.split '.'
+          # check if condition include planning
+          idx = path.indexOf 'danceClasses.'
+          idx2 = path.indexOf 'planning.'
+          if idx isnt -1 or idx2 isnt -1
+            condition = {}
+            if idx isnt -1
+              condition[path[idx..]] = expected 
+            else
+              condition[path[idx2+9..]] = expected
+            # select relevant plannings
+            Planning.findWhere condition, (err, plannings) =>
+              return next 'end' if plannings.length is 0
+              # only kept dancers with relevant planning ids
+              ids = _.pluck plannings, 'id'
+              models = _.filter models, (model) =>
+                _.some model.registrations, (registration) => registration.planningId in ids
+              next()
+          else
+            # restrict the selected models for this condition
+            async.filter models, (model, next) =>
+              @_checkValue model, steps, expected, next
+            , (results) =>
+              # updates the model
+              models = results
+              return next 'end' if models.length is 0
+              next()
+        , (err) =>
+          return callback null, [] if err is 'end'
+          callback null, models
 
     id: null
 

@@ -94,7 +94,6 @@ define [
     onUpdateKnownBy: =>
       @scope.dancer.knownBy = (value for value of i18n.knownByMeanings when @scope.knownBy[value])
       @scope.dancer.knownBy.push @scope.knownByOther if @scope.knownByOther
-      console.log @scope.dancer.knownBy
 
     # **private**
     # Update rendering with a given dancer

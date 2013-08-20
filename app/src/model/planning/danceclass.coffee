@@ -22,7 +22,7 @@ define [
     end: "Mon 09:00"
 
     # Dance teacher and dancing hall
-    teatcher: null
+    teacher: null
     hall: null
 
     # Creates a dance class from a set of raw JSON arguments
@@ -37,7 +37,7 @@ define [
         level: ''
         start: 'Mon 08:00'
         end: 'Mon 09:00'
-        teatcher: null
+        teacher: null
         hall: null
       # fill attributes
       super(raw)
