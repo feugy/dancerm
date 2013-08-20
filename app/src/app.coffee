@@ -5,7 +5,8 @@ define [
   'controller/dancer'
   'model/dancer/dancer'
   'model/planning/planning'
-], (angular, StorageService, HomeCtrl, DancerCtrl, DancerModel, PlanningModel) ->
+  'model/initializer'
+], (angular, StorageService, HomeCtrl, DancerCtrl, DancerModel, PlanningModel, initializer) ->
 
   # declare main module that configures routing
   app = angular.module 'app', ['ngRoute', 'ui.bootstrap']
@@ -26,12 +27,17 @@ define [
   ]
 
   # make storage an Angular service
-  app.factory 'storage', ->
+  app.factory 'storage', ['$rootScope', (rootScope) ->
     # creates the instance
     storage = new StorageService()
     # bind models to storage provider
     DancerModel.bind storage
     PlanningModel.bind storage
+    # init model
+    initializer storage, (err, initialized) ->
+      throw err if err?
+      rootScope.$broadcast 'model-initialized' if initialized
     storage
+  ]
   
   app

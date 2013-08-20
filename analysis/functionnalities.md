@@ -5,7 +5,7 @@
 ## Functionnal requirements
 
 - Have a list of dancers.
-- Distinguish dancers by teachers (legal requirement)
+- Distinguish dancers by teachers (legal requirement) (2'45)
 - Send new year schedule
 - alert unpaid classes (by classes)
 - alert on missing medical certificate
@@ -61,5 +61,9 @@ Needed (53'00)
 13/08 6h
 14/08 2h
 15/08 6h
+- 28h
 16/08 5h
 17/08 3h
+19/08 4h
+20/08 2h
+- 14h

@@ -2,12 +2,10 @@ define [
   'underscore'
   '../model/dancer/dancer'
   '../model/planning/planning'
-  '../model/initializer'
-], (_, Dancer, Planning, modelInit) ->
+], (_, Dancer, Planning) ->
 
   # supported model classes
   _supported = [Dancer, Planning]
-
 
   # Storage is a service to store and retrieve models (Dancer and Planning).
   # Works as a persistent hashmap.
@@ -21,8 +19,6 @@ define [
       test = mocha?
       @dbName= "dancerm#{if test then '-test' else ''}"
       @db = null
-      # model initialization at startup
-      modelInit @ unless test
 
     # **private**
     # Run a given process function that need database to be initialize.

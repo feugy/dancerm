@@ -23,6 +23,8 @@ define [
       Planning.findAll @_onPlanningsRetrieved
       # injects public methods into scope
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
+      # redraw all on initialization
+      @scope.$on 'model-initialized', => Planning.findAll @_onPlanningsRetrieved
 
     # Navigate to another controller
     #
