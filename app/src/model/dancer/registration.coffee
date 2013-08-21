@@ -17,6 +17,12 @@ define [
     # price awaited and account balance
     charged: 0
 
+    # payment period: year, quarter, class
+    period: 'year'
+
+    # payment free text field
+    details: null
+
     # payment list for this registration and the account balance 
     payments: []
     balance: 0
@@ -32,6 +38,8 @@ define [
         charged: 0
         balance: 0
         payments: []
+        period: 'year'
+        details: null
       # fill attributes
       super(raw)
       # enrich object attributes

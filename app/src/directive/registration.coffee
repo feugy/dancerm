@@ -13,6 +13,8 @@ define [
     templateUrl: 'registration.html'
     # will remplace hosting element
     replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
     # applicable as element and attribute
     restrict: 'EA'
     # controller
@@ -48,6 +50,7 @@ define [
     constructor: (@scope, element, @dialog) ->
       @$el = $(element)
       # class use to highlight the balance state
+      @scope.i18n = i18n
       @scope.balanceState = ""
       @scope.$watch 'src', @_onDisplayRegistration
       @scope.$watchCollection 'src.danceClassIds', @_onDisplayRegistration
@@ -68,13 +71,23 @@ define [
       else 
         @scope.balanceState = ''
 
+    # Updates the payment period of the source registration object
+    #
+    # @param period [String] selected period
+    onUpdatePeriod: (period) =>
+      @scope.src.period = period
+      @scope.periodLabel = i18n.periods[@scope.src.period]
+
     # Invoked when a payment needs to be removed.
     # Confirm operation with a modal popup and proceed to the removal
     #
     # @param removed [Payment] the removed payment model
     onRemovePayment: (removed) =>
       @dialog.messageBox(i18n.ttl.confirmRemove, 
-        _.sprintf(i18n.msg.removePayment, i18n.paymentTypes[removed.type], removed.value), 
+        _.sprintf(i18n.msg.removePayment, 
+          i18n.paymentTypes[removed.type], 
+          removed.value, 
+          removed.receipt.format i18n.formats.receipt), 
         [
           {result: false, label: i18n.btn.no}
           {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
@@ -95,6 +108,8 @@ define [
     # **private**
     # When displayed registration changed, refresh rendering by retrieving planning and selected dance classes
     _onDisplayRegistration: =>
+      # get the friendly labels for period
+      @onUpdatePeriod @scope.src.period
       # gets all dance classes details from the models
       Planning.find @scope.src.planningId, (err, planning) =>
         throw err if err?

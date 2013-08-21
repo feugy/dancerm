@@ -5,17 +5,20 @@
     margin 0
     font-weight normal
 
+    .input-append
+      margin-bottom 0px
+      line-height 1.2em
+
+      input
+        text-align right
+
   .danceClasses
-  .payments
     display -webkit-flex
     -webkit-flex-flow row wrap
 
   .danceClass
-  .payment
     display block
     padding 5px 10px
-
-  .danceClass
     > *
       padding 0.2em 0.5em
 
@@ -25,74 +28,75 @@
       color #888
 
   .danceClass:not(:last-child)
-  .payment:not(:last-child)
     border-right 1px solid #888
 
-  .balance
-
-    .sum
-      margin-left 25px
-    .sum:after
-      content '/'
-      display inline
-      padding-left 5px
-
-    .input-append
-      line-height 26px
-      margin-bottom 2px
-
-      > *
-        padding 2px 4px
-        font-size 17px
-
-      input
-        width 36px
-        text-align right
-
   .balance-low 
-    .sum, .input-small
-      color #FF952B
+    color #FF952B
 
   .balance-right 
-    .sum, .input-small
-      color #24B532
+    color #24B532
 
-.payment
-
-  .type
-    margin-bottom 3px
-
-    .btn.remove
-      font-weight bold
-      font-size 20px
-      padding 4px 7px
-
-  .input-append 
-    display -webkit-flex
-    -webkit-flex-flow row wrap
-    margin-bottom 3px
-    
-    > input
-      -webkit-flex 1
-      margin 0
-      text-align right
-      width auto
-
-  .details 
-    display -webkit-flex
-    -webkit-flex-flow row wrap
+  .payments 
 
     > *
-      font-size 0.7em
+      display -webkit-flex
+      -webkit-flex-flow row
 
-    > label
-      line-height 16px
+      > *
+        -webkit-flex 1
 
-    > input
-      -webkit-flex 1
-      width auto
-      padding 2px 4px
+    header
+      text-align center
+
+      .remove
+        width 35px
+
+      .receipt
+        margin-left 4px
+        padding 0 7px
+
+    .total
+      display block
+      text-align right
+
+      .input-append
+        margin-bottom 0
+
+        span:not(.add-on)
+          padding 4px 6px
+          font-size 14px
+          width 60px
+          display inline-block
+
+    .type
+      -webkit-flex none
+      text-align right
+      width 130px
+
+      .dropup
+        text-align left
+
+    .receipt
+      -webkit-flex none
+      text-align center
+      width 100px
+
+    .receipt.invalid
+      background-color #f89406
+      color #fff
+
+    .remove
+      -webkit-flex none
       height 20px
+      margin-right 5px
+
+    .value
+      -webkit-flex none
+      width 100px
+
+      input
+        width 53px
+        text-align right
 
 .planning
   titleH = 20px

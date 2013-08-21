@@ -8,17 +8,17 @@ define [
   # May be per month, quarter or year.
   class Payment extends Base
 
-    # card, cash, check
+    # traveler check, cash, check
     type: 'check'
-
-    # payment duration in month (only indicative)
-    duration: 12
 
     # amount of money paid
     value: 0
 
     # receiption date
     receipt: null
+
+    # bank name
+    bank: null
 
     # free text, for example to store check owner name
     details: null
@@ -30,9 +30,9 @@ define [
       # set default values
       _.defaults raw, 
         type: 'check'
+        bank: null
         receipt: moment()
         value: 0
-        duration: 12
         details: null
       # fill attributes
       super(raw)

@@ -7,13 +7,33 @@
   <div class="danceClasses">
     <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start|classDate}}</span></div>
   </div>
-  <h3 class="{{balanceState}}"><span class="text">{{'lbl.payments'|i18n:{sep:true} }}</span><span class="balance"><span class="sum" data-ng-bind="src.balance">
-    </span><span class="input-append">
+  <h3>{{'lbl.charged'|i18n:{sep:true} }}
+    <span class="input-append">
       <input type="text" class="input-small" data-ng-model="stringCharged" data-ng-keyup="onChargedInput($event)"/>
       <span class="add-on">{{'lbl.currency'|i18n}}</span>
     </span>
-  </span><a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a></h3>
+    <span class="btn-group">
+      <a href="" class="btn dropdown-toggle">{{periodLabel}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li data-ng-repeat="(period, label) in i18n.periods"><a data-ng-click="onUpdatePeriod(period)">{{label}}</a></li>
+      </ul>
+    </span>
+    <a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a>
+  </h3>
   <div class="payments">
-    <div data-payment data-ng-repeat="payment in src.payments" data-src="payment" data-on-remove="onRemovePayment(payment)"></div>
+    <header>
+      <div class="remove"></div>
+      <div class="type"></div>
+      <div class="receipt">{{'lbl.receipt'|i18n}}</div>
+      <div>{{'lbl.bank'|i18n}}</div>
+      <div>{{'lbl.details'|i18n}}</div>
+      <div class="value">{{'lbl.value'|i18n}}</div>
+    </header>
+    <div data-payment 
+      data-ng-repeat="payment in src.payments" 
+      data-src="payment" 
+      data-on-remove="onRemovePayment(payment)"></div>
+    <div class="total {{balanceState}}">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-append"><span data-ng-bind="src.balance"></span><span class="add-on">{{'lbl.currency'|i18n}}</span></span></div>
   </div>
+
 </article>

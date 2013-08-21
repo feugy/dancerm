@@ -65,23 +65,25 @@ define [
           danceClassIds: [1, 2]
           charged: 300
           balance: 200
+          details: 'Inclu le paiement de M. Legrand'
+          period: 'quarter'
           payments: [
             type: 'cash'
             value: 100
-            duration: 3
+            bank: null
             details: null
             receipt: moment().toJSON()
           ,
             type: 'check'
             value: 50
-            duration: 3
+            bank: 'La Poste'
             details: 'something'
             receipt: moment().toJSON()
           , 
             type: 'card'
             value: 50
             details: null
-            duration: 6
+            bank: null
             receipt: moment().toJSON()
           ]
         ,
@@ -92,7 +94,6 @@ define [
           payments: [
             type: 'cash'
             value: 300
-            duration: 12
             details: null
             receipt: moment().toJSON()
           ]

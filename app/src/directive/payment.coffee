@@ -1,16 +1,19 @@
 define [
   'jquery'
   'underscore'
+  'moment'
   'i18n!nls/common'
   '../app'
-], ($, _, i18n, app) ->
+], ($, _, moment, i18n, app) ->
 
   # The payment directive displays and edit dancer's payment
   app.directive 'payment', ->
     # directive template
     templateUrl: "payment.html"
-    # will remplace hosting element
+    # will replace hosting element
     replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
     # applicable as element and attribute
     restrict: 'EA'
     # controller
@@ -40,6 +43,7 @@ define [
     constructor: (@scope, element, @compile) ->
       @$el = $(element)
       @scope.i18n = i18n
+      @scope.receiptValid = true
       @scope.$watch 'src', @_onDisplayPayment
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
@@ -58,6 +62,17 @@ define [
       # invoke method inheritted from parent scope
       @scope.src.value = parseFloat @scope.stringValue
       @scope.$parent.$parent.onPaymentChanged()
+
+    # Validates the receipt input and only accepts dates
+    #
+    # @param event [event] key-up event
+    onReceiptInput: =>
+      # parse input (moment does not allow empty input)
+      receipt = moment @scope.receipt or 'empty', i18n.formats.receipt
+      # set validation class
+      @scope.receiptValid = receipt.isValid()
+      #updates model only if valid
+      @scope.src.receipt = receipt if @scope.receiptValid
 
     # **private**
     # When displayed payment changed, refresh rendering

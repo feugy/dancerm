@@ -2,10 +2,10 @@
 
 # TODO
 
-- payment refactor (period, checking date, bank name)
 - import list
 - conflict management
 - export list
+- add second phone
 
 ## Functionnal requirements
 

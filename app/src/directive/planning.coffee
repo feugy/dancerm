@@ -9,7 +9,7 @@ define [
   app.directive 'planning', ->
     # directive template
     template: """<div class="planning"></div>"""
-    # will remplace hosting element
+    # will replace hosting element
     replace: true
     # applicable as element and attribute
     restrict: 'EA'

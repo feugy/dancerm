@@ -15,7 +15,7 @@ define root:
   msg:
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
-    removePayment: "Vous allez supprimer le paiement par %s de %.2f €. Voulez-vous vraiment continuer ?"
+    removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
 
   # buttons
   btn: 
@@ -42,10 +42,14 @@ define root:
     birth: 'Date de naissance'
     certified: 'Certificat médical'
     danceClasses: 'Cours'
-    payments: 'A régler'
+    charged: 'Réglement de'
     currency: '€'
-    details: 'Dét.'
+    receipt: 'Encaissement'
+    bank: 'Banque'
+    details: 'Détails'
     knownBy: 'Connu par'
+    value: 'Valeur'
+    sum: 'Total'
     other: 'autre'
     Mon: 'Lundi'
     Tue: 'Mardi'
@@ -58,7 +62,7 @@ define root:
   # formats
   formats:
     datePicker: "dd/MM/yyyy"
-    receipt: "DD/MM"
+    receipt: "DD/MM/YYYY"
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']
@@ -67,8 +71,13 @@ define root:
   paymentTypes: 
     check: 'Chèque'
     cash: 'Espèces'
-    card: 'Carte'
-    transfer: 'Virement'
+    traveler: 'Ch. vacance'
+
+  # payment periods
+  periods:
+    year: "à l'année"
+    quarter: "au trimestre"
+    'class': "au cours"
 
   # different ways to learn the school existence
   knownByMeanings:
