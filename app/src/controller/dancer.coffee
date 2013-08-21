@@ -54,13 +54,13 @@ define [
     onUpdateTitle: (selected) =>
       @scope.dancer?.title = selected
 
-    # Add a new registration for the current year to the edited dancer, or edit an existing one
+    # Add a new registration for the current season to the edited dancer, or edit an existing one
     # Displays the registration dialog
     #
     # @param registration [Registration] the edited registration, null to create a new one 
     onRegister: (registration = null) =>
       handled = new Registration()
-      # display dialog to choose registration year and dance classes
+      # display dialog to choose registration season and dance classes
       @dialog.dialog(
         keyboard: false
         backdropClick: false
@@ -82,7 +82,7 @@ define [
       Planning.find removed.planningId, (err, planning) =>
         throw err if err?
         @scope.$apply =>
-          @dialog.messageBox(i18n.ttl.confirmRemove, _.sprintf(i18n.msg.removeRegistration, planning.year), [
+          @dialog.messageBox(i18n.ttl.confirmRemove, _.sprintf(i18n.msg.removeRegistration, planning.season), [
             {result: false, label: i18n.btn.no}
             {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
           ]).open().then (confirm) =>

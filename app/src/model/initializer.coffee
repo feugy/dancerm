@@ -23,9 +23,9 @@ define [
       # quit if error is found or if already initialized
       return callback err if err?
       return callback null, false if initialized
-      # create a planning for year 2013
+      # create a planning for season 2013/2014
       planning = new Planning
-        year: 2013
+        season: '2013/2014'
         danceClasses: [
           {kind: 'Toutes danses', color:'color1', level: 'débutant', start: 'Wed 19:45', end: 'Wed 20:45', hall: 'Gratte-ciel 2', teacher: 'Michelle'}
           {kind: 'Toutes danses', color:'color1', level: 'intermédiaire', start: 'Thu 20:00', end: 'Thu 21:00', hall: 'Gratte-ciel 2', teacher: 'Michelle'}

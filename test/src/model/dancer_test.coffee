@@ -211,13 +211,13 @@ define [
         anthony = 'Anthony'
         diana = 'Diana'
         # given two plannings
-        new Planning(id:18, year:2012, danceClasses: [
+        new Planning(id:18, season:'2012/2013', danceClasses: [
           new DanceClass id: 1, teacher: anthony
           new DanceClass id: 2, teacher: anthony
           new DanceClass id: 3, teacher: diana
         ]).save (err) ->
           return done "Failed to save first planning: #{err}" if err?
-          new Planning(id:19, year:2013, danceClasses: [
+          new Planning(id:19, season:'2013/2014', danceClasses: [
             new DanceClass id: 4, teacher: anthony
             new DanceClass id: 5, teacher: diana
           ]).save (err) ->
@@ -229,7 +229,7 @@ define [
               dancer2 = new Dancer firstname: 'Mitch', registrations: [planningId: 19, danceClassIds: [4]]
               dancer2.save (err) ->
                 return done "Failed to save second dancer: #{err}" if err?
-                Dancer.findWhere {'registrations.danceClasses.teacher': anthony, 'registrations.planning.year': 2012}, (err, dancers) =>
+                Dancer.findWhere {'registrations.danceClasses.teacher': anthony, 'registrations.planning.season': '2012/2013'}, (err, dancers) =>
                   return done "Failed to find existing dancer by teacher: #{err}" if err?
                   expect(dancers).to.exist
                   expect(dancers).to.have.lengthOf 2

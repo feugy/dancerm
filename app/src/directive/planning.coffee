@@ -89,6 +89,9 @@ define [
     _buildCalendar: =>
       html = []
       # adds time column
+      html.push "<div class='legend'><h2>#{i18n.planning.legend}</h2>"
+      html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
+      html.push '</div>'
       html.push "<div class='time'><div class='title'>&nbsp;</div><div class='groups'>&nbsp;</div>"
       # add quarter from the earliest to the latest hours
       for hour in @hours
@@ -106,9 +109,6 @@ define [
           for i in [0..3]
             html.push "<div class='quarter q#{i}' data-hour='#{hour}' data-quarter='#{i}'>&nbsp;</div>"
         html.push "</div>"
-      html.push "<div class='legend'><h2>#{i18n.planning.legend}</h2>"
-      html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
-      html.push '</div>'
 
       @$el.empty().append html.join ''
       @$el.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
@@ -156,7 +156,7 @@ define [
         eQuarter = parseInt(course.end[course.end.indexOf(':')+1..])/15
         
         # gets horizontal positionning
-        column = days.indexOf(day)+2
+        column = days.indexOf(day)+3
         start = @$el.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
         end = @$el.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
               

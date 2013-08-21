@@ -20,13 +20,13 @@ define [
       expect(tested.danceClasses).to.be.an 'array'
       expect(tested.danceClasses).to.have.lengthOf 0
       # then all plain attributes have been set to default
-      expect(tested).to.have.property 'year', 2013
+      expect(tested).to.have.property 'season', '2013/2014'
 
     it 'should planning save raw values', ->
       # given a raw planning
       raw = 
         id: 'anId'
-        year: 2012
+        season: '2012/2013'
         danceClasses: [
           {id: 'salsa2', kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15', teacher: 'Anthony', hall: 'Gratte-ciel 1'}
           {id: 'salsa1', kind: 'salsa', level: '1', start: 'Wed 17:15', end: 'Wed 18:15', teacher: 'Anthony', hall: 'Croix Luizet'}
@@ -36,7 +36,7 @@ define [
       tested = new Planning _.clone raw
       # then all defined attributes have been saved
       expect(tested).to.have.property 'id', raw.id
-      expect(tested).to.have.property 'year', raw.year
+      expect(tested).to.have.property 'season', raw.season
       # then the registrations have been enriched
       expect(tested).to.have.property 'danceClasses'
       expect(tested.danceClasses).to.be.an 'array'
@@ -63,7 +63,7 @@ define [
         storage.removeAll Planning, (err) ->
           return done "Failed to remove existing plannings: #{err.message}" if err?
           # given an existing planning
-          planning = new Planning year: 2012, danceClasses: [kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15']
+          planning = new Planning season: '2012/2013', danceClasses: [kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15']
           planning.save done
 
       it 'should planning be retrieved by key', (done) ->
@@ -87,7 +87,7 @@ define [
 
       it 'should multiple models be retrieved', (done) ->
         # given another planning
-        planning2 = new Planning year: 2013, danceClasses: []
+        planning2 = new Planning season: '2013/2014', danceClasses: []
         planning2.save (err) ->
           return done "Failed to save planning2: #{err.message}" if err?
           # when retrieving all plannings

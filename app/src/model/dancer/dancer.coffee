@@ -93,7 +93,7 @@ define [
 
     birth: null
 
-    # has or not a medical certificate for the current year
+    # has or not a medical certificate for the current season
     certified: false
 
     # how the dancers has known the school: leaflets, website, pagejaunesFr, searchEngine, directory, biennialAssociations, mouth, other

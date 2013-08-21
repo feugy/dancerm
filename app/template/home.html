@@ -1,8 +1,8 @@
 <div class="home">
   <div class="btn-group">
-    <a href="" class="btn dropdown-toggle" >{{selected.year}}<span class="caret"></span></a>
+    <a href="" class="btn dropdown-toggle" >{{selected.season}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
-      <li data-ng-repeat="planning in plannings"><a data-ng-click="selected = planning">{{planning.year}}</a></li>
+      <li data-ng-repeat="planning in plannings"><a data-ng-click="selected = planning">{{planning.season}}</a></li>
     </ul>
   </div>
   <span data-planning data-src="selected" data-on-click="onDisplayClass(danceClass)"></span>

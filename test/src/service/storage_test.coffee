@@ -36,9 +36,9 @@ define [
           done()
 
     it 'should Planning model and its submodels be saved and retrieved', (done) ->
-      # given a planning for year 2013
+      # given a planning for season 2013
       planning = new Planning
-        year: 2013
+        season: '2013/2014'
         danceClasses: [
           {kind: 'Toutes danses', level: 'débutant', start: 'Wed 19:45', end: 'Wed 20:45', hall: 'Gratte-ciel'}
           {kind: 'Toutes danses', level: 'intermédiaire', start: 'Thu 20:00', end: 'Thu 21:00', hall: 'Gratte-ciel'}

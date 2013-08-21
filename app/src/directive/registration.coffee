@@ -98,8 +98,8 @@ define [
       # gets all dance classes details from the models
       Planning.find @scope.src.planningId, (err, planning) =>
         throw err if err?
-        # sets year for displayal
-        @scope.year = planning.year
+        # sets season for displayal
+        @scope.season = planning.season
         # retrieves full dance class objects from their ids
         @scope.danceClasses = (
           for id in @scope.src.danceClassIds

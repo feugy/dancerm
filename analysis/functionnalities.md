@@ -2,6 +2,11 @@
 
 # TODO
 
+- payment refactor (period, checking date, bank name)
+- import list
+- conflict management
+- export list
+
 ## Functionnal requirements
 
 - Have a list of dancers.
@@ -66,4 +71,5 @@ Needed (53'00)
 17/08 3h
 19/08 4h
 20/08 4h
+21/08
 - 16h

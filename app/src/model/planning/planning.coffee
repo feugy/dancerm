@@ -1,11 +1,12 @@
 define [
   'underscore'
+  'moment'
   '../base'
   './danceclass'
   '../../util/common'
-], (_, Base, DanceClass,{generateId}) ->
+], (_, moment, Base, DanceClass,{generateId}) ->
 
-  # A planning embed dance classes for a given year
+  # A planning embed dance classes for a given season
   class Planning extends Base
 
     # In-memory cache, updated by finders. 
@@ -13,7 +14,7 @@ define [
     
     id: null
 
-    year: 2013
+    season: ''
 
     # list of dance classes
     danceClasses: []
@@ -22,10 +23,12 @@ define [
     #
     # @param raw [Object] raw attributes of this planning
     constructor: (raw = {}) ->
+      now = moment()
+      year = if now.month() >= 7 then now.year() else now.year()-1
       # set default values
       _.defaults raw, 
         id: generateId()
-        year: 2013
+        season: "#{year}/#{year+1}"
         danceClasses: []
       # fill attributes
       super(raw)

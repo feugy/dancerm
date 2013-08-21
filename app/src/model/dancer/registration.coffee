@@ -8,7 +8,7 @@ define [
   # Multiple payment may be used for the same registration: their sum is stored in `balance`
   class Registration extends Base
 
-    # corresponding planning, meaning registration year
+    # corresponding planning, meaning registration season
     planningId: null
 
     # id of the concerned dance classs

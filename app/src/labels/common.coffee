@@ -7,12 +7,13 @@ define root:
     address: 'Adresse'
     contact: 'Contact'
     newRegistration: 'Nouvelle inscription'
+    editRegistration: "Modification de l'inscription"
     confirmRemove: 'Confirmation de la suppression'
     dancerList: 'Liste des danceurs'
 
   # long messages with html
   msg:
-    registrationYear: "Choissiez l'année et le cours : "
+    registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f €. Voulez-vous vraiment continuer ?"
 
