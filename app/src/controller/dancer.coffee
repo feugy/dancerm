@@ -39,6 +39,7 @@ define [
 
       # fill the scope and bind public methods
       @scope.i18n = i18n
+      @scope.birthValid = true
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
     # Save the current values inside storage
@@ -47,6 +48,24 @@ define [
       @scope.dancer.save (err) =>
         throw err if err?
         console.log '>>> save done !'
+
+    # @findWhere {lastname: (val) -> 0 is name.toLowerCase().indexOf val?.toLowerCase()}, callback
+    
+    # Validates the birth input and only accepts dates
+    #
+    # @param event [event] key-up event
+    onBirthInput: =>
+      # allow empty
+      unless @scope.birth
+        @scope.dancer.birth = null
+        @scope.birthValid = true
+      else
+        # parse input
+        birth = moment @scope.birth, i18n.formats.birth
+        # set validation class
+        @scope.birthValid = birth.isValid()
+        #updates model only if valid
+        @scope.dancer.birth = birth if @scope.birthValid
 
     # Invoked by view to update dancer's title according to selected item
     #
@@ -108,3 +127,4 @@ define [
       for value of i18n.knownByMeanings 
         @scope.knownBy[value] = _.contains dancer.knownBy, value
       @scope.knownByOther = _.find dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
+      @scope.birth = dancer.birth?.format(i18n.formats.birth) or null

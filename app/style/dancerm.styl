@@ -18,6 +18,10 @@ body
   .registration
     overflow-y visible
 
+  .invalid
+    background-color #f89406
+    color #fff
+
 for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
   .color{i+1}
     background-color color
@@ -80,8 +84,8 @@ article
     display inline-block
     box-sizing border-box
 
-  input:not(:hover):not(:focus)
-  textarea:not(:hover):not(:focus)
+  input:not(:hover):not(:focus):not(.invalid)
+  textarea:not(:hover):not(:focus):not(.invalid)
     background transparent
     border-color transparent
     box-shadow none

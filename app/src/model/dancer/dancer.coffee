@@ -14,26 +14,16 @@ define [
     # In-memory cache, updated by finders. 
     @_cache = {}
 
-    # **private**
-    # Check the a given path inside an object has the expected value.
-    # steps contains an item per from sub objects to dive in.
-    # If a sub object is an array, all this items are checked, and the method exist at first match.
-    #
-    # Enhance to auto resolve planning values
-    #
-    # @param obj [Object] the checked object
-    # @param steps [Array] contains names of each attributes of each sub object
-    # @param expected [Object] the expected value
-    # @param callback [Function] end callback, invoked with arguments:
-    # @option callback match [Boolean] true if the value match, false otherwise.
-
     # **static**
     # Find a list of models from the storage provider that match given conditions
     # Condition is an object, whose fields are path within the dancer, with their expected values.
     # (interpreted in the same order)
     # In path, dots are supported, and allow diving in sub object or sub array.
+    # An expected value may be a function, that will take as arguments the given value and it's model, 
+    # and must returns a boolean
     # 
-    # If planning is found within path, the planning corresponding model is automatically retrieved 
+    # If 'planning' or 'danceClasses' are found within path, the corresponding planning model 
+    # is automatically resolved and use for traversal
     #
     # @param conditions [Object] keys define path, values are expected values
     # @param callback [Function] end callback, invoked with:
@@ -65,7 +55,7 @@ define [
           else
             # restrict the selected models for this condition
             async.filter models, (model, next) =>
-              @_checkValue model, steps, expected, next
+              @_checkValue model, model, steps, expected, next
             , (results) =>
               # updates the model
               models = results

@@ -62,7 +62,7 @@ define root:
 
   # formats
   formats:
-    datePicker: "dd/MM/yyyy"
+    birth: "DD/MM/YYYY"
     receipt: "DD/MM/YYYY"
 
   # civility mapping
@@ -95,14 +95,3 @@ define root:
     # must be same days used in DanceClass's start and end attributes
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     legend: 'Légende :'
-    
-  # default dancer value for creation
-  defaultDancer:
-    firstname: 'Anne'
-    lastname: 'Dupond'
-    birth: '1980-04-20'
-    certified: true
-    address:
-      street: '1 rue de la République'
-      zipcode: 69001
-      city: 'Lyon'

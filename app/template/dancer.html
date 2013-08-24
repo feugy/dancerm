@@ -16,7 +16,7 @@
     </div>
     <div class="row-fluid">
       <span class="span6"><label>{{'lbl.birth'|i18n:{sep:true} }}</label>
-        <input type="text" datepicker-popup="{{'formats.datePicker'|i18n}}" data-ng-model="birth"/>
+        <input class="birth {{birthValid ? '' : 'invalid'}}" type="text" data-ng-model="birth" data-ng-keyup="onBirthInput()"/>
       </span>
       <span class="span6"><label>{{'lbl.certified'|i18n:{sep:true} }}</label><input type="checkbox" name="certified" data-ng-model="dancer.certified"/></span>
     </div>
