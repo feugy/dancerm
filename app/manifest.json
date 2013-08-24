@@ -3,6 +3,10 @@
   "name": "DanceRM",
   "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
   "version": "0.0.1",
+  "permissions": [
+    {"fileSystem": ["write"]},
+    "unlimitedStorage"
+  ],
   "app": {
     "background": {
       "scripts": ["script/main.js"]

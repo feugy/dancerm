@@ -41,8 +41,9 @@ module.exports = (grunt) ->
       app:
         store: 'app/vendor'
         packages: 
-          'angular': 'PatternConsulting/bower-angular#1.2.0rc1'
+          'angular': 'PatternConsulting/bower-angular#1.1.5'
           'angular-bootstrap': '0.5.0'
+          'bootstrap': '2.3.2'
           'async': '0.1.23'
           'jquery': '2.0.3'
           'jszip': '1.0.0'

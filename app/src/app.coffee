@@ -9,16 +9,20 @@ define [
 ], (angular, StorageService, HomeCtrl, DancerCtrl, DancerModel, PlanningModel, initializer) ->
 
   # declare main module that configures routing
-  app = angular.module 'app', ['ngRoute', 'ui.bootstrap']
+  app = angular.module 'app', ['ui.bootstrap'] #['ngRoute', 'ui.bootstrap']
   app.config ['$locationProvider', '$routeProvider', (location, route) ->
     # TODO problem with angular 1.2.0rc1 use push state
-    # location.html5Mode true
+    location.html5Mode true
     # configure routing
     route.when "/home",
       name: 'home'
       templateUrl: 'home.html'
       controller: HomeCtrl
-    route.when "/dancer/:id?",
+    route.when "/dancer/:id",
+      name: 'dancer'
+      templateUrl: 'dancer.html'
+      controller: DancerCtrl
+    route.when "/dancer",
       name: 'dancer'
       templateUrl: 'dancer.html'
       controller: DancerCtrl

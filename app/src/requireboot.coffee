@@ -47,7 +47,7 @@ require [
   'ui.bootstrap'
   './app'
   # require directives and filters immediately to allow circular dependencies
-  'angular-route'
+  #'angular-route'
   './util/filters'
   './directive/registration'
   './directive/planning'

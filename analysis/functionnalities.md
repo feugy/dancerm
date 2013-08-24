@@ -3,7 +3,6 @@
 # TODO
 
 - import list
-- find dancer by name
 - save data
 - list dancers by class
 - list dancers by teacher
