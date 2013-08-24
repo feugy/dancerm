@@ -64,3 +64,45 @@ define [
           expect(report.worksheets[2].name).to.be.equal 'Feuil3'
           expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
           done()
+
+    describe 'given a well-formated file with multiple ', ->
+
+      before (done) ->
+        @timeout 60000
+        expected = [
+          new Dancer title: 'Mme', firstname: 'Amarande', lastname: 'Gniewek', address:{ street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800'}, phone:'0472697929', cellphone: '0673284308', knownBy: ['Ancien']
+          new Dancer title: 'M.', firstname: 'Joseph', lastname: 'Gniewek', address:{ street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800'}, phone:'0472697929', cellphone: '0673284308', knownBy: ['Ancien']
+          new Dancer title: 'M.', firstname: 'Florent', lastname: 'Gros', birth: '2007-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
+          new Dancer title: 'Mlle', firstname: 'Paloma', lastname: 'Gros', birth: '2007-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
+          new Dancer title: 'Mme', firstname: 'Virginie', lastname: 'Marcolungo', birth: '1977-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
+          new Dancer title: 'Mlle', firstname: 'Maeva', lastname: 'Meloni', birth: '1994-01-01', address:{ street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478853765', cellphone:'0472102290', knownBy: ['associationsBiennal', 'leaflets']
+          new Dancer title: 'Mlle', firstname: 'Melissa', lastname: 'Meloni', birth: '1998-01-01', address:{ street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478853765', cellphone:'0472102290', knownBy: ['associationsBiennal', 'leaflets']
+          new Dancer title: 'Mlle', firstname: 'Inès', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
+          new Dancer title: 'M.', firstname: 'Jessim', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
+          new Dancer title: 'Mlle', firstname: 'Sirine', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
+        ]
+        loadFile 'import_2', done
+
+      it 'should import extract multiple dancers same raw', (done) ->
+        tested.fromFile file, (err, models, report) ->
+          return done err if err?
+          # then all models are present
+          models = _.sortBy models, (model) -> model.lastname + model.firstname
+          expect(models).to.have.lengthOf 10
+          for model, i in models
+            expect(model).to.be.an.instanceOf Dancer
+            expect(JSON.stringify _.omit model.toJSON(), ['id', 'created']).to.be.deep.equal JSON.stringify _.omit expected[i].toJSON(), ['id', 'created']
+          # then report should contain all informations
+          expect(report.modifiedBy).to.be.equal 'Damien Feugas'
+          expect(report.modifiedOn.valueOf()).to.be.closeTo moment('2013-08-24 17:07:07').valueOf(), 500
+          expect(report.worksheets).to.have.lengthOf 3
+          expect(report.worksheets[0].extracted).to.be.equal 10
+          expect(report.worksheets[0].name).to.be.equal 'Feuil1'
+          expect(report.worksheets[0].details).to.be.null
+          expect(report.worksheets[1].extracted).to.be.equal 0
+          expect(report.worksheets[1].name).to.be.equal 'Feuil2'
+          expect(report.worksheets[1].details).to.be.equal 'Empty worksheet'
+          expect(report.worksheets[2].extracted).to.be.equal 0
+          expect(report.worksheets[2].name).to.be.equal 'Feuil3'
+          expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
+          done()

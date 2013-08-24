@@ -6,7 +6,7 @@ define [
 ], (_, moment, xlsx, Dancer) ->
 
   # mandatory columns to proceed with extraction
-  mandatory = ['firstname', 'lastname']
+  mandatory = ['title', 'lastname']
 
   # Import utility class.
   # Allow importation of dancers from XLSX files 
@@ -109,22 +109,43 @@ define [
 
       # then extract dancers
       for line, row in worksheet.data when line?.length > 0 and row > colRow
-        raw = {}
-        # extract and convert each values
-        for attr, col of columns 
-          raw[attr] = @_convertValue attr, line[col]?.value
-          #console.log "#{attr} convert '#{line[col]?.value}' -> '#{raw[attr]}'"
-      
-        # check that we have all mandatory columns
-        if _.every(mandatory, (attr) -> raw[attr]?)
-          # expand address
-          if 'street' of raw or 'city' of raw or 'zipcode' of raw
-            raw.address = street: raw.street, city: raw.city, zipcode: raw.zipcode
-            delete raw.city
-            delete raw.street
-            delete raw.zipcode
-          dancers.push new Dancer raw
-          result.extracted++
+        # check multiple dancers on same line
+        titles = @_convertValue 'title', line[columns.title]?.value
+        # only one ? let's put it in an array
+        titles = [titles] unless _.isArray titles
+        # process this lines as many times as titles found.
+        for title, index in titles
+          dancer = @_processLine title, index, line, columns, dancers, result 
+          if dancer?
+            dancers.push dancer
+            result.extracted++
+          
+    # **private**
+    # Convert a given line into a dancer. 
+    # Dancer will be created only if the mandatory fields are found.
+    #
+    # @param title [String] dancer's title
+    # @param index [Integer] extracted values index, (firstname, lastname, phone, email), when values are multiple
+    # @param line [Array] orignal line data
+    # @param columns [Object] hashmap of dancer's attribute and their corresponding column
+    # @return the created dancer or null
+    _processLine: (title, index, line, columns, dancers, result) =>
+      raw = title: title
+      # extract and convert each values
+      for attr, col of columns when attr isnt 'title'
+        raw[attr] = @_convertValue attr, line[col]?.value, index
+        #console.log "#{attr} convert '#{line[col]?.value}' -> '#{raw[attr]}'", line[col]
+
+      # check that we have all mandatory columns
+      return null unless _.every(mandatory, (attr) -> raw[attr]?)
+      # expand address
+      if 'street' of raw or 'city' of raw or 'zipcode' of raw
+        raw.address = street: raw.street, city: raw.city, zipcode: raw.zipcode
+        delete raw.city
+        delete raw.street
+        delete raw.zipcode
+      # and return new dancer
+      new Dancer raw
 
     # **private**
     # Convert incoming column name into a supported dancer attribute
@@ -138,11 +159,11 @@ define [
         when 'nom' then return 'lastname'
         when 'titre', 'civilité', 'civilite' then return 'title'
         when 'email', 'mail', 'e-mail', 'adresse mail' then return 'email'
-        when 'telephone', 'téléphone', 'tel', 'tel.', 'tel domicile' then return 'phone'
-        when 'portable', 'tel bureau' then return 'cellphone'
-        when 'adresse', 'addr.', 'rue' then return 'street'
+        when 'telephone', 'téléphone', 'tel', 'tel.', 'tel domicile', 'téléphone  domicile' then return 'phone'
+        when 'portable', 'tel bureau', 'téléphone  bureau' then return 'cellphone'
+        when 'adresse', 'addr.', 'rue', 'adresse1' then return 'street'
         when 'ville' then return 'city' 
-        when 'code postal' then return 'zipcode'
+        when 'code postal', 'code_postal' then return 'zipcode'
         when 'publicité' then return 'knownBy'
         when 'id', '#' then return 'id'
         when 'créé', 'cree', 'creation', 'création' then return 'created'
@@ -150,23 +171,39 @@ define [
 
     # **private**
     # Convert incoming attribute value into a supported dancer attribute value
+    # 'firstname', 'lastname', 'birth', 'phone', 'cellphone' and 'email' fields may have multiple values (separated with a comma).
+    # In that case, index decide which one to return.
+    # For 'title' field, if comma is found, an array of possible values are returned.
     #
     # @param attr [String] attribute name
     # @param value [Object] converted value. May by null
+    # @param index [Integer] if multiple values are found, the extracted value index, default to 0.
     # @return the matching dancer attribute value, or null
-    _convertValue: (attr, value) =>
-      value = "#{value}" if _.isNumber value
+    _convertValue: (attr, value, index = 0) =>
+      if _.isNumber value
+        return undefined if isNaN value
+        value = "#{value}" 
       return undefined unless _.isString value
+
+      # handles first multiple value fields
+      if attr in ['firstname', 'lastname', 'email', 'phone', 'cellphone', 'birth'] and 0 <= value.indexOf ','
+        values = value.split ','
+        return @_convertValue attr, values[if index >= values.length then values.length-1 else index]
+
       lValue = value.toLowerCase().trim()
       switch attr
         when 'firstname', 'lastname', 'street', 'city' then return _.capitalize lValue
         when 'title'
-          if lValue in ['melle', 'mlle', 'melle.', 'mlle.'] 
-            return 'Mlle' 
-          else if lValue in ['mme', 'madame', 'mme.'] 
-            return 'Mme' 
-          else 
-            return 'M.'
+          if 0 <= lValue.indexOf ','
+            # multiple dancers on the same raw
+            return (@_convertValue 'title', val for val in lValue.split ',')
+          else
+            if lValue in ['melle', 'mlle', 'melle.', 'mlle.'] 
+              return 'Mlle' 
+            else if lValue in ['mme', 'madame', 'mme.', 'me'] 
+              return 'Mme' 
+            else
+              return 'M.'
         when 'email' then return lValue
         when 'phone', 'cellphone', 'zipcode'
           value = lValue.replace('+33', '0').replace(/\D/g, '').trim()

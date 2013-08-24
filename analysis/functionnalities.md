@@ -3,9 +3,13 @@
 # TODO
 
 - import list
-- conflict management
+- find dancer by name
+- save data
+- list dancers by class
+- list dancers by teacher
+- list dancers by year(s)
 - export list
-- add second phone
+- fully test import error cases
 
 ## Functionnal requirements
 
