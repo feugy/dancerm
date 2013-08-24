@@ -37,16 +37,20 @@
   <article>
     <h2>{{'ttl.contact'|i18n}}</h2>
     <div class="row-fluid">
-      <span class="span6"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email"  data-ng-model="dancer.email"/></span>
+      <span class="span6"><label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><input type="text" name="cellphone" data-ng-model="dancer.cellphone"/></span>
       <span class="span6"><label>{{'lbl.phone'|i18n:{sep:true} }}</label><input type="text" name="phone" data-ng-model="dancer.phone"/></span>
     </div>
+    <div class="row-fluid">
+      <span class="span6"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email"  data-ng-model="dancer.email"/></span>
+      <label class="span6">{{'lbl.knownBy'|i18n:{sep:true} }}</label>
+    </div>
     <div class="row-fluid known-by">
-      <label class="span12">{{'lbl.knownBy'|i18n:{sep:true} }}</label>
-      <span class="span3" data-ng-repeat="(value, label) in i18n.knownByMeanings">
+      <span data-ng-repeat="(value, label) in i18n.knownByMeanings">
         <input data-ng-model="knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="onUpdateKnownBy()"/><label for="{{value}}">{{label}}</label>
       </span>
-      <span class="span6"><label>{{'lbl.other'|i18n:{sep:true} }}</label><input type="text" data-ng-model="knownByOther"  data-ng-change="onUpdateKnownBy()"/></span>
-    <div/>
+      <span><label>{{'lbl.other'|i18n:{sep:true} }}</label><input type="text" data-ng-model="knownByOther"  data-ng-change="onUpdateKnownBy()"/>
+      </span>
+    </div>
   </article>
 
   <!-- registrations -->

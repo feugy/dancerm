@@ -4,6 +4,10 @@
   "description": "Automated tests for DanceRM",
   "version": "0.0.1",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "permissions": [
+    {"fileSystem": ["write"]},
+    "unlimitedStorage"
+  ],
   "app": {
     "background": {
       "scripts": ["launcher.js"]

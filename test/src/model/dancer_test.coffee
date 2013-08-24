@@ -45,6 +45,7 @@ define [
       expect(tested).to.have.property 'address', null
       expect(tested).to.have.property 'email', null
       expect(tested).to.have.property 'phone', null
+      expect(tested).to.have.property 'cellphone', null
       expect(tested).to.have.property 'birth', null
       expect(tested).to.have.property 'certified', false
 

@@ -5,3 +5,5 @@ app/style/*.css
 test/script
 test/vendor
 analysis/ribas.flac
+analysis/~*.xlsx
+test/fixture/~*.xlsx

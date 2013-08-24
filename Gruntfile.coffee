@@ -45,6 +45,7 @@ module.exports = (grunt) ->
           'angular-bootstrap': '0.5.0'
           'async': '0.1.23'
           'jquery': '2.0.3'
+          'jszip': '1.0.0'
           'moment': '2.1.0'
           'requirejs': '2.1.8'
           'requirejs-i18n': '2.0.3'
@@ -58,6 +59,7 @@ module.exports = (grunt) ->
           'async': '0.1.23'
           'chai': '1.7.2'
           'jquery': '2.0.3'
+          'jszip': '1.0.0'
           'mocha': '1.12.0'
           'moment': '2.1.0'
           'requirejs': '2.1.8'
@@ -70,7 +72,7 @@ module.exports = (grunt) ->
         files: [{
           expand: true 
           cwd: 'app/script', 
-          src: ['**/*.js']
+          src: ['**/*.js', '**/*.js.map']
           dest: 'test/script/'
         }]
 

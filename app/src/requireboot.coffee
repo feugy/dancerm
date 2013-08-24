@@ -9,10 +9,12 @@ requirejs.config
     'jquery': '../vendor/jquery/jquery'
     'ui.bootstrap': '../vendor/angular-bootstrap/ui-bootstrap-tpls'
     'moment': '../vendor/moment/moment'
+    'jszip': '../vendor/jszip/jszip.min'
     'nls': 'labels'
     'i18n': '../vendor/requirejs-i18n/i18n'
     'underscore': '../vendor/underscore/underscore'
     'underscore.string': '../vendor/underscore.string/lib/underscore.string'
+    'xlsx': '../vendor/xlsx.js/xlsx'
     
   # vendor libs dependencies and exported variable
   shim:
@@ -22,6 +24,8 @@ requirejs.config
       deps: ['angular']
     'jquery': 
       exports: '$'
+    'jszip':
+      exports: 'JSZip'
     'moment': 
       exports: 'moment'
     'underscore': 
@@ -30,6 +34,9 @@ requirejs.config
       deps: ['underscore']
     'ui.bootstrap':
       deps: ['angular']
+    'xlsx': 
+      deps: ['jszip']
+      exports: 'xlsx'
 
 require [
   'jquery'

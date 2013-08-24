@@ -38,6 +38,7 @@ define root:
     zipcode: 'Code postal'
     city: 'Ville'
     phone: 'Téléphone'
+    cellphone: 'Portable'
     email: 'E-mail'
     birth: 'Date de naissance'
     certified: 'Certificat médical'
@@ -86,7 +87,7 @@ define root:
     pagejaunesFr: 'pagejaunes.fr'
     searchEngine: 'moteur de recherche'
     directory: 'annuaire'
-    biennialAssociations: 'biennale des asso.'
+    associationsBiennal: 'biennale des asso.'
     mouth: 'bouche à oreille'
 
   # planning directive configuration values

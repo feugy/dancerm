@@ -89,6 +89,7 @@ define [
 
     # contact
     phone: null
+    cellphone: null
     email: null
 
     birth: null
@@ -96,7 +97,7 @@ define [
     # has or not a medical certificate for the current season
     certified: false
 
-    # how the dancers has known the school: leaflets, website, pagejaunesFr, searchEngine, directory, biennialAssociations, mouth, other
+    # how the dancers has known the school: leaflets, website, pagejaunesFr, searchEngine, directory, associationsBiennal, mouth, other
     knownBy: []
 
     # list of registration for given dance classes
@@ -111,11 +112,13 @@ define [
       _.defaults raw, 
         id: generateId()
         created: moment()
+        birth: null
         title: 'Mme'
         firstname: ''
         lastname: ''
         address: null
         phone: null
+        cellphone: null
         email: null
         certified: false
         registrations: []
@@ -124,6 +127,6 @@ define [
       super(raw)
       # enrich object attributes
       @created = moment @created
-      @birth = moment @birth
+      @birth = moment @birth if @birth?
       @address = new Address @address if @address?
       @registrations = (new Registration raw for raw in @registrations when raw?)

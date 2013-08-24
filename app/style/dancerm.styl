@@ -68,8 +68,8 @@ article
     vertical-align top
     margin 5px 0 0
 
-  input
-    margin-bottom 0
+  .row-fluid input
+    margin-bottom 5px
     margin-left 5px
 
   textarea
@@ -90,15 +90,27 @@ article
   .registration-bar
     text-align center
 
-  .known-by .span3
-    min-height 0
+  .known-by > *
+    height 20px
+    width 18%
+    margin-right 3%
+    display inline-block
+
+  .known-by > *:last-child
+    width auto
+
+    label
+      display inline-block
+      margin 4px 0 0 -5px
+
+    input
+      display inline-block
 
   .known-by [type="checkbox"]
     margin 0
 
-  .known-by .span3 label
-    margin 0 0 0 1em
-    font-size 0.8em
+  .known-by > * label
+    margin 0 0 0 0.5em
 
 .register
   max-height 450px
