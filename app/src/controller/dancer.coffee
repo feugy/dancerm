@@ -7,6 +7,10 @@ define [
   './register'
 ], (_, i18n, Dancer, Registration, Planning, RegisterController) ->
   
+  paths = ['title', 'firstname', 'lastname',
+    'address.street', 'address.zipcode', 'address.city', 
+    'email', 'phone', 'cellphone',
+    'birth', 'certified', 'knownBy']
   # Displays and edits a given dancer.
   # New registration may be added, and the corresponding directive will be consequently used.
   #
@@ -25,8 +29,14 @@ define [
     # Link to Angular deferred implementation
     q: null
 
+    # link to Angular directive compiler
+    compile: null
+
     # Dancers's search request in progress
     _reqInProgress: false
+
+    # Displayed dancer clone to allow rollback
+    _prev: null
 
     # Controller constructor: bind methods and attributes to current scope
     #
@@ -35,19 +45,19 @@ define [
     # @param dialog [Object] Angular dialog service
     # @param q [Object] Angular deferred implementation
     # @param compile [Object] Angular directive compiler
-    constructor: (@scope, routeParams, @dialog, @q, compile) -> 
+    constructor: (@scope, routeParams, @dialog, @q, @compile) -> 
       @_reqInProgress = false
+      @scope.isNew = false
+      @scope.hasChanged = false
       if routeParams.id?
         # load edited dancer
         Dancer.find routeParams.id, (err, dancer) =>
           throw err if err?
           @scope.$apply => @_displayDancer dancer
       else
+        @scope.isNew = true
         # creates an empty dancer
         @_displayDancer new Dancer()
-        # creates typeahead
-        for attr in ['firstname', 'lastname']
-          $(".#{attr}").append compile($(".#{attr}").attr 'data-typeahead', "dancer as dancer.firstname+' '+dancer.lastname for dancer in findByAttr('#{attr}', $viewValue) | filter:$viewValue | limitTo:20") @scope
 
       # fill the scope and bind public methods
       @scope.i18n = i18n
@@ -61,10 +71,15 @@ define [
         throw err if err?
         console.log '>>> save done !'
 
+    # restore previous values
+    onCancel: =>
+      return unless @_prev?
+      @scope.dancer = new Dancer @_prev
+
     # Search within existing models a match on given attribute
     # Only available when dancer is not saved yet.
     #
-    # @param attr [String] mathcing attribute name
+    # @param attr [String] matching attribute name
     # @param typed [String] typed string
     # @return a promise of mathcing dancers
     findByAttr: (attr, typed) =>
@@ -88,6 +103,9 @@ define [
     #
     # @param dancer [Dancer] chosen dancer
     onChooseDancer: (dancer) =>
+      # removes typeahead
+      @scope.isNew = false
+      $('.typeahead.dropdown-menu').remove()
       # replace current dancer
       @_displayDancer dancer
 
@@ -159,6 +177,8 @@ define [
     #
     # @param dancer [Dancer] the new displayed dancer
     _displayDancer: (dancer) =>
+      # makes a clone of displayed dancer to allow cancellation
+      @_prev = dancer.toJSON()
       @scope.dancer = dancer
       @scope.birth = dancer.birth?.toDate()
       @scope.showBirthPicker = false
@@ -168,3 +188,12 @@ define [
         @scope.knownBy[value] = _.contains dancer.knownBy, value
       @scope.knownByOther = _.find dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
       @scope.birth = dancer.birth?.format(i18n.formats.birth) or null
+      # listen to dancer's changes
+      @scope.$watchCollection "[#{("dancer.#{path}" for path in paths).join ','}]", @_onChange 
+      @scope.$watchCollection 'dancer.registrations', @_onChange 
+
+    # **private**
+    # Checks if a field has been changed
+    _onChange: =>
+      @scope.dancer.address = null unless @scope.dancer.address?.zipcode? or @scope.dancer.address?.city? or @scope.dancer.address?.street?
+      @scope.hasChanged = not _.isEqual @scope.dancer.toJSON(), @_prev

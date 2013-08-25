@@ -19,3 +19,14 @@ define [
     day = i18n.lbl[input[0..2]]
     "#{day} #{input[4..8]}"
   ]
+
+  # The setNull directive set model value to null if value is empty
+  app.directive 'setNull', ->
+    # no replacement
+    replace: false
+    # applicable as attribute only
+    restrict: 'A'
+    require: 'ngModel'
+    link: (scope, elm, attrs, ctrl) ->
+      ctrl.$parsers.unshift (viewValue) ->
+        return if viewValue is "" then null else viewValue

@@ -149,7 +149,7 @@ define [
     # @return raw attribute of the current model
     toJSON: =>
       raw = {} 
-      for attr, value of @ when not _.isFunction value
+      for attr, value of @ when attr isnt '$$hashKey' and not _.isFunction value 
         if _.isArray value
           raw[attr] = []
           for val, i in value
