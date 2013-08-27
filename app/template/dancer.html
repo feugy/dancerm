@@ -1,4 +1,11 @@
 <div class="dancer">
+  <div class="pull-right btn-bar">
+    <a href="" class="btn btn-primary" data-ng-click="onSave()">{{'btn.save'|i18n}}</a>
+    <a href="" class="btn btn-warning" data-ng-if="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a>
+  </div>
+  <div class="pull-left">
+    <a href="" class="btn" data-ng-click="onBack()">{{'btn.backToList'|i18n}}</a>
+  </div>
   <!-- dancer displayal -->
   <article>
     <h2>{{'ttl.generalInfo'|i18n}}</h2>
@@ -76,9 +83,4 @@
     data-src="registration" 
     data-on-edit="onRegister(registration)"
     data-on-remove="onRemoveRegistration(registration)"></div>
-
-  <div class="pull-right btn-bar">
-    <a href="" class="btn btn-primary" data-ng-click="onSave()">{{'btn.save'|i18n}}</a>
-    <a href="" class="btn btn-warning" data-ng-if="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a>
-  </div>
 </div>

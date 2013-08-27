@@ -28,6 +28,7 @@ define root:
     yes: 'Oui'
     no: 'Non'
     addPayment: 'Nouveau paiement'
+    backToList: 'Retour à la liste'
 
   # short labels
   lbl:

@@ -43,6 +43,7 @@ module.exports = (grunt) ->
         packages: 
           'angular': 'PatternConsulting/bower-angular#1.1.5'
           'angular-bootstrap': '0.5.0'
+          'angular-ui-router': '0.0.2'
           'bootstrap': '2.3.2'
           'async': '0.1.23'
           'jquery': '2.0.3'

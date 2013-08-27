@@ -1,33 +1,51 @@
 define [
   'angular'
   'service/storage'
-  'controller/home'
+  'controller/layout'
+  'controller/list'
+  'controller/planning'
   'controller/dancer'
   'model/dancer/dancer'
   'model/planning/planning'
   'model/initializer'
-], (angular, StorageService, HomeCtrl, DancerCtrl, DancerModel, PlanningModel, initializer) ->
+], (angular, StorageService, LayoutCtrl, ListCtrl, PlanningCtrl, DancerCtrl, DancerModel, PlanningModel, initializer) ->
 
   # declare main module that configures routing
-  app = angular.module 'app', ['ui.bootstrap'] #['ngRoute', 'ui.bootstrap']
-  app.config ['$locationProvider', '$routeProvider', (location, route) ->
-    # TODO problem with angular 1.2.0rc1 use push state
+  app = angular.module 'app', ['ui.bootstrap', 'ui.router', 'ui.state']
+
+  app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
     location.html5Mode true
     # configure routing
-    route.when "/home",
-      name: 'home'
-      templateUrl: 'home.html'
-      controller: HomeCtrl
-    route.when "/dancer/:id",
-      name: 'dancer'
-      templateUrl: 'dancer.html'
-      controller: DancerCtrl
-    route.when "/dancer",
-      name: 'dancer'
-      templateUrl: 'dancer.html'
-      controller: DancerCtrl
-    route.otherwise 
-      redirectTo: "/home"
+    router.otherwise '/home'
+
+    home = 
+      url: '/home'
+      abstract: true
+      templateUrl: 'columnandmain.html'
+      controller: LayoutCtrl
+    states.state 'home', home
+
+    states.state 'list-and-planning',
+      parent: home
+      url: ''
+      views: 
+        column:
+          templateUrl: 'list.html'
+          controller: ListCtrl
+        main:
+          templateUrl: 'planning.html'
+          controller: PlanningCtrl
+
+    states.state 'list-and-dancer',
+      parent: home
+      url: '/dancer/:id'
+      views: 
+        column:
+          templateUrl: 'list.html'
+          controller: ListCtrl
+        main:
+          templateUrl: 'dancer.html'
+          controller: DancerCtrl
   ]
 
   # make storage an Angular service

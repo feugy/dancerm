@@ -5,7 +5,7 @@ requirejs.config
   paths:
     'async': '../vendor/async/lib/async'
     'angular': '../vendor/angular/angular'
-    'angular-route': '../vendor/angular/angular-route'
+    'angular-ui-router': '../vendor/angular-ui-router/release/angular-ui-router.min'
     'jquery': '../vendor/jquery/jquery'
     'ui.bootstrap': '../vendor/angular-bootstrap/ui-bootstrap-tpls'
     'moment': '../vendor/moment/moment'
@@ -20,7 +20,7 @@ requirejs.config
   shim:
     'angular':
       exports: 'angular'
-    'angular-route':
+    'angular-ui-router':
       deps: ['angular']
     'jquery': 
       exports: '$'
@@ -44,10 +44,10 @@ require [
   'angular'
   # unwired
   'underscore.string'
+  'angular-ui-router'
   'ui.bootstrap'
   './app'
   # require directives and filters immediately to allow circular dependencies
-  #'angular-route'
   './util/filters'
   './directive/registration'
   './directive/planning'

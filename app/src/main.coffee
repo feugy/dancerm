@@ -2,5 +2,5 @@
 chrome.app.runtime.onLaunched.addListener ->
   chrome.app.window.create '../template/app.html', 
     bounds:
-      width: 1000
+      width: 1250
       height: 700

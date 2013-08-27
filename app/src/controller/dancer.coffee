@@ -18,7 +18,7 @@ define [
   class DancerController
               
     # Controller dependencies
-    @$inject: ['$scope', '$routeParams', '$dialog', '$q', '$compile']
+    @$inject: ['$scope', '$stateParams', '$location', '$dialog', '$q', '$compile']
 
     # Controller scope, injected within constructor
     scope: null
@@ -32,6 +32,9 @@ define [
     # link to Angular directive compiler
     compile: null
 
+    # link to Angular location service
+    location: null
+
     # Dancers's search request in progress
     _reqInProgress: false
 
@@ -41,17 +44,19 @@ define [
     # Controller constructor: bind methods and attributes to current scope
     #
     # @param scope [Object] Angular current scope
-    # @param routeParams [Object] invokation route parameters
+    # @param stateParams [Object] invokation route parameters
+    # @param location [Object] Angular location service
     # @param dialog [Object] Angular dialog service
     # @param q [Object] Angular deferred implementation
     # @param compile [Object] Angular directive compiler
-    constructor: (@scope, routeParams, @dialog, @q, @compile) -> 
+    constructor: (@scope, stateParams, @location, @dialog, @q, @compile) -> 
       @_reqInProgress = false
       @scope.isNew = false
       @scope.hasChanged = false
-      if routeParams.id?
+      console.log stateParams
+      if stateParams.id
         # load edited dancer
-        Dancer.find routeParams.id, (err, dancer) =>
+        Dancer.find stateParams.id, (err, dancer) =>
           throw err if err?
           @scope.$apply => @_displayDancer dancer
       else
@@ -64,11 +69,20 @@ define [
       @scope.birthValid = true
       @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
+    # Goes back to list, after a confirmation if dancer has chnaged
+    onBack: =>
+      # TODO confirm if dancer changed
+      console.log "go back to list}"
+      @location.path "/home"
+
     # Save the current values inside storage
     onSave: =>
       console.log '>>> save dancer:', @scope.dancer.toJSON()
       @scope.dancer.save (err) =>
         throw err if err?
+        @scope.hasChanged = false
+        # reload search
+        @scope.triggerSearch()
         console.log '>>> save done !'
 
     # restore previous values
@@ -188,6 +202,8 @@ define [
         @scope.knownBy[value] = _.contains dancer.knownBy, value
       @scope.knownByOther = _.find dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
       @scope.birth = dancer.birth?.format(i18n.formats.birth) or null
+      # update layout displayed
+      @scope.displayed = @scope.dancer
       # listen to dancer's changes
       @scope.$watchCollection "[#{("dancer.#{path}" for path in paths).join ','}]", @_onChange 
       @scope.$watchCollection 'dancer.registrations', @_onChange 

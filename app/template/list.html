@@ -1,0 +1,8 @@
+<article>
+  <h2>{{'ttl.dancerList'|i18n:{sep:true} }}</h2>
+  <ul>
+    <li class="dancer" data-ng-repeat="dancer in list" data-ng-click="displayDancer(dancer)">
+      <span class="firstname" data-ng-bind="dancer.firstname"></span><span class="lastname" data-ng-bind="dancer.lastname"></span>
+    </li>
+  </ul>
+</article>

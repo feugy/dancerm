@@ -4,7 +4,7 @@ define [
   '../model/dancer/dancer'
 ], (_, Planning, Dancer) ->
   
-  class HomeController
+  class PlanningController
               
     # Controller dependencies
     # Inject storage to ensure that models are properly initialized
@@ -13,12 +13,14 @@ define [
     # Controller scope, injected within constructor
     scope: null
     
+    # Link to Angular location provider
+    location: null
+
     # Controller constructor: bind methods and attributes to current scope
     #
     # @param scope [Object] Angular current scope
     # @param location [Object] Angular location service
     constructor: (@scope, @location) -> 
-      @scope.list = []
       # Retrieve all plannings
       Planning.findAll @_onPlanningsRetrieved
       # injects public methods into scope
@@ -26,22 +28,19 @@ define [
       # redraw all on initialization
       @scope.$on 'model-initialized', => Planning.findAll @_onPlanningsRetrieved
 
-    # Navigate to another controller
-    #
-    # @param dest [String] destination route
-    navigateTo: (dest) =>
-      @location.path dest
-
     # Invoked when clicking on a given dance class.
     # displays dancers registered into this class
     #
     # @param chosen [DanceClass] the clicked dance class
     onDisplayClass: (chosen) =>
-      # find all dancers in this dance class
-      Dancer.findWhere {'registrations.danceClassIds':chosen.id}, (err, dancers) =>
-        throw err if err?
-        @scope.$apply =>
-          @scope.list = dancers
+      # update layout controller values
+      @scope.search.classId = chosen.id
+      @scope.triggerSearch()
+
+    # Invoked to display an empty dancer's screen
+    onNewDancer: =>
+      console.log "ask to display new dancer"
+      @location.path "/home/dancer/"
 
     # **private**
     # Invoked when all plannings were retrieved.
