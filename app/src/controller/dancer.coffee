@@ -38,9 +38,6 @@ define [
     # Dancers's search request in progress
     _reqInProgress: false
 
-    # Displayed dancer clone to allow rollback
-    _prev: null
-
     # Controller constructor: bind methods and attributes to current scope
     #
     # @param scope [Object] Angular current scope
@@ -53,7 +50,6 @@ define [
       @_reqInProgress = false
       @scope.isNew = false
       @scope.hasChanged = false
-      console.log stateParams
       if stateParams.id
         # load edited dancer
         Dancer.find stateParams.id, (err, dancer) =>
@@ -71,24 +67,41 @@ define [
 
     # Goes back to list, after a confirmation if dancer has chnaged
     onBack: =>
-      # TODO confirm if dancer changed
-      console.log "go back to list}"
-      @location.path "/home"
+      goBack = =>
+        console.log "go back to list}"
+        @location.path "/home"
+
+      return goBack() unless @scope.hasChanged
+      # confirm if dancer changed
+      @dialog.messageBox(i18n.ttl.confirm, i18n.msg.confirmGoBack, [
+          {label: i18n.btn.no, cssClass: 'btn-warning'}
+          {label: i18n.btn.yes, result: true}
+        ]
+      ).open().then (confirmed) =>
+        goBack() if confirmed
 
     # Save the current values inside storage
     onSave: =>
-      console.log '>>> save dancer:', @scope.dancer.toJSON()
-      @scope.dancer.save (err) =>
+      console.log "save dancer #{@scope.dancer.fistname} #{@scope.dancer.lastname} (#{@scope.dancer.id})"
+      @scope.displayed = new Dancer @scope.dancer.toJSON()
+      @scope.displayed.save (err) =>
         throw err if err?
         @scope.hasChanged = false
         # reload search
         @scope.triggerSearch()
-        console.log '>>> save done !'
 
     # restore previous values
     onCancel: =>
-      return unless @_prev?
-      @scope.dancer = new Dancer @_prev
+      return unless @scope.hasChanged
+      @dialog.messageBox(i18n.ttl.confirm, 
+        _.sprintf(i18n.msg.cancelEdition, @scope.dancer.firstname, @scope.dancer.lastname), 
+        [
+          {label: i18n.btn.no, cssClass: 'btn-warning'}
+          {label: i18n.btn.yes, result: true}
+        ]
+      ).open().then (confirmed) =>
+        return unless confirmed
+        @scope.dancer = new Dancer @scope.displayed.toJSON()
 
     # Search within existing models a match on given attribute
     # Only available when dancer is not saved yet.
@@ -173,7 +186,7 @@ define [
       Planning.find removed.planningId, (err, planning) =>
         throw err if err?
         @scope.$apply =>
-          @dialog.messageBox(i18n.ttl.confirmRemove, _.sprintf(i18n.msg.removeRegistration, planning.season), [
+          @dialog.messageBox(i18n.ttl.confirm, _.sprintf(i18n.msg.removeRegistration, planning.season), [
             {result: false, label: i18n.btn.no}
             {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
           ]).open().then (confirm) =>
@@ -191,19 +204,18 @@ define [
     #
     # @param dancer [Dancer] the new displayed dancer
     _displayDancer: (dancer) =>
+      # update layout displayed
+      @scope.displayed = dancer
       # makes a clone of displayed dancer to allow cancellation
-      @_prev = dancer.toJSON()
-      @scope.dancer = dancer
-      @scope.birth = dancer.birth?.toDate()
+      @scope.dancer = new Dancer dancer.toJSON()
+      @scope.birth = @scope.dancer.birth?.toDate()
       @scope.showBirthPicker = false
       # translate the "known by" possibilities into a list of boolean
       @scope.knownBy = {}
       for value of i18n.knownByMeanings 
-        @scope.knownBy[value] = _.contains dancer.knownBy, value
-      @scope.knownByOther = _.find dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
-      @scope.birth = dancer.birth?.format(i18n.formats.birth) or null
-      # update layout displayed
-      @scope.displayed = @scope.dancer
+        @scope.knownBy[value] = _.contains @scope.dancer.knownBy, value
+      @scope.knownByOther = _.find @scope.dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
+      @scope.birth = @scope.dancer.birth?.format(i18n.formats.birth) or null
       # listen to dancer's changes
       @scope.$watchCollection "[#{("dancer.#{path}" for path in paths).join ','}]", @_onChange 
       @scope.$watchCollection 'dancer.registrations', @_onChange 
@@ -212,4 +224,4 @@ define [
     # Checks if a field has been changed
     _onChange: =>
       @scope.dancer.address = null unless @scope.dancer.address?.zipcode? or @scope.dancer.address?.city? or @scope.dancer.address?.street?
-      @scope.hasChanged = not _.isEqual @scope.dancer.toJSON(), @_prev
+      @scope.hasChanged = not _.isEqual @scope.dancer.toJSON(), @scope.displayed.toJSON()

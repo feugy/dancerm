@@ -8,7 +8,7 @@ define root:
     contact: 'Contact'
     newRegistration: 'Nouvelle inscription'
     editRegistration: "Modification de l'inscription"
-    confirmRemove: 'Confirmation de la suppression'
+    confirm: 'Confirmation de la suppression'
     dancerList: 'Liste des danceurs'
 
   # long messages with html
@@ -16,6 +16,8 @@ define root:
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
+    cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
+    confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
 
   # buttons
   btn: 
