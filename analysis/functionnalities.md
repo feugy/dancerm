@@ -2,7 +2,6 @@
 
 # TODO
 
-- import list
 - save data
 - list dancers by class
 - list dancers by teacher
@@ -81,4 +80,5 @@ Needed (53'00)
 24/08 6h
 25/08 3h
 26/08 2h
-27/08 1h
+27/08 2h
+28/08 1h

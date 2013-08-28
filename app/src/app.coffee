@@ -1,6 +1,8 @@
 define [
   'angular'
   'service/storage'
+  'service/export'
+  'service/import'
   'controller/layout'
   'controller/list'
   'controller/planning'
@@ -8,7 +10,9 @@ define [
   'model/dancer/dancer'
   'model/planning/planning'
   'model/initializer'
-], (angular, StorageService, LayoutCtrl, ListCtrl, PlanningCtrl, DancerCtrl, DancerModel, PlanningModel, initializer) ->
+], (angular, StorageService, ExportService, ImportService, 
+  LayoutCtrl, ListCtrl, PlanningCtrl, DancerCtrl, 
+  DancerModel, PlanningModel, initializer) ->
 
   # declare main module that configures routing
   app = angular.module 'app', ['ui.bootstrap', 'ui.router', 'ui.state']
@@ -61,5 +65,9 @@ define [
       rootScope.$broadcast 'model-initialized' if initialized
     storage
   ]
-  
+
+  # make export an Angular service
+  app.service 'export', ExportService
+  app.service 'import', ImportService
+        
   app

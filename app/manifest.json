@@ -5,7 +5,8 @@
   "version": "0.0.1",
   "permissions": [
     {"fileSystem": ["write"]},
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "storage"
   ],
   "app": {
     "background": {

@@ -10,6 +10,7 @@ define root:
     editRegistration: "Modification de l'inscription"
     confirm: 'Confirmation de la suppression'
     dancerList: 'Liste des danceurs'
+    import: 'Importation'
 
   # long messages with html
   msg:
@@ -18,6 +19,7 @@ define root:
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
     cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
+    importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
 
   # buttons
   btn: 
@@ -29,8 +31,10 @@ define root:
     remove: 'Supprimer'
     yes: 'Oui'
     no: 'Non'
+    ok: 'Ok'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour à la liste'
+    import: 'Importer des danseurs'
 
   # short labels
   lbl:
@@ -62,6 +66,10 @@ define root:
     Fri: 'Vendredi'
     Sat: 'Samedi'
     Sun: 'Dimanche'
+
+  # errors
+  err:
+    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
 
   # formats
   formats:

@@ -12,9 +12,6 @@ define [
   # Allow importation of dancers from XLSX files 
   class Import
 
-    constructor: (done) ->
-      done()
-
     # Read the content of an XlsX file, and extract dancers from it
     #
     # @param path [FileEntry] path to the read file
