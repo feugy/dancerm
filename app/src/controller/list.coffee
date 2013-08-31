@@ -23,9 +23,9 @@ module.exports = class ListController
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
-  # display a given dancer on the main part
+  # Displays a given dancer on the main part
   #
   # @param dancer [Dancer] choosen dancer
-  displayDancer: (dancer) =>
+  onDisplayDancer: (dancer) =>
     console.log "ask to display #{dancer.id}"
     @state.go 'list-and-dancer', id:dancer.id

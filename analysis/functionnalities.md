@@ -2,6 +2,8 @@
 
 # TODO
 
+- design
+- packaging
 - export list
 - fully test import error cases
 

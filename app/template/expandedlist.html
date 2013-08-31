@@ -1,4 +1,4 @@
-<a data-ui-sref="expanded-list" class="btn"><i class="icon-chevron-right"></i></a>
+<a data-ui-sref="list-and-planning" class="btn"><i class="icon-chevron-left"></i></a>
 <div class="form-search">
   <input type="text" class="search-query" data-ng-model="search.name" data-ng-keyup="triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
 </div>
@@ -9,18 +9,25 @@
   <table class="table table-striped" data-ng-show="list.length > 0">
     <thead>
       <tr>
-        <th>{{'lbl.firstname'|i18n}}</th>
-        <th>{{'lbl.lastname'|i18n}}</th>
-        <th>{{'lbl.certified'|i18n}}</th>
-        <th>{{'lbl.due'|i18n}}</th>
+
+        <th data-ng-repeat="attr in ['title', 'firstname', 'lastname', 'certified', 'due', 'birth', 'phone', 'cellphone', 'email', 'knownBy', 'address']"
+          data-ng-click="onSort(attr)">{{'lbl.'+attr|i18n}}<i data-ng-show="sort === attr" data-ng-class="sortAsc ? 'icon-chevron-up' : 'icon-chevron-down'"></i>
+        </th>
       </tr>
     </thead>
     <tbody>
     <tr class="dancer" data-ng-repeat="dancer in list" data-ng-click="onDisplayDancer(dancer)">
+      <td>{{dancer.title}}</td>
       <td>{{dancer.firstname}}</td>
       <td>{{dancer.lastname}}</td>
       <td><i data-ng-class="dancer.certified ? 'icon-ok' : 'icon-fire'"></i></td>
       <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="icon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
+      <td>{{dancer.birth.format(i18n.formats.birth)}}</td>
+      <td>{{dancer.phone}}</td>
+      <td>{{dancer.cellphone}}</td>
+      <td>{{dancer.email}}</td>
+      <td><span class="known-by" data-ng-repeat="knownBy in dancer.knownBy">{{i18n.knownByMeanings[knownBy] || knownBy}}</span>
+      <td>{{dancer.address.street}} {{dancer.address.zipcode}} {{dancer.address.city}}</td>
     </tr>
     </tbody>
   </table>

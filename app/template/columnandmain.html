@@ -1,4 +1,4 @@
 <div class="column-and-main row-fluid">
-	<div class="column span3" data-ui-view="column"></div>
-	<div class="main span9" data-ui-view="main"></div>
+	<div class="column" data-ng-class="hasMain ? 'span3' : 'expanded'" data-ui-view="column"></div>
+	<div class="main span9" data-ui-view="main" data-ng-show="hasMain"></div>
 </div>

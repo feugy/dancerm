@@ -55,11 +55,17 @@ for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
       display inline-block
       width 28px
 
-  .dancer
-    .lastname
-      font-weight bold
-      padding-left 0.5em
-      cursor pointer
+  .known-by:not(:last-child):after
+    display inline
+    content ', '
+
+  td
+    cursor pointer
+    
+.column.expanded
+
+  th
+    cursor pointer
 
 article
   border 1px solid #ccc

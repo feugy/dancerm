@@ -44,6 +44,10 @@ module.exports = class Registration extends Base
     @payments = (new Payment raw for raw in @payments when raw?)
     @updateBalance()
 
+  # @return amount to be paid for this registration
+  due: =>
+    @charged - @balance
+
   # Updates the registration's balance according to payment values
   updateBalance: =>
     @balance = 0

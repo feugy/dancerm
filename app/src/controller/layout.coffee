@@ -7,7 +7,7 @@ module.exports = class LayoutController
               
   # Controller dependencies
   # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', 'export', 'import', '$dialog']
+  @$inject: ['$scope', 'export', 'import', '$dialog', '$state']
   
   # Controller scope, injected within constructor
   scope: null
@@ -31,8 +31,12 @@ module.exports = class LayoutController
   # @param export [Export] Export service
   # @param import [import] Import service
   # @param dialog [Object] Angular dialog service
-  constructor: (@scope, @export, @import, @dialog) -> 
+  # @param state [Object] Angular state provider
+  constructor: (@scope, @export, @import, @dialog, state) -> 
     @_searchPending = false
+    # updates main existance when state is loaded
+    @scope.$on '$stateChangeSuccess', =>
+      @scope.hasMain = state?.current?.views?.main?
     # displayed dancer's list
     @scope.list = []
     # search criteria

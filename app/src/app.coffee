@@ -8,6 +8,7 @@ ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
 LayoutCtrl = require '../script/controller/layout'
 ListCtrl = require '../script/controller/list'
+ExpandedListCtrl = require '../script/controller/expandedlist'
 PlanningCtrl = require '../script/controller/planning'
 DancerCtrl = require '../script/controller/dancer'
 DancerModel = require '../script/model/dancer/dancer'
@@ -50,7 +51,15 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
       main:
         templateUrl: 'dancer.html'
         controller: DancerCtrl
-  ]
+
+  states.state 'expanded-list',
+    parent: home
+    url: '/list'
+    views: 
+      column:
+        templateUrl: 'expandedlist.html'
+        controller: ExpandedListCtrl
+]
 
 # make storage an Angular service
 app.factory 'storage', ['$rootScope', (rootScope) ->
