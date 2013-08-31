@@ -12,6 +12,7 @@ module.exports =
     dancerList: 'Liste des danceurs'
     import: 'Importation'
     dump: 'Sauvegarde externe'
+    search: 'Recherche de danseurs'
 
   # long messages with html
   msg:
@@ -73,6 +74,7 @@ module.exports =
   err:
     importFailed: "L'imporation du fichier de danseurs à échouée: %s"
     dumpFailed: "La sauvegarde externe des données à échouée: %s"
+    search: 'La recherche à échouée: %s'
 
   # formats
   formats:

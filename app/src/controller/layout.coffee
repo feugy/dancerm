@@ -21,6 +21,10 @@ module.exports = class LayoutController
   # Link to Angular dialog service
   dialog: null
 
+  # **private**
+  # Disable concurrent search. Only first search is taken in account
+  _searchPending: false
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular current scope
@@ -28,6 +32,7 @@ module.exports = class LayoutController
   # @param import [import] Import service
   # @param dialog [Object] Angular dialog service
   constructor: (@scope, @export, @import, @dialog) -> 
+    @_searchPending = false
     # displayed dancer's list
     @scope.list = []
     # search criteria
@@ -45,13 +50,27 @@ module.exports = class LayoutController
   # Trigger the search based on `scope.search` descriptor.
   # `scope.list` will be updated at the search end.
   triggerSearch: =>
+    return if @_searchPending
+    @_searchPending = true
+    
     console.log "search with criteria", @scope.search
-    if @scope.search.classId?
+    # common search result display
+    searchEnd = (err, dancers) =>
+      @_searchPending = false
+      return @dialog.messageBox(i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]).open() if err?
+      @scope.$apply =>
+        @scope.list = dancers
+
+    # depending on criterias
+    if @scope.search.string?
+      searched = @scope.search.string.toLowerCase()
+      # find all dancers by first name/last name
+      return Dancer.findWhere {id: (id, dancer) -> 
+        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 0 is dancer.lastname?.toLowerCase().indexOf searched
+      }, searchEnd
+    else if @scope.search.classId?
       # find all dancers in this dance class
-      return Dancer.findWhere {'registrations.danceClassIds': @scope.search.classId}, (err, dancers) =>
-        throw err if err?
-        @scope.$apply =>
-          @scope.list = dancers
+      return Dancer.findWhere {'registrations.danceClassIds': @scope.search.classId}, searchEnd
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified

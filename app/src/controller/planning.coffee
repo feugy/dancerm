@@ -32,6 +32,7 @@ module.exports = class PlanningController
   # @param chosen [DanceClass] the clicked dance class
   onDisplayClass: (chosen) =>
     # update layout controller values
+    @scope.search.string = null
     @scope.search.classId = chosen.id
     @scope.triggerSearch()
 
