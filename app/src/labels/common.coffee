@@ -1,4 +1,4 @@
-define root:
+module.exports = 
   
   # titles  
   ttl:
@@ -11,6 +11,7 @@ define root:
     confirm: 'Confirmation de la suppression'
     dancerList: 'Liste des danceurs'
     import: 'Importation'
+    dump: 'Sauvegarde externe'
 
   # long messages with html
   msg:
@@ -20,6 +21,7 @@ define root:
     cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
     importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
+    dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
 
   # buttons
   btn: 
@@ -70,6 +72,7 @@ define root:
   # errors
   err:
     importFailed: "L'imporation du fichier de danseurs à échouée: %s"
+    dumpFailed: "La sauvegarde externe des données à échouée: %s"
 
   # formats
   formats:

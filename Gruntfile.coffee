@@ -45,28 +45,15 @@ module.exports = (grunt) ->
           'angular-bootstrap': '0.5.0'
           'angular-ui-router': '0.0.2'
           'bootstrap': '2.3.2'
-          'async': '0.1.23'
           'jquery': '2.0.3'
           'jszip': '1.0.0'
-          'moment': '2.1.0'
-          'requirejs': '2.1.8'
-          'requirejs-i18n': '2.0.3'
-          'underscore': '1.5.1'
-          'underscore.string': '2.3.2'
 
       # bower dependenvies for tests
       test:
         store: 'test/vendor'
         packages: 
-          'async': '0.1.23'
-          'chai': '1.7.2'
           'jquery': '2.0.3'
           'jszip': '1.0.0'
-          'mocha': '1.12.0'
-          'moment': '2.1.0'
-          'requirejs': '2.1.8'
-          'underscore': '1.5.1'
-          'underscore.string': '2.3.2'
 
     # copy app file into test script to allow testing
     copy:

@@ -8,7 +8,12 @@
     "url": "https://github.com/feugy/dancerm.git"
   },
   "dependencies": {
-    "coffee-script": "1.6.3"
+    "async": "0.2.9",
+    "coffee-script": "1.6.3",
+    "moment": "2.1.0",
+    "node-zip": "1.0.1",
+    "underscore": "1.5.1",
+    "underscore.string": "2.3.3"
   },
   "devDependencies": {
     "chai": "1.7.2",
@@ -20,5 +25,13 @@
     "grunt-bowerful": "0.3.0",
     "mocha": "1.12.0"
   },
-  "licence": "LGPL v3"
+  "licence": "LGPL v3",
+  "main": "app/template/app.html",
+  "window": {
+    "toolbar": false,
+    "frame": true,
+    "show": false,
+    "min_width": 1250,
+    "min_height": 700
+  }
 }

@@ -1,17 +1,15 @@
-define [
-  'underscore'
-  'moment'
-  './planning/planning'
-], (_, moment, Planning) ->
+_ = require 'underscore'
+moment = require 'moment'
+Planning = require './planning/planning'
 
-  # Allow to initialize storage with a 2013 planning.
-  # Inefective if some plannings are already present.
-  #
-  # @param storage [Storage] a storage service instance
-  # @param callback [Function] end callback, invoked with argumetns:
-  # @option callback err [Error] an error object, or null if no error occured
-  # @option callback initialized [Boolean] true if the planning was initialized, false if some models are already present
-  initialization = (storage, callback) =>
+# Allow to initialize storage with a 2013 planning.
+# Inefective if some plannings are already present.
+#
+# @param storage [Storage] a storage service instance
+# @param callback [Function] end callback, invoked with argumetns:
+# @option callback err [Error] an error object, or null if no error occured
+# @option callback initialized [Boolean] true if the planning was initialized, false if some models are already present
+module.exports = (storage, callback) =>
 
     initialized = false
 

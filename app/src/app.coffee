@@ -1,73 +1,73 @@
-define [
-  'angular'
-  'service/storage'
-  'service/export'
-  'service/import'
-  'controller/layout'
-  'controller/list'
-  'controller/planning'
-  'controller/dancer'
-  'model/dancer/dancer'
-  'model/planning/planning'
-  'model/initializer'
-], (angular, StorageService, ExportService, ImportService, 
-  LayoutCtrl, ListCtrl, PlanningCtrl, DancerCtrl, 
-  DancerModel, PlanningModel, initializer) ->
+# merge underscore and underscore string functions
+_ = require 'underscore'
+_str = require 'underscore.string'
+_.mixin _str.exports()
 
-  # declare main module that configures routing
-  app = angular.module 'app', ['ui.bootstrap', 'ui.router', 'ui.state']
+StorageService = require '../script/service/storage'
+ExportService = require '../script/service/export'
+ImportService = require '../script/service/import'
+LayoutCtrl = require '../script/controller/layout'
+ListCtrl = require '../script/controller/list'
+PlanningCtrl = require '../script/controller/planning'
+DancerCtrl = require '../script/controller/dancer'
+DancerModel = require '../script/model/dancer/dancer'
+PlanningModel = require '../script/model/planning/planning'
+initializer = require '../script/model/initializer'
 
-  app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
-    location.html5Mode true
-    # configure routing
-    router.otherwise '/home'
+# declare main module that configures routing
+app = angular.module 'app', ['ui.bootstrap', 'ui.router']
 
-    home = 
-      url: '/home'
-      abstract: true
-      templateUrl: 'columnandmain.html'
-      controller: LayoutCtrl
-    states.state 'home', home
+app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
+  location.html5Mode false
+  # configure routing
+  router.otherwise '/home'
 
-    states.state 'list-and-planning',
-      parent: home
-      url: ''
-      views: 
-        column:
-          templateUrl: 'list.html'
-          controller: ListCtrl
-        main:
-          templateUrl: 'planning.html'
-          controller: PlanningCtrl
+  home = 
+    url: '/home'
+    abstract: true
+    templateUrl: 'columnandmain.html'
+    controller: LayoutCtrl
+  states.state 'home', home
 
-    states.state 'list-and-dancer',
-      parent: home
-      url: '/dancer/:id'
-      views: 
-        column:
-          templateUrl: 'list.html'
-          controller: ListCtrl
-        main:
-          templateUrl: 'dancer.html'
-          controller: DancerCtrl
+  states.state 'list-and-planning',
+    parent: home
+    url: ''
+    views: 
+      column:
+        templateUrl: 'list.html'
+        controller: ListCtrl
+      main:
+        templateUrl: 'planning.html'
+        controller: PlanningCtrl
+
+  states.state 'list-and-dancer',
+    parent: home
+    url: '/dancer/:id'
+    views: 
+      column:
+        templateUrl: 'list.html'
+        controller: ListCtrl
+      main:
+        templateUrl: 'dancer.html'
+        controller: DancerCtrl
   ]
 
-  # make storage an Angular service
-  app.factory 'storage', ['$rootScope', (rootScope) ->
-    # creates the instance
-    storage = new StorageService()
-    # bind models to storage provider
-    DancerModel.bind storage
-    PlanningModel.bind storage
-    # init model
-    initializer storage, (err, initialized) ->
-      throw err if err?
-      rootScope.$broadcast 'model-initialized' if initialized
-    storage
-  ]
+# make storage an Angular service
+app.factory 'storage', ['$rootScope', (rootScope) ->
+  # creates the instance
+  storage = new StorageService()
+  # bind models to storage provider
+  DancerModel.bind storage
+  PlanningModel.bind storage
+  # init model
+  initializer storage, (err, initialized) ->
+    throw err if err?
+    rootScope.$broadcast 'model-initialized'
+  storage
+]
 
-  # make export an Angular service
-  app.service 'export', ExportService
-  app.service 'import', ImportService
-        
-  app
+# make export an Angular service
+app.service 'export', ExportService
+app.service 'import', ImportService
+
+module.exports = app

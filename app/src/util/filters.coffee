@@ -1,32 +1,29 @@
-define [
-  'i18n!nls/common'
-  '../app'
-], (i18n, app) ->
+i18n = require '../labels/common'
   
-  # i18n filter replace a given expression by its i18n value.
-  # the 'sep' option can be added to suffix with the fieldSeparator label 
-  app.filter 'i18n', ['$parse', (parse) -> (input, options) -> 
-    sep = ''
-    if options?.sep is true
-      sep = parse('lbl.fieldSeparator') i18n
-    value = parse(input) i18n
-    "#{if value? then value else input}#{sep}"
-  ]
-    
-  # classDate filter displays with friendly names start or end of a dance class
-  app.filter 'classDate', [ -> (input, length) ->
-    return unless input?.length is 9
-    day = i18n.lbl[input[0..2]]
-    "#{day} #{input[4..8]}"
-  ]
+# i18n filter replace a given expression by its i18n value.
+# the 'sep' option can be added to suffix with the fieldSeparator label 
+app.filter 'i18n', ['$parse', (parse) -> (input, options) -> 
+  sep = ''
+  if options?.sep is true
+    sep = parse('lbl.fieldSeparator') i18n
+  value = parse(input) i18n
+  "#{if value? then value else input}#{sep}"
+]
+  
+# classDate filter displays with friendly names start or end of a dance class
+app.filter 'classDate', [ -> (input, length) ->
+  return unless input?.length is 9
+  day = i18n.lbl[input[0..2]]
+  "#{day} #{input[4..8]}"
+]
 
-  # The setNull directive set model value to null if value is empty
-  app.directive 'setNull', ->
-    # no replacement
-    replace: false
-    # applicable as attribute only
-    restrict: 'A'
-    require: 'ngModel'
-    link: (scope, elm, attrs, ctrl) ->
-      ctrl.$parsers.unshift (viewValue) ->
-        return if viewValue is "" then null else viewValue
+# The setNull directive set model value to null if value is empty
+app.directive 'setNull', ->
+  # no replacement
+  replace: false
+  # applicable as attribute only
+  restrict: 'A'
+  require: 'ngModel'
+  link: (scope, elm, attrs, ctrl) ->
+    ctrl.$parsers.unshift (viewValue) ->
+      return if viewValue is "" then null else viewValue

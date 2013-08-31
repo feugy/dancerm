@@ -1,23 +1,21 @@
-define [
-  'underscore'
-  '../base'
-], (_, Base) ->
+_ = require 'underscore'
+Base = require '../base'
 
-  class Address extends Base
+module.exports = class Address extends Base
 
-    # address detailed attributes
-    street: ''
-    zipcode: 0
-    city: ''
+  # address detailed attributes
+  street: ''
+  zipcode: 0
+  city: ''
 
-    # Creates an address from a set of raw JSON arguments
-    #
-    # @param raw [Object] raw attributes of this address
-    constructor: (raw = {}) ->
-      # set default values
-      _.defaults raw, 
-        street: ''
-        zipcode: 0
-        city: ''
-      # fill attributes
-      super(raw)
+  # Creates an address from a set of raw JSON arguments
+  #
+  # @param raw [Object] raw attributes of this address
+  constructor: (raw = {}) ->
+    # set default values
+    _.defaults raw, 
+      street: ''
+      zipcode: 0
+      city: ''
+    # fill attributes
+    super(raw)

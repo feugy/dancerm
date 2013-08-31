@@ -7,3 +7,5 @@ test/vendor
 analysis/ribas.flac
 analysis/~*.xlsx
 test/fixture/~*.xlsx
+dump_dancerm.json
+bin/debug.log

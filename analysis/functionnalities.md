@@ -2,7 +2,6 @@
 
 # TODO
 
-- save data
 - list dancers by class
 - list dancers by teacher
 - list dancers by year(s)
