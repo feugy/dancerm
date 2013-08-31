@@ -30,35 +30,55 @@ module.exports = class Dancer extends Base
   @findWhere: (conditions, callback) ->
     @findAll (err, models) =>
       return callback err if err?
+
+      checkCondition = (steps, expected, next) =>
+        # restrict the selected models for this condition
+        async.filter models, (model, nextFilter) =>
+          @_checkValue model, model, steps, expected, nextFilter
+        , (results) =>
+          # updates the model
+          models = results
+          return next 'end' if models.length is 0
+          next()
+
       # check each conditions
       async.forEach _.pairs(conditions), ([path, expected], next) =>
         steps = path.split '.'
+        condition = {}
         # check if condition include planning
-        idx = path.indexOf 'danceClasses.'
-        idx2 = path.indexOf 'planning.'
-        if idx isnt -1 or idx2 isnt -1
-          condition = {}
-          if idx isnt -1
-            condition[path[idx..]] = expected 
-          else
-            condition[path[idx2+9..]] = expected
-          # select relevant plannings
-          Planning.findWhere condition, (err, plannings) =>
+        idx = path.indexOf 'planning.'
+        if idx isnt -1 
+          condition[path[idx+9..]] = expected
+          return Planning.findWhere condition, (err, plannings) ->
             return next 'end' if plannings.length is 0
             # only kept dancers with relevant planning ids
             ids = _.pluck plannings, 'id'
-            models = _.filter models, (model) =>
-              _.some model.registrations, (registration) => registration.planningId in ids
+            models = _.filter models, (model) ->
+              _.some model.registrations, (reg) -> reg.planningId in ids
             next()
+
+        # check if condition include dance classes
+        idx = path.indexOf 'danceClasses.'
+        if idx isnt -1
+          condition[path[idx..]] = expected 
+          return Planning.findWhere condition, (err, plannings) =>
+            return next 'end' if plannings.length is 0
+            # only kept relevant dance class ids
+            subSteps = path[idx+13..].split '.'
+            async.map plannings, (planning, nextMap) =>
+              async.filter planning.danceClasses, (danceClass, nextFilter) =>
+                @_checkValue danceClass, danceClass, subSteps, expected, nextFilter
+              , (danceClasses) ->
+                nextMap null, _.pluck danceClasses, 'id'
+            , (err, ids) ->
+              ids = _.flatten ids
+              models = _.filter models, (model) ->
+                _.some model.registrations, (reg) -> 0 isnt _.intersection(reg.danceClassIds, ids).length
+              next()
         else
-          # restrict the selected models for this condition
-          async.filter models, (model, next) =>
-            @_checkValue model, model, steps, expected, next
-          , (results) =>
-            # updates the model
-            models = results
-            return next 'end' if models.length is 0
-            next()
+          # check simple condition
+          checkCondition steps, expected, next
+
       , (err) =>
         return callback null, [] if err is 'end'
         callback null, models

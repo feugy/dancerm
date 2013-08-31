@@ -36,4 +36,7 @@ module.exports = class ListController
   _onSearchChanged: (value, old) =>
     # quit if no changes detected or not enough letters
     return unless value?.length >= 3 and value isnt old
+    @scope.search.classId = null
+    @scope.search.season = null
+    @scope.search.teacher = null
     @scope.triggerSearch()

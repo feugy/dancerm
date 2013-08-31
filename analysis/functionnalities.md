@@ -2,9 +2,6 @@
 
 # TODO
 
-- list dancers by class
-- list dancers by teacher
-- list dancers by year(s)
 - export list
 - fully test import error cases
 

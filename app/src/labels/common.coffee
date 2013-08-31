@@ -38,6 +38,7 @@ module.exports =
     addPayment: 'Nouveau paiement'
     backToList: 'Retour à la liste'
     import: 'Importer des danseurs'
+    searchAll: 'Tous les danseurs'
 
   # short labels
   lbl:

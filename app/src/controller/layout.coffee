@@ -38,6 +38,9 @@ module.exports = class LayoutController
     # search criteria
     @scope.search = 
       classId: null
+      season: null
+      string: null
+      teacher: null
     # displayed dancer.
     @scope.displayed = null
     # injects public methods into scope
@@ -65,12 +68,21 @@ module.exports = class LayoutController
     if @scope.search.string?
       searched = @scope.search.string.toLowerCase()
       # find all dancers by first name/last name
-      return Dancer.findWhere {id: (id, dancer) -> 
+      Dancer.findWhere {id: (id, dancer) -> 
         0 is dancer.firstname?.toLowerCase().indexOf(searched) or 0 is dancer.lastname?.toLowerCase().indexOf searched
       }, searchEnd
     else if @scope.search.classId?
       # find all dancers in this dance class
-      return Dancer.findWhere {'registrations.danceClassIds': @scope.search.classId}, searchEnd
+      Dancer.findWhere {'registrations.danceClassIds': @scope.search.classId}, searchEnd
+    else if @scope.search.season?
+      # find all dancers by season and optionnaly by teacher for this season
+      condition = {'registrations.planning.season': @scope.search.season}
+      condition['registrations.danceClasses.teacher'] = @scope.search.teacher if @scope.search.teacher?
+      Dancer.findWhere condition, searchEnd
+    else
+      # no search !!
+      @_searchPending = false
+
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified
@@ -124,7 +136,6 @@ module.exports = class LayoutController
   # @option callback error [Error] an error object or null if no error occurred.
   _chooseDumpLocation: (callback) =>
     # first, explain what we're asking
-    console.log 'coucou !!'
     @dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).open().then =>
       dialog = $('<input style="display:none;" type="file" nwsaveas value="dump_dancerm.json" accept="application/json"/>')
       dialog.change (evt) =>

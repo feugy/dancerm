@@ -6,7 +6,14 @@
       <li data-ng-repeat="planning in plannings"><a data-ng-click="selected = planning">{{planning.season}}</a></li>
     </ul>
   </div>
-  <span data-planning data-src="selected" data-on-click="onDisplayClass(danceClass)"></span>
+  <div class="btn-group">
+    <a href="" class="btn dropdown-toggle" >{{search.teacher || i18n.btn.searchAll}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a data-ng-click="onSelectByTeacher()">{{'btn.searchAll'|i18n}}</a></li>
+      <li data-ng-repeat="teacher in teachers"><a data-ng-click="onSelectByTeacher(teacher)">{{teacher}}</a></li>
+    </ul>
+  </div>
+  <span data-planning data-src="selected" data-on-click="onSelectByClass(danceClass)"></span>
   <div class="row-fluid">
     <a href="" class="btn btn-primary" data-ng-click="onNewDancer()">{{'btn.newDancer'|i18n}}</a>
   </div>

@@ -1,0 +1,9 @@
+{
+  "name": "dancerm-test",
+  "version": "0.0.1",
+  "main": "tests.html",
+  "window": {
+    "toolbar": true,
+    "frame": true
+  }
+}

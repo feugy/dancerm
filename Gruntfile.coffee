@@ -21,6 +21,9 @@ module.exports = (grunt) ->
 
       # coffee-script compilation for tests
       test:
+        options:
+          sourceMap: true
+
         expand: true
         cwd: 'test/src'
         src: ['**/*.coffee']
@@ -36,8 +39,8 @@ module.exports = (grunt) ->
         dest: 'app/style'
         ext: '.css'
         
+    # bower dependencies for application
     bowerful:
-      # bower dependencies for application
       app:
         store: 'app/vendor'
         packages: 
@@ -48,49 +51,23 @@ module.exports = (grunt) ->
           'jquery': '2.0.3'
           'jszip': '1.0.0'
 
-      # bower dependenvies for tests
-      test:
-        store: 'test/vendor'
-        packages: 
-          'jquery': '2.0.3'
-          'jszip': '1.0.0'
-
-    # copy app file into test script to allow testing
-    copy:
-      app:
-        files: [{
-          expand: true 
-          cwd: 'app/script', 
-          src: ['**/*.js', '**/*.js.map']
-          dest: 'test/script/'
-        }]
-
     # compile when a coffee/stylus file has changed
     watch:
       app:
         files: 'app/src/**/*.coffee'
-        tasks: ['coffee', 'copy:app']
+        tasks: 'coffee:app'
       test:
         files: 'test/src/**/*.coffee'
-        tasks: 'coffee'
+        tasks: 'coffee:test'
       style:
         files: 'app/style/**/*.styl'
         tasks: 'stylus'
 
-    # Chrome package app generation (To be done with valid key)
-    ###crx:
-      DanceRM: 
-        src: 'app/'
-        dest: 'dist/DancerRM'
-        privateKey: 'chrome-key.pem'###
-
   # Load different plugins
   grunt.loadNpmTasks 'grunt-bowerful'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  #grunt.loadNpmTasks 'grunt-crx'
 
   # Default task(s).
   grunt.registerTask 'default', ['watch']

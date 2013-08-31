@@ -14,7 +14,7 @@ module.exports = class Storage
 
   # Storage constructor
   constructor: () ->
-    test = mocha?
+    test = process.env.NODE_ENV?.toLowerCase() is 'test'
     @dbName= "dancerm#{if test then '-test' else ''}"
     @db = null
 
