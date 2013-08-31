@@ -9,7 +9,7 @@ module.exports =
     newRegistration: 'Nouvelle inscription'
     editRegistration: "Modification de l'inscription"
     confirm: 'Confirmation de la suppression'
-    dancerList: 'Liste des danceurs'
+    dancerList: 'Liste des danseurs'
     import: 'Importation'
     dump: 'Sauvegarde externe'
     search: 'Recherche de danseurs'
@@ -26,7 +26,7 @@ module.exports =
 
   # buttons
   btn: 
-    newDancer: 'Nouveau danseur'
+    newDancer: 'Inscrire un danseur'
     register: 'Nouvelle Inscription'
     cancel: 'Annuler'
     save: 'Enregistrer'
@@ -38,10 +38,11 @@ module.exports =
     addPayment: 'Nouveau paiement'
     backToList: 'Retour à la liste'
     import: 'Importer des danseurs'
-    searchAll: 'Tous les danseurs'
 
   # short labels
   lbl:
+    searchPlaceholder: 'chercher par nom/prénom'
+    allTeachers: 'tous les professeurs'
     fieldSeparator: ' :'
     firstname: 'Prénom'
     lastname: 'Nom'

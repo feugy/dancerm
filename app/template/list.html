@@ -1,6 +1,7 @@
 <div class="form-search">
-  <input type="text" class="search-query" data-ng-model="search.string"/>
+  <input type="text" class="search-query" data-ng-model="search.name" data-ng-keyup="triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
 </div>
+<div data-tags data-src="search" data-on-remove="triggerSearch()"></div>
 <article>
   <h2>{{'ttl.dancerList'|i18n:{sep:true} }}</h2>
   <ul>

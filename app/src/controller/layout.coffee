@@ -37,7 +37,7 @@ module.exports = class LayoutController
     @scope.list = []
     # search criteria
     @scope.search = 
-      classId: null
+      danceClasses: null
       season: null
       string: null
       teacher: null
@@ -54,34 +54,33 @@ module.exports = class LayoutController
   # `scope.list` will be updated at the search end.
   triggerSearch: =>
     return if @_searchPending
-    @_searchPending = true
+    conditions = {}
+    # depending on criterias
+    if @scope.search.name?.length >= 3 
+      # find all dancers by first name/last name
+      searched = @scope.search.name.toLowerCase()
+      conditions.id = (id, dancer) -> 
+        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 0 is dancer.lastname?.toLowerCase().indexOf searched
+
+    # find all dancers by season and optionnaly by teacher for this season
+    conditions['registrations.planning.season'] = @scope.search.season if @scope.search.season?
     
-    console.log "search with criteria", @scope.search
-    # common search result display
-    searchEnd = (err, dancers) =>
+    if @scope.search.danceClasses?.length > 0
+      ids = _.pluck @scope.search.danceClasses, 'id'
+      # select class students: can be combined with season and name
+      conditions['registrations.danceClassIds'] = (id) -> id in ids
+    else if @scope.search.teacher?
+      # add teacher if needed: can be combined with season and name
+      conditions['registrations.danceClasses.teacher'] = @scope.search.teacher if @scope.search.teacher?
+    
+    # clear list content
+    return @scope.list = [] if _.isEmpty conditions
+    @_searchPending = true
+    Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
       return @dialog.messageBox(i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]).open() if err?
       @scope.$apply =>
         @scope.list = dancers
-
-    # depending on criterias
-    if @scope.search.string?
-      searched = @scope.search.string.toLowerCase()
-      # find all dancers by first name/last name
-      Dancer.findWhere {id: (id, dancer) -> 
-        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 0 is dancer.lastname?.toLowerCase().indexOf searched
-      }, searchEnd
-    else if @scope.search.classId?
-      # find all dancers in this dance class
-      Dancer.findWhere {'registrations.danceClassIds': @scope.search.classId}, searchEnd
-    else if @scope.search.season?
-      # find all dancers by season and optionnaly by teacher for this season
-      condition = {'registrations.planning.season': @scope.search.season}
-      condition['registrations.danceClasses.teacher'] = @scope.search.teacher if @scope.search.teacher?
-      Dancer.findWhere condition, searchEnd
-    else
-      # no search !!
-      @_searchPending = false
 
 
   # Read a given xlsx file to import dancers.

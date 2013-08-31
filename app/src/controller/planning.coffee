@@ -33,25 +33,32 @@ module.exports = class PlanningController
   # Invoked when clicking on a given dance class.
   # displays dancers registered into this class
   #
-  # @param chosen [DanceClass] the clicked dance class
-  onSelectByClass: (chosen) =>
-    # update layout controller values
-    @scope.search.string = null
-    @scope.search.classId = chosen.id
-    @scope.search.season = null
-    @scope.search.teacher = null
+  # @param event [Event] click event, to check pressed keys
+  # @param chosen [Array<DanceClass>] the clicked dance(s) class
+  onSelectByClass: (event, chosen) =>
+    if event?.ctrlKey
+      for danceClass in chosen
+        # add or remove
+        i = _.indexOf @scope.search.danceClasses, danceClass
+        if i isnt -1
+          @scope.search.danceClasses.splice i, 1
+        else
+          @scope.search.danceClasses.push danceClass
+    else
+      # changes all dance classes
+      @scope.search.danceClasses = chosen
+    @scope.search.season = @scope.selected.season
     @scope.triggerSearch()
 
   # Invoked when clicking on a given teacher name.
   # displays dancers registered for this teatcher on current year
   #
-  # @param chosen [String] the clicked teacher. May be null to select no dancers
+  # @param chosen [String] the clicked teacher
   onSelectByTeacher: (chosen) =>
     # update layout controller values
-    @scope.search.string = null
-    @scope.search.classId = null
+    @scope.search.teacher = chosen
     @scope.search.season = @scope.selected.season
-    @scope.search.teacher = chosen or null
+    @scope.search.danceClasses = []
     @scope.triggerSearch()
 
   # Invoked to display an empty dancer's screen

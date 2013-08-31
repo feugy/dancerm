@@ -67,7 +67,7 @@ class PlanningDirective
     @$el.delegate '.danceClass', 'click', (event) =>
       danceClass = $(event.target).closest '.danceClass'
       # invoke click handler
-      @scope.onClick danceClass: _.findWhere @scope.src.danceClasses, id:danceClass.data 'id'
+      @scope.onClick $event: event, danceClasses: [_.findWhere @scope.src.danceClasses, id:danceClass.data 'id']
 
       # disabled unless we provide a selected array
       return unless @scope.selected?
@@ -79,6 +79,11 @@ class PlanningDirective
       else
         # adds id
         @scope.selected.push danceClass.data 'id'
+
+    @$el.delegate '.legend > *', 'click', (event) =>
+      color = $(event.target).attr 'class'
+      # invoke click handler
+      @scope.onClick $event: event, danceClasses: _.where @scope.src.danceClasses, color:color
     
   # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized

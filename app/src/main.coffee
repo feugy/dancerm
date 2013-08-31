@@ -54,9 +54,10 @@ win.once 'loaded', ->
   global.app = require '../script/app'
   # require directives and filters immediately to allow circular dependencies
   require '../script/util/filters'
-  require '../script/directive/registration'
   require '../script/directive/planning'
   require '../script/directive/payment'
+  require '../script/directive/tags'
+  require '../script/directive/registration'
 
   # starts the application from a separate file to allow circular dependencies to application
   angular.bootstrap $('body'), ['app']
