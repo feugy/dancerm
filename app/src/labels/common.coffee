@@ -24,6 +24,7 @@ module.exports =
     importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     emptyDancerList: 'Aucun danseur pour ces critères'
+    dancerListLength: ' danseur(s) séléctionné(s)'
 
   # buttons
   btn: 

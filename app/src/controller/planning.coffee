@@ -15,20 +15,29 @@ module.exports = class PlanningController
   # Link to Angular location provider
   location: null
 
+  # **private**
+  # delay before displaying planning to avoid UI glitches
+  _planningDelay: 0
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular current scope
   # @param location [Object] Angular location service
   constructor: (@scope, @location) -> 
-    # first fetch
-    Planning.findAll @_onPlanningsRetrieved
     @scope.teachers = []
     @scope.i18n = i18n
     @scope.$watch 'selected', @_onSelectPlanning
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
     # redraw all on initialization
-    @scope.$on 'model-initialized', => Planning.findAll @_onPlanningsRetrieved
+    @scope.$on 'model-initialized', => 
+      return if @scope.plannings?
+      @_planningDelay = 0
+      Planning.findAll @_onPlanningsRetrieved
+    @scope.$on '$stateChangeSuccess', =>
+      return if @scope.plannings?
+      @_planningDelay = 190
+      Planning.findAll @_onPlanningsRetrieved
 
   # Invoked when clicking on a given dance class.
   # displays dancers registered into this class
@@ -74,9 +83,11 @@ module.exports = class PlanningController
   # @param plannings [Array<Planning>] list of available plannings
   _onPlanningsRetrieved: (err, plannings) =>
     throw err if err?
-    @scope.$apply =>
-      @scope.plannings = plannings
-      @scope.selected = plannings?[0]
+    _.delay =>
+      @scope.$apply =>
+        @scope.plannings = plannings
+        @scope.selected = plannings?[0]
+    , @_planningDelay
 
   # **private**
   # When a planning is selected, updates the teacher list

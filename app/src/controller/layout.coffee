@@ -34,9 +34,15 @@ module.exports = class LayoutController
   # @param state [Object] Angular state provider
   constructor: (@scope, @export, @import, @dialog, state) -> 
     @_searchPending = false
+    @_isExpand = false
     # updates main existance when state is loaded
-    @scope.$on '$stateChangeSuccess', =>
+    @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
       @scope.hasMain = state?.current?.views?.main?
+      if toState.name is 'expanded-list' or fromState.name is 'expanded-list'
+        @scope.animation = 'animate-expand'
+      else
+        @scope.animation = 'animate-main'
+
     # displayed dancer's list
     @scope.list = []
     # search criteria

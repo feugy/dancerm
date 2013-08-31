@@ -1,4 +1,10 @@
-<div class="column-and-main row-fluid">
-	<div class="column" data-ng-class="hasMain ? 'span3' : 'expanded'" data-ui-view="column"></div>
-	<div class="main span9" data-ui-view="main" data-ng-show="hasMain"></div>
+<div class="column-and-main">
+	<div  class="column" 
+        data-ng-class="hasMain ? '' : 'expanded'" 
+        data-ui-view="column"></div>
+
+	<div  class="main" 
+        data-ng-class="hasMain ? '' : 'empty'" 
+        data-ui-view="main" 
+        data-ng-animate="animation"></div>
 </div>

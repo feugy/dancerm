@@ -34,7 +34,7 @@ module.exports = (grunt) ->
     stylus:
       compile:
         expand: true
-        cwd: 'app/style'
+        cwd: 'app/src/style'
         src: ['**/*.styl']
         dest: 'app/style'
         ext: '.css'
@@ -51,6 +51,16 @@ module.exports = (grunt) ->
           'jquery': '2.0.3'
           'jszip': '1.0.0'
 
+    # copy images file from stylus folder to style
+    copy:
+      stylus:
+        files: [{
+          expand: true 
+          cwd: 'app/src/style', 
+          src: ['**/*.png']
+          dest: 'app/style'
+        }]
+
     # compile when a coffee/stylus file has changed
     watch:
       app:
@@ -60,12 +70,13 @@ module.exports = (grunt) ->
         files: 'test/src/**/*.coffee'
         tasks: 'coffee:test'
       style:
-        files: 'app/style/**/*.styl'
-        tasks: 'stylus'
+        files: 'app/src/style/**/*.styl'
+        tasks: ['stylus', 'copy:stylus']
 
   # Load different plugins
   grunt.loadNpmTasks 'grunt-bowerful'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 

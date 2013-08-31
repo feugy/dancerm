@@ -6,6 +6,7 @@
 <article>
   <h2>{{'ttl.dancerList'|i18n:{sep:true} }}</h2>
   <div data-ng-hide="list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
+  <div class="length" data-ng-show="list.length > 0">{{list.length}}{{'msg.dancerListLength'|i18n}}</div>
   <table class="table table-striped" data-ng-show="list.length > 0">
     <thead>
       <tr>

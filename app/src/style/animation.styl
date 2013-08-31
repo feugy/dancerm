@@ -1,0 +1,21 @@
+@import 'variable'
+
+
+.animate-main-enter
+  position absolute
+  width 70%
+  -webkit-animation outgoing animationDuration linear 0 1 reverse
+
+.animate-main-leave
+  position absolute
+  width 70%
+  -webkit-animation outgoing animationDuration
+
+@keyframes outgoing
+  0%
+    opacity 1
+    -webkit-transform translateX(0%)
+
+  100%
+    opacity 0
+    -webkit-transform translateX(100%)
