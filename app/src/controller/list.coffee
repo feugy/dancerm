@@ -4,19 +4,19 @@ module.exports = class ListController
               
   # Controller dependencies
   # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', '$location']
+  @$inject: ['$scope', '$state']
   
   # Controller scope, injected within constructor
   scope: null
 
-  # Link to Angular location provider
-  location: null
+  # Link to Angular state provider
+  state: null
   
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular current scope
-  # @param location [Object] Angular location provider
-  constructor: (@scope, @location) -> 
+  # @param state [Object] Angular state provider
+  constructor: (@scope, @state) -> 
     @scope.tags = []
     @scope.$watch 'search', @_onSearchChanged, true 
     @scope.$watch 'search.name', @_onSearchNameChanged 
@@ -28,4 +28,4 @@ module.exports = class ListController
   # @param dancer [Dancer] choosen dancer
   displayDancer: (dancer) =>
     console.log "ask to display #{dancer.id}"
-    @location.path "/home/dancer/#{dancer.id}"
+    @state.go 'list-and-dancer', id:dancer.id

@@ -43,6 +43,7 @@ module.exports = class LayoutController
       teacher: null
     # displayed dancer.
     @scope.displayed = null
+    @scope.hasChanged = false
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
     # dump data immediately

@@ -23,6 +23,7 @@ module.exports =
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
     importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
+    emptyDancerList: 'Aucun danseur pour ces critères'
 
   # buttons
   btn: 
@@ -36,7 +37,7 @@ module.exports =
     no: 'Non'
     ok: 'Ok'
     addPayment: 'Nouveau paiement'
-    backToList: 'Retour à la liste'
+    backToList: 'Retour au planning'
     import: 'Importer des danseurs'
 
   # short labels
@@ -53,10 +54,12 @@ module.exports =
     cellphone: 'Portable'
     email: 'E-mail'
     birth: 'Date de naissance'
+    shortCertified: 'Certificat'
     certified: 'Certificat médical'
     danceClasses: 'Cours'
     charged: 'Réglement de'
     currency: '€'
+    balance: 'Balance'
     receipt: 'Encaissement'
     bank: 'Banque'
     details: 'Détails'

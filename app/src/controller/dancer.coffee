@@ -17,7 +17,7 @@ paths = ['title', 'firstname', 'lastname',
 module.exports = class DancerController
             
   # Controller dependencies
-  @$inject: ['$scope', '$stateParams', '$location', '$dialog', '$q', '$compile']
+  @$inject: ['$scope', '$stateParams', '$state', '$dialog', '$q', '$compile']
 
   # Controller scope, injected within constructor
   scope: null
@@ -31,8 +31,8 @@ module.exports = class DancerController
   # link to Angular directive compiler
   compile: null
 
-  # link to Angular location service
-  location: null
+  # link to Angular state service
+  state: null
 
   # Dancers's search request in progress
   _reqInProgress: false
@@ -41,11 +41,11 @@ module.exports = class DancerController
   #
   # @param scope [Object] Angular current scope
   # @param stateParams [Object] invokation route parameters
-  # @param location [Object] Angular location service
+  # @param state [Object] Angular state service
   # @param dialog [Object] Angular dialog service
   # @param q [Object] Angular deferred implementation
   # @param compile [Object] Angular directive compiler
-  constructor: (@scope, stateParams, @location, @dialog, @q, @compile) -> 
+  constructor: (@scope, stateParams, @state, @dialog, @q, @compile) -> 
     @_reqInProgress = false
     @scope.isNew = false
     @scope.hasChanged = false
@@ -64,20 +64,25 @@ module.exports = class DancerController
     @scope.birthValid = true
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
 
+    @scope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams) =>
+      return unless @scope.hasChanged
+      # stop state change until user choose what to do with pending changes
+      event.preventDefault()
+      # confirm if dancer changed
+      @dialog.messageBox(i18n.ttl.confirm, i18n.msg.confirmGoBack, [
+          {label: i18n.btn.no, cssClass: 'btn-warning'}
+          {label: i18n.btn.yes, result: true}
+        ]
+      ).open().then (confirmed) =>
+        return unless confirmed
+        # if confirmed, effectively go on desired state
+        @scope.hasChanged = false
+        @state.go toState.name, toParams 
+
   # Goes back to list, after a confirmation if dancer has chnaged
   onBack: =>
-    goBack = =>
-      console.log "go back to list}"
-      @location.path "/home"
-
-    return goBack() unless @scope.hasChanged
-    # confirm if dancer changed
-    @dialog.messageBox(i18n.ttl.confirm, i18n.msg.confirmGoBack, [
-        {label: i18n.btn.no, cssClass: 'btn-warning'}
-        {label: i18n.btn.yes, result: true}
-      ]
-    ).open().then (confirmed) =>
-      goBack() if confirmed
+    console.log 'go back to list'
+    @state.go 'list-and-planning'
 
   # Save the current values inside storage
   onSave: =>

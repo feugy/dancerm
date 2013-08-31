@@ -4,9 +4,17 @@
 <div data-tags data-src="search" data-on-remove="triggerSearch()"></div>
 <article>
   <h2>{{'ttl.dancerList'|i18n:{sep:true} }}</h2>
-  <ul>
-    <li class="dancer" data-ng-repeat="dancer in list" data-ng-click="displayDancer(dancer)">
-      <span class="firstname" data-ng-bind="dancer.firstname"></span><span class="lastname" data-ng-bind="dancer.lastname"></span>
-    </li>
-  </ul>
+  <div data-ng-hide="list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
+  <table data-ng-show="list.length > 0">
+    <thead>
+      <tr>
+        <th>{{'lbl.firstname'|i18n}}</th><th>{{'lbl.lastname'|i18n}}</th><th>{{'lbl.shortCertified'|i18n}}</th><th>{{'lbl.balance'|i18n}}</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr class="dancer" data-ng-repeat="dancer in list" data-ng-click="displayDancer(dancer)">
+      <td>{{dancer.firstname}}</td><td>{{dancer.lastname}}</td><td>{{dancer.certified}}</td><td>{{dancer.registrations[0].balance}}{{'lbl.currency'|i18n}}</td>
+    </tr>
+    </tbody>
+  </table>
 </article>
