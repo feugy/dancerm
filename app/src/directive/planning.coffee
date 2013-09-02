@@ -28,7 +28,7 @@ days = i18n.planning.days
 class PlanningDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element', '$attrs']
+  @$inject: ['$scope', '$element', '$attrs', '$compile']
   
   # Controller scope, injected within constructor
   scope: null
@@ -47,13 +47,17 @@ class PlanningDirective
 
   # color legend used. color classe used as key
   legend: {}
+
+  # link to Angular directive compiler
+  compile: null
   
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   # @param attrs [Object] values of attributes
-  constructor: (@scope, element, attrs) ->
+  # @param compile [Object] Angular directive compiler
+  constructor: (@scope, element, attrs, @compile) ->
     @groups = {}
     @hours = []
     @legend = {}
@@ -89,10 +93,6 @@ class PlanningDirective
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
   _buildCalendar: =>
     html = []
-    # adds time column
-    html.push "<div class='legend'><h2>#{i18n.planning.legend}</h2>"
-    html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
-    html.push '</div>'
     html.push "<div class='time'><div class='title'>&nbsp;</div><div class='groups'>&nbsp;</div>"
     # add quarter from the earliest to the latest hours
     for hour in @hours
@@ -110,7 +110,11 @@ class PlanningDirective
         for i in [0..3]
           html.push "<div class='quarter q#{i}' data-hour='#{hour}' data-quarter='#{i}'>&nbsp;</div>"
       html.push "</div>"
-
+    # adds legend
+    html.push "<div class='legend'>#{i18n.planning.legend}"
+    html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
+    html.push '</div>'
+    
     @$el.empty().append html.join ''
     @$el.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
 
@@ -157,7 +161,7 @@ class PlanningDirective
       eQuarter = parseInt(course.end[course.end.indexOf(':')+1..])/15
       
       # gets horizontal positionning
-      column = days.indexOf(day)+3
+      column = days.indexOf(day)+2
       start = @$el.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
       end = @$el.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
             
@@ -166,11 +170,17 @@ class PlanningDirective
       groupCol = @groups[day].indexOf course[@groupBy]
 
       # and eventually positionates the rendering inside the right day
-      render = $("""<div class="danceClass #{course.color}" data-id="#{course.id}">#{course.level}</div>""").css 
-        height: (end.position()?.top or start.parent().height()) - start.position().top
+      tooltip = _.sprintf i18n.lbl.classTooltip, course.kind, course.level, course.start.replace(day, ''), 
+        course.end.replace(day, '')
+      render = @compile("""<div class="danceClass #{course.color}" data-id="#{course.id}"
+          data-tooltip="#{tooltip}" data-tooltip-popup-delay="200"
+          data-tooltip-append-to-body="true">#{course.level}</div>""") @scope
+      render.css 
+        height: height = (end.position()?.top or start.parent().height()) - start.position().top
         top: start.position().top
         left: "#{groupCol*width}%"
         width: "#{width}%"
+        'line-height': "#{height}px"
       $(@$el.children()[column-1]).append render 
 
     if @scope.selected?

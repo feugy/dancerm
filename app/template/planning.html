@@ -1,19 +1,22 @@
 <div>
-  <a href="" class="pull-right btn" data-ng-click="importDancers()">{{'btn.import'|i18n}}</a>
-  <div class="btn-group">
-    <a href="" class="btn dropdown-toggle" >{{selected.season}}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li data-ng-repeat="planning in plannings"><a data-ng-click="selected = planning">{{planning.season}}</a></li>
-    </ul>
-  </div>
-  <div class="btn-group">
-    <a href="" class="btn dropdown-toggle" >{{search.teacher || i18n.lbl.allTeachers}}<span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li data-ng-repeat="teacher in teachers"><a data-ng-click="onSelectByTeacher(teacher)">{{teacher}}</a></li>
-    </ul>
+  <header>
+    <a href="" class="btn btn-primary" data-ng-click="onNewDancer()">{{'btn.newDancer'|i18n}}</a>
+    <a href="" class="btn" data-ng-click="importDancers()">{{'btn.import'|i18n}}</a>
+  </header>
+  <div class="commands">
+    <div class="btn-group">
+      <a href="" class="btn dropdown-toggle" >{{selected.season}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li data-ng-repeat="planning in plannings"><a data-ng-click="selected = planning">{{planning.season}}</a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+      <a href="" class="btn dropdown-toggle" >{{search.teacher || i18n.lbl.allTeachers}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a data-ng-click="onSelectByTeacher()">{{'lbl.allTeachers'|i18n}}</a></li>
+        <li data-ng-repeat="teacher in teachers"><a data-ng-click="onSelectByTeacher(teacher)">{{teacher}}</a></li>
+      </ul>
+    </div>
   </div>
   <span data-planning data-src="selected" data-on-click="onSelectByClass($event, danceClasses)"></span>
-  <div class="row-fluid">
-    <a href="" class="btn btn-primary" data-ng-click="onNewDancer()">{{'btn.newDancer'|i18n}}</a>
-  </div>
 </div>

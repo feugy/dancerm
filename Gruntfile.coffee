@@ -47,9 +47,7 @@ module.exports = (grunt) ->
           'angular': 'PatternConsulting/bower-angular#1.1.5'
           'angular-bootstrap': '0.5.0'
           'angular-ui-router': '0.0.2'
-          'bootstrap': '2.3.2'
           'jquery': '2.0.3'
-          'jszip': '1.0.0'
 
     # copy images file from stylus folder to style
     copy:
@@ -57,7 +55,7 @@ module.exports = (grunt) ->
         files: [{
           expand: true 
           cwd: 'app/src/style', 
-          src: ['**/*.png']
+          src: ['img/**/*', 'font/**/*', 'css/**/*']
           dest: 'app/style'
         }]
 

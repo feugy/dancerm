@@ -1,75 +1,132 @@
-@import '../vendor/bootstrap/build/css/bootstrap.min.css'
+
+/******************************************************************************
+ * Inclusions
+ */
+
+@import 'css/bootstrap.min.css'
 @import 'variable'
 @import 'mixins'
 @import 'directive'
 @import 'animation'
 
 /******************************************************************************
- * Main layout
+ * Main layout and background
  */
 
 html
   height 100%
   overflow auto
-  background #fafafa
+  background background
+
 
 .column-and-main
+  pageMargin = 15px
   // for animations
   overflow hidden
-  display -webkit-flex
-  -webkit-flex-flow row
+  // take all page space
+  position absolute
+  top 0
+  right 0
+  left 0
+  bottom 0
+
+  > *
+    position absolute
+    top 0
+    bottom 0
+    box-sizing border-box
+    padding pageMargin
+
+  > header
+    top 15px
+    left 0
+    bottom auto
+    width 28%
+    background primaryBtnBackground
+    padding 1em
+    z-index 1
+    border-radius 0 1em 0 0
 
   > .column
-    width 30%
-    transition width animationDuration
+    left 0
+    width 25%
+    background colBackground
+    padding-top (100px+pageMargin)
+
+  > .main
+    // main right column
+    right 0
+    width 75%
+
+  // no main layout
+
   > .column.expanded
     width 100%
-  > .main
-    -webkit-flex 1
-    margin-left 20px
+
   > .main.empty
     width 0
 
 /******************************************************************************
- * TODO
- */
+ * Typography
+ */  
 
-body 
-  margin 10px
-  background transparent
+body
+  color textColor
+  font-family textFont
 
-  .registration
-    overflow-y visible
-
-  .invalid
-    background-color #f89406
-    color #fff
-
-.btn > .caret
-  display inline-block
-  margin-left 5px
-
-
-for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
-  .color{i+1}
-    background-color color
-    color #fff
-
-.main
-
-  .planning
-    width 100%
-    height 300px
-    font-size 10px
-    box-sizing border-box
-    margin 10px 0
-
-  > .row-fluid
+  .column-and-main > header
+    color headerColor
+    font-family headingFont
+    font-size (fontSize*2.5)
     text-align center
 
-.column
+  * 
+    font-family textFont
+    font-size fontSize
 
-  .form-search
+  for i in (1..3)
+    h{i}
+      border-top 2px solid headingColor
+      color headingColor
+      font-family headingFont
+      font-weight normal
+      font-size (fontSize*(1+0.2*(5-i)))
+      margin 0  
+
+  input.invalid
+    background-color errorColor !important
+    color errorTextColor !important
+
+  input:not(:hover):not(:focus):not(.invalid)
+  textarea:not(:hover):not(:focus):not(.invalid)
+    background rgba(inputColor, 7%)
+    color textColor
+    border-color transparent
+    box-shadow none
+    -webkit-box-shadow none
+
+/******************************************************************************
+ * Left Column
+ */
+
+.column-and-main > .column
+  transition width animationDuration
+  // list will take all available vertical space
+  display -webkit-flex
+  -webkit-flex-flow column
+
+  h2
+    // header text will take all available horizontal space
+    display -webkit-flex
+    -webkit-align-items center
+
+    span
+      font-size (fontSize*1.6)
+      font-family headingFont
+      -webkit-flex 1
+
+  .input-append
+    margin 20px 0 0
     display -webkit-flex
     -webkit-flex-flow row
 
@@ -77,103 +134,196 @@ for color, i in #87BDBD #95A5C9 #9FDE9F #2C7B7B #314983 #349034
       -webkit-flex 1
     input::-webkit-input-placeholder
       font-style italic
-      
-    input:after
-      content ''
+
+  .list-length
+    color headingColor
+    text-align center
+    display block
+    margin 1em 0
+
+  .table
+    -webkit-flex 1
+    margin 0
+    // tbody text will take all available vertical space
+    display -webkit-flex
+    -webkit-flex-flow column
+
+    // make raw as block, and cell as inline element with fixed width
+    tr 
+      display block
+      font-size 0
+    th, td
       display inline-block
-      width 28px
+      box-sizing border-box
+      font-weight normal
+    th
+      font-family headingFont
+    td
+      word-break break-word
 
-  .known-by:not(:last-child):after
-    display inline
-    content ', '
+    // we MUST have fixed width columns
+    for width, i in 30 35 15 20
+      td:nth-child({i+1})
+        width unit(width, '%')
+      th:nth-child({i+1})
+        width unit((width - 2), '%')
 
-  td
-    cursor pointer
-    
-.column.expanded
+    tbody
+      // take all vertical space
+      -webkit-flex 1
+      overflow auto
 
-  th
-    cursor pointer
+      tr:hover
+        cursor pointer
+        background linkColor
 
-article
-  border 1px solid #ccc
-  border-radius 3px
-  margin 10px 0
-  padding 0 1em 1em
-  
-  > h2
-    color #aaa
-    font-size 1.2em
-    line-height 10px
-    font-weight normal
-    font-style italic
-    background #fafafa
-    position relative
-    display inline
-    top -10px
-    left 25px
-    padding 0 5px
+    thead tr
+      background headerBackground
+      color headerColor
+      font-weight normal
+
+    // use white icons, make lastname bold and add stripes
+    td i
+      background-image url(img/glyphicons-halflings-white.png)
+    td:nth-child(2)
+      font-weight bold
+    tr:nth-child(even)
+      background colBackground
+
+.column-and-main > .column.expanded
+    .input-append
+      width 300px
+    > .tags
+    > .list-length
+      display inline-block
+
+    td:nth-child(2)
+      font-weight normal
+    td:nth-child(3)
+      font-weight bold
+
+    // we MUST have fixed width columns
+    for width, i in 4 7 10 4 4 8 9 9 15 10 20
+      td:nth-child({i+1}), th:nth-child({i+1})
+        width unit(width, '%')
+
+/******************************************************************************
+ * Main Part
+ */
+
+.column-and-main > .main
+  padding-top 80px
+
+  header
+    position absolute
+    top 15px
+    right 0
+    background colBackground
+    padding 1em
+    z-index 1
+    border-radius 0 0 0 1em
+
+  .commands
+    text-align center
+
+  .planning
+    height 500px
+    margin 10px 0
+
+/******************************************************************************
+ * Dancer
+ */
 
 .dancer
-  
-  // to allow button bar margin.
-  padding-top 1px
-
-  > article:first-of-type
-    margin-top 45px
-
-  label
-    display inline-block
-    cursor default
-    vertical-align top
-    margin 5px 0 0
-
-  .row-fluid input
-    margin-bottom 5px
-    margin-left 5px
-
-  textarea
-    margin 0 0 5px
-    resize none
-    height 3.6em
-    width 100%
-    display inline-block
-    box-sizing border-box
-
-  input:not(:hover):not(:focus):not(.invalid)
-  textarea:not(:hover):not(:focus):not(.invalid)
-    background transparent
-    border-color transparent
-    box-shadow none
-    -webkit-box-shadow none
+  overflow auto
+  height 100%
+  box-sizing border-box
+  padding-right 10px
+  padding-top 25px
 
   .registration-bar
     text-align center
 
-  .known-by > *
-    height 20px
-    width 18%
-    margin-right 3%
-    display inline-block
+  article
+    border-top 2px solid headingColor
+    margin 10px 0
+    padding 0 1em 1em
+    
+    > h2
+      border-top none
+      line-height 10px
+      font-size fontSize*1.6
+      background background
+      position relative
+      display inline
+      top -10px
+      left 25px
+      padding 0 5px
 
-  .known-by > *:last-child
-    width auto
+    .row-fluid 
+      > span
+        display -webkit-flex
 
-    label
-      display inline-block
-      margin 4px 0 0 -5px
+      input[type=text],
+      input[type=email]
+        -webkit-flex 1
+        margin-bottom 5px
+        margin-left 5px
+        height auto
 
-    input
-      display inline-block
+      input[type=checkbox]
+        margin 8px 0 0 5px
 
-  .known-by [type="checkbox"]
-    margin 0
+      label
+        width 100px
+        text-align right
+        display inline-block
+        cursor default
+        margin 5px 5px 0 0
 
-  .known-by > * label
-    margin 0 0 0 0.5em
+      textarea
+        -webkit-flex 1
+        margin 0 0 5px 5px
+        resize none
+        height 3.6em
+        display inline-block
+        box-sizing border-box
+
+    .row-fluid.known-by
+
+      > span
+        display inline-block
+        height 20px
+        width 20%
+        margin-right 10px
+        position relative
+
+      > *:last-child
+        width auto
+
+        label 
+          vertical-align 2px
+          position static
+        input 
+          display inline-block
+
+      label
+        text-align left
+        width auto
+        margin 0
+        left 18px
+        position absolute
+
+      input[type="checkbox"]
+        margin 0
+
+/******************************************************************************
+ * Registration popup
+ */
 
 .register
-  max-height 450px
+  height 450px
+  max-height inherit
 
   > span
     display block
@@ -183,3 +333,118 @@ article
     width 100%
     height 400px
     font-size 10px
+
+/******************************************************************************
+ * Bootstrap overload
+ */
+
+body
+
+  .modal
+    background background
+    width 60%
+    left 45%
+    border-radius 0 2em
+
+    .modal-header
+      background headerColor
+      border none
+      border-radius 0 2em 0 0
+
+      h3
+        color headerBackground
+        border none
+
+    .modal-footer
+      background colBackground
+      padding 10px
+      border-radius 0 0 0 2em
+      border none
+      box-shadow none
+
+  .tooltip.top
+    z-index 1100
+    .tooltip-inner
+      background infoBtnBackground
+    .tooltip-arrow
+      border-top-color infoColor
+
+  .dropdown-menu
+    text-align left
+    background btnBackground
+
+    li > a:hover
+      background background
+      color textColor
+
+  .btn-group.open .btn.dropdown-toggle
+    background btnBackgroundHover
+
+  input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, .uneditable-input:focus
+    border-color focusColor
+    box-shadow 0 0 8px focusColor
+
+  input[type="text"], input[type="number"]:focus, input[type="email"], input[type="url"], input[type="search"], input[type="tel"], .uneditable-input
+    background-color inputColor
+
+  .text-error
+    color lighten(errorColor, 30%)
+
+  .input-append .add-on
+  .input-prepend .add-on
+    background-color headerBackground
+    color headerColor
+    border-color textColor
+    text-shadow none
+
+    i
+      background-image url(img/glyphicons-halflings-white.png)
+
+  .btn > .caret
+    display inline-block
+    margin-left 5px
+
+  .btn 
+    color btnColor
+    background-color btnBackgroundHover
+    background-image btnBackground
+
+  .btn:hover, .btn:focus, .btn:active, .btn.active, .btn.disabled, .btn[disabled] 
+    color btnColor
+    background-color btnBackgroundHover
+
+  .btn-primary 
+    color emphasisColor
+    background-color primaryBtnBackgroundHover
+    background-image primaryBtnBackground
+
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] 
+    background-color primaryBtnBackgroundHover
+
+  .btn-warning 
+    color btnColor
+    background-image warningBtnBackground
+
+  .btn-warning:hover, .btn-warning:focus, .btn-warning:active, .btn-warning.active, .btn-warning.disabled, .btn-warning[disabled] 
+    background-color warningBtnBackgroundHover
+
+  .btn-danger 
+    color errorTextColor
+    background-image dangerBtnBackground
+
+  .btn-danger:hover, .btn-danger:focus, .btn-danger:active, .btn-danger.active, .btn-danger.disabled, .btn-danger[disabled] 
+    background-color dangerBtnBackgroundHover
+
+  .btn-success 
+    color btnColor
+    background-image successBtnBackground
+
+  .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .btn-success.disabled, .btn-success[disabled] 
+    background-color successBtnBackgroundHover
+
+  .btn-info 
+    color btnColor
+    background-image infoBtnBackground
+
+  .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled] 
+    background-color infoBtnBackgroundHover

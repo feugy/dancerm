@@ -18,17 +18,17 @@
         <li data-ng-repeat="(period, label) in i18n.periods"><a data-ng-click="onUpdatePeriod(period)">{{label}}</a></li>
       </ul>
     </span>
-    <a href="" class="btn pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a>
+    <a href="" class="btn btn-primary pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a>
   </h3>
   <div class="payments">
-    <header>
+    <h3>
       <div class="remove"></div>
-      <div class="type"></div>
+      <div class="type">{{'lbl.type'|i18n}}</div>
       <div class="receipt">{{'lbl.receipt'|i18n}}</div>
       <div>{{'lbl.bank'|i18n}}</div>
       <div>{{'lbl.details'|i18n}}</div>
       <div class="value">{{'lbl.value'|i18n}}</div>
-    </header>
+    </h3>
     <div data-payment 
       data-ng-repeat="payment in src.payments" 
       data-src="payment" 

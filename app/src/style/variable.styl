@@ -1,1 +1,72 @@
+
+/******************************************************************************
+ * Font declaration: always first
+ */
+
+@font-face
+  font-family Quicksand
+  src url(font/Quicksand-Regular.otf)
+
+@font-face
+  font-family Montserrat
+  src url(font/Montserrat-Regular.ttf)
+@font-face
+  font-family Montserrat
+  font-weight bold
+  font-style normal
+  src url(font/Montserrat-Bold.ttf)
+
+/******************************************************************************
+ * Texts
+ */
+
+headerColor = #e7d8b1
+headingColor = #e7d8b1
+btnColor = #403b3f
+emphasisColor = #201b21
+textColor = #f0e9cf
+fontSize = 13px
+headingFont = Montserrat
+textFont = Quicksand
+linkColor = #5fc0ce
+warningColor = #f89406
+errorColor = #890f0f
+errorTextColor = #ffffff
+infoColor = #03899c
+successColor = #6fb86f
+focusColor = rgba(#36BBCE,.8)
+inputColor = #ffffff
+
+/******************************************************************************
+ * Animations
+ */
+
 animationDuration = 200ms
+
+/******************************************************************************
+ * Backgrounds
+ */
+
+background = #625c5E
+headerBackground = #201b21
+colBackground = rgba(black, 0.2)
+
+btnBackground = linear-gradient(to bottom, lighten(headingColor, 30%), headingColor)
+btnBackgroundHover = headingColor
+
+primaryBtnBackground = linear-gradient(to bottom, headingColor, darken(headingColor, 30%))
+primaryBtnBackgroundHover = darken(headingColor, 30%)
+
+warningBtnBackground = linear-gradient(to bottom, lighten(warningColor, 30%), warningColor)
+warningBtnBackgroundHover = warningColor
+
+dangerBtnBackground = linear-gradient(to bottom, lighten(errorColor, 30%), errorColor)
+dangerBtnBackgroundHover = errorColor
+
+successBtnBackground = linear-gradient(to bottom, lighten(successColor, 30%), successColor)
+successBtnBackgroundHover = successColor
+
+infoBtnBackground = linear-gradient(to bottom, lighten(infoColor, 30%), infoColor)
+infoBtnBackgroundHover = infoColor
+
+planningColors = #e2d0a1 #ada58F #f7f3d7 #adaa8F #e7ceb1 #a9acae

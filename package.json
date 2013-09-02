@@ -1,6 +1,6 @@
 {
   "name": "dancerm",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Feugy <damien.feugas@gmail.comQ",
   "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
   "repository": {
@@ -34,7 +34,7 @@
     "toolbar": false,
     "frame": true,
     "show": false,
-    "min_width": 1250,
+    "min_width": 1000,
     "min_height": 700
   }
 }

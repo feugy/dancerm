@@ -28,7 +28,7 @@ win.on 'minimize', -> isMaximized = false
 
 # DOM is ready
 win.once 'loaded', ->
-  win.showDevTools()
+
   $(window).on 'keyup', (event) ->
     # opens dev tools on F12 or Command+Option+J
     win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey

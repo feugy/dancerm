@@ -9,3 +9,4 @@ analysis/~*.xlsx
 test/fixture/~*.xlsx
 dump_dancerm.json
 bin/debug.log
+app/style/**/*

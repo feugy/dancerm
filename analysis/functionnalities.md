@@ -2,50 +2,49 @@
 
 # TODO
 
-- design
 - packaging
 - export list
 - fully test import error cases
 
 ## Functionnal requirements
 
-- Have a list of dancers.
-- Distinguish dancers by teachers (legal requirement) (2'45)
+ok - Have a list of dancers.
+ok - Distinguish dancers by teachers (legal requirement) (2'45)
 - Send new year schedule
-- alert unpaid classes (by classes)
-- alert on missing medical certificate
+ok - alert unpaid classes (by classes)
+ok - alert on missing medical certificate
 - select email list for external mailing (export as list)
 - print invoice
 - print invoice for tuition
 
 Enroll dancers:
-- manually (multiple) and enter afterwise
+ok - manually (multiple) and enter afterwise
 - internet enroll (print and write, or write and print) with manual check
-- live enroll
+ok - live enroll
 
 List dancers:
 - by N last year
-- by teachers
-- by class
-- by unpaid
+ok - by teachers
+ok - by class
+ok - by unpaid
 
 Dancer information (4'00) 
-- registration date
-- title
-- firstname
-- lastname
-- street
-- zipcode
-- city
-- phone
-- email
+ok - registration date
+ok - title
+ok - firstname
+ok - lastname
+ok - street
+ok - zipcode
+ok - city
+ok - phone
+ok - email
 - first and last enroll year
-- birth year
-- medical certifical 
+ok - birth year
+ok - medical certifical 
 - classes (and by class)
-  - enroll duration (year, quarter)
-  - account balance 
-  - payment type (if bank check, name)
+  ok - enroll duration (year, quarter)
+  ok - account balance 
+  ok - payment type (if bank check, name)
   
 ## Resources
 
@@ -80,3 +79,10 @@ Needed (53'00)
 26/08 2h
 27/08 2h
 28/08 1h
+29/08 2h
+- 18h
+30/08 0
+31/08 8h
+01/09 12h
+02/09 2h
+- 22h

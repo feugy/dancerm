@@ -6,8 +6,7 @@ Dancer = require '../model/dancer/dancer'
 module.exports = class PlanningController
               
   # Controller dependencies
-  # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', '$location', 'storage']
+  @$inject: ['$scope', '$location']
   
   # Controller scope, injected within constructor
   scope: null
@@ -62,8 +61,8 @@ module.exports = class PlanningController
   # Invoked when clicking on a given teacher name.
   # displays dancers registered for this teatcher on current year
   #
-  # @param chosen [String] the clicked teacher
-  onSelectByTeacher: (chosen) =>
+  # @param chosen [String] the clicked teacher, may be null
+  onSelectByTeacher: (chosen = null) =>
     # update layout controller values
     @scope.search.teacher = chosen
     @scope.search.season = @scope.selected.season

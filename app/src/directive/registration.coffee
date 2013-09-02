@@ -79,7 +79,7 @@ class RegistrationDirective
   #
   # @param removed [Payment] the removed payment model
   onRemovePayment: (removed) =>
-    @dialog.messageBox(i18n.ttl.confirmRemove, 
+    @dialog.messageBox(i18n.ttl.confirm, 
       _.sprintf(i18n.msg.removePayment, 
         i18n.paymentTypes[removed.type], 
         removed.value, 

@@ -7,7 +7,7 @@ module.exports = class LayoutController
               
   # Controller dependencies
   # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', 'export', 'import', '$dialog', '$state']
+  @$inject: ['$scope', 'export', 'import', '$dialog', '$state', 'storage']
   
   # Controller scope, injected within constructor
   scope: null
@@ -91,8 +91,7 @@ module.exports = class LayoutController
       @_searchPending = false
       return @dialog.messageBox(i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]).open() if err?
       @scope.$apply =>
-        @scope.list = dancers
-
+        @scope.list = _.sortBy dancers, 'lastname'
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified

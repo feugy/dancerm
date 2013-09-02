@@ -24,7 +24,7 @@ app.directive 'payment', ->
 class PaymentDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element', '$compile']
+  @$inject: ['$scope', '$element']
   
   # Controller scope, injected within constructor
   scope: null
@@ -36,7 +36,7 @@ class PaymentDirective
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
-  constructor: (@scope, element, @compile) ->
+  constructor: (@scope, element) ->
     @$el = $(element)
     @scope.i18n = i18n
     @scope.receiptValid = true

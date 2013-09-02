@@ -1,4 +1,5 @@
 _ = require 'underscore'
+moment = require 'moment'
 i18n = require '../labels/common'
 Dancer = require '../model/dancer/dancer'
 Registration = require '../model/dancer/registration'
@@ -17,7 +18,7 @@ paths = ['title', 'firstname', 'lastname',
 module.exports = class DancerController
             
   # Controller dependencies
-  @$inject: ['$scope', '$stateParams', '$state', '$dialog', '$q', '$compile']
+  @$inject: ['$scope', '$stateParams', '$state', '$dialog', '$q']
 
   # Controller scope, injected within constructor
   scope: null
@@ -27,9 +28,6 @@ module.exports = class DancerController
 
   # Link to Angular deferred implementation
   q: null
-
-  # link to Angular directive compiler
-  compile: null
 
   # link to Angular state service
   state: null
@@ -44,8 +42,7 @@ module.exports = class DancerController
   # @param state [Object] Angular state service
   # @param dialog [Object] Angular dialog service
   # @param q [Object] Angular deferred implementation
-  # @param compile [Object] Angular directive compiler
-  constructor: (@scope, stateParams, @state, @dialog, @q, @compile) -> 
+  constructor: (@scope, stateParams, @state, @dialog, @q) -> 
     @_reqInProgress = false
     @scope.isNew = false
     @scope.hasChanged = false
@@ -124,9 +121,11 @@ module.exports = class DancerController
     condition[attr] = (val) -> 0 is val?.toLowerCase().indexOf typed
     # find matching dancers
     Dancer.findWhere condition, (err, models) => 
-      @scope.$apply => 
+      next = =>
         @_reqInProgress = false
         defer.resolve models
+      return next() if @scope.$$phase
+      @scope.$apply next
     defer.promise
 
   # Invoked by the typeahead directive when a suggested dancer is chosen.
@@ -220,9 +219,9 @@ module.exports = class DancerController
       @scope.knownBy[value] = _.contains @scope.dancer.knownBy, value
     @scope.knownByOther = _.find @scope.dancer.knownBy, (value) -> !(value of i18n.knownByMeanings)
     @scope.birth = @scope.dancer.birth?.format(i18n.formats.birth) or null
-    # listen to dancer's changes
-    @scope.$watchCollection "[#{("dancer.#{path}" for path in paths).join ','}]", @_onChange 
-    @scope.$watchCollection 'dancer.registrations', @_onChange 
+    # listen to dancer's changes 
+    # TODO found better way to do this
+    @scope.$watch @_onChange 
 
   # **private**
   # Checks if a field has been changed

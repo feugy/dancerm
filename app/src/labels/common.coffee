@@ -58,7 +58,7 @@ module.exports =
     email: 'E-mail'
     birth: 'Né(e) le'
     certified: 'Cert.'
-    certifiedLong: 'Certificat médical'
+    certifiedLong: 'Certificat'
     danceClasses: 'Cours'
     charged: 'Réglement de'
     currency: '€'
@@ -66,10 +66,12 @@ module.exports =
     receipt: 'Encaissement'
     bank: 'Banque'
     details: 'Détails'
+    type: 'Type'
     knownBy: 'Connu par'
     value: 'Valeur'
     sum: 'Total'
     other: 'autre'
+    classTooltip: '%s (%s) %s~%s'
     Mon: 'Lundi'
     Tue: 'Mardi'
     Wed: 'Mercredi'
@@ -86,8 +88,8 @@ module.exports =
 
   # formats
   formats:
-    birth: "DD/MM/YYYY"
-    receipt: "DD/MM/YYYY"
+    birth: 'DD/MM/YYYY'
+    receipt: 'DD/MM/YYYY'
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']

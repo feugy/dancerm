@@ -204,7 +204,7 @@ module.exports = class Import
         value = lValue.replace('+33', '0').replace(/\D/g, '').trim()
         return if value is '' then null else value
       when 'knownBy'
-        return (
+        return _.uniq (
           for val in lValue.split ','
             val = val.trim()
             switch val

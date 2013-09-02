@@ -1,10 +1,186 @@
+@import 'variable'
+
+/******************************************************************************
+ * Tags
+ */
+
+.tags
+  
+  .tag
+    cursor default 
+    color headingColor
+    display inline-block
+    padding .2em
+    padding-left .5em
+    font-size fontSize*0.9
+    border-radius 0 1em
+    background-color rgba(emphasisColor, 0.5)
+    margin-top 6px
+    line-height 20px
+
+    .close
+      padding 0 0.2em
+      color headingColor
+      opacity 0.5
+      text-shadow 0 1px 0 emphasisColor
+
+    .close:hover
+      opacity 1
+
+  .tag:not(:last-child)
+    margin-right 6px
+
+/******************************************************************************
+ * Planning
+ */
+
+for color, i in planningColors
+  .tags .color{i+1}
+  .color{i+1}
+    background-color color
+    color emphasisColor
+
+    .close
+      color emphasisColor
+      text-shadow 0 1px 0 inputColor
+
+.planning
+  titleH = 20px
+  titleMrg = 5px
+  groupH = 40px
+  legendH = 30px
+
+  width 100%
+  height 100%
+  box-sizing border-box
+  padding-bottom titleH + titleMrg + groupH + legendH
+
+  .time
+    background-color colBackground
+    color headingColor
+    text-align right
+    width 6.5%
+
+    .q0
+      font-size fontSize*0.8
+      line-height 1em
+      padding 0.2em
+      text-align right
+
+    .groups
+      color transparent
+
+  .day 
+  .time
+    box-sizing border-box
+    display inline-block
+    height 100%
+    position relative
+    margin-top titleH + titleMrg + groupH
+
+  // day limit
+  .day:not(:last-child)
+    border-right 1px solid lighten(headerColor, 50%)
+
+  .quarter
+    box-sizing border-box
+
+  // hour limit
+  .quarter.q0
+    border-top 1px solid lighten(headerColor, 25%)
+
+  // half-hour limit
+  .quarter.q2
+    border-top 1px dashed lighten(headerColor, 50%)
+
+  // day column header
+  .title
+    text-align center
+    background-color headerBackground
+    color headerColor
+    font-family headingFont
+    box-sizing border-box
+    height titleH
+    position absolute
+    top -(titleH + groupH + titleMrg)
+    width 100%
+
+  // group sub-column header
+  .groups
+    background-color colBackground
+    color headingColor
+    display -webkit-flex
+    -webkit-flex-flow row wrap
+    height groupH
+    position absolute
+    top -(groupH)
+    width 100%
+
+    > *
+      -webkit-flex 1
+      text-align center
+      overflow hidden
+      line-height 1.5em
+      margin auto 0
+      padding 0.2em
+      box-sizing border-box
+      font-size fontSize*0.8
+
+    > *:not(:last-child)
+      border-right 1px solid headingColor
+
+  .danceClass
+    border-radius 0 1em
+    padding 0.2em
+    box-sizing border-box
+    position absolute
+    overflow hidden
+    text-align center
+    cursor pointer
+    text-overflow ellipsis 
+
+  .danceClass.selected
+    background-color linkColor
+
+  .legend
+    margin-top 10px
+    text-align right
+    display block
+    height legendH
+    color headingColor
+    font-family headingFont
+
+    > span
+      cursor pointer
+      color emphasisColor
+      border-radius 0 1em
+      font-size fontSize*0.9
+      font-family textFont
+      padding 0 .8em
+      margin 0 0 0 8px
+      display inline-block
+
+for i in 2..7
+  .planning.days{i} .day
+    // 6.5% for time
+    width unit((100 - 6.5) / i, '%')
+
+for i in 6..20
+  .planning.hours{i} 
+    .quarter
+      height unit(100 / (i * 4), '%')  
+
+/******************************************************************************
+ * Registration
+ */
+
 .registration
 
   h3
-    font-size 1.2em
-    margin 0
-    font-weight normal
+    border none
+    font-size fontSize*1.4
 
+    // payment input
     .input-append
       margin-bottom 0px
       line-height 1.2em
@@ -12,30 +188,38 @@
       input
         text-align right
 
+  // dance classes, displayed in a row
   .danceClasses
     display -webkit-flex
     -webkit-flex-flow row wrap
+    margin-bottom 10px
 
-  .danceClass
-    display block
-    padding 5px 10px
-    > *
-      padding 0.2em 0.5em
-
-    .hour
+    .danceClass
       display block
-      font-size 0.8em
-      color #888
+      padding 5px 10px
 
-  .danceClass:not(:last-child)
-    border-right 1px solid #888
+      .kind
+        padding .2em 1em
+        border-radius 0 1em
+        display block
 
+      .hour
+      .level
+        font-size fontSize*0.9
+      .level
+        padding-right 1em
+
+    .danceClass:not(:last-child)
+      border-right 1px solid emphasisColor
+
+  // payement balance highlight
   .balance-low 
-    color #FF952B
+    color lighten(errorColor, 30%)
 
   .balance-right 
-    color #24B532
+    color successColor
 
+  // payement displayal
   .payments 
 
     > *
@@ -45,8 +229,16 @@
       > *
         -webkit-flex 1
 
-    header
+    h3
       text-align center
+      background headerBackground
+      color headerColor
+      border none
+      line-height 30px
+      margin 5px 0
+
+      > *
+        font-family headingFont
 
       .remove
         width 35px
@@ -54,6 +246,9 @@
       .receipt
         margin-left 4px
         padding 0 7px
+
+    input
+      margin 0 4px
 
     .total
       display block
@@ -70,7 +265,8 @@
 
     .type
       -webkit-flex none
-      text-align right
+      height 30px
+      margin-right 4px
       width 130px
 
       .dropup
@@ -81,127 +277,21 @@
       text-align center
       width 100px
 
-    .remove
+    .remove.btn
       -webkit-flex none
       height 20px
       margin-right 5px
+      background colBackground
+      border-color textColor
+
+      .icon-remove
+        background-image url(img/glyphicons-halflings-white.png)
 
     .value
       -webkit-flex none
       width 100px
+      margin-bottom 5px
 
       input
         width 53px
         text-align right
-
-.planning
-  titleH = 20px
-  groupH = 40px
-  legendH = 30px
-  
-  width 100%
-  height 100%
-  box-sizing border-box
-  padding-bottom titleH + groupH + legendH
-
-  .time
-    background-color #ccc
-    color #fff
-    text-align right
-    width 6.5%
-
-    .q0
-      font-size 0.8em
-      line-height 1em
-      padding 0.2em
-      text-align right
-
-    .groups
-      color transparent
-
-  .day 
-  .time
-    box-sizing border-box
-    display inline-block
-    height 100%
-    position relative
-    margin-top 65px
-
-  .day:not(:last-child)
-    border-right 1px solid #ccc
-
-  .quarter
-    box-sizing border-box
-
-  .quarter.q0
-    border-top 1px solid #888
-  .quarter.q2
-    border-top 1px dashed #ccc
-
-  .title
-    text-align center
-    background-color #aaa
-    color #fff
-    box-sizing border-box
-    height titleH
-    position absolute
-    top -(titleH + groupH)
-    width 100%
-
-  .groups
-    background-color #ccc
-    color #fff
-    display -webkit-flex
-    -webkit-flex-flow row wrap
-    height groupH
-    position absolute
-    top - groupH
-    width 100%
-
-    > *
-      -webkit-flex 1
-      text-align center
-      overflow hidden
-      margin auto 0
-      padding 0.2em
-      box-sizing border-box
-
-  .danceClass
-    position absolute
-    overflow hidden
-    white-space nowrap
-    text-overflow ellipsis 
-    text-align center
-    cursor pointer
-
-  .danceClass.selected
-    background-color #666
-
-  .legend
-    text-align right
-    display block
-    height legendH
-
-    h2
-      display inline-block
-      line-height 1em
-      height auto
-      font-size 0.9em
-      font-weight normal
-
-    > span
-      font-size 0.9em
-      padding 0 0.4em
-      margin 0 0.4em
-      display inline-block
-
-for i in 2..7
-  .planning.days{i} .day
-    // 6.5% for time
-    width unit((100 - 6.5) / i, '%')
-
-for i in 6..20
-  .planning.hours{i} 
-    .quarter
-      height unit(100 / (i * 4), '%')  
-    
