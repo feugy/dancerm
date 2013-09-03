@@ -30,11 +30,9 @@ module.exports = class PlanningController
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
     # redraw all on initialization
     @scope.$on 'model-initialized', => 
-      return if @scope.plannings?
       @_planningDelay = 0
       Planning.findAll @_onPlanningsRetrieved
     @scope.$on '$stateChangeSuccess', =>
-      return if @scope.plannings?
       @_planningDelay = 190
       Planning.findAll @_onPlanningsRetrieved
 

@@ -1,6 +1,7 @@
 'use strict'
 
 gui = require 'nw.gui'
+i18n = require '../script/labels/common'
 
 # make some variable globals for other scripts
 global.gui = gui
@@ -28,6 +29,8 @@ win.on 'minimize', -> isMaximized = false
 
 # DOM is ready
 win.once 'loaded', ->
+  # set application title
+  window.document?.title = i18n.ttl.application
 
   $(window).on 'keyup', (event) ->
     # opens dev tools on F12 or Command+Option+J

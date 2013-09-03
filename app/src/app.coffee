@@ -68,8 +68,12 @@ app.factory 'storage', ['$rootScope', (rootScope) ->
   # bind models to storage provider
   DancerModel.bind storage
   PlanningModel.bind storage
+  # for debug purposes
+  window.storage = storage
+  window.Dancer = DancerModel
+  window.Planning = PlanningModel
   # init model
-  initializer storage, (err, initialized) ->
+  initializer (err, initialized) ->
     throw err if err?
     rootScope.$broadcast 'model-initialized'
   storage
