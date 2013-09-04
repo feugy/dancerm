@@ -18,10 +18,23 @@ module.exports = class ListController
   # @param state [Object] Angular state provider
   constructor: (@scope, @state) -> 
     @scope.tags = []
-    @scope.$watch 'search', @_onSearchChanged, true 
-    @scope.$watch 'search.name', @_onSearchNameChanged 
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
+
+    # detach table during transition, to avoid huge UI redraw
+    table = null
+    previous = null
+    @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
+      if toState.name is 'expanded-list' or fromState.name is 'expanded-list'
+        element = $('.column-and-main .column .table')
+        if @scope.list.length
+          table = element          
+          previous = table.prev();
+          table.detach()
+    $('.column-and-main .column').on 'webkitTransitionEnd', (e) ->
+      if table? and $(e.target).hasClass 'column'
+        table.insertAfter previous 
+        table = null
 
   # Displays a given dancer on the main part
   #

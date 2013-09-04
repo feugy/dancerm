@@ -202,16 +202,31 @@ body
       background colBackground
 
 .column-and-main > .column.expanded
+
     .input-append
       width 300px
     > .tags
     > .list-length
       display inline-block
 
+    th
+      cursor pointer
+      i 
+        margin-left 0.5em
+        background-image url(img/glyphicons-halflings-white.png)
     td:nth-child(2)
       font-weight normal
     td:nth-child(3)
       font-weight bold
+
+    .input-row
+      display -webkit-flex
+
+      .input-append
+        margin 0
+
+      .tags 
+        margin-left 1em
 
     // we MUST have fixed width columns
     for width, i in 4 7 10 4 4 8 9 9 15 10 20

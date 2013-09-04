@@ -31,7 +31,7 @@
   "licence": "LGPL v3",
   "main": "app/template/app.html",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "frame": true,
     "show": false,
     "min_width": 1000,

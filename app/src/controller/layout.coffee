@@ -46,10 +46,10 @@ module.exports = class LayoutController
     @scope.list = []
     # search criteria
     @scope.search = 
-      danceClasses: null
-      season: null
+      danceClasses: []
+      seasons: []
       string: null
-      teacher: null
+      teachers: []
     # displayed dancer.
     @scope.displayed = null
     @scope.hasChanged = false
@@ -70,18 +70,21 @@ module.exports = class LayoutController
       # find all dancers by first name/last name
       searched = @scope.search.name.toLowerCase()
       conditions.id = (id, dancer) -> 
-        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 0 is dancer.lastname?.toLowerCase().indexOf searched
+        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 
+        0 is dancer.lastname?.toLowerCase().indexOf(searched) or
+        0 is dancer.address?.city?.toLowerCase().indexOf(searched)
 
     # find all dancers by season and optionnaly by teacher for this season
-    conditions['registrations.planning.season'] = @scope.search.season if @scope.search.season?
+    if @scope.search.seasons?.length > 0
+      conditions['registrations.planning.season'] = (season) => season in @scope.search.seasons
     
     if @scope.search.danceClasses?.length > 0
       ids = _.pluck @scope.search.danceClasses, 'id'
       # select class students: can be combined with season and name
       conditions['registrations.danceClassIds'] = (id) -> id in ids
-    else if @scope.search.teacher?
+    else if @scope.search.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
-      conditions['registrations.danceClasses.teacher'] = @scope.search.teacher if @scope.search.teacher?
+      conditions['registrations.danceClasses.teacher'] = (teacher) => teacher in @scope.search.teachers
     
     # clear list content
     return @scope.list = [] if _.isEmpty conditions
@@ -106,9 +109,9 @@ module.exports = class LayoutController
         err = new Error "No dancers found" if !err? and dancers?.length is 0
         if err?
           console.error "Import failed: #{err}"
+          $('.modal').remove()
           # displays an error dialog
           return @scope.$apply =>
-            $('.modal').remove()
             @dialog.messageBox(i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]).open()
 
         # get all existing dancers
@@ -119,10 +122,11 @@ module.exports = class LayoutController
 
           @import.merge existing, dancers, (err, imported) =>
             console.info "#{imported}/#{dancers.length} dancers imported"
+            $('.modal').remove()
             @scope.$apply =>
-              $('.modal').remove()
               msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
-              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open()
+              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open().then ->
+                $('.modal-backdrop').remove()
 
     dialog.trigger 'click'
 

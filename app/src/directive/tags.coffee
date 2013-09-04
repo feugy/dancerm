@@ -46,12 +46,10 @@ class TagsDirective
   _onRemoveTag: (event) =>
     tag = $(event.target).closest '.tag'
     @scope.$apply =>
-      if tag.hasClass 'season'
-        @scope.src.season = null
-        @scope.src.danceClasses = []
-      else if tag.hasClass 'teacher'
-        @scope.src.teacher = null
-        @scope.src.danceClasses = []
+      if tag.data('season')?
+        @scope.src.seasons.splice @scope.src.seasons.indexOf(tag.data('season')), 1
+      else if tag.data('teacher')?
+        @scope.src.teachers.splice @scope.src.teachers.indexOf(tag.data('teacher')), 1
       else
         # remove selected class
         id = tag.data 'id'
@@ -65,10 +63,12 @@ class TagsDirective
   # Updates displayed tags from the search criteria
   _onUpdateTags: =>
     @$el.empty()
-    if @scope.src.season
-      @$el.append "<div class='tag season'>#{@scope.src.season}<b class='close'>&times;</b></div>"
-    if @scope.src.teacher
-      @$el.append "<div class='tag teacher'>#{@scope.src.teacher}<b class='close'>&times;</b></div>"
+    if @scope.src.seasons?
+      for season in @scope.src.seasons
+        @$el.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"
+    if @scope.src.teachers?
+      for teacher in @scope.src.teachers
+        @$el.append "<div class='tag teacher' data-teacher='#{teacher}'>#{teacher}<b class='close'>&times;</b></div>"
     if @scope.src.danceClasses?
       for danceClass in @scope.src.danceClasses
         day = danceClass.start[0..2]

@@ -145,6 +145,8 @@ class PlanningDirective
   # Display each available dance class on the planning
   _displayClasses: (planning, old) =>
     return unless planning? and planning isnt old
+    # no available classes
+    return @$el.empty() unless planning.danceClasses?.length > 0
     # analyses to find hour span and dance groups
     @_extractSpans planning.danceClasses
     # then build empty calendar

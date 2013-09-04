@@ -3,9 +3,7 @@
 # TODO
 
 - packaging
-- import previous years
 - print
-- multiple year/teacher selection
 - export to excel
 - tuition
 - registration free text
