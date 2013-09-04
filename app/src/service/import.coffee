@@ -1,6 +1,9 @@
 _ = require 'underscore'
 moment = require 'moment'
+async = require 'async'
 Dancer = require '../model/dancer/dancer'
+Planning = require '../model/planning/planning'
+Registration = require '../model/dancer/registration'
 fs = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
@@ -12,12 +15,68 @@ mandatory = ['title', 'lastname']
 # Allow importation of dancers from XLSX files 
 module.exports = class Import
 
+
+  # Merges new dancers into existing ones
+  # 
+  # @param existings [Array<Dancer>] array of existing dancers
+  # @param added [Array<Object>] array of new dancers (`fromFile()` output)
+  # @param callback [Function] merge end callback, invoked with arguments:
+  # @option callback err [Error] an Error object, or null if no problem occurred
+  # @option callback inported [Number] number of modified or added dancers
+  merge: (existings, added, callback) =>
+    imported = 0
+    # get existing names
+    names = _.map existings, (existing) -> existing?.lastname?.toLowerCase()+existing?.firstname.toLowerCase()
+    # work in series to avoid concurrent planning creation
+    async.forEachSeries added, ({dancer, lastRegistration}, next) ->
+      isNew = true
+
+      # check if it already exists
+      dancerName = dancer?.lastname?.toLowerCase()+dancer?.firstname?.toLowerCase()
+      idx = names.indexOf dancerName
+      # if so, reuse all existing values
+      if idx >= 0
+        isNew = false
+        dancer = existings[idx] 
+        
+      saveDancer = (regModified) ->
+        # quit if not new and no moficiations on registrations
+        return next() unless isNew or regModified
+        imported++
+        dancer.save next
+
+      saveDancerWithPlanning = (planning) ->
+        # do not add same planning twice !
+        return saveDancer false if _.find(dancer.registrations, (reg) -> reg.planningId is planning.id)
+         
+        # add en empty registration at last position to keep newer first
+        dancer.registrations.push new Registration planningId: planning.id
+        saveDancer true
+          
+      # reuse registration if possible
+      return saveDancer false unless lastRegistration?
+      season = "#{lastRegistration}/#{lastRegistration+1}"
+      Planning.findWhere {season:season}, (err, [planning]) ->
+        return next new Error "Failed to reuse existing planning #{season}: #{err}" if err
+        return saveDancerWithPlanning planning if planning?
+          
+        # creates the unexisting planning
+        planning = new Planning season: season
+        planning.save (err) ->
+          return next new Error "Failed to save new planning #{season}: #{err}" if err
+          console.log '>>> save new planning', planning
+          saveDancerWithPlanning planning
+
+    , (err) ->
+      callback err, imported
+
   # Read the content of an XlsX file, and extract dancers from it
   #
   # @param filePath [String] absolute or relative path to the read file
   # @param callback [Function] extraction end callback, invoked with arguments:
   # @option callback err [Error] an Error object, or null if no problem occurred
-  # @option callback dancers [Array<Dancer>] the list (that may be empty) of extracted dancers
+  # @option callback dancers [Array<Object>] the list (that may be empty) of extracted dancers: 
+  # contains `dancer` and `lastRegistration` attributes
   fromFile: (filePath, callback) =>
     return callback new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
@@ -123,7 +182,7 @@ module.exports = class Import
   # @param index [Integer] extracted values index, (firstname, lastname, phone, email), when values are multiple
   # @param line [Array] orignal line data
   # @param columns [Object] hashmap of dancer's attribute and their corresponding column
-  # @return the created dancer or null
+  # @return the created dancer (object containing `dancer` and `lastRegistration` attributes) or null
   _processLine: (title, index, line, columns, dancers, result) =>
     raw = title: title
     # extract and convert each values
@@ -140,7 +199,7 @@ module.exports = class Import
       delete raw.street
       delete raw.zipcode
     # and return new dancer
-    new Dancer raw
+    dancer: new Dancer(raw), lastRegistration: raw.lastRegistration or null
 
   # **private**
   # Convert incoming column name into a supported dancer attribute
@@ -163,6 +222,7 @@ module.exports = class Import
       when 'id', '#' then return 'id'
       when 'créé', 'cree', 'creation', 'création' then return 'created'
       when 'année naissance', 'anniversaire', 'né le' then return 'birth'
+      when 'année de cours', 'année cours' then return 'lastRegistration'
 
   # **private**
   # Convert incoming attribute value into a supported dancer attribute value
@@ -227,3 +287,5 @@ module.exports = class Import
           value = moment lValue, format
           return value if value?.isValid()
         return undefined
+      when 'lastRegistration'
+        return parseInt lValue

@@ -3,7 +3,12 @@
 # TODO
 
 - packaging
-- export list
+- import previous years
+- print
+- multiple year/teacher selection
+- export to excel
+- tuition
+- registration free text
 - fully test import error cases
 
 ## Functionnal requirements
@@ -86,3 +91,4 @@ Needed (53'00)
 01/09 12h
 02/09 2h
 - 22h
+04/09 1h

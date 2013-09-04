@@ -87,6 +87,9 @@ body
     -webkit-user-select none
     cursor default
 
+  .btn, .btn *, a, a *, label, .btn-group
+    cursor pointer
+
   input, textarea
     -webkit-user-select text
     cursor text
@@ -181,8 +184,9 @@ body
       overflow auto
 
       tr:hover
-        cursor pointer
         background linkColor
+        *
+          cursor pointer
 
     thead tr
       background headerBackground

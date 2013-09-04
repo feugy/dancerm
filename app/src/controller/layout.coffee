@@ -1,5 +1,4 @@
 _ = require 'underscore'
-async = require  'async'
 i18n = require  '../labels/common'
 Dancer = require  '../model/dancer/dancer'
   
@@ -102,29 +101,28 @@ module.exports = class LayoutController
       dialog.remove()
       # dialog cancellation
       return unless filePath
+      @scope.$apply => @dialog.messageBox(i18n.ttl.import, i18n.msg.importing).open()
       @import.fromFile filePath, (err, dancers) =>
         err = new Error "No dancers found" if !err? and dancers?.length is 0
         if err?
           console.error "Import failed: #{err}"
           # displays an error dialog
           return @scope.$apply =>
+            $('.modal').remove()
             @dialog.messageBox(i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]).open()
 
         # get all existing dancers
         Dancer.findAll (err, existing) =>
-          return console.error err if err?
-          imported = 0
-          # get existing names
-          names = _.map existing, (existing) -> existing?.lastname?.toLowerCase()+existing?.firstname.toLowerCase()
-          async.forEach dancers, (dancer, next) =>
-            # save each dancers unless it already exists
-            return next() if _.find(names, (name) -> dancer?.lastname?.toLowerCase()+dancer?.firstname.toLowerCase() is name)?
-            imported++
-            dancer.save next
-          , (err) =>
+          if err?
+            $('.modal').remove()
+            return console.error err 
+
+          @import.merge existing, dancers, (err, imported) =>
             console.info "#{imported}/#{dancers.length} dancers imported"
             @scope.$apply =>
-              @dialog.messageBox(i18n.ttl.import, _.sprintf(i18n.msg.importSuccess, imported, dancers.length), [label: i18n.btn.ok]).open()
+              $('.modal').remove()
+              msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
+              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open()
 
     dialog.trigger 'click'
 
