@@ -1,0 +1,62 @@
+@import 'variable'
+
+html 
+  background transparent
+
+  printColor = #000
+  secondaryColor = #888
+
+  body
+    background transparent
+
+    label
+      color secondaryColor
+
+    input:not(:hover):not(:focus):not(.invalid)
+    textarea:not(:hover):not(:focus):not(.invalid)
+      color printColor
+
+    .column-and-main > header
+    .column-and-main > .column
+    .column-and-main > .main header
+    .payments
+    .btn
+    .dancer article .row-fluid.known-by > span:not(.selected)
+      display none
+
+    .dancer article > h2 
+      background transparent
+      color secondaryColor
+      position static
+      line-height 30px
+
+    .dancer article
+      border-top-color lighten(secondaryColor, 50%)
+
+    .column-and-main > .main
+      padding-top 0
+      position static
+
+    .registration h3
+      color secondaryColor
+      font-size fontSize
+      font-weight normal
+      font-family Quicksand
+
+    .input-append .add-on
+    .input-prepend .add-on
+      background transparent
+      border-color transparent
+      color secondaryColor
+
+    .danceClass .level
+    .danceClass .hour
+      color secondaryColor
+
+    for color, i in planningColors
+      .color{i+1}
+        background-color transparent
+        border 1px solid secondaryColor
+
+        .close
+          display none

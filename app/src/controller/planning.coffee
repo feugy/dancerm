@@ -115,5 +115,5 @@ module.exports = class PlanningController
     _.delay =>
       @scope.$apply =>
         @scope.plannings = _.sortBy(plannings, 'season').reverse()
-        @onSelectPlanning(plannings?[0])
+        @onSelectPlanning(@scope.plannings?[0])
     , @_planningDelay

@@ -2,7 +2,8 @@
   <header>
     <a href="" class="btn" data-ng-click="onBack()">{{'btn.backToList'|i18n}}</a>
     <a href="" class="btn btn-primary" data-ng-show="hasChanged" data-ng-click="onSave()">{{'btn.save'|i18n}}</a>
-    <a href="" class="btn btn-warning" data-ng-show="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a>
+    <a href="" class="btn btn-warning" data-ng-show="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a><a href="" class="btn" data-ng-click="onPrint()">{{'btn.print'|i18n}}</a>
+
    </header>
   <!-- dancer displayal -->
   <article>
@@ -62,10 +63,10 @@
       <span class="span6"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email"  data-ng-model="dancer.email" data-set-null/></span>
     </div>
     <div class="row-fluid known-by">
-      <span data-ng-repeat="(value, label) in i18n.knownByMeanings">
+      <span data-ng-repeat="(value, label) in i18n.knownByMeanings" data-ng-class="knownBy[value] ? 'selected' : ''">
         <input data-ng-model="knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="onUpdateKnownBy()"/><label for="{{value}}">{{label}}</label>
       </span>
-      <span><label>{{'lbl.other'|i18n:{sep:true} }}</label><input type="text" data-ng-model="knownByOther"  data-ng-change="onUpdateKnownBy()"/>
+      <span  data-ng-class="knownByOther ? 'selected' : ''"><label>{{'lbl.other'|i18n:{sep:true} }}</label><input type="text" data-ng-model="knownByOther"  data-ng-change="onUpdateKnownBy()"/>
       </span>
     </div>
   </article>

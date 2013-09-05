@@ -41,6 +41,7 @@ module.exports =
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
     import: 'Importer des danseurs'
+    print: 'Imprimer'
 
   # short labels
   lbl:

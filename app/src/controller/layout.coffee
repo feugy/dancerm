@@ -125,7 +125,8 @@ module.exports = class LayoutController
             $('.modal').remove()
             @scope.$apply =>
               msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
-              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open().then ->
+              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open().then =>
+                # TODO refresh all
                 $('.modal-backdrop').remove()
 
     dialog.trigger 'click'
