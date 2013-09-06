@@ -3,6 +3,7 @@ _ = require 'underscore'
 _str = require 'underscore.string'
 _.mixin _str.exports()
 
+i18n = require '../script/labels/common'
 StorageService = require '../script/service/storage'
 ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
@@ -82,5 +83,14 @@ app.factory 'storage', ['$rootScope', (rootScope) ->
 # make export an Angular service
 app.service 'export', ExportService
 app.service 'import', ImportService
+
+#on close, dump data, with a waiting dialog message
+app.close = (callback) ->
+  $injector = angular.element('body').injector()
+  # display waigin message
+  $injector.get('$rootScope').$apply =>
+    $injector.get('$dialog').messageBox(i18n.ttl.dump, i18n.msg.dumping, []).open()
+  # export data
+  $injector.get('export').dump localStorage.getItem('dumpPath'), callback
 
 module.exports = app

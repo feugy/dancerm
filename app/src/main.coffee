@@ -13,15 +13,23 @@ global.localStorage = localStorage
 # 'window' is DOM's window
 win = gui.Window.get()
 isMaximized = false
+hasDump = false
 
 # stores in local storage application state
 win.on 'close', ->
-  console.log 'close !'
+  return @close true if hasDump
+
+  hasDump = true
+  global.app.close (err) =>
+    console.error err if err?
+    console.log 'close after save'
+    @close true
+
+  console.log 'ask to close...'
   for attr in ['x', 'y', 'width', 'height']
     localStorage.setItem attr, win[attr]
 
   localStorage.setItem 'maximized', isMaximized
-  @close true
 
 win.on 'maximize', -> console.log('maximized'); isMaximized = true
 win.on 'unmaximize', -> isMaximized = false

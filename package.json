@@ -10,6 +10,7 @@
   "dependencies": {
     "async": "0.2.9",
     "coffee-script": "1.6.3",
+    "mime": "1.2.11",
     "moment": "2.1.0",
     "node-zip": "1.0.1",
     "underscore": "1.5.1",

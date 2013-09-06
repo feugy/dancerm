@@ -9,6 +9,9 @@ html
   body
     background transparent
 
+    *
+      font-family Verdana
+
     label
       color secondaryColor
 
@@ -24,10 +27,17 @@ html
     .dancer article .row-fluid.known-by > span:not(.selected)
       display none
 
+    .column-and-main > .main
+      width 100%
+
+      .dancer 
+        padding 15px 0
+
     .dancer article > h2 
       background transparent
       color secondaryColor
       position static
+      font-size fontSize*1.4
       line-height 30px
 
     .dancer article

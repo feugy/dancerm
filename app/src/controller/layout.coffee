@@ -55,10 +55,8 @@ module.exports = class LayoutController
     @scope.hasChanged = false
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
-    # dump data immediately
-    @scope.$on 'model-initialized', => 
-      @_loadDumpEntry (err) =>
-        @dialog.messageBox(i18n.ttl.dump, _.sprintf(i18n.err.dumpFailed, err.message), [label: i18n.btn.ok]).open() if err?
+    # Ask immediately dump entry if missing
+    @_loadDumpEntry()
 
   # Trigger the search based on `scope.search` descriptor.
   # `scope.list` will be updated at the search end.
@@ -98,7 +96,7 @@ module.exports = class LayoutController
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified
   importDancers: =>
-    dialog = $('<input style="display:none;" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
+    dialog = $('<input style="display:none;" type="file" accept="application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
     dialog.change (evt) =>
       filePath = dialog.val()
       dialog.remove()
@@ -139,8 +137,7 @@ module.exports = class LayoutController
     # nothing in localStorage
     dumpPath = localStorage.getItem 'dumpPath'
     return @_chooseDumpLocation callback unless dumpPath
-    console.info 'resuse file location from local storage...', dumpPath
-    @export.dump dumpPath, callback  
+    console.info 'reuse file location from local storage...', dumpPath
 
   # **private**
   # Ask user to choose a dump location, and immediately dump data inside.

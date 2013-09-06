@@ -26,6 +26,7 @@ module.exports =
     emptyDancerList: 'Aucun danseur pour ces critères'
     dancerListLength: ' danseur(s) séléctionné(s)'
     importing: 'Importation en cours, veuillez patienter...'
+    dumping: 'Sauvegarde externe en cours, veuillez patienter...'
 
   # buttons
   btn: 

@@ -7,6 +7,7 @@ Registration = require '../model/dancer/registration'
 fs = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
+mime = require 'mime'
 
 # mandatory columns to proceed with extraction
 mandatory = ['title', 'lastname']
@@ -64,7 +65,6 @@ module.exports = class Import
         planning = new Planning season: season
         planning.save (err) ->
           return next new Error "Failed to save new planning #{season}: #{err}" if err
-          console.log '>>> save new planning', planning
           saveDancerWithPlanning planning
 
     , (err) ->
@@ -80,33 +80,56 @@ module.exports = class Import
   fromFile: (filePath, callback) =>
     return callback new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
-    # read file content
-    fs.readFile filePath, (err, data) =>
-      return callback err if err?
-      try 
-        # jszip only accept base64 url encoded content
-        content = xlsx data.toString 'base64'
+    extension = mime.lookup filePath
 
-        # read at least one worksheet
-        return callback new Error "no worksheet found in file" unless content?.worksheets?.length > 0
-        
-        dancers = []
-        report =
-          readTime: content.processTime
-          modifiedBy: content.lastModifiedBy 
-          modifiedOn: moment content.modified
-          worksheets: []
-        start = Date.now()
-        # read all worksheets
-        for worksheet in content.worksheets
-          @_extractWorksheet dancers, worksheet, report
+    # Xlsx content
+    if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      fs.readFile filePath, (err, data) =>
+        return callback err if err?
+        try 
+          # jszip only accept base64 url encoded content
+          content = xlsx data.toString 'base64'
 
-        # and returns results
-        report.extractTime = Date.now() - start
-        callback null, dancers, report
-      catch exc
-        return callback exc
+          # read at least one worksheet
+          return callback new Error "no worksheet found in file" unless content?.worksheets?.length > 0
+          
+          dancers = []
+          report =
+            readTime: content.processTime
+            modifiedBy: content.lastModifiedBy 
+            modifiedOn: moment content.modified
+            worksheets: []
+          start = Date.now()
+          # read all worksheets
+          for worksheet in content.worksheets
+            @_extractWorksheet dancers, worksheet, report
 
+          # and returns results
+          report.extractTime = Date.now() - start
+          callback null, dancers, report
+        catch exc
+          return callback exc
+
+    # Json content
+    else if extension is 'application/json'
+      start =  Date.now()
+      fs.readFile filePath, 'utf8', (err, data) =>
+        return callback err if err?
+        try 
+          report =
+            readTime: Date.now()-start
+          # parse content
+          content = JSON.parse data
+          return callback new Error "no dancers found in file" unless content?.dancers?.length > 0
+          dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
+          # and returns results
+          report.extractTime = Date.now() - report.readTime
+          callback null, dancers, report
+        catch exc
+          return callback exc
+    else
+      callback new Error "unsupported format #{extension}"
+    
   # **private**
   # Extract dancers from a given worksheet data matrix
   # First find column names, then creates dancers
