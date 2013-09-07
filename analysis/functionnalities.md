@@ -2,7 +2,6 @@
 
 # TODO
 
-- packaging
 - print
 - tuition
 - registration free text

@@ -1,7 +1,7 @@
 {
   "name": "dancerm",
-  "version": "1.0.1",
-  "author": "Feugy <damien.feugas@gmail.comQ",
+  "version": "2.0.0",
+  "author": "Feugy <damien.feugas@gmail.com>",
   "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   "licence": "LGPL v3",
   "main": "app/template/app.html",
   "window": {
+    "icon": "app/style/img/dancerm.png",
     "toolbar": true,
     "frame": true,
     "show": false,

@@ -12,7 +12,10 @@ requestExecutionLevel admin
 
 ; header customization
 !define MUI_HEADERIMAGE
-!define MUI_BGCOLOR "EEEEEE"
+!define MUI_BGCOLOR "ffffff"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "welcome.bmp"
+!define MUI_ICON "..\app\style\img\dancerm.ico"
 
 ; displayed pages: choose directory, and file installation
 !insertmacro MUI_PAGE_WELCOME
@@ -44,8 +47,8 @@ section
   file /r ..\node_modules\xlsx.js
 
   ; creates a shortcut within installation folder and on desktop
-  createShortCut "$INSTDIR\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"'
-  createShortCut "$DESKTOP\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"'
+  createShortCut "$INSTDIR\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"' "$INSTDIR\app\style\img\dancerm.ico"
+  createShortCut "$DESKTOP\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"' "$INSTDIR\app\style\img\dancerm.ico"
 
   ; Write also the uninstaller
   writeUninstaller $INSTDIR\uninstall.exe
