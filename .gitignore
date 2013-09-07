@@ -11,3 +11,4 @@ dump_dancerm.json
 bin/debug.log
 app/style/**/*
 installer/*.exe
+test/fixture/out.*

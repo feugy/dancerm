@@ -241,10 +241,10 @@ module.exports = class Import
       when 'adresse', 'addr.', 'rue', 'adresse1' then return 'street'
       when 'ville' then return 'city' 
       when 'code postal', 'code_postal' then return 'zipcode'
-      when 'publicité' then return 'knownBy'
+      when 'publicité', 'connu par' then return 'knownBy'
       when 'id', '#' then return 'id'
       when 'créé', 'cree', 'creation', 'création' then return 'created'
-      when 'année naissance', 'anniversaire', 'né le' then return 'birth'
+      when 'année naissance', 'anniversaire', 'né le', 'né(e) le' then return 'birth'
       when 'année de cours', 'année cours' then return 'lastRegistration'
 
   # **private**
@@ -287,7 +287,7 @@ module.exports = class Import
         value = lValue.replace('+33', '0').replace(/\D/g, '').trim()
         return if value is '' then null else value
       when 'knownBy'
-        return _.uniq (
+        return _.compact _.uniq (
           for val in lValue.split ','
             val = val.trim()
             switch val

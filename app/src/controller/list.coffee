@@ -3,7 +3,6 @@ _ = require 'underscore'
 module.exports = class ListController
               
   # Controller dependencies
-  # Inject storage to ensure that models are properly initialized
   @$inject: ['$scope', '$state']
   
   # Controller scope, injected within constructor

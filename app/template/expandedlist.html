@@ -1,4 +1,4 @@
-<h2><span>{{'ttl.dancerList'|i18n}}</span><a data-ui-sref="list-and-planning" class="btn"><i class="icon-chevron-left"></i></a></h2>
+<h2><span>{{'ttl.dancerList'|i18n}}</span><a href="" class="btn export" data-ng-click="onExport()" data-ng-class="{disabled: list.length == 0}">{{'btn.export'|i18n}}</a><a data-ui-sref="list-and-planning" class="btn"><i class="icon-chevron-left"></i></a></h2>
 <div class="input-row">
   <div class="input-append">
     <input type="text" data-ng-model="search.name" data-ng-keyup="triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>

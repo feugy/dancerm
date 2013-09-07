@@ -28,9 +28,12 @@ module.exports = class PlanningController
     # injects public methods into scope
     @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
     # redraw all on initialization
-    @scope.$on 'model-initialized', => 
+    @scope.$on 'model-initialized', refreshNow = => 
       @_planningDelay = 0
       Planning.findAll @_onPlanningsRetrieved
+    @scope.$on 'model-imported', =>
+      @scope.triggerSearch()
+      refreshNow()
     @scope.$on '$stateChangeSuccess', =>
       @_planningDelay = 190
       Planning.findAll @_onPlanningsRetrieved

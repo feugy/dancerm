@@ -11,6 +11,7 @@ module.exports =
     confirm: 'Confirmation de la suppression'
     dancerList: 'Liste des danseurs'
     import: 'Importation'
+    export: 'Exportation'
     dump: 'Sauvegarde externe'
     search: 'Recherche de danseurs'
 
@@ -26,6 +27,7 @@ module.exports =
     emptyDancerList: 'Aucun danseur pour ces critères'
     dancerListLength: ' danseur(s) séléctionné(s)'
     importing: 'Importation en cours, veuillez patienter...'
+    exporting: 'Export en cours, veuillez patienter...'
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
 
   # buttons
@@ -42,6 +44,7 @@ module.exports =
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
     import: 'Importer des danseurs'
+    export: 'Exporter la liste'
     print: 'Imprimer'
 
   # short labels
@@ -86,6 +89,7 @@ module.exports =
   # errors
   err:
     importFailed: "L'imporation du fichier de danseurs à échouée: %s"
+    exportFailed: "L'export de la liste de danseurs à échoué: %s"
     dumpFailed: "La sauvegarde externe des données à échouée: %s"
     search: 'La recherche à échouée: %s'
 

@@ -6,13 +6,10 @@ module.exports = class LayoutController
               
   # Controller dependencies
   # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', 'export', 'import', '$dialog', '$state', 'storage']
+  @$inject: ['$scope', 'import', '$dialog', '$state', 'storage']
   
   # Controller scope, injected within constructor
   scope: null
-
-  # Link to export service
-  export: null
 
   # Link to import service
   import: null
@@ -27,11 +24,10 @@ module.exports = class LayoutController
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular current scope
-  # @param export [Export] Export service
   # @param import [import] Import service
   # @param dialog [Object] Angular dialog service
   # @param state [Object] Angular state provider
-  constructor: (@scope, @export, @import, @dialog, state) -> 
+  constructor: (@scope, @import, @dialog, state) -> 
     @_searchPending = false
     @_isExpand = false
     # updates main existance when state is loaded
@@ -102,30 +98,33 @@ module.exports = class LayoutController
       dialog.remove()
       # dialog cancellation
       return unless filePath
-      @scope.$apply => @dialog.messageBox(i18n.ttl.import, i18n.msg.importing).open()
+      @scope.$apply => 
+        dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
+        dialog.open()
       @import.fromFile filePath, (err, dancers) =>
         err = new Error "No dancers found" if !err? and dancers?.length is 0
         if err?
           console.error "Import failed: #{err}"
-          $('.modal').remove()
           # displays an error dialog
           return @scope.$apply =>
+            dialog.close()
             @dialog.messageBox(i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]).open()
 
         # get all existing dancers
         Dancer.findAll (err, existing) =>
           if err?
-            $('.modal').remove()
+            @scope.$apply =>
+              dialog.close()
             return console.error err 
 
           @import.merge existing, dancers, (err, imported) =>
             console.info "#{imported}/#{dancers.length} dancers imported"
-            $('.modal').remove()
             @scope.$apply =>
+              dialog.close()
               msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
               @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open().then =>
-                # TODO refresh all
-                $('.modal-backdrop').remove()
+                # refresh all
+                @scope.$broadcast 'model-imported'
 
     dialog.trigger 'click'
 
@@ -136,8 +135,7 @@ module.exports = class LayoutController
   _loadDumpEntry: (callback) =>
     # nothing in localStorage
     dumpPath = localStorage.getItem 'dumpPath'
-    return @_chooseDumpLocation callback unless dumpPath
-    console.info 'reuse file location from local storage...', dumpPath
+    @_chooseDumpLocation callback unless dumpPath
 
   # **private**
   # Ask user to choose a dump location, and immediately dump data inside.
@@ -155,7 +153,5 @@ module.exports = class LayoutController
         # retain entry for next loading
         localStorage.setItem 'dumpPath', dumpPath
         return callback err if err?
-        # immediately dump data
-        @export.dump dumpPath, callback
 
       dialog.trigger 'click'

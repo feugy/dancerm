@@ -4,7 +4,6 @@
 
 - packaging
 - print
-- export to excel
 - tuition
 - registration free text
 - fully test import error cases
@@ -13,10 +12,10 @@
 
 ok - Have a list of dancers.
 ok - Distinguish dancers by teachers (legal requirement) (2'45)
-- Send new year schedule
+ok - Send new year schedule
 ok - alert unpaid classes (by classes)
 ok - alert on missing medical certificate
-- select email list for external mailing (export as list)
+ok - select email list for external mailing (export as list)
 - print invoice
 - print invoice for tuition
 
@@ -26,7 +25,7 @@ ok - manually (multiple) and enter afterwise
 ok - live enroll
 
 List dancers:
-- by N last year
+ok - by N last year
 ok - by teachers
 ok - by class
 ok - by unpaid
@@ -41,7 +40,7 @@ ok - zipcode
 ok - city
 ok - phone
 ok - email
-- first and last enroll year
+ok - first and last enroll year
 ok - birth year
 ok - medical certifical 
 - classes (and by class)
@@ -55,8 +54,8 @@ ok - medical certifical
 [list of OCR libraries](http://en.wikipedia.org/wiki/Comparison_of_optical_character_recognition_software)
 
 Needed (53'00)
-- An invoice
-- The current file
+ok - An invoice
+ok - The current file
 
 # Time
 
@@ -91,4 +90,5 @@ Needed (53'00)
 - 22h
 04/09 5h
 05/09 2h
-06/09 
+06/09 2h
+07/09 
