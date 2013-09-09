@@ -23,6 +23,8 @@ app.directive 'registration', ->
     onEdit: '&'
     # invoked when registration needs removal
     onRemove: '&'
+    # invoked when printing the registration
+    onPrint: '&'
 
 class RegistrationDirective
                 

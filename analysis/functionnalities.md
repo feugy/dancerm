@@ -2,7 +2,6 @@
 
 # TODO
 
-- print
 - tuition
 - registration free text
 - fully test import error cases
@@ -15,7 +14,7 @@ ok - Send new year schedule
 ok - alert unpaid classes (by classes)
 ok - alert on missing medical certificate
 ok - select email list for external mailing (export as list)
-- print invoice
+ok - print invoice
 - print invoice for tuition
 
 Enroll dancers:
@@ -90,4 +89,6 @@ ok - The current file
 04/09 5h
 05/09 2h
 06/09 2h
-07/09 
+07/09 4h
+09/09 1h
+14h

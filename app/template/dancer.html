@@ -2,7 +2,7 @@
   <header>
     <a href="" class="btn" data-ng-click="onBack()">{{'btn.backToList'|i18n}}</a>
     <a href="" class="btn btn-primary" data-ng-show="hasChanged" data-ng-click="onSave()">{{'btn.save'|i18n}}</a>
-    <a href="" class="btn btn-warning" data-ng-show="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a><!--<a href="" class="btn" data-ng-click="onPrint()">{{'btn.print'|i18n}}</a>-->
+    <a href="" class="btn btn-warning" data-ng-show="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a>
   </header>
   <!-- dancer displayal -->
   <article>
@@ -79,5 +79,6 @@
     data-ng-repeat="registration in dancer.registrations" 
     data-src="registration" 
     data-on-edit="onRegister(registration)"
-    data-on-remove="onRemoveRegistration(registration)"></div>
+    data-on-remove="onRemoveRegistration(registration)"
+    data-on-print="onPrintRegistration(registration)"></div>
 </div>

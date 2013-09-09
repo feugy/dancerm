@@ -3,6 +3,7 @@
   <h3>{{'lbl.danceClasses'|i18n:{sep:true} }}<span class="pull-right">
     <a href="" class="btn" data-ng-click="onEdit()">{{'btn.edit'|i18n}}</a>
     <a href="" class="btn btn-warning" data-ng-click="onRemove()">{{'btn.remove'|i18n}}</a>
+    <a href="" class="btn" data-ng-click="onPrint()"><i class="icon-print"></i></a>
   </span></h3>
   <div class="danceClasses">
     <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start|classDate}}</span></div>

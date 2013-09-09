@@ -1,72 +1,67 @@
 @import 'variable'
 
+secondaryColor = #888
+fontSize = 15px
+
 html 
   background transparent
 
-  printColor = #000
-  secondaryColor = #888
+body
+  padding 50px
+  background transparent
 
-  body
-    background transparent
+  *
+    font-family Verdana
+    font-size fontSize
 
-    *
-      font-family Verdana
+  h1 
+    font-size fontSize*1.4
+    font-weight normal
+    margin 30px 0 0
+    text-align center
 
-    label
-      color secondaryColor
+  label
+    padding-right 30px
+    width 100px
+    text-align right
+    display inline-block
 
-    input:not(:hover):not(:focus):not(.invalid)
-    textarea:not(:hover):not(:focus):not(.invalid)
-      color printColor
+  > *
+    margin-top 30px 
 
-    .column-and-main > header
-    .column-and-main > .column
-    .column-and-main > .main header
-    .payments
-    .btn
-    .dancer article .row-fluid.known-by > span:not(.selected)
-      display none
+  .pre-filled
+    margin-top 120px
+    
+  .last
+    text-align right
 
-    .column-and-main > .main
-      width 100%
+  .input
+    display inline-block
+    width 180px
+    margin 0 0.5em -4px
+    border-bottom 1px dashed #888
 
-      .dancer 
-        padding 15px 0
+  .who, .when, .what, .input
+    line-height 2.5em
 
-    .dancer article > h2 
-      background transparent
-      color secondaryColor
-      position static
-      font-size fontSize*1.4
-      line-height 30px
+  .btn
+    position absolute
+    left 46%
+    color emphasisColor
+    background-color primaryBtnBackgroundHover
+    background-image primaryBtnBackground
+    cursor pointer
+    text-shadow 0 -1px 0 rgba(0, 0, 0, 0.25)
+    padding 4px 12px
+    margin-bottom 0
+    font-size fontSize
+    line-height 20px
+    text-align center
+    vertical-align middle
+    border 1px solid #cccccc
+    border-radius 3px
+    box-shadow inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)
 
-    .dancer article
-      border-top-color lighten(secondaryColor, 50%)
-
-    .column-and-main > .main
-      padding-top 0
-      position static
-
-    .registration h3
-      color secondaryColor
-      font-size fontSize
-      font-weight normal
-      font-family Quicksand
-
-    .input-append .add-on
-    .input-prepend .add-on
-      background transparent
-      border-color transparent
-      color secondaryColor
-
-    .danceClass .level
-    .danceClass .hour
-      color secondaryColor
-
-    for color, i in planningColors
-      .color{i+1}
-        background-color transparent
-        border 1px solid secondaryColor
-
-        .close
-          display none
+  .btn:hover, .btn:focus, .btn:active, .btn.active
+    background-color primaryBtnBackgroundHover
+    outline 0

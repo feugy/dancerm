@@ -40,6 +40,7 @@ section
 
   setOutPath $INSTDIR\node_modules
   file /r ..\node_modules\async
+  file /r ..\node_modules\mime
   file /r ..\node_modules\moment
   file /r ..\node_modules\node-zip
   file /r ..\node_modules\underscore

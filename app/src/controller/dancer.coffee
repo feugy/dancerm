@@ -202,8 +202,16 @@ module.exports = class DancerController
     @scope.dancer.knownBy = (value for value of i18n.knownByMeanings when @scope.knownBy[value])
     @scope.dancer.knownBy.push @scope.knownByOther if @scope.knownByOther
 
-  onPrint: =>
-    window.print()
+  # Print the registration confirmation form
+  #
+  # @param registration [Registration] the concerned registration
+  onPrintRegistration: (registration) =>
+    Planning.find registration.planningId, (err, planning) =>
+      console.error err if err?
+      preview = window.open 'registrationprint.html'
+      preview.dancer = @scope.dancer
+      preview.registration = registration
+      preview.planning = planning
 
   # **private**
   # Update rendering with a given dancer

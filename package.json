@@ -33,7 +33,7 @@
   "main": "app/template/app.html",
   "window": {
     "icon": "app/style/img/dancerm.png",
-    "toolbar": true,
+    "toolbar": false,
     "frame": true,
     "show": false,
     "min_width": 1000,

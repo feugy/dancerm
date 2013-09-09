@@ -14,6 +14,8 @@ module.exports =
     export: 'Exportation'
     dump: 'Sauvegarde externe'
     search: 'Recherche de danseurs'
+    print: 'DanceRM : impression pour %s %s'
+    registrationPrint: 'Inscription année %s'
 
   # long messages with html
   msg:
@@ -93,10 +95,17 @@ module.exports =
     dumpFailed: "La sauvegarde externe des données à échouée: %s"
     search: 'La recherche à échouée: %s'
 
-  # formats
+  # date/time formats
   formats:
     birth: 'DD/MM/YYYY'
     receipt: 'DD/MM/YYYY'
+
+  # print texts
+  print:
+    who: "Je soussigné(e)"
+    what: "ai pris connaissance et approuve le règlement intérieur de l'Ecole de Danse RIBAS."
+    when: "Villeurbanne, le"
+    sign: "Signature"
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']
