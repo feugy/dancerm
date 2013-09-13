@@ -31,6 +31,9 @@ module.exports = class PlanningController
     @scope.$on 'model-initialized', refreshNow = => 
       @_planningDelay = 0
       Planning.findAll @_onPlanningsRetrieved
+      # find also all all dancer to avoid latency at first consultation
+      Dancer.findAll()
+
     @scope.$on 'model-imported', =>
       @scope.triggerSearch()
       refreshNow()

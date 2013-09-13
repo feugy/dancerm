@@ -205,7 +205,7 @@ textarea {
 }
 body {
   margin: 0;
-  font-family: Quicksand;
+  font-family: Quicksand,Arial;
   font-size: 13px;
   line-height: 20px;
   color: #f0e9cf;
@@ -617,7 +617,7 @@ h4,
 h5,
 h6 {
   margin: 10px 0;
-  font-family: Montserrat;
+  font-family: Montserrat,Verdana;
   font-weight: normal;
   line-height: 20px;
   color: #e7d8b1;
@@ -1214,7 +1214,7 @@ input,
 button,
 select,
 textarea {
-  font-family: Quicksand;
+  font-family: Quicksand,Arial;
 }
 label {
   display: block;
@@ -3573,7 +3573,7 @@ input[type="submit"].btn.btn-mini {
 .navbar-search .search-query {
   margin-bottom: 0;
   padding: 4px 14px;
-  font-family: Quicksand;
+  font-family: Quicksand,Arial;
   font-size: 13px;
   font-weight: normal;
   line-height: 1;

@@ -38,7 +38,7 @@ module.exports = class Base
   # @param callback [Function] end callback, invoked with:
   # @option callback err [Error] an error object, or null if no problem occured
   # @option callback model [Base] the found model
-  @find: (id, callback) ->
+  @find: (id, callback = ->) ->
     return callback(new Error "#{@name} isn't bound to any storage provider") unless @storage?
     # use storage unless we have a cached value
     if id of @_cache
@@ -55,7 +55,7 @@ module.exports = class Base
   # @param callback [Function] end callback, invoked with:
   # @option callback err [Error] an error object, or null if no problem occured
   # @option callback models [Array<Base>] the found models
-  @findAll: (callback) ->
+  @findAll: (callback = ->) ->
     return callback(new Error "#{@name} isn't bound to any storage provider") unless @storage?
     # use the cache unless no entry
     unless 0 is _.size @_cache
@@ -82,7 +82,7 @@ module.exports = class Base
   # @param callback [Function] end callback, invoked with:
   # @option callback err [Error] an error object, or null if no problem occured
   # @option callback dancers [Array<Base>] array (that may be empty) of models matching these conditions
-  @findWhere: (conditions, callback) ->
+  @findWhere: (conditions, callback = ->) ->
     @findAll (err, models) =>
       return callback err if err?
       # check each conditions

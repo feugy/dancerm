@@ -89,7 +89,7 @@ module.exports = class RegisterController
     @_plannings = plannings
     @scope.$apply =>
       # extracts existing seasons and select first
-      @scope.seasons = _.pluck @_plannings, 'season'
+      @scope.seasons = _.pluck(@_plannings, 'season').sort().reverse()
       if @registration.planningId?
         @onUpdateSeason _.findWhere(@_plannings, id: @registration.planningId)?.season
       else
