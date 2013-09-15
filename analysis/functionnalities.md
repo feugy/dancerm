@@ -3,6 +3,8 @@
 # TODO
 
 - tuition
+- stats (by creation date, by teachers, by year...)
+- pre-registration status
 - registration free text
 - fully test import error cases
 
@@ -92,3 +94,5 @@ ok - The current file
 07/09 4h
 09/09 1h
 14h
+
+15/09 3h

@@ -194,8 +194,15 @@ body
       font-weight normal
 
     // use white icons, make lastname bold and add stripes
-    td i
-      background-image url(img/glyphicons-halflings-white.png)
+    td       
+      [class^="icon-"], [class*=" icon-"] 
+        background-image url(img/glyphicons-halflings-white.png)
+      .icon-ok
+        background-position 0 0
+        background-image url("img/icons.png")
+      .icon-warning
+        background-position -14px 0
+        background-image url("img/icons.png")
     td:nth-child(2)
       font-weight bold
     tr:nth-child(even)
@@ -211,9 +218,11 @@ body
 
     th
       cursor pointer
-      i 
+
+      [class^="icon-"], [class*=" icon-"] 
         margin-left 0.5em
         background-image url(img/glyphicons-halflings-white.png)
+
     td:nth-child(2)
       font-weight normal
     td:nth-child(3)

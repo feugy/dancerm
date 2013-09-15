@@ -31,6 +31,7 @@ module.exports =
     importing: 'Importation en cours, veuillez patienter...'
     exporting: 'Export en cours, veuillez patienter...'
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
+    exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
 
   # buttons
   btn: 
@@ -47,6 +48,7 @@ module.exports =
     backToList: 'Retour au planning'
     import: 'Importer des danseurs'
     export: 'Exporter la liste'
+    exportEmails: 'Copier les emails'
     print: 'Imprimer'
 
   # short labels

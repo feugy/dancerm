@@ -41,7 +41,6 @@ module.exports = class ExpandedListController extends ListController
         attr = (model) -> model?.address?.zipcode
       @scope.list = _.sortBy @scope.list, attr
 
-
   # Choose a target file and export list as xlsx
   onExport: =>
     return unless @scope.list?.length > 0
@@ -68,3 +67,17 @@ module.exports = class ExpandedListController extends ListController
             @dialog.messageBox(i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]).open()
 
     dialog.trigger 'click'
+
+  # Export email as string
+  onExportEmails: =>
+    return unless @scope.list?.length > 0
+    emails = _.uniq(dancer.email.trim() for dancer in @scope.list when dancer.email?.trim().length > 0).sort().join ', '
+    # put in the system clipboard
+    clipboard = gui.Clipboard.get()
+    clipboard.set emails, 'text'
+    # display a popup with string to copy
+    @dialog.messageBox(
+      i18n.ttl.export, 
+      _.sprintf(i18n.msg.exportEmails, emails), 
+      [label: i18n.btn.ok]
+    ).open()
