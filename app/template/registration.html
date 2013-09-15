@@ -21,7 +21,7 @@
     </span>
     <a href="" class="btn btn-primary pull-right" data-ng-click="onNewPayment()">{{'btn.addPayment'|i18n}}</a>
   </h3>
-  <div class="payments">
+  <div class="payments" data-ng-show="src.payments.length > 0">
     <h3>
       <div class="remove"></div>
       <div class="type">{{'lbl.type'|i18n}}</div>

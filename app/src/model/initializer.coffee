@@ -63,6 +63,8 @@ module.exports = (callback) =>
         {kind: 'Danse sportive/Rock/Salsa', color:'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', hall: 'Gratte-ciel 2', teacher: 'Anthony'}
         {kind: 'Danse sportive/Rock/Salsa', color:'color3', level: 'avancé', start: 'Wed 14:30', end: 'Wed 15:30', hall: 'Gratte-ciel 2', teacher: 'Anthony'}
         {kind: 'Danse sportive/Rock/Salsa', color:'color3', level: 'danse sportive', start: 'Fri 17:30', end: 'Fri 18:30', hall: 'Gratte-ciel 1', teacher: 'Anthony'}
+        {kind: 'Danse sportive/Rock/Salsa', color:'color3', level: 'compétiteurs latine', start: 'Tue 20:30', end: 'Tue 22:00', hall: 'Croix-Luizet', teacher: 'Anthony'}
+        {kind: 'Danse sportive/Rock/Salsa', color:'color3', level: 'Compétiteurs standard', start: 'Thu 20:30', end: 'Thu 22:00', hall: 'Gratte-ciel 1', teacher: 'Anthony'}
       ]
 
       # merge with existing classes, and add new ones
