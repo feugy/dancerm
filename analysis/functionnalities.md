@@ -96,3 +96,5 @@ ok - The current file
 14h
 
 15/09 3h
+
+Paid: 110h 10€/h
