@@ -265,7 +265,8 @@ body
  */
 
 .dancer
-  overflow auto
+  overflow-x hidden
+  overflow-y auto
   height 100%
   box-sizing border-box
   padding-right 10px
@@ -417,6 +418,9 @@ body
     li > a:hover
       background background
       color textColor
+
+  .btn.dropdown-toggle:focus
+    box-shadow 0 0 0 1px focusColor
 
   .btn-group.open .btn.dropdown-toggle
     background btnBackgroundHover

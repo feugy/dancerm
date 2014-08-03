@@ -57,6 +57,11 @@ class RegistrationDirective
   # Creates a new payment and adds it to the current registration
   onNewPayment: =>
     @scope.src.payments.push new Payment()
+    parent = @$el.parent()
+    _.defer => 
+      @$el.find('.type > .dropup > a').focus()
+      parent.scrollTop parent[0].scrollHeight
+    null
 
   # Invoked each time a payment value changed
   # Updates the registration balance

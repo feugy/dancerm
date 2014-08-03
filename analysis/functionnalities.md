@@ -100,18 +100,18 @@ Paid: 110h 10€/h
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb 
 
-0,5 - rename dancer -> file (fiche)
-  2 - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
-0,5 - on payement addition, automatically scroll to bottom, and put focus to first field
-0,5 - add payment field: payer, prefilled with dancer's name
-0,5 - add another "known-by" choice: "old dancers"
-  1 - add age column (from current date) into expanded list
-  1 - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
-  6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
-  3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
-  6 - stats on known-by dancers 
-  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
- 10 - merge data from two different PCs
+ok - on payement addition, automatically scroll to bottom, and put focus to first field
+,5 - rename dancer -> file (fiche)
+ 2 - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
+,5 - add payment field: payer, prefilled with dancer's name
+,5 - add another "known-by" choice: "old dancers"
+ 1 - add age column (from current date) into expanded list
+ 1 - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
+ 6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
+ 3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
+ 6 - stats on known-by dancers 
+ 8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
+10 - merge data from two different PCs
 
 ## Functionnal requirements
 
@@ -124,4 +124,4 @@ Paid: 110h 10€/h
 
 ## Hours
 
-03/08
+03/08 - 0,5
