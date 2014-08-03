@@ -109,15 +109,15 @@ for color, i in planningColors
   .groups
     background-color colBackground
     color headingColor
-    display -webkit-flex
-    -webkit-flex-flow row wrap
+    display flex
+    flex-flow row wrap
     height groupH
     position absolute
     top -(groupH)
     width 100%
 
     > *
-      -webkit-flex 1
+      flex 1
       text-align center
       overflow hidden
       line-height 1.5em
@@ -190,8 +190,8 @@ for i in 6..20
 
   // dance classes, displayed in a row
   .danceClasses
-    display -webkit-flex
-    -webkit-flex-flow row wrap
+    display flex
+    flex-flow row wrap
     margin-bottom 10px
 
     .danceClass
@@ -214,20 +214,26 @@ for i in 6..20
 
   // payement balance highlight
   .balance-low 
-    color lighten(errorColor, 30%)
+    color lowColor = lighten(errorColor, 30%)
+
+    .input-group-addon
+      background-color lowColor
 
   .balance-right 
     color successColor
+    
+    .input-group-addon
+      background-color successColor
 
   // payement displayal
   .payments 
 
     > *
-      display -webkit-flex
-      -webkit-flex-flow row
+      display flex
+      flex-flow row
 
       > *
-        -webkit-flex 1
+        flex 1
 
     h3
       text-align center
@@ -242,7 +248,7 @@ for i in 6..20
 
       .remove
         width 35px
-        -webkit-flex none
+        flex none
 
       .receipt
         margin-left 4px
@@ -250,22 +256,22 @@ for i in 6..20
 
     input
       margin 0 4px
+      height 28px
+
+    .input-group input:first-child
+      margin-right 0
 
     .total
       display block
       text-align right
+      font-weight bold
 
-      .input-append
-        margin-bottom 0
-
-        span:not(.add-on)
-          padding 4px 6px
-          font-size 14px
-          width 60px
-          display inline-block
-
+      .input-group span:not(.input-group-addon)
+        display table-cell
+        padding 4px 6px
+      
     .type
-      -webkit-flex none
+      flex none
       height 30px
       margin-right 4px
       width 130px
@@ -274,25 +280,28 @@ for i in 6..20
         text-align left
 
     .receipt
-      -webkit-flex none
+      flex none
       text-align center
       width 100px
 
     .remove.btn
-      -webkit-flex none
-      height 20px
+      flex none
+      height 27px
       margin-right 5px
       background colBackground
       border-color textColor
 
-      .icon-remove
-        background-image url(img/glyphicons-halflings-white.png)
+      .glyphicon-remove
+        color white
 
     .value
-      -webkit-flex none
-      width 100px
+    .total .input-group
+      flex none
+      width 85px
       margin-bottom 5px
+      display inline-table
 
       input
-        width 53px
+      span:not(.input-group-addon)
+        width 46px
         text-align right

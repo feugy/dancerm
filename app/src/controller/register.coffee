@@ -11,7 +11,7 @@ Registration = require '../model/dancer/registration'
 module.exports = class RegisterController
 
   # Controller dependencies
-  @$inject: ['registration', '$scope', 'dialog']
+  @$inject: ['registration', '$scope', '$modalInstance']
 
   # Currently edited registration
   registration: null

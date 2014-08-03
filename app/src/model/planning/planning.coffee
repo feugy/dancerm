@@ -1,16 +1,10 @@
 _ = require 'underscore'
 moment = require 'moment'
-Base = require '../base'
+Persisted = require '../persisted'
 DanceClass = require './danceclass'
-{generateId} = require '../../util/common'
 
 # A planning embed dance classes for a given season
-module.exports = class Planning extends Base
-
-  # In-memory cache, updated by finders. 
-  @_cache = {}
-  
-  id: null
+module.exports = class Planning extends Persisted
 
   season: ''
 
@@ -25,7 +19,6 @@ module.exports = class Planning extends Base
     year = if now.month() >= 7 then now.year() else now.year()-1
     # set default values
     _.defaults raw, 
-      id: generateId()
       season: "#{year}/#{year+1}"
       danceClasses: []
     # fill attributes

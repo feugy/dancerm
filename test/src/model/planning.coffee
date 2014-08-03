@@ -3,7 +3,6 @@ _ = require 'underscore'
 moment = require 'moment'
 Planning = require '../../../app/script/model/planning/planning'
 DanceClass = require '../../../app/script/model/planning/danceclass'
-Storage = require '../../../app/script/service/storage'
 
 describe 'Planning model tests', ->
   
@@ -11,15 +10,11 @@ describe 'Planning model tests', ->
     # when creating a planning without values
     tested = new Planning()
     # then an id was set
-    expect(tested).to.have.property 'id'
-    expect(tested.id).to.be.a 'string'
-    expect(tested.id).to.have.lengthOf 12
+    expect(tested).to.have.property('id').that.is.null
     # then the dance classes array was set
-    expect(tested).to.have.property 'danceClasses'
-    expect(tested.danceClasses).to.be.an 'array'
-    expect(tested.danceClasses).to.have.lengthOf 0
+    expect(tested).to.have.property('danceClasses').that.is.an('array').and.that.have.lengthOf 0
     # then all plain attributes have been set to default
-    expect(tested).to.have.property 'season', '2013/2014'
+    expect(tested).to.have.property('season').that.equal '2014/2015'
 
   it 'should planning save raw values', ->
     # given a raw planning
@@ -52,14 +47,10 @@ describe 'Planning model tests', ->
   describe 'given an existing planning', ->
 
     planning = null
-    storage = null
 
     before (done) ->
-      # given a empty storage bound to the Planning class
-      storage = new Storage()
-      Planning.bind storage
-      Planning._cache = {}
-      storage.removeAll Planning, (err) ->
+      # given a empty Planning store
+      Planning.drop (err) ->
         return done "Failed to remove existing plannings: #{err.message}" if err?
         # given an existing planning
         planning = new Planning season: '2012/2013', danceClasses: [kind: 'salsa', level: '2', start: 'Wed 18:15', end: 'Wed 19:15']

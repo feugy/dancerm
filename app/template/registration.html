@@ -3,7 +3,7 @@
   <h3>{{'lbl.danceClasses'|i18n:{sep:true} }}<span class="pull-right">
     <a href="" class="btn" data-ng-click="onEdit()">{{'btn.edit'|i18n}}</a>
     <a href="" class="btn btn-warning" data-ng-click="onRemove()">{{'btn.remove'|i18n}}</a>
-    <a href="" class="btn" data-ng-click="onPrint()"><i class="icon-print"></i></a>
+    <a href="" class="btn" data-ng-click="onPrint()"><i class="glyphicon glyphicon-print"></i></a>
   </span></h3>
   <div class="danceClasses">
     <div class="danceClass" data-ng-repeat="course in danceClasses"><span class="kind {{course.color}}">{{course.kind}}</span><span class="level">{{course.level}}</span><span class="hour">{{course.start|classDate}}</span></div>
@@ -13,7 +13,7 @@
       <input type="text" class="input-small" data-ng-model="stringCharged" data-ng-keyup="onChargedInput($event)"/>
       <span class="add-on">{{'lbl.currency'|i18n}}</span>
     </span>
-    <span class="btn-group">
+    <span class="btn-group" data-dropdown>
       <a href="" class="btn dropdown-toggle">{{periodLabel}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="(period, label) in i18n.periods"><a data-ng-click="onUpdatePeriod(period)">{{label}}</a></li>
@@ -34,7 +34,7 @@
       data-ng-repeat="payment in src.payments" 
       data-src="payment" 
       data-on-remove="onRemovePayment(payment)"></div>
-    <div class="total {{balanceState}}">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-append"><span data-ng-bind="src.balance"></span><span class="add-on">{{'lbl.currency'|i18n}}</span></span></div>
+    <div class="total {{balanceState}}">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-group"><span data-ng-bind="src.balance"></span><span class="input-group-addon">{{'lbl.currency'|i18n}}</span></span></div>
   </div>
 
 </article>

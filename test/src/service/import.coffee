@@ -4,7 +4,6 @@ async = require 'async'
 moment = require 'moment'
 path = require 'path'
 Import = require '../../../app/script/service/import'
-Storage = require '../../../app/script/service/storage'
 Dancer = require '../../../app/script/model/dancer/dancer'
 Planning = require '../../../app/script/model/planning/planning'
 
@@ -13,13 +12,10 @@ describe 'Import service tests', ->
   planning2011 = null
 
   before (done) ->
-    storage = new Storage()
-    Dancer.bind storage
-    Planning.bind storage
-    storage.removeAll Planning, (next) ->
-      Planning._cache = {}
-      storage.removeAll Dancer, (next) ->
-        Dancer._cache = {}
+    Planning.drop (err) ->
+      return done err if err?
+      Dancer.drop (err) ->
+        return done err if err?
         planning2011 = new Planning season: '2011/2012'
         planning2011.save done
 
@@ -34,7 +30,7 @@ describe 'Import service tests', ->
       {lastReg: 2011, dancer: new Dancer title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-01-01', address:{ street: '2 rue clément marrot', city: 'Lyon', zipcode:'69007'}, cellphone: '0617979688'}
     ]
 
-    tested.fromFile path.join('fixture', 'import_1.xlsx'), (err, models, report) ->
+    tested.fromFile path.join(__dirname, '..', '..', 'fixture', 'import_1.xlsx'), (err, models, report) ->
       return done err if err?
       # then all models are present
       models = _.sortBy models, 'lastname'
@@ -72,7 +68,7 @@ describe 'Import service tests', ->
       new Dancer title: 'Mlle', firstname: 'Sirine', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
     ]
 
-    tested.fromFile path.join('fixture', 'import_2.xlsx'), (err, models, report) ->
+    tested.fromFile path.join(__dirname, '..', '..', 'fixture', 'import_2.xlsx'), (err, models, report) ->
       return done err if err?
       # then all models are present
       models = _.sortBy models, (model) -> model.dancer.lastname + model.dancer.firstname
@@ -126,13 +122,13 @@ describe 'Import service tests', ->
             # then a planning has been created
             Planning.find model.registrations[0].planningId, (err, model) ->
               return next err if err?
-              expect(model).to.have.property 'season', "#{reg}/#{reg+1}"
+              expect(model).to.have.property('season').that.is.equal "#{reg}/#{reg+1}"
               planning2012 = model
               next()
         # then existing Nelly has no modification
         (next) -> 
           Dancer.find existing[1].id, (err, model) ->
-            expect(err).to.exist
+            expect(err, "Nelly was modified").to.exist
             expect(err.message).to.contain 'not found'
             next()
         (next) -> 
@@ -160,7 +156,7 @@ describe 'Import service tests', ->
         # then Lila has not been modified
         (next) -> 
           Dancer.find existing[3].id, (err, model) ->
-            expect(err).to.exist
+            expect(err, 'Lila was modified !').to.exist
             expect(err.message).to.contain 'not found'
             next()
         (next) ->

@@ -24,16 +24,15 @@ module.exports = class ListController
     table = null
     previous = null
     @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
-      if toState.name is 'expanded-list' or fromState.name is 'expanded-list'
-        element = $('.column-and-main .column .table')
-        if @scope.list.length
-          table = element          
-          previous = table.prev();
-          table.detach()
-    $('.column-and-main .column').on 'webkitTransitionEnd', (e) ->
-      if table? and $(e.target).hasClass 'column'
-        table.insertAfter previous 
-        table = null
+      return unless @scope.list.length and (toState.name is 'expanded-list' or fromState.name is 'expanded-list')
+      _.defer =>       
+        table = $('.column.expanded .table')
+        previous = table.prev()
+        table.detach()
+    $('.column-and-main .column').on '$animate:close', (e) ->
+      return unless table? and previous?
+      table.insertAfter previous 
+      table = null
 
   # Displays a given dancer on the main part
   #

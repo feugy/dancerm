@@ -5,7 +5,7 @@ i18n = require '../labels/common'
 module.exports = class ExpandedListController extends ListController
 
   # Controller dependencies
-  @$inject: ['$scope', '$state', '$dialog', 'export']
+  @$inject: ['$scope', '$state', 'dialog', 'export']
 
   # Link to export service
   export: null
@@ -54,8 +54,7 @@ module.exports = class ExpandedListController extends ListController
       # waiting message box
       waitingDialog = null
       @scope.$apply => 
-        waitingDialog = @dialog.messageBox(i18n.ttl.export, i18n.msg.exporting)
-        waitingDialog.open()
+        waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
       # Perform export
       @export.toFile filePath, @scope.list, (err) =>
@@ -64,7 +63,7 @@ module.exports = class ExpandedListController extends ListController
           console.error "Export failed: #{err}"
           # displays an error dialog
           @scope.$apply =>
-            @dialog.messageBox(i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]).open()
+            @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
 
     dialog.trigger 'click'
 
@@ -76,8 +75,4 @@ module.exports = class ExpandedListController extends ListController
     clipboard = gui.Clipboard.get()
     clipboard.set emails, 'text'
     # display a popup with string to copy
-    @dialog.messageBox(
-      i18n.ttl.export, 
-      _.sprintf(i18n.msg.exportEmails, emails), 
-      [label: i18n.btn.ok]
-    ).open()
+    @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.msg.exportEmails, emails), [label: i18n.btn.ok]

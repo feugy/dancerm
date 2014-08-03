@@ -302,7 +302,8 @@ module.exports = class Import
           )
       when 'birth'
         for format in ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY']
-          value = moment lValue, format
+          # use strict mode to avoid parsing 2-digit years
+          value = moment lValue, format, true
           return value if value?.isValid()
         return null
       when 'created'

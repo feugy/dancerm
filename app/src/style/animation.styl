@@ -1,14 +1,33 @@
 @import 'variable'
 
-.main 
-  .animate-main-enter
-    opacity 0
-    margin-left 100%
+.column-and-main 
+
+  > .main
     transition all animationDuration
 
-  .animate-main-enter-active
-    opacity 1
-    margin-left 0
+    &.ng-enter
+      right (- visibleMainWidth)
 
-  .animate-main-leave
-    display none
+    &.ng-enter-active
+      right 0
+
+    &.ng-leave-active
+      opacity 0
+      right (- visibleMainWidth)
+
+  > .column
+    transition all animationDuration
+
+    &.expanded.ng-enter
+      width collapsedColumnWidth
+
+    &.expanded.ng-enter-active
+    &.expanded.ng-leave-active 
+      width expandedColumnWidth
+
+      .export
+        display none
+
+    &.ng-leave
+      // hide leaving column when changing main, or when expanding column
+      display none

@@ -2,7 +2,7 @@
   <h3>{{title}}</h3>
 </div>
 <div class="modal-body register">
-  <span data-ng-show="isNew">{{'msg.registrationSeason'|i18n}}<div class="btn-group">
+  <span data-ng-show="isNew">{{'msg.registrationSeason'|i18n}}<div class="btn-group" data-dropdown>
       <a href="" class="btn dropdown-toggle" >{{planning.season}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="season in seasons"><a data-ng-click="onUpdateSeason(season)">{{season}}</a></li>

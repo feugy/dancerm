@@ -5,8 +5,7 @@ Dancer = require  '../model/dancer/dancer'
 module.exports = class LayoutController
               
   # Controller dependencies
-  # Inject storage to ensure that models are properly initialized
-  @$inject: ['$scope', 'import', '$dialog', '$state', 'storage']
+  @$inject: ['$scope', 'import', 'dialog', '$state']
   
   # Controller scope, injected within constructor
   scope: null
@@ -33,10 +32,6 @@ module.exports = class LayoutController
     # updates main existance when state is loaded
     @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
       @scope.hasMain = state?.current?.views?.main?
-      if toState.name is 'expanded-list' or fromState.name is 'expanded-list'
-        @scope.animation = 'animate-expand'
-      else
-        @scope.animation = 'animate-main'
 
     # displayed dancer's list
     @scope.list = []
@@ -63,29 +58,28 @@ module.exports = class LayoutController
     if @scope.search.name?.length >= 3 
       # find all dancers by first name/last name
       searched = @scope.search.name.toLowerCase()
-      conditions.id = (id, dancer) -> 
-        0 is dancer.firstname?.toLowerCase().indexOf(searched) or 
-        0 is dancer.lastname?.toLowerCase().indexOf(searched) or
-        0 is dancer.address?.city?.toLowerCase().indexOf(searched)
+      conditions.$where = () -> 
+        0 is @firstname?.toLowerCase().indexOf(searched) or 
+        0 is @lastname?.toLowerCase().indexOf(searched) or
+        0 is @address?.city?.toLowerCase().indexOf(searched)
 
     # find all dancers by season and optionnaly by teacher for this season
     if @scope.search.seasons?.length > 0
-      conditions['registrations.planning.season'] = (season) => season in @scope.search.seasons
+      conditions['registrations.planning.season'] = $in: @scope.search.seasons
     
     if @scope.search.danceClasses?.length > 0
-      ids = _.pluck @scope.search.danceClasses, 'id'
       # select class students: can be combined with season and name
-      conditions['registrations.danceClassIds'] = (id) -> id in ids
+      conditions['registrations.danceClassIds'] = $in: _.pluck @scope.search.danceClasses, 'id'
     else if @scope.search.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
-      conditions['registrations.danceClasses.teacher'] = (teacher) => teacher in @scope.search.teachers
+      conditions['registrations.danceClasses.teacher'] = $in: @scope.search.teachers
     
     # clear list content
     return @scope.list = [] if _.isEmpty conditions
     @_searchPending = true
     Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
-      return @dialog.messageBox(i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]).open() if err?
+      return @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok] if err?
       @scope.$apply =>
         @scope.list = _.sortBy dancers, 'lastname'
 
@@ -100,7 +94,6 @@ module.exports = class LayoutController
       return unless filePath
       @scope.$apply => 
         dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
-        dialog.open()
       @import.fromFile filePath, (err, dancers) =>
         err = new Error "No dancers found" if !err? and dancers?.length is 0
         if err?
@@ -108,7 +101,7 @@ module.exports = class LayoutController
           # displays an error dialog
           return @scope.$apply =>
             dialog.close()
-            @dialog.messageBox(i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]).open()
+            @dialog.messageBox i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]
 
         # get all existing dancers
         Dancer.findAll (err, existing) =>
@@ -122,7 +115,7 @@ module.exports = class LayoutController
             @scope.$apply =>
               dialog.close()
               msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
-              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).open().then =>
+              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
                 # refresh all
                 @scope.$broadcast 'model-imported'
 
@@ -143,7 +136,7 @@ module.exports = class LayoutController
   # @option callback error [Error] an error object or null if no error occurred.
   _chooseDumpLocation: (callback) =>
     # first, explain what we're asking
-    @dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).open().then =>
+    @dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).result.then =>
       dialog = $('<input style="display:none;" type="file" nwsaveas value="dump_dancerm.json" accept="application/json"/>')
       dialog.change (evt) =>
         dumpPath = dialog.val()

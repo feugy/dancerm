@@ -1,7 +1,6 @@
 {expect} = require 'chai'
 _ = require 'underscore'
 moment = require 'moment'
-Storage = require '../../../app/script/service/storage'
 Dancer = require '../../../app/script/model/dancer/dancer'
 Address = require '../../../app/script/model/dancer/address'
 Registration = require '../../../app/script/model/dancer/registration'
@@ -11,42 +10,31 @@ DanceClass = require '../../../app/script/model/planning/danceclass'
 
 describe 'Dancer model tests', ->
 
-  storage = null
-
   before (done) ->
-    storage = new Storage()
-    Dancer.bind storage
-    Planning.bind storage
-    Dancer._cache = {}
-    storage.removeAll Dancer, (err) ->
+    Dancer.drop (err) ->
       return done err if err?
-      Planning._cache = {}
-      storage.removeAll Planning, done
+      Planning.drop done
   
   it 'should new dancer be created with default values', ->
     # when creating a dancer withou values
     tested = new Dancer()
     # then an id was set
-    expect(tested).to.have.property 'id'
-    expect(tested.id).to.be.a 'string'
-    expect(tested.id).to.have.lengthOf 12
+    expect(tested).to.have.property('id').that.is.null
     # then the creation date was set
     expect(tested).to.have.property 'created'
     expect(tested.created.valueOf()).to.be.closeTo moment().valueOf(), 500
     # then registrations is an empty array
-    expect(tested).to.have.property 'registrations'
-    expect(tested.registrations).to.be.an 'array'
-    expect(tested.registrations).to.have.lengthOf 0
+    expect(tested).to.have.property('registrations').that.is.an('array').and.that.have.lengthOf 0
     # then all plain attributes have been set to default
-    expect(tested).to.have.property 'title', 'Mme'
-    expect(tested).to.have.property 'firstname', ''
-    expect(tested).to.have.property 'lastname', ''
-    expect(tested).to.have.property 'address', null
-    expect(tested).to.have.property 'email', null
-    expect(tested).to.have.property 'phone', null
-    expect(tested).to.have.property 'cellphone', null
-    expect(tested).to.have.property 'birth', null
-    expect(tested).to.have.property 'certified', false
+    expect(tested).to.have.property('title').that.equal 'Mme'
+    expect(tested).to.have.property('firstname').that.is.empty
+    expect(tested).to.have.property('lastname').that.is.empty
+    expect(tested).to.have.property('address').that.is.null
+    expect(tested).to.have.property('email').that.is.null
+    expect(tested).to.have.property('phone').that.is.null
+    expect(tested).to.have.property('cellphone').that.is.null
+    expect(tested).to.have.property('birth').that.is.null
+    expect(tested).to.have.property('certified').that.is.false
 
   it 'should dancer save raw values', ->
     # given a raw dancer
@@ -135,8 +123,7 @@ describe 'Dancer model tests', ->
 
     beforeEach (done) ->
       # given no dancer
-      Dancer._cache = {}
-      storage.removeAll Dancer, (err) ->
+      Dancer.drop (err) ->
         return done err if err?
         # given a brand new dancer 
         existing = new Dancer 

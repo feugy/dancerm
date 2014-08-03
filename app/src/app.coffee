@@ -4,9 +4,9 @@ _str = require 'underscore.string'
 _.mixin _str.exports()
 
 i18n = require '../script/labels/common'
-StorageService = require '../script/service/storage'
 ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
+DialogService = require '../script/service/dialog'
 LayoutCtrl = require '../script/controller/layout'
 ListCtrl = require '../script/controller/list'
 ExpandedListCtrl = require '../script/controller/expandedlist'
@@ -16,8 +16,10 @@ DancerModel = require '../script/model/dancer/dancer'
 PlanningModel = require '../script/model/planning/planning'
 initializer = require '../script/model/initializer'
 
+console.log "running with angular v#{angular.version.full}"
+
 # declare main module that configures routing
-app = angular.module 'app', ['ui.bootstrap', 'ui.router']
+app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
   location.html5Mode false
@@ -62,34 +64,25 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
         controller: ExpandedListCtrl
 ]
 
-# make storage an Angular service
-app.factory 'storage', ['$rootScope', (rootScope) ->
-  # creates the instance
-  storage = new StorageService()
-  # bind models to storage provider
-  DancerModel.bind storage
-  PlanningModel.bind storage
-  # for debug purposes
-  window.storage = storage
-  window.Dancer = DancerModel
-  window.Planning = PlanningModel
+# application initialization
+app.run ['$rootScope', (rootScope) ->
   # init model
   initializer (err, initialized) ->
     throw err if err?
     rootScope.$broadcast 'model-initialized'
-  storage
 ]
 
 # make export an Angular service
 app.service 'export', ExportService
 app.service 'import', ImportService
+app.service 'dialog', DialogService
 
 #on close, dump data, with a waiting dialog message
 app.close = (callback) ->
   $injector = angular.element('body').injector()
   # display waigin message
   $injector.get('$rootScope').$apply =>
-    $injector.get('$dialog').messageBox(i18n.ttl.dump, i18n.msg.dumping, []).open()
+    $injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping
   # export data
   $injector.get('export').dump localStorage.getItem('dumpPath'), callback
 

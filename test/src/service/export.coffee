@@ -1,4 +1,5 @@
 {expect} = require 'chai'
+{each} = require 'async'
 _ = require 'underscore'
 path = require 'path'
 Export = require '../../../app/script/service/export'
@@ -21,7 +22,7 @@ describe 'Export service tests', ->
     ]
 
     # when exporting the list into a file
-    out = path.join('fixture', 'out.export_1.xlsx')
+    out = path.join(__dirname, '..', '..', 'fixture', 'out.export_1.xlsx')
     tested.toFile out, dancers, (err) ->
       return done "Failed to export to file #{err}" if err?
 
@@ -30,8 +31,9 @@ describe 'Export service tests', ->
         return done "Failed to import from generated file: #{err}" if err?
         expect(models).to.have.lengthOf dancers.length
         # then all dancers were properly extracted
-        for expected in dancers
+        each dancers, (expected, next) ->
           found = _.find(models, (model) -> model.dancer.firstname is expected.firstname)?.dancer
           expect(found).to.exist
           expect(_.omit found.toJSON(), 'created', 'id').to.be.deep.equal _.omit expected.toJSON(), 'created', 'id'
-          done()
+          next()
+        , done

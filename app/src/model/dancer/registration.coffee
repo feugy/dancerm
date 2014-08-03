@@ -52,4 +52,4 @@ module.exports = class Registration extends Base
   updateBalance: =>
     @balance = 0
     for payment in @payments
-      @balance += payment.value
+      @balance += payment.value or 0

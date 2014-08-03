@@ -3,7 +3,7 @@
  * Inclusions
  */
 
-@import 'css/bootstrap.min.css'
+@import 'css/bootstrap.css'
 @import 'variable'
 @import 'mixins'
 @import 'directive'
@@ -45,23 +45,24 @@ html
     background primaryBtnBackground
     padding 1em
     z-index 1
+    line-height 20px
     border-radius 0 1em 0 0
 
   > .column
     left 0
-    width 25%
+    width collapsedColumnWidth
     background colBackground
     padding-top (100px+pageMargin)
 
   > .main
     // main right column
     right 0
-    width 75%
+    width visibleMainWidth
 
   // no main layout
 
   > .column.expanded
-    width 100%
+    width expandedColumnWidth
 
   > .main.empty
     width 0
@@ -113,7 +114,6 @@ body
     color textColor
     border-color transparent
     box-shadow none
-    -webkit-box-shadow none
 
 /******************************************************************************
  * Left Column
@@ -122,26 +122,22 @@ body
 .column-and-main > .column
   transition width animationDuration
   // list will take all available vertical space
-  display -webkit-flex
-  -webkit-flex-flow column
+  display flex
+  flex-flow column
 
   h2
     // header text will take all available horizontal space
-    display -webkit-flex
-    -webkit-align-items center
+    display flex
+    align-items center
 
     span
       font-size (fontSize*1.6)
       font-family headingFont
-      -webkit-flex 1
+      flex 1
 
-  .input-append
+  .input-group
     margin 20px 0 0
-    display -webkit-flex
-    -webkit-flex-flow row
 
-    input 
-      -webkit-flex 1
     input::-webkit-input-placeholder
       font-style italic
 
@@ -152,11 +148,11 @@ body
     margin 1em 0
 
   .table
-    -webkit-flex 1
+    flex 1
     margin 0
     // tbody text will take all available vertical space
-    display -webkit-flex
-    -webkit-flex-flow column
+    display flex
+    flex-flow column
 
     // make raw as block, and cell as inline element with fixed width
     tr 
@@ -180,7 +176,7 @@ body
 
     tbody
       // take all vertical space
-      -webkit-flex 1
+      flex 1
       overflow auto
 
       tr:hover
@@ -195,14 +191,10 @@ body
 
     // use white icons, make lastname bold and add stripes
     td       
-      [class^="icon-"], [class*=" icon-"] 
-        background-image url(img/glyphicons-halflings-white.png)
-      .icon-ok
-        background-position 0 0
-        background-image url("img/icons.png")
-      .icon-warning
-        background-position -14px 0
-        background-image url("img/icons.png")
+      .glyphicon-ok
+        color successColor
+      .glyphicon-exclamation-sign
+        color errorColor
     td:nth-child(2)
       font-weight bold
     tr:nth-child(even)
@@ -210,7 +202,7 @@ body
 
 .column-and-main > .column.expanded
 
-    .input-append
+    .input-group
       width 300px
     > .tags
     > .list-length
@@ -219,9 +211,9 @@ body
     th
       cursor pointer
 
-      [class^="icon-"], [class*=" icon-"] 
+      .glyphicon
         margin-left 0.5em
-        background-image url(img/glyphicons-halflings-white.png)
+        color white
 
     td:nth-child(2)
       font-weight normal
@@ -229,9 +221,9 @@ body
       font-weight bold
 
     .input-row
-      display -webkit-flex
+      display flex
 
-      .input-append
+      .input-group
         margin 0
 
       .tags 
@@ -298,13 +290,13 @@ body
       left 25px
       padding 0 5px
 
-    .row-fluid 
+    .row
       > span
-        display -webkit-flex
+        display flex
 
       input[type=text],
       input[type=email]
-        -webkit-flex 1
+        flex 1
         margin-bottom 5px
         margin-left 5px
         height auto
@@ -320,14 +312,14 @@ body
         margin 5px 5px 0 0
 
       textarea
-        -webkit-flex 1
+        flex 1
         margin 0 0 5px 5px
         resize none
         height 3.6em
         display inline-block
         box-sizing border-box
 
-    .row-fluid.known-by
+    .row.known-by
 
       > span
         display inline-block
@@ -360,7 +352,6 @@ body
  */
 
 .register
-  height 450px
   max-height inherit
 
   > span
@@ -377,11 +368,23 @@ body
  */
 
 body
+  
+  h1, h2, h3
+    line-height 40px
 
-  .modal
+  label
+    font-weight normal
+
+  .table>thead>tr>th
+    border-bottom 0
+  .table>thead>tr
+    border-bottom 2px solid tableBorderColor
+
+  .glyphicon
+    top 2px
+
+  .modal-content
     background background
-    width 60%
-    left 45%
     border-radius 0 2em
 
     .modal-header
@@ -418,32 +421,75 @@ body
   .btn-group.open .btn.dropdown-toggle
     background btnBackgroundHover
 
-  input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, .uneditable-input:focus
+  select
+  textarea
+  input:not([type="checkbox"])
+  input:not([type="radio"])
+    padding 4px 6px  
+
+  textarea:hover
+  input:not([type="checkbox"]):hover
+  input:not([type="radio"]):hover
+    border-color tableBorderColor
+
+  textarea:focus
+  input[type="text"]:focus
+  input[type="number"]:focus
+  input[type="email"]:focus
+  input[type="url"]:focus
+  input[type="search"]:focus
+  input[type="tel"]:focus
+  .uneditable-input:focus
     border-color focusColor
     box-shadow 0 0 8px focusColor
+    outline-color focusColor
+    color infoColor
 
-  input[type="text"], input[type="number"]:focus, input[type="email"], input[type="url"], input[type="search"], input[type="tel"], .uneditable-input
+  textarea
+  input[type="text"]
+  input[type="number"]:focus
+  input[type="email"]
+  input[type="url"]
+  input[type="search"]
+  input[type="tel"]
+  .uneditable-input
     background-color inputColor
+    border-width 1px
+    border-radius inputRadius
+    color focusTextColor
 
   .text-error
     color lighten(errorColor, 30%)
 
-  .input-append .add-on
-  .input-prepend .add-on
-    background-color headerBackground
-    color headerColor
-    border-color textColor
-    text-shadow none
+  .input-group 
+    input:first-child
+      border-radius inputRadius 0 0 inputRadius
+      font-size fontSize
 
-    i
-      background-image url(img/glyphicons-halflings-white.png)
+    input:last-child
+      border-radius inputRadius 0 0 inputRadius 
+      font-size fontSize
+
+    .input-group-addon
+      background-color headerBackground
+      color headerColor
+      border-color textColor
+      text-shadow none
+    
+      &:last-child
+        border-left 1px solid textColor
+      &:first-child
+        border-right 1px solid textColor
 
   .btn > .caret
     display inline-block
     margin-left 5px
 
   .btn 
+    padding 4px 12px
     color btnColor
+    font-size fontSize
+    border-color rgba(0, 0, 0, 0.25)
     background-color btnBackgroundHover
     background-image btnBackground
 

@@ -1,16 +1,12 @@
 _ = require 'underscore'
 async = require 'async'
 moment = require 'moment'
-Base = require '../base'
+Persisted = require '../persisted'
 Address = require './address'
 Registration = require './registration'
 Planning = require '../planning/planning'
-{generateId} = require '../../util/common'
 
-module.exports = class Dancer extends Base
-
-  # In-memory cache, updated by finders. 
-  @_cache = {}
+module.exports = class Dancer extends Persisted
 
   # **static**
   # Find a list of models from the storage provider that match given conditions
@@ -28,62 +24,41 @@ module.exports = class Dancer extends Base
   # @option callback err [Error] an error object, or null if no problem occured
   # @option callback dancers [Array<Base>] array (that may be empty) of models matching these conditions
   @findWhere: (conditions, callback) ->
-    @findAll (err, models) =>
-      return callback err if err?
-
-      checkCondition = (steps, expected, next) =>
-        # restrict the selected models for this condition
-        async.filter models, (model, nextFilter) =>
-          @_checkValue model, model, steps, expected, nextFilter
-        , (results) =>
-          # updates the model
-          models = results
-          return next 'end' if models.length is 0
-          next()
-
-      # check each conditions
-      async.forEach _.pairs(conditions), ([path, expected], next) =>
-        steps = path.split '.'
-        condition = {}
-        # check if condition include planning
-        idx = path.indexOf 'planning.'
-        if idx isnt -1 
-          condition[path[idx+9..]] = expected
+    # check each conditions
+    async.eachSeries _.pairs(conditions), ([path, expected], next) =>
+      steps = path.split '.'
+      condition = {}
+      # check if condition include registration's planning
+      for {search, prefix, select, extract} in [
+          {search:'planning.', prefix:'', select: 'planningId', extract: (p, path) -> [p.id]}
+          # TODO will be really eased if danceClasses are in a separated collection.
+          # In this case, no need to perform projection
+          {search:'danceClasses.', prefix: 'danceClasses.', select: 'danceClassIds', extract: (p, path) -> 
+            [danceClass.id for danceClass in p.danceClasses when danceClass[path] is expected]
+          }
+        ]
+        idx = path.indexOf search
+        if idx >= 0
+          conditionPath = path[idx+search.length..]
+          condition[prefix + conditionPath] = expected
           return Planning.findWhere condition, (err, plannings) ->
-            return next 'end' if plannings.length is 0
+            return next err if err?
             # only kept dancers with relevant planning ids
-            ids = _.pluck plannings, 'id'
-            models = _.filter models, (model) ->
-              _.some model.registrations, (reg) -> reg.planningId in ids
+            delete conditions[path]
+            path = path[0...idx] + select
+            # TODO in case of autonomous danceClasses, just need to pluk ids.
+            current = _.uniq _.flatten (extract planning, conditionPath for planning in plannings)
+            if conditions[path]?.$in?
+              # Logical and between existing conditions 
+              current = _.intersection conditions[path].$in, current
+            conditions[path] = $in: current
             next()
-
-        # check if condition include dance classes
-        idx = path.indexOf 'danceClasses.'
-        if idx isnt -1
-          condition[path[idx..]] = expected 
-          return Planning.findWhere condition, (err, plannings) =>
-            return next 'end' if plannings.length is 0
-            # only kept relevant dance class ids
-            subSteps = path[idx+13..].split '.'
-            async.map plannings, (planning, nextMap) =>
-              async.filter planning.danceClasses, (danceClass, nextFilter) =>
-                @_checkValue danceClass, danceClass, subSteps, expected, nextFilter
-              , (danceClasses) ->
-                nextMap null, _.pluck danceClasses, 'id'
-            , (err, ids) ->
-              ids = _.flatten ids
-              models = _.filter models, (model) ->
-                _.some model.registrations, (reg) -> 0 isnt _.intersection(reg.danceClassIds, ids).length
-              next()
-        else
-          # check simple condition
-          checkCondition steps, expected, next
-
-      , (err) =>
-        return callback null, [] if err is 'end'
-        callback null, models
-
-  id: null
+      # no specific conditions
+      next()
+    , (err) =>
+      return callback err if err?
+      # run superclass treatment
+      super conditions, callback
 
   created: null
 
@@ -118,7 +93,6 @@ module.exports = class Dancer extends Base
   constructor: (raw = {}) ->
     # set default values
     _.defaults raw, 
-      id: generateId()
       created: moment()
       birth: null
       title: 'Mme'

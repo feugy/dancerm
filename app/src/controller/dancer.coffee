@@ -18,7 +18,7 @@ paths = ['title', 'firstname', 'lastname',
 module.exports = class DancerController
             
   # Controller dependencies
-  @$inject: ['$scope', '$stateParams', '$state', '$dialog', '$q']
+  @$inject: ['$scope', '$stateParams', '$state', 'dialog', '$q']
 
   # Controller scope, injected within constructor
   scope: null
@@ -70,7 +70,7 @@ module.exports = class DancerController
           {label: i18n.btn.no, cssClass: 'btn-warning'}
           {label: i18n.btn.yes, result: true}
         ]
-      ).open().then (confirmed) =>
+      ).result.then (confirmed) =>
         return unless confirmed
         # if confirmed, effectively go on desired state
         @scope.hasChanged = false
@@ -86,6 +86,7 @@ module.exports = class DancerController
     console.log "save dancer #{@scope.dancer.fistname} #{@scope.dancer.lastname} (#{@scope.dancer.id})"
     @scope.displayed = new Dancer @scope.dancer.toJSON()
     @scope.displayed.save (err) =>
+      console.log err
       throw err if err?
       @scope.hasChanged = false
       # reload search
@@ -100,7 +101,7 @@ module.exports = class DancerController
         {label: i18n.btn.no, cssClass: 'btn-warning'}
         {label: i18n.btn.yes, result: true}
       ]
-    ).open().then (confirmed) =>
+    ).result.then (confirmed) =>
       return unless confirmed
       @scope.dancer = new Dancer @scope.displayed.toJSON()
 
@@ -118,9 +119,10 @@ module.exports = class DancerController
     # prepare search conditions
     typed = typed.toLowerCase()
     condition = {}
-    condition[attr] = (val) -> 0 is val?.toLowerCase().indexOf typed
+    condition[attr] = new RegExp "^#{typed}", 'i'
     # find matching dancers
     Dancer.findWhere condition, (err, models) => 
+      console.error err if err?
       next = =>
         @_reqInProgress = false
         defer.resolve models
@@ -168,15 +170,13 @@ module.exports = class DancerController
   onRegister: (registration = null) =>
     handled = new Registration()
     # display dialog to choose registration season and dance classes
-    @dialog.dialog(
+    @dialog.modal(
+      size: 'lg'
       keyboard: false
-      backdropClick: false
-      dialogFade: true
-      backdropFade: true
       controller: RegisterController
       templateUrl: 'register.html'
       resolve: registration: -> registration or handled
-    ).open().then (confirmed) =>
+    ).result.then (confirmed) =>
       return if !confirmed or registration?
       # add the created registration to current dancer at the first position
       @scope.dancer.registrations.splice 0, 0, handled
@@ -192,7 +192,7 @@ module.exports = class DancerController
         @dialog.messageBox(i18n.ttl.confirm, _.sprintf(i18n.msg.removeRegistration, planning.season), [
           {result: false, label: i18n.btn.no}
           {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
-        ]).open().then (confirm) =>
+        ]).result.then (confirm) =>
           return unless confirm
           @scope.dancer.registrations.splice @scope.dancer.registrations.indexOf(removed), 1
 

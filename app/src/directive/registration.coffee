@@ -29,7 +29,7 @@ app.directive 'registration', ->
 class RegistrationDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element', '$dialog']
+  @$inject: ['$scope', '$element', 'dialog']
   
   # Controller scope, injected within constructor
   scope: null
@@ -89,7 +89,7 @@ class RegistrationDirective
       [
         {result: false, label: i18n.btn.no}
         {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
-      ]).open().then (confirm) =>
+      ]).result.then (confirm) =>
         return unless confirm
         @scope.src.payments.splice @scope.src.payments.indexOf(removed), 1
         @onPaymentChanged()

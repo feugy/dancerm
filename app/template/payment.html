@@ -1,7 +1,7 @@
 <div class="payment">
-  <a href="" class="btn remove" data-ng-click="onRemove()"><i class="icon-remove"></i></a>
+  <a href="" class="btn remove" data-ng-click="onRemove()"><i class="glyphicon glyphicon-remove"></i></a>
   <div class="type">
-    <span class="btn-group dropup">
+    <span class="btn-group dropup" data-dropdown>
       <a href="" class="btn dropdown-toggle">{{typeLabel}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="(type, label) in i18n.paymentTypes"><a data-ng-click="onUpdateType(type)">{{label}}</a></li>
@@ -11,8 +11,8 @@
   <input class="receipt {{receiptValid ? '' : 'invalid'}}" type="text" data-ng-model="receipt" data-ng-keyup="onReceiptInput()"/>
   <input type="text" data-ng-model="src.bank"/>
   <input type="text" data-ng-model="src.details"/>
-  <span class="value input-append">
-    <input type="text" data-ng-model="stringValue" data-ng-keyup="onValueInput($event)"/>
-    <span class="add-on">{{'lbl.currency'|i18n}}</span>
+  <span class="value input-group">
+    <input class="form-control" type="text" data-ng-model="stringValue" data-ng-keyup="onValueInput($event)"/>
+    <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
   </span>
 </div>

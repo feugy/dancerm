@@ -3,6 +3,8 @@
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 
+console.log "running on node-webkit v#{process.versions['node-webkit']}"
+
 # make some variable globals for other scripts
 global.gui = gui
 global.$ = $
@@ -43,7 +45,9 @@ win.once 'loaded', ->
   $(window).on 'keyup', (event) ->
     # opens dev tools on F12 or Command+Option+J
     win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
-      
+    # reloads full app on Shift+F5
+    win.reloadDev() if event.which is 116 and event.shiftKey
+
   # restore from local storage application state if possible
   if localStorage.getItem 'x'
     x = Number localStorage.getItem 'x'
