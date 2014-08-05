@@ -30,19 +30,30 @@ win.once 'loaded', ->
   # set application title
   window.document?.title = _.sprintf i18n.ttl.print, dancer.firstname, dancer.lastname
 
-  # fill form
   $('.registration').text _.sprintf i18n.ttl.registrationPrint, planning.season
-  $('.firstname').find('label').text i18n.lbl.firstname+i18n.lbl.fieldSeparator
-  $('.firstname').find('span').text dancer.firstname
 
-  $('.lastname').find('label').text i18n.lbl.lastname+i18n.lbl.fieldSeparator
-  $('.lastname').find('span').text dancer.lastname
+  # fill form
+  for {selector, label, value} in [
+    {selector: '.firstname', label: i18n.lbl.firstname, value: dancer.firstname}
+    {selector: '.lastname', label: i18n.lbl.lastname, value: dancer.lastname}
+    {selector: '.address', label: i18n.lbl.address, value: "#{dancer.address?.street} #{dancer.address?.zipcode} #{dancer.address?.city}"}
+    {selector: '.phone', label: i18n.lbl.phone, value: dancer.phone or dancer.cellphone}
+    {selector: '.email', label: i18n.lbl.email, value: dancer.email}
+    {
+      selector: '.danceclass'
+      label: if dancer.title in i18n.civilityTitles[1..] then i18n.lbl.registeredFemale else i18n.lbl.registeredMale
+      value: (formatClass id for id in registration.danceClassIds).join ', '
+    }
+  ]
+    $(selector).find('label').text label+i18n.lbl.fieldSeparator
+    $(selector).find('span').text value
 
-  $('.danceclass').find('label').text i18n.lbl.danceClasses+i18n.lbl.fieldSeparator
-  $('.danceclass').find('span').text (formatClass id for id in registration.danceClassIds).join ', '
-
-  $('.who, .what, .when, .sign').each ->
-    $(@).text i18n.print[$(@).attr 'class']
+  for selector in ['who', 'what', 'when', 'certificate', 'sign']
+    if i18n.print["#{selector}Male"]
+      text = i18n.print[if dancer.title in i18n.civilityTitles[1..] then "#{selector}Female" else "#{selector}Male"]
+    else
+      text = i18n.print[selector]
+    $(".#{selector}").text text
 
   $('.print').text(i18n.btn.print).on 'click', ->
     $('.print').remove()

@@ -86,7 +86,6 @@ module.exports = class DancerController
     console.log "save dancer #{@scope.dancer.fistname} #{@scope.dancer.lastname} (#{@scope.dancer.id})"
     @scope.displayed = new Dancer @scope.dancer.toJSON()
     @scope.displayed.save (err) =>
-      console.log err
       throw err if err?
       @scope.hasChanged = false
       # reload search

@@ -46,7 +46,7 @@ win.once 'loaded', ->
     # opens dev tools on F12 or Command+Option+J
     win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
     # reloads full app on Shift+F5
-    win.reloadDev() if event.which is 116 and event.shiftKey
+    win.reloadDev() if event.which is 116 and event.ctrlKey
 
   # restore from local storage application state if possible
   if localStorage.getItem 'x'

@@ -99,7 +99,7 @@ Paid: 110h 10€/h
 
 ! - use angular's controllerAs
 ! - migrate old storage to nedb
-! - leverage export with compacted nedb 
+! - leverage export with compacted nedb (with new knownBy status)
 
 ok - on payement addition, automatically scroll to bottom, and put focus to first field
 ,5 - rename dancer -> file (fiche)
@@ -107,12 +107,12 @@ ok - on payement addition, automatically scroll to bottom, and put focus to firs
 ok - add payment field: payer, prefilled with dancer's name
 ok - add another "known-by" choice: "old dancers"
 ok - add age column (from current date) into expanded list
- 1 - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
+ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
  6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
  3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
  6 - stats on known-by dancers 
  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
-10 - merge data from two different PCs
+11 - merge data from two different PCs
 
 ## Functionnal requirements
 
@@ -127,4 +127,4 @@ ok - add age column (from current date) into expanded list
 
 03/08 - 0,5
 04/05 - 0,5
-05/05 - 1,5
+05/05 - 2

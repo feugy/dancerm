@@ -79,6 +79,8 @@ module.exports =
     payer: 'Par'
     phone: 'Téléphone'
     receipt: 'Encaissement'
+    registeredFemale: 'Inscrite au(x) cours'
+    registeredMale: 'Inscrit au(x) cours'
     Sat: 'Samedi'
     searchPlaceholder: 'chercher par nom/prénom'
     street: 'Voie'
@@ -109,7 +111,9 @@ module.exports =
     sign: "Signature"
     what: "ai pris connaissance et approuve le règlement intérieur de l'Ecole de Danse RIBAS."
     when: "Villeurbanne, le"
-    who: "Je soussigné(e)"
+    whoFemale: "Je soussignée"
+    whoMale: "Je soussigné"
+    certificate: "Et m'engage a fournir un certificat valide pour la pratique de la danse."
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']
