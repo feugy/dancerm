@@ -320,33 +320,34 @@ body
         display inline-block
         box-sizing border-box
 
-    .row.known-by
+    .known-by
+      display flex
+      flex-flow wrap
+      margin 0 -10px
 
       > span
-        display inline-block
-        height 20px
-        width 20%
-        margin-right 10px
-        position relative
+        width 140px
+        margin 2px 10px 2px 0
 
       > *:last-child
-        width auto
+        flex 1
+        display flex
 
         label 
           vertical-align 2px
-          position static
         input 
-          display inline-block
+          margin-left 5px
+          height 28px
+          flex 1
 
       label
         text-align left
         width auto
-        margin 0
-        left 18px
-        position absolute
+        margin 4px 0 0 2px
+        display inline
 
       input[type="checkbox"]
-        margin 0
+        vertical-align -2px
 
 /******************************************************************************
  * Registration popup

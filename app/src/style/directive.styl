@@ -247,7 +247,7 @@ for i in 6..20
         font-family headingFont
 
       .remove
-        width 35px
+        width 26px
         flex none
 
       .receipt
@@ -273,8 +273,8 @@ for i in 6..20
     .type
       flex none
       height 30px
-      margin-right 4px
-      width 130px
+      margin-right 0px
+      width 120px
 
       .dropup
         text-align left
@@ -288,6 +288,7 @@ for i in 6..20
       flex none
       height 27px
       margin-right 5px
+      padding 4px
       background colBackground
       border-color textColor
 
@@ -297,11 +298,14 @@ for i in 6..20
     .value
     .total .input-group
       flex none
-      width 85px
+      width 64px
       margin-bottom 5px
       display inline-table
 
       input
       span:not(.input-group-addon)
-        width 46px
+        width 42px
         text-align right
+
+      span.input-group-addon
+        padding 4px

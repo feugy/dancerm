@@ -61,7 +61,7 @@
       <span class="col-md-6"><label>{{'lbl.knownBy'|i18n:{sep:true} }}</label></span>
       <span class="col-md-6"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email"  data-ng-model="dancer.email" data-set-null/></span>
     </div>
-    <div class="row known-by">
+    <div class="known-by">
       <span data-ng-repeat="(value, label) in i18n.knownByMeanings" data-ng-class="knownBy[value] ? 'selected' : ''">
         <input data-ng-model="knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="onUpdateKnownBy()"/><label for="{{value}}">{{label}}</label>
       </span>
@@ -78,6 +78,7 @@
   <div data-registration 
     data-ng-repeat="registration in dancer.registrations" 
     data-src="registration" 
+    data-dancer="dancer"
     data-on-edit="onRegister(registration)"
     data-on-remove="onRemoveRegistration(registration)"
     data-on-print="onPrintRegistration(registration)"></div>

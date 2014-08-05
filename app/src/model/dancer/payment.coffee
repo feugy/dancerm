@@ -15,6 +15,9 @@ module.exports = class Payment extends Base
   # receiption date
   receipt: null
 
+  # payer's name
+  payer: null
+
   # bank name
   bank: null
 
@@ -32,6 +35,7 @@ module.exports = class Payment extends Base
       receipt: moment()
       value: 0
       details: null
+      payer: null
     # fill attributes
     super(raw)
     # enrich object attributes

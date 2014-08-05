@@ -2,99 +2,100 @@ module.exports =
   
   # titles  
   ttl:
-    application: 'DanceRM'
-    generalInfo: 'Information'
     address: 'Adresse'
-    contact: 'Contact'
-    newRegistration: 'Nouvelle inscription'
-    editRegistration: "Modification de l'inscription"
+    application: 'DanceRM'
     confirm: 'Confirmation de la suppression'
+    contact: 'Contact'
     dancerList: 'Liste des danseurs'
-    import: 'Importation'
-    export: 'Exportation'
     dump: 'Sauvegarde externe'
-    search: 'Recherche de danseurs'
+    editRegistration: "Modification de l'inscription"
+    export: 'Exportation'
+    generalInfo: 'Information'
+    import: 'Importation'
+    newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour %s %s'
     registrationPrint: 'Inscription année %s'
-
+    search: 'Recherche de danseurs'
+    
   # long messages with html
   msg:
+    cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
+    confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
+    dancerListLength: ' danseur(s) séléctionné(s)'
+    dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
+    dumping: 'Sauvegarde externe en cours, veuillez patienter...'
+    emptyDancerList: 'Aucun danseur pour ces critères'
+    exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
+    exporting: 'Export en cours, veuillez patienter...'
+    importing: 'Importation en cours, veuillez patienter...'
+    importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
-    cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
-    confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
-    importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
-    dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
-    emptyDancerList: 'Aucun danseur pour ces critères'
-    dancerListLength: ' danseur(s) séléctionné(s)'
-    importing: 'Importation en cours, veuillez patienter...'
-    exporting: 'Export en cours, veuillez patienter...'
-    dumping: 'Sauvegarde externe en cours, veuillez patienter...'
-    exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
 
   # buttons
   btn: 
-    newDancer: 'Inscrire un danseur'
-    register: 'Nouvelle Inscription'
-    cancel: 'Annuler'
-    save: 'Enregistrer'
-    edit: 'Modifier'
-    remove: 'Supprimer'
-    yes: 'Oui'
-    no: 'Non'
-    ok: 'Ok'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
-    import: 'Importer des danseurs'
+    cancel: 'Annuler'
+    edit: 'Modifier'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
+    import: 'Importer des danseurs'
+    newDancer: 'Inscrire un danseur'
+    no: 'Non'
+    ok: 'Ok'
     print: 'Imprimer'
+    register: 'Nouvelle Inscription'
+    remove: 'Supprimer'
+    save: 'Enregistrer'
+    yes: 'Oui'
 
   # short labels
   lbl:
-    searchPlaceholder: 'chercher par nom/prénom'
-    allTeachers: 'tous les professeurs'
-    fieldSeparator: ' :'
-    firstname: 'Prénom'
-    lastname: 'Nom'
-    title: 'Titre'
     address: 'Adresse'
-    street: 'Voie'
-    zipcode: 'Code postal'
-    city: 'Ville'
-    phone: 'Téléphone'
-    cellphone: 'Portable'
-    email: 'E-mail'
+    allTeachers: 'tous les professeurs'
+    bank: 'Banque'
     birth: 'Né(e) le'
+    cellphone: 'Portable'
     certified: 'Cert.'
     certifiedLong: 'Certificat'
-    danceClasses: 'Cours'
     charged: 'Réglement de'
-    currency: '€'
-    due: 'Rgt.'
-    receipt: 'Encaissement'
-    bank: 'Banque'
-    details: 'Détails'
-    type: 'Type'
-    knownBy: 'Connu par'
-    value: 'Valeur'
-    sum: 'Total'
-    other: 'autre'
+    city: 'Ville'
     classTooltip: '%s (%s) %s~%s'
-    Mon: 'Lundi'
-    Tue: 'Mardi'
-    Wed: 'Mercredi'
-    Thu: 'Jeudi'
+    currency: '€'
+    danceClasses: 'Cours'
+    details: 'Détails'
+    due: 'Rgt.'
+    email: 'E-mail'
+    fieldSeparator: ' :'
+    firstname: 'Prénom'
     Fri: 'Vendredi'
+    knownBy: 'Connu par'
+    lastname: 'Nom'
+    Mon: 'Lundi'
+    other: 'autre'
+    payer: 'Par'
+    phone: 'Téléphone'
+    receipt: 'Encaissement'
     Sat: 'Samedi'
+    searchPlaceholder: 'chercher par nom/prénom'
+    street: 'Voie'
     Sun: 'Dimanche'
+    sum: 'Total'
+    Thu: 'Jeudi'
+    title: 'Titre'
+    Tue: 'Mardi'
+    type: 'Type'
+    value: 'Valeur'
+    Wed: 'Mercredi'
+    zipcode: 'Code postal'
 
   # errors
   err:
-    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
-    exportFailed: "L'export de la liste de danseurs à échoué: %s"
     dumpFailed: "La sauvegarde externe des données à échouée: %s"
+    exportFailed: "L'export de la liste de danseurs à échoué: %s"
+    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
     search: 'La recherche à échouée: %s'
 
   # date/time formats
@@ -104,35 +105,36 @@ module.exports =
 
   # print texts
   print:
-    who: "Je soussigné(e)"
+    sign: "Signature"
     what: "ai pris connaissance et approuve le règlement intérieur de l'Ecole de Danse RIBAS."
     when: "Villeurbanne, le"
-    sign: "Signature"
+    who: "Je soussigné(e)"
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']
 
   # payment types
   paymentTypes: 
-    check: 'Chèque'
     cash: 'Espèces'
+    check: 'Chèque'
     traveler: 'Ch. vacance'
 
   # payment periods
   periods:
-    year: "à l'année"
-    quarter: "au trimestre"
     'class': "au cours"
+    quarter: "au trimestre"
+    year: "à l'année"
 
   # different ways to learn the school existence
   knownByMeanings:
-    leaflets: 'tract'
-    website: 'notre site web'
-    pagejaunesFr: 'pagejaunes.fr'
-    searchEngine: 'moteur de recherche'
-    directory: 'annuaire'
     associationsBiennal: 'biennale des asso.'
+    directory: 'annuaire'
+    elders: 'anciens'
+    leaflets: 'tract'
+    searchEngine: 'moteur de recherche'
     mouth: 'bouche à oreille'
+    pagejaunesFr: 'pagejaunes.fr'
+    website: 'notre site web'
 
   # planning directive configuration values
   planning:

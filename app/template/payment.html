@@ -9,6 +9,7 @@
     </span>
   </div>
   <input class="receipt {{receiptValid ? '' : 'invalid'}}" type="text" data-ng-model="receipt" data-ng-keyup="onReceiptInput()"/>
+  <input type="text" data-ng-model="src.payer"/>
   <input type="text" data-ng-model="src.bank"/>
   <input type="text" data-ng-model="src.details"/>
   <span class="value input-group">

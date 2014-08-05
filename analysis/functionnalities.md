@@ -92,7 +92,8 @@ Paid: 110h 10€/h
 
 ## Bugs
 
-- horizontal scrollbar in dancer
+- no refresh on F5
+- disable back support
 
 ## TODOs 
 
@@ -103,8 +104,8 @@ Paid: 110h 10€/h
 ok - on payement addition, automatically scroll to bottom, and put focus to first field
 ,5 - rename dancer -> file (fiche)
  2 - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
-,5 - add payment field: payer, prefilled with dancer's name
-,5 - add another "known-by" choice: "old dancers"
+ok - add payment field: payer, prefilled with dancer's name
+ok - add another "known-by" choice: "old dancers"
  1 - add age column (from current date) into expanded list
  1 - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
  6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -125,3 +126,5 @@ ok - on payement addition, automatically scroll to bottom, and put focus to firs
 ## Hours
 
 03/08 - 0,5
+04/05 - 0,5
+05/05 - 0,5

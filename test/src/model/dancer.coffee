@@ -58,6 +58,7 @@ describe 'Dancer model tests', ->
         payments: [
           type: 'cash'
           value: 100
+          payer: 'Jean'
           bank: null
           details: null
           receipt: moment().toJSON()
@@ -70,6 +71,7 @@ describe 'Dancer model tests', ->
         , 
           type: 'card'
           value: 50
+          payer: 'Dujardin'
           details: null
           bank: null
           receipt: moment().toJSON()
@@ -81,6 +83,7 @@ describe 'Dancer model tests', ->
         balance: 300
         payments: [
           type: 'cash'
+          payer: 'Dujardin'
           value: 300
           details: null
           receipt: moment().toJSON()

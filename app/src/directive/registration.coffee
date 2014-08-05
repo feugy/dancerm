@@ -17,6 +17,8 @@ app.directive 'registration', ->
   controller: RegistrationDirective
   # parent scope binding.
   scope: 
+    # concerned dancer
+    dancer: '='
     # displayed registration
     src: '='
     # invoked when registration needs editing
@@ -56,7 +58,7 @@ class RegistrationDirective
 
   # Creates a new payment and adds it to the current registration
   onNewPayment: =>
-    @scope.src.payments.push new Payment()
+    @scope.src.payments.push new Payment(payer: @scope.dancer.lastname)
     parent = @$el.parent()
     _.defer => 
       @$el.find('.type > .dropup > a').focus()
