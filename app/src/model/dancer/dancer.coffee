@@ -80,7 +80,7 @@ module.exports = class Dancer extends Persisted
   # has or not a medical certificate for the current season
   certified: false
 
-  # how the dancers has known the school: leaflets, website, pagejaunesFr, searchEngine, directory, associationsBiennal, mouth, other
+  # how the dancers has known the school: leaflets, website, pagesjaunesFr, searchEngine, directory, associationsBiennal, mouth, elders, groupon, other
   knownBy: []
 
   # list of registration for given dance classes

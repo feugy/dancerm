@@ -11,7 +11,7 @@
 <table class="table" data-ng-show="list.length > 0">
   <thead>
     <tr>
-      <th data-ng-repeat="attr in ['title', 'firstname', 'lastname', 'certified', 'due', 'birth', 'phone', 'cellphone', 'email', 'knownBy', 'address']"
+      <th data-ng-repeat="attr in ['title', 'firstname', 'lastname', 'certified', 'due', 'age', 'birth', 'knownBy', 'phone', 'cellphone', 'email', 'address']"
         data-ng-click="onSort(attr)">{{'lbl.'+attr|i18n}}<i data-ng-show="sort === attr" data-ng-class="sortAsc ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down'"></i>
       </th>
     </tr>
@@ -23,11 +23,12 @@
     <td>{{dancer.lastname}}</td>
     <td><i class="glyphicon" data-ng-class="dancer.certified ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-exclamation-sign'"></i></td>
     <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="glyphicon glyphicon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
+    <td>{{getAge(dancer)}}</td>
     <td>{{dancer.birth.format(i18n.formats.birth)}}</td>
+    <td><span class="known-by" data-ng-repeat="knownBy in dancer.knownBy">{{i18n.knownByMeanings[knownBy] || knownBy}}</span>
     <td>{{dancer.phone}}</td>
     <td>{{dancer.cellphone}}</td>
     <td>{{dancer.email}}</td>
-    <td><span class="known-by" data-ng-repeat="knownBy in dancer.knownBy">{{i18n.knownByMeanings[knownBy] || knownBy}}</span>
     <td>{{dancer.address.street}} {{dancer.address.zipcode}} {{dancer.address.city}}</td>
   </tr>
   </tbody>

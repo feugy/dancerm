@@ -202,40 +202,44 @@ body
 
 .column-and-main > .column.expanded
 
+  .input-group
+    width 300px
+  > .tags
+  > .list-length
+    display inline-block
+
+  th
+    cursor pointer
+
+    .glyphicon
+      margin-left 0.5em
+      color white
+
+  td:nth-child(2)
+    font-weight normal
+  td:nth-child(3)
+    font-weight bold
+
+  .input-row
+    display flex
+
     .input-group
-      width 300px
-    > .tags
-    > .list-length
-      display inline-block
+      margin 0
 
-    th
-      cursor pointer
+    .tags 
+      margin-left 1em
 
-      .glyphicon
-        margin-left 0.5em
-        color white
+  // we MUST have fixed width columns
+  // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address 
+  for width, i in 4 7 10 3 3 3 8 9 9 9 15 20
+    td:nth-child({i+1}), th:nth-child({i+1})
+      width unit(width, '%')
 
-    td:nth-child(2)
-      font-weight normal
-    td:nth-child(3)
-      font-weight bold
+  .export.btn
+    margin-right 7px
 
-    .input-row
-      display flex
-
-      .input-group
-        margin 0
-
-      .tags 
-        margin-left 1em
-
-    // we MUST have fixed width columns
-    for width, i in 4 7 10 4 4 8 9 9 15 10 20
-      td:nth-child({i+1}), th:nth-child({i+1})
-        width unit(width, '%')
-
-    .export.btn
-      margin-right 7px
+  .known-by
+    margin-right 5px
 
 /******************************************************************************
  * Main Part
@@ -326,12 +330,13 @@ body
       margin 0 -10px
 
       > span
-        width 140px
+        width 155px
         margin 2px 10px 2px 0
 
       > *:last-child
         flex 1
         display flex
+        margin 0 10px 0 0
 
         label 
           vertical-align 2px

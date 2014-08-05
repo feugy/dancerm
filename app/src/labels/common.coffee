@@ -54,6 +54,7 @@ module.exports =
   # short labels
   lbl:
     address: 'Adresse'
+    age: 'Age'
     allTeachers: 'tous les professeurs'
     bank: 'Banque'
     birth: 'Né(e) le'
@@ -125,16 +126,17 @@ module.exports =
     quarter: "au trimestre"
     year: "à l'année"
 
-  # different ways to learn the school existence
+  # different ways to learn the school existence (order is important)
   knownByMeanings:
-    associationsBiennal: 'biennale des asso.'
     directory: 'annuaire'
     elders: 'anciens'
-    leaflets: 'tract'
-    searchEngine: 'moteur de recherche'
+    associationsBiennal: 'biennale des asso.'
     mouth: 'bouche à oreille'
-    pagejaunesFr: 'pagejaunes.fr'
+    groupon: 'groupon'
+    searchEngine: 'moteur de recherche'
     website: 'notre site web'
+    pagesjaunesFr: 'pagesjaunes.fr'
+    leaflets: 'tract'
 
   # planning directive configuration values
   planning:

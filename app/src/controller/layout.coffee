@@ -120,6 +120,7 @@ module.exports = class LayoutController
                 @scope.$broadcast 'model-imported'
 
     dialog.trigger 'click'
+    null
 
   # **private**
   # Load from localStorage the saved dump fileEntry, and reloads it.
@@ -129,6 +130,7 @@ module.exports = class LayoutController
     # nothing in localStorage
     dumpPath = localStorage.getItem 'dumpPath'
     @_chooseDumpLocation callback unless dumpPath
+    null
 
   # **private**
   # Ask user to choose a dump location, and immediately dump data inside.

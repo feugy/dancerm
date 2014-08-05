@@ -1,4 +1,5 @@
 _ = require 'underscore'
+moment = require 'moment'
 ListController = require './list' 
 i18n = require '../labels/common'
 
@@ -22,6 +23,13 @@ module.exports = class ExpandedListController extends ListController
     # keeps current sort for inversion
     @scope.sort = null
     @scope.sortAsc = true
+
+  # Return age of dancer from the current date
+  #
+  # @param dancer [Dancer] the concerned dancer
+  # @return the age in years
+  getAge: (dancer) => 
+    moment().diff dancer.birth, 'years'
 
   # Sort list by given attribute and order
   #

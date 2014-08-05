@@ -291,13 +291,15 @@ module.exports = class Import
           for val in lValue.split ','
             val = val.trim()
             switch val
-              when 'bao', 'biennale des asso.', 'biennale des associations' then 'associationsBiennal'
+              when 'bao', 'biennale des asso.', 'biennale des associations', 'forum des associations' then 'associationsBiennal'
               when 'google', 'yahoo', 'internet', 'moteur de recherche' then 'searchEngine'
               when 'tract', 'tracts' then 'leaflets'
-              when 'notre site web', 'ecolededanceribas', 'ecolededanceribas.com', 'www.ecolededanceribas.com' then 'website'
-              when 'pagejaunes.fr' then 'pagejaunesFr'
-              when 'annuaire' then 'directory'
+              when 'site', 'notre site web', 'ecolededanceribas', 'ecolededanceribas.com', 'www.ecolededanceribas.com' then 'website'
+              when 'pagejaunes.fr', 'www.pagesjaunes.fr', 'pagesjaunes.fr', 'www.pagejaunes.fr' then 'pagesjaunesFr'
+              when 'annuaire', 'annuaire papier' then 'directory'
               when 'bouche à oreille' then 'mouth'
+              when 'ancien', 'anciens', 'maman ancien élève', 'soeur', 'soeurs', 'frère', 'frères' then 'elders'
+              when 'groupon' then 'groupon'
               else _.capitalize val
           )
       when 'birth'

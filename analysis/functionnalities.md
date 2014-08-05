@@ -106,7 +106,7 @@ ok - on payement addition, automatically scroll to bottom, and put focus to firs
  2 - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
 ok - add payment field: payer, prefilled with dancer's name
 ok - add another "known-by" choice: "old dancers"
- 1 - add age column (from current date) into expanded list
+ok - add age column (from current date) into expanded list
  1 - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
  6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
  3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
@@ -127,4 +127,4 @@ ok - add another "known-by" choice: "old dancers"
 
 03/08 - 0,5
 04/05 - 0,5
-05/05 - 0,5
+05/05 - 1,5
