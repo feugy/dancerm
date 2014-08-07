@@ -37,16 +37,19 @@ win.on 'maximize', -> console.log('maximized'); isMaximized = true
 win.on 'unmaximize', -> isMaximized = false
 win.on 'minimize', -> isMaximized = false
 
+
+$(win.window).on 'keyup', (event) ->
+  # opens dev tools on F12 or Command+Option+J
+  win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
+  # reloads full app on Ctrl+F5
+  if event.which is 116 and event.ctrlKey
+    delete global.require.cache[attr] for attr of global.require.cache
+    win.reloadIgnoringCache() 
+
 # DOM is ready
-win.once 'loaded', ->
+$(win.window).on 'load', ->
   # set application title
   window.document?.title = i18n.ttl.application
-
-  $(window).on 'keyup', (event) ->
-    # opens dev tools on F12 or Command+Option+J
-    win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
-    # reloads full app on Shift+F5
-    win.reloadDev() if event.which is 116 and event.ctrlKey
 
   # restore from local storage application state if possible
   if localStorage.getItem 'x'
