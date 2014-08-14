@@ -1,85 +1,52 @@
 <div class="dancer">
-  <header>
-    <a href="" class="btn" data-ng-click="onBack()">{{'btn.backToList'|i18n}}</a>
-    <a href="" class="btn btn-primary" data-ng-show="hasChanged" data-ng-click="onSave()">{{'btn.save'|i18n}}</a>
-    <a href="" class="btn btn-warning" data-ng-show="hasChanged" data-ng-click="onCancel()">{{'btn.cancel'|i18n}}</a>
-  </header>
-  <!-- dancer displayal -->
-  <article>
-    <h2>{{'ttl.generalInfo'|i18n}}</h2>
-    <div class="row">
-      <span class="col-md-1">
-        <div class="btn-group" data-dropdown>
-          <a href="" class="btn dropdown-toggle">{{dancer.title || i18n.civilityTitles[1]}}<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li data-ng-repeat="choice in i18n.civilityTitles"><a data-ng-click="onUpdateTitle(choice)">{{choice}}</a></li>
-          </ul>
-        </div>
-      </span>
-
-      <span class="col-md-5"><label>{{'lbl.firstname'|i18n:{sep:true} }}</label><input 
-        type="text" 
-        data-ng-if="isNew" 
-        data-ng-model="dancer.firstname"
-        data-typeahead="dancer as dancer.firstname+' '+dancer.lastname for dancer in findByAttr('firstname', $viewValue) | filter:$viewValue | limitTo:20" 
-        data-typeahead-min-length="3" 
-        data-typeahead-on-select="onChooseDancer($model)"/><input type="text" data-ng-if="!isNew" data-ng-model="dancer.firstname"/></span>
-      <span class="col-md-6"><label>{{'lbl.lastname'|i18n:{sep:true} }}</label><input 
-        type="text" 
-        data-ng-if="isNew" 
-        data-ng-model="dancer.lastname"
-        data-typeahead="dancer as dancer.firstname+' '+dancer.lastname for dancer in findByAttr('lastname', $viewValue) | filter:$viewValue | limitTo:20" 
-        data-typeahead-min-length="3" 
-        data-typeahead-on-select="onChooseDancer($model)"/><input type="text" data-ng-if="!isNew" data-ng-model="dancer.lastname"/></span>
-    </div>
-    <div class="row">
-      <span class="col-md-offset-1 col-md-5"><label>{{'lbl.birth'|i18n:{sep:true} }}</label>
-        <input class="birth {{birthValid ? '' : 'invalid'}}" type="text" data-ng-model="birth" data-ng-keyup="onBirthInput()" data-set-null/>
-      </span>
-      <span class="col-md-6"><label>{{'lbl.certifiedLong'|i18n:{sep:true} }}</label><input type="checkbox" name="certified" data-ng-model="dancer.certified"/></span>
-    </div>
-  </article>
-
-  <article>
-    <h2>{{'ttl.address'|i18n}}</h2>
-    <div class="row">
-      <span class="col-md-12"><label>{{'lbl.street'|i18n:{sep:true} }}</label><textarea data-ng-model="dancer.address.street" data-set-null/></span>
-    </div>
-    <div class="row">
-      <span class="col-md-4"><label>{{'lbl.zipcode'|i18n:{sep:true} }}</label><input type="text" name="zipcode" data-ng-model="dancer.address.zipcode" data-set-null/></span>
-      <span class="col-md-8"><label>{{'lbl.city'|i18n:{sep:true} }}</label><input type="text" name="city" data-ng-model="dancer.address.city" data-set-null/></span>
-    </div>
-  </article>
-
-  <article>
-    <h2>{{'ttl.contact'|i18n}}</h2>
-    <div class="row">
-      <span class="col-md-6"><label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><input type="text" name="cellphone" data-ng-model="dancer.cellphone" data-set-null/></span>
-      <span class="col-md-6"><label>{{'lbl.phone'|i18n:{sep:true} }}</label><input type="text" name="phone" data-ng-model="dancer.phone" data-set-null/></span>
-    </div>
-    <div class="row">
-      <span class="col-md-6"><label>{{'lbl.knownBy'|i18n:{sep:true} }}</label></span>
-      <span class="col-md-6"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email"  data-ng-model="dancer.email" data-set-null/></span>
-    </div>
-    <div class="known-by">
-      <span data-ng-repeat="(value, label) in i18n.knownByMeanings" data-ng-class="knownBy[value] ? 'selected' : ''">
-        <input data-ng-model="knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="onUpdateKnownBy()"/><label for="{{value}}">{{label}}</label>
-      </span>
-      <span data-ng-class="knownByOther ? 'selected' : ''"><label>{{'lbl.other'|i18n:{sep:true} }}</label><input type="text" data-ng-model="knownByOther"  data-ng-change="onUpdateKnownBy()"/>
-      </span>
-    </div>
-  </article>
-
-  <!-- registrations -->
-  <div class="row registration-bar">
-    <a href="" class="btn btn-primary" data-ng-click="onRegister()">{{'btn.register'|i18n}}</a>
+  <h4>{{'ttl.dancer'|i18n}}</h4>
+  <div class="row">
+    <span class="col-md-1 title">
+      <div class="btn-group" data-dropdown>
+        <a href="" class="btn dropdown-toggle">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li data-ng-repeat="choice in ctrl.i18n.civilityTitles"><a data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
+        </ul>
+      </div>
+    </span>
+    <span class="col-md-5 firstname"><label>{{'lbl.firstname'|i18n:{sep:true} }}</label><input 
+      type="text" 
+      data-ng-if="ctrl.isNew" 
+      data-ng-model="ctrl.src.firstname"
+      data-typeahead="choice.firstname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('firstname', $viewValue) | filter:$viewValue | limitTo:20" 
+      data-typeahead-min-length="3" 
+      data-typeahead-on-select="onLoad({model: $item})"/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.firstname" data-set-null/></span>
+    <span class="col-md-6 lastname"><label>{{'lbl.lastname'|i18n:{sep:true} }}</label><input 
+      type="text" 
+      data-ng-if="ctrl.isNew" 
+      data-ng-model="ctrl.src.lastname"
+      data-typeahead="choice.lastname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('lastname', $viewValue) | filter:$viewValue | limitTo:20" 
+      data-typeahead-min-length="3" 
+      data-typeahead-on-select="onLoad({model: $item})"/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.lastname" data-set-null/></span>
   </div>
-
-  <div data-registration 
-    data-ng-repeat="registration in dancer.registrations" 
-    data-src="registration" 
-    data-dancer="dancer"
-    data-on-edit="onRegister(registration)"
-    data-on-remove="onRemoveRegistration(registration)"
-    data-on-print="onPrintRegistration(registration)"></div>
+  <div class="row">
+    <span class="col-md-6 cellphone"><label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><input type="text" name="cellphone" data-ng-model="ctrl.src.cellphone" data-set-null/></span>
+    <span class="col-md-6 email"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email" data-ng-model="ctrl.src.email" data-set-null/></span>
+  </div>
+  <div class="row">
+    <span class="col-md-6 birth"><label>{{'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group">
+        <input type="text"
+          data-set-null
+          data-datepicker-popup="{{'formats.birthSelection'|i18n}}" 
+          data-is-open="ctrl.birthOpts.open"
+          data-ng-model="ctrl.birthOpts.value"
+          data-show-button-bar="false"
+          data-datepicker-options="ctrl.birthOpts"
+          data-ng-change="ctrl.setBirth()"/>
+        <a href="" class="input-group-addon" data-ng-click="ctrl.toggleBirth($event)"><i class="glyphicon glyphicon-calendar"></i></a>
+      </span>
+    </span>
+    <!--<span class="col-md-6"><label>{{'lbl.knownBy'|i18n:{sep:true} }}</label><span data-ng-class="ctrl.knownByOther ? 'selected' : ''" class="known-by-other"><input type="text" data-ng-model="ctrl.knownByOther" data-ng-change="ctrl.setKnownBy()"/><label>{{'lbl.other'|i18n}}</label></span>
+    </span>-->
+  </div>
+  <!--<div class="known-by">
+    <span data-ng-repeat="(value, label) in ctrl.i18n.knownByMeanings" data-ng-class="ctrl.knownBy[value] ? 'selected' : ''">
+      <input data-ng-model="ctrl.knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="ctrl.setKnownBy()"/><label for="{{value}}">{{label}}</label>
+    </span>
+  </div>-->
 </div>

@@ -1,30 +1,30 @@
-<h2><span>{{'ttl.dancerList'|i18n}}</span><a href="" class="btn export" data-ng-click="onExport()" data-ng-class="{disabled: list.length == 0}">{{'btn.export'|i18n}}</a><a href="" class="btn export" data-ng-click="onExportEmails()" data-ng-class="{disabled: list.length == 0}">{{'btn.exportEmails'|i18n}}</a><a data-ui-sref="list-and-planning" class="btn"><i class="glyphicon glyphicon-chevron-left"></i></a></h2>
+<h2><span>{{'ttl.dancerList'|i18n}}</span><a href="" class="btn export" data-ng-click="ctrl.onExport()" data-ng-class="{disabled: ctrl.list.length == 0}">{{'btn.export'|i18n}}</a><a href="" class="btn export" data-ng-click="ctrl.onExportEmails()" data-ng-class="{disabled: ctrl.list.length == 0}">{{'btn.exportEmails'|i18n}}</a><a data-ui-sref="list-and-planning" class="btn"><i class="glyphicon glyphicon-chevron-left"></i></a></h2>
 <div class="input-row">
   <div class="input-group">
-    <input class="form-control" type="text" data-ng-model="search.name" data-ng-keyup="triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
+    <input class="form-control" type="text" data-ng-model="ctrl.search.name" data-ng-keyup="ctrl.triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
     <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
   </div>
-  <span data-tags data-src="search" data-on-remove="triggerSearch()"></span>
+  <span data-tags data-src="ctrl.search" data-on-remove="ctrl.triggerSearch()"></span>
 </div>
-<div class="list-length" data-ng-hide="list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
-<div class="list-length" data-ng-show="list.length > 0">{{list.length}}{{'msg.dancerListLength'|i18n}}</div>
-<table class="table" data-ng-show="list.length > 0">
+<div class="list-length" data-ng-hide="ctrl.list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
+<div class="list-length" data-ng-show="ctrl.list.length > 0">{{ctrl.list.length}}{{'msg.dancerListLength'|i18n}}</div>
+<table class="table" data-ng-show="ctrl.list.length > 0">
   <thead>
     <tr>
       <th data-ng-repeat="attr in ['title', 'firstname', 'lastname', 'certified', 'due', 'age', 'birth', 'knownBy', 'phone', 'cellphone', 'email', 'address']"
-        data-ng-click="onSort(attr)">{{'lbl.'+attr|i18n}}<i data-ng-show="sort === attr" data-ng-class="sortAsc ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down'"></i>
+        data-ng-click="ctrl.onSort(attr)">{{'lbl.'+attr|i18n}}<i data-ng-show="ctrl.sort === attr" data-ng-class="ctrl.sortAsc ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down'"></i>
       </th>
     </tr>
   </thead>
   <tbody>
-  <tr data-ng-repeat="dancer in list" data-ng-click="onDisplayDancer(dancer)">
+  <tr data-ng-repeat="dancer in ctrl.list" data-ng-click="ctrl.onDisplayDancer(dancer)">
     <td>{{dancer.title}}</td>
     <td>{{dancer.firstname}}</td>
     <td>{{dancer.lastname}}</td>
     <td><i class="glyphicon" data-ng-class="dancer.certified ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-exclamation-sign'"></i></td>
     <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="glyphicon glyphicon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
-    <td>{{getAge(dancer)}}</td>
-    <td>{{dancer.birth.format(i18n.formats.birth)}}</td>
+    <td>{{ctrl.getAge(dancer)}}</td>
+    <td>{{ctrl.getBirth(dancer)}}</td>
     <td><span class="known-by" data-ng-repeat="knownBy in dancer.knownBy">{{i18n.knownByMeanings[knownBy] || knownBy}}</span>
     <td>{{dancer.phone}}</td>
     <td>{{dancer.cellphone}}</td>

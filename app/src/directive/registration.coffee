@@ -1,7 +1,7 @@
 _ = require 'underscore'
 i18n = require '../labels/common'
-Planning = require '../model/planning/planning'
-Payment = require '../model/dancer/payment'
+DanceClass = require '../model/danceclass'
+Payment = require '../model/payment'
 
 # The registration directive displays dancer's registration to dance classes and their payments
 app.directive 'registration', ->

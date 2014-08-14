@@ -1,12 +1,12 @@
 <h2><span>{{'ttl.dancerList'|i18n}}</span><a data-ui-sref="expanded-list" class="btn"><i class="glyphicon glyphicon-chevron-right"></i></a></h2>
 <div class="input-group">
-  <input class="form-control" type="text" data-ng-model="search.name" data-ng-keyup="triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
+  <input class="form-control" type="text" data-ng-model="ctrl.search.name" data-ng-keyup="ctrl.triggerSearch()" placeholder="{{'lbl.searchPlaceholder'|i18n}}"/>
   <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
 </div>
-<div data-tags data-src="search" data-on-remove="triggerSearch()"></div>
-<div class="list-length" data-ng-hide="list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
-<div class="list-length" data-ng-show="list.length > 0">{{list.length}}{{'msg.dancerListLength'|i18n}}</div>
-<table class="table" data-ng-show="list.length > 0">
+<div data-tags data-src="ctrl.search" data-on-remove="ctrl.triggerSearch()"></div>
+<div class="list-length" data-ng-hide="ctrl.list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
+<div class="list-length" data-ng-show="ctrl.list.length > 0">{{ctrl.list.length}}{{'msg.dancerListLength'|i18n}}</div>
+<table class="table" data-ng-show="ctrl.list.length > 0">
   <thead>
     <tr>
       <th>{{'lbl.firstname'|i18n}}</th>
@@ -16,11 +16,11 @@
     </tr>
   </thead>
   <tbody>
-  <tr data-ng-repeat="dancer in list" data-ng-click="onDisplayDancer(dancer)">
-    <td>{{dancer.firstname}}</td>
-    <td>{{dancer.lastname}}</td>
-    <td><i class="glyphicon" data-ng-class="dancer.certified ? 'glyphicon-ok' : 'glyphicon-exclamation-sign'"></i></td>
-    <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="glyphicon glyphicon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
-  </tr>
+    <tr data-ng-repeat="dancer in ctrl.list" data-ng-click="ctrl.displayDancer(dancer)">
+      <td>{{dancer.firstname}}</td>
+      <td>{{dancer.lastname}}</td>
+      <td><i class="glyphicon" data-ng-class="dancer.certified ? 'glyphicon-ok' : 'glyphicon-exclamation-sign'"></i></td>
+      <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="glyphicon glyphicon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
+    </tr>
   </tbody>
 </table>

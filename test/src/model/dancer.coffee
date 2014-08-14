@@ -1,118 +1,101 @@
 {expect} = require 'chai'
+require('chai').use require 'chai-as-promised'
 _ = require 'underscore'
 moment = require 'moment'
-Dancer = require '../../../app/script/model/dancer/dancer'
-Address = require '../../../app/script/model/dancer/address'
-Registration = require '../../../app/script/model/dancer/registration'
-Payment = require '../../../app/script/model/dancer/payment'
-Planning = require '../../../app/script/model/planning/planning'
-DanceClass = require '../../../app/script/model/planning/danceclass'
+{Promise} = require 'q'
+Dancer = require '../../../app/script/model/dancer'
+Address = require '../../../app/script/model/address'
+Registration = require '../../../app/script/model/registration'
+Payment = require '../../../app/script/model/payment'
+DanceClass = require '../../../app/script/model/danceclass'
+Card = require '../../../app/script/model/card'
 
 describe 'Dancer model tests', ->
 
-  before (done) ->
-    Dancer.drop (err) ->
-      return done err if err?
-      Planning.drop done
+  beforeEach ->
+    Promise.all [
+      Card.drop()
+      Dancer.drop()
+      Address.drop()
+      DanceClass.drop()
+    ]
   
   it 'should new dancer be created with default values', ->
-    # when creating a dancer withou values
+    # when creating a dancer without values
     tested = new Dancer()
     # then an id was set
     expect(tested).to.have.property('id').that.is.null
     # then the creation date was set
     expect(tested).to.have.property 'created'
     expect(tested.created.valueOf()).to.be.closeTo moment().valueOf(), 500
-    # then registrations is an empty array
-    expect(tested).to.have.property('registrations').that.is.an('array').and.that.have.lengthOf 0
-    # then all plain attributes have been set to default
-    expect(tested).to.have.property('title').that.equal 'Mme'
-    expect(tested).to.have.property('firstname').that.is.empty
-    expect(tested).to.have.property('lastname').that.is.empty
-    expect(tested).to.have.property('address').that.is.null
-    expect(tested).to.have.property('email').that.is.null
-    expect(tested).to.have.property('phone').that.is.null
+    # then default values were set
+    expect(tested).to.have.property('title').that.is.null
+    expect(tested).to.have.property('firstname').that.is.null
+    expect(tested).to.have.property('lastname').that.is.null
     expect(tested).to.have.property('cellphone').that.is.null
+    expect(tested).to.have.property('email').that.is.null
     expect(tested).to.have.property('birth').that.is.null
-    expect(tested).to.have.property('certified').that.is.false
+    # then dancer's address is empty
+    expect(tested).to.have.property('addressId').that.is.null
+    expect(tested).to.have.property('address').that.eventually.be.null
+    # then dance classes is an empty array
+    expect(tested).to.have.property('danceClassIds').that.is.an('array').and.that.has.lengthOf 0
+    expect(tested).to.have.property('danceClasses').that.eventually.be.an('array').and.that.has.lengthOf 0
+    # then dancer's card is set to default
+    expect(tested).to.have.property('cardId').that.is.null
+    expect(tested).to.have.property('card').that.eventually.be.an.instanceOf Card
+    expect()
 
-  it 'should dancer save raw values', ->
-    # given a raw dancer
-    raw = 
-      id: 'anId'
-      created: moment().toJSON()
-      title: 'M.'
-      firstname: 'Jean'
-      lastname: 'Dujardin'
-      address:
+  it 'should dancer save raw values', (done) ->
+    season = '2013/2014'
+    # givan a some address, registration, dance classes
+    Promise.all([
+      new Address(
         street: '15 place de la bourse'
         zipcode: 69100
         city: 'Villeurbanne'
-      registrations: [
-        planningId: 18
-        danceClassIds: [1, 2]
-        charged: 300
-        balance: 200
-        details: 'Inclu le paiement de M. Legrand'
-        period: 'quarter'
-        payments: [
-          type: 'cash'
-          value: 100
-          payer: 'Jean'
-          bank: null
-          details: null
-          receipt: moment().toJSON()
-        ,
-          type: 'check'
-          value: 50
-          bank: 'La Poste'
-          details: 'something'
-          receipt: moment().toJSON()
-        , 
-          type: 'card'
-          value: 50
-          payer: 'Dujardin'
-          details: null
-          bank: null
-          receipt: moment().toJSON()
-        ]
-      ,
-        planningId: 17
-        danceClassIds: [2]
-        charged: 300
-        balance: 300
-        payments: [
-          type: 'cash'
-          payer: 'Dujardin'
-          value: 300
-          details: null
-          receipt: moment().toJSON()
-        ]
-      ]
+        phone: '0401020304'
+      ).save(),
+      new Card(
+        knownBy: ['searchEngine', 'elders']
+      ).save(),
+      new DanceClass(season: season, kind: 'salsa', teacher: 'Anthony').save(),
+      new DanceClass(season: season, kind: 'ballroom', teacher: 'Diana').save()
+    ]).then ([address, card, salsa, ballroom]) ->
+        # given a raw dancer
+        raw = 
+          created: moment().toJSON()
+          title: 'M.'
+          firstname: 'Jean'
+          lastname: 'Dujardin'
+          cellphone: '0601020304'
+          email: 'jean.dujardin@yopmail.com'
+          birth: '1980-05-24'
+          addressId: address.id
+          cardId: card.id
+          danceClassIds: [salsa.id, ballroom.id]
 
-    # when creating a dancer with a clone to avoid modifications
-    tested = new Dancer _.clone raw
-    # then all defined attributes have been saved
-    expect(tested).to.have.property 'id', raw.id
-    expect(tested).to.have.property 'title', raw.title
-    expect(tested).to.have.property 'firstname', raw.firstname
-    expect(tested).to.have.property 'lastname', raw.lastname
-    # then the address have been enriched
-    expect(tested).to.have.property 'address'
-    expect(tested.address).to.be.an.instanceOf Address
-    expect(tested.address.toJSON()).to.deep.equal raw.address
-    # then the registrations have been enriched
-    expect(tested).to.have.property 'registrations'
-    expect(tested.registrations).to.be.an 'array'
-    for registration, i in tested.registrations
-      expect(registration).to.be.an.instanceOf Registration
-      expect(_.omit registration.toJSON(), 'payments').to.deep.equal _.omit raw.registrations[i], 'payments'
-      for payment, j in registration.payments
-        expect(payment).to.be.an.instanceOf Payment
-        expect(payment.toJSON()).to.deep.equal raw.registrations[i].payments[j]
-    # then the creation date have been enriched
-    expect(tested.created.isSame raw.created).to.be.true
-    expect(_.pick tested.toJSON(), 'id', 'title', 'created', 'firstname', 'lastname', 'address').to.deep.equal _.omit raw, 'registrations'
+        # when creating a dancer with a clone to avoid modifications
+        tested = new Dancer _.clone raw
+        # then all defined attributes have been saved
+        expect(tested).to.have.property 'id'
+        # the personnal fields are available
+        expect(tested).to.have.property('title').that.equal 'M.'
+        expect(tested).to.have.property('firstname').that.equal 'Jean'
+        expect(tested).to.have.property('lastname').that.equal 'Dujardin'
+        expect(tested).to.have.property('cellphone').that.equal '0601020304'
+        expect(tested).to.have.property('email').that.equal 'jean.dujardin@yopmail.com'
+        expect(tested).to.have.property('birth').that.satisfy (b) -> moment.isMoment(b) and b.isSame '1980-05-24'
+        # then address containing relevant fields
+        expect(tested).to.have.property('addressId').that.equal address.id
+        expect(tested).to.have.property('address').that.eventually.is.an.instanceOf(Address).and.that.equal address
+        # then the registrations are available
+        expect(tested).to.have.property('cardId').that.equal card.id
+        expect(tested).to.have.property('card').that.eventually.is.an.instanceOf(Card).and.that.equal card
+        # then the dance classes are available
+        expect(tested).to.have.property('danceClassIds').that.deep.equal [salsa.id, ballroom.id]
+        expect(tested).to.have.property('danceClasses').that.eventually.deep.equal [salsa, ballroom]
+        done()
 
   it 'should dancer not save unallowed values', ->
     # when creating a dancer with unallowed attributes
@@ -120,111 +103,190 @@ describe 'Dancer model tests', ->
     # then the attribute was not reported and the dancer created
     expect(tested).not.to.have.property 'unallowed'
 
-  describe 'given an existing dancer', ->
+  describe 'given a dancer without address, card or dance classes', ->
 
-    existing = null
+    dancer = new Dancer
+      title: 'Mlle.'
+      firstname: 'Lucy'
+      lastname: 'Grandjean'
+     
+    beforeEach dancer.save
+
+    it 'should dancer empty address be resolved at construction', (done) ->
+      expect(dancer).to.have.property('addressId').that.is.null
+      expect(dancer).to.have.property('address').that.eventually.is.null.notify done
+
+    it 'should dancer addres be modified', (done) ->
+      # given an address
+      new Address(
+        street: '15 place de la bourse'
+        zipcode: 69100
+        city: 'Villeurbanne'
+      ).save().then (address) ->
+        # when affecting this address to the dancer
+        dancer.address = address
+        # then the id was updated
+        expect(dancer).to.have.property('addressId').that.equal address.id
+        expect(dancer).to.have.property('address').that.eventually.equal(address).notify ->
+          dancer.save().then ->
+            # then address getter read from data base is consistent
+            Dancer.find(dancer.id).then (result) ->
+              expect(result).to.exist
+              expect(result).to.have.property('addressId').that.equal address.id
+              expect(result).to.have.property('address').that.eventually.satisfy((result) ->
+                expect(result).to.be.an.instanceOf Address
+                expect(result).to.have.property('id').that.equal address.id
+              ).notify done
+
+    it 'should dancer empty card be resolved at construction', (done) ->
+      expect(dancer).to.have.property('cardId').that.is.null
+      expect(dancer).to.have.property('card').that.eventually.is.an.instanceOf(Card).notify done
+
+    it 'should dancer card be modified', (done) ->
+      # given an registration
+      new Card(
+        knownBy: 'searchEngine'
+      ).save().then (card) ->
+        # when affecting this card to the dancer
+        dancer.card = card
+        # then the id was updated
+        expect(dancer).to.have.property('cardId').that.equal card.id
+        expect(dancer).to.have.property('card').that.eventually.equal(card).notify ->
+          dancer.save().then ->
+            # then address getter read from data base is consistent
+            Dancer.find(dancer.id).then (result) ->
+              expect(result).to.exist
+              expect(result).to.have.property('cardId').that.equal card.id
+              expect(result).to.have.property('card').that.eventually.satisfy((result) ->
+                expect(result).to.be.an.instanceOf Card
+                expect(result).to.have.property('id').that.equal card.id
+              ).notify done
+
+    it 'should dancer empty dance classes be resolved at construction', (done) ->
+      expect(dancer).to.have.property('danceClassIds').that.has.lengthOf 0
+      expect(dancer).to.have.property('danceClasses').that.eventually.has.lengthOf(0).notify done
+
+    it 'should dancer dance classes be modified', (done) ->
+      # given multiple dance classes
+      Promise.all([
+        new DanceClass(season: '2014/2015', kind: 'salsa', teacher: 'Anthony').save(),
+        new DanceClass(season: '2013/2014', kind: 'ballroom', teacher: 'Diana').save(),
+        new DanceClass(season: '2013/2014', kind: 'salsa', teacher: 'Anthony').save()
+      ]).then((classes) ->
+        # when affecting this classes to the dancer
+        dancer.danceClasses = classes
+        # then the id was updated
+        expect(dancer).to.have.property('danceClassIds').that.deep.equal _.pluck classes, 'id'
+        expect(dancer).to.have.property('danceClasses').that.eventually.deep.equal(classes).notify ->
+          dancer.save().then ->
+            # then address getter read from data base is consistent
+            Dancer.find(dancer.id).then (result) ->
+              expect(result).to.exist
+              expect(result).to.have.property('danceClassIds').that.deep.equal _.pluck classes, 'id'
+              expect(result).to.have.property('danceClasses').that.eventually.satisfy((results) ->
+                i = 0
+                for danceClass in results
+                  expect(danceClass).to.be.an.instanceOf DanceClass
+                  expect(danceClass).to.have.property('id').that.equal classes[i++].id
+              ).notify done
+      ).catch done
+
+  describe 'given some dancers, card, classes and registrations', ->
+
+    lucy = new Dancer title: 'Mlle.', firstname: 'Lucy', lastname: 'Grandjean'
+    bob = new Dancer title: 'M.', firstname: 'Bob', lastname: 'Marchant'
+    jack = new Dancer title: 'M.', firstname: 'Jack', lastname: 'Marchant'
+    salsa14 = new DanceClass season: '2014/2015', kind: 'salsa', teacher: 'Anthony'
+    salsa13 = new DanceClass season: '2013/2014', kind: 'salsa', teacher: 'Anthony'
+    batchata14 = new DanceClass season: '2014/2015', kind: 'batchata', teacher: 'Anthony'
+    ballroom14 = new DanceClass season: '2014/2015', kind: 'ballroom', teacher: 'Diana'
+    ballroom13 = new DanceClass season: '2013/2014', kind: 'ballroom', teacher: 'Diana'
+    cardBobJack = new Card registrations: [
+      new Registration season: '2014/2015', charged: 600, 
+      new Registration season: '2013/2014', charged: 200, period: 'quarter'
+    ]
+    cardLucy = new Card registrations: [
+      new Registration season: '2014/2015', charged: 400
+      new Registration season: '2013/2014', charged: 200
+    ]
+    addressBobJack = new Address city: 'Lyon', street: 'rue Bellecour', zipcode: '69001'
+    addressLucy = new Address city: 'Villeurbanne', street: 'cours Emile Zola', zipcode: '69100'
 
     beforeEach (done) ->
-      # given no dancer
-      Dancer.drop (err) ->
-        return done err if err?
-        # given a brand new dancer 
-        existing = new Dancer 
-          title: 'Mlle'
-          firstname: 'Lucie'
-          lastname: 'Grandjean'
-          registrations: [
-            planningId: 18
-            danceClassIds: [1, 2]
-          ]
-        existing.save done
+      Promise.all([salsa14.save(), salsa13.save(), batchata14.save(), ballroom14.save(), ballroom13.save(), 
+        cardBobJack.save(), cardLucy.save(), addressBobJack.save(), addressLucy.save()
+      ]).then ->
+        lucy.address = addressLucy
+        lucy.danceClasses = [ballroom13, ballroom14, salsa14]
+        jack.address = addressBobJack
+        jack.danceClasses = [salsa14]
+        bob.address = addressBobJack
+        bob.danceClasses = [salsa13, salsa14, batchata14]
+        Promise.all([lucy.save(), bob.save(), jack.save()]).then -> done()
 
-    it 'should dancer be found by id', (done) ->
-      Dancer.find existing.id, (err, retrieved) =>
-        return done "Failed to find existing dancer by id: #{err}" if err?
-        expect(retrieved).to.exist
-        expect(retrieved).to.be.an.instanceOf Dancer
-        expect(retrieved.toJSON()).to.be.deep.equal existing.toJSON()
-        done()
+    it 'should findWhere() resolve on dance classes', ->
+      Dancer.findWhere('danceClassIds': $in: batchata14.id).then (dancers) ->
+        expect(dancers).to.have.lengthOf 3
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
 
-    it 'should findWhere() found within array', (done) ->
-      # given two another dancers
-      dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, danceClassIds: [3]]
-      dancer1.save (err) ->
-        return done "Failed to save first dancer: #{err}" if err?
-        dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, danceClassIds: [1]]
-        dancer2.save (err) ->
-          return done "Failed to save second dancer: #{err}" if err?
-          Dancer.findWhere {'registrations.danceClassIds': 1}, (err, dancers) =>
-            return done "Failed to find existing dancer by class id: #{err}" if err?
-            expect(dancers).to.exist
-            expect(dancers).to.have.lengthOf 2
-            expect(_.findWhere dancers, firstname: 'Jack').to.exist
-            expect(_.findWhere dancers, firstname: 'Lucie').to.exist
-            expect(_.findWhere dancers, firstname: 'Bob').not.to.exist
-            done()
+    it 'should findWhere() resolve on dance classes', ->
+      Dancer.findWhere('danceClasses.teacher': 'Anthony').then (dancers) ->
+        expect(dancers).to.have.lengthOf 3
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
 
-    it 'should findWhere() single value', (done) ->
-      # given two another dancers
-      dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, charged: 100, danceClassIds: [3]]
-      dancer1.save (err) ->
-        return done "Failed to save first dancer: #{err}" if err?
-        dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, charged: 100, danceClassIds: [1]]
-        dancer2.save (err) ->
-          return done "Failed to save second dancer: #{err}" if err?
-          Dancer.findWhere {'registrations.charged': 100}, (err, dancers) =>
-            return done "Failed to find existing dancer by charge: #{err}" if err?
-            expect(dancers).to.exist
-            expect(dancers).to.have.lengthOf 2
-            expect(_.findWhere dancers, firstname: 'Jack').to.exist
-            expect(_.findWhere dancers, firstname: 'Bob').to.exist
-            expect(_.findWhere dancers, firstname: 'Lucie').not.to.exist
-            done()
+    it 'should findWhere() resolve multiple criteria on dance classes', ->
+      Dancer.findWhere('danceClasses.teacher': 'Anthony', 'danceClasses.season': '2013/2014').then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
 
-    it 'should findWhere() use multiple conditions', (done) ->
-      # given two another dancers
-      dancer1 = new Dancer firstname: 'Bob', registrations: [planningId: 18, charged: 100, danceClassIds: [3]]
-      dancer1.save (err) ->
-        return done "Failed to save first dancer: #{err}" if err?
-        dancer2 = new Dancer firstname: 'Jack', registrations: [planningId: 18, charged: 50, danceClassIds: [1]]
-        dancer2.save (err) ->
-          return done "Failed to save second dancer: #{err}" if err?
-          Dancer.findWhere {'registrations.danceClassIds': 1, 'registrations.charged': 50}, (err, dancers) =>
-            return done "Failed to find existing dancer by charge: #{err}" if err?
-            expect(dancers).to.exist
-            expect(dancers).to.have.lengthOf 1
-            expect(_.findWhere dancers, firstname: 'Jack').to.exist
-            expect(_.findWhere dancers, firstname: 'Bob').not.to.exist
-            expect(_.findWhere dancers, firstname: 'Lucie').not.to.exist
-            done()
+    it 'should findWhere() resolve on registrations', ->
+      Dancer.findWhere('card.registrations.charged': 200).then (dancers) ->
+        expect(dancers).to.have.lengthOf 2
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
 
-    it 'should findWhere() resolve plannings and dance classes', (done) ->
-      anthony = 'Anthony'
-      diana = 'Diana'
-      # given two plannings
-      new Planning(id:18, season:'2012/2013', danceClasses: [
-        new DanceClass id: 1, teacher: anthony
-        new DanceClass id: 2, teacher: diana
-        new DanceClass id: 3, teacher: diana
-      ]).save (err) ->
-        return done "Failed to save first planning: #{err}" if err?
-        new Planning(id:19, season:'2013/2014', danceClasses: [
-          new DanceClass id: 4, teacher: anthony
-          new DanceClass id: 5, teacher: diana
-        ]).save (err) ->
-          return done "Failed to save second planning: #{err}" if err?
-          # given two another dancers
-          dancer1 = new Dancer firstname: 'Jack', registrations: [planningId: 18, danceClassIds: [3]]
-          dancer1.save (err) ->
-            return done "Failed to save first dancer: #{err}" if err?
-            dancer2 = new Dancer firstname: 'Mitch', registrations: [planningId: 19, danceClassIds: [4]]
-            dancer2.save (err) ->
-              return done "Failed to save second dancer: #{err}" if err?
-              Dancer.findWhere {'registrations.danceClasses.teacher': anthony, 'registrations.planning.season': '2012/2013'}, (err, dancers) =>
-                return done "Failed to find existing dancer by teacher: #{err}" if err?
-                expect(dancers).to.exist
-                expect(dancers).to.have.lengthOf 1
-                expect(_.findWhere dancers, firstname: 'Lucie').to.exist
-                expect(_.findWhere dancers, firstname: 'Jack').not.to.exist
-                expect(_.findWhere dancers, firstname: 'Mitch').not.to.exist
-                done()
+    it 'should findWhere() resolve multiple criteria on on registrations', ->
+      Dancer.findWhere('card.registrations.charged': 200, 'card.registrations.period': 'quarter').then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+
+    it 'should findWhere() resolve registrations and dance classes', ->
+      Dancer.findWhere('card.registrations.charged': 200, 'danceClasses.kind': 'ballroom').then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+
+    it 'should findWhere() resolve on address', ->
+      Dancer.findWhere('address.city': 'Lyon').then (dancers) ->
+        expect(dancers).to.have.lengthOf 2
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
+
+    it 'should findWhere() resolve multiple criteria on on address', ->
+      Dancer.findWhere('address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': $regex: /Zola/).then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+
+    it 'should findWhere() resolve address, registrations and dance classes', ->
+      Dancer.findWhere(
+        'danceClasses.teacher': 'Anthony'
+        'card.registrations.season': '2013/2014' 
+        'address.city': 'Villeurbanne'
+      ).then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
+        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist

@@ -1,7 +1,7 @@
 _ = require 'underscore'
 i18n = require '../labels/common'
-Planning = require '../model/planning/planning'
-Registration = require '../model/dancer/registration'
+DanceClass = require '../model/danceclass'
+Registration = require '../model/registration'
   
 # Allow to choose a given dance class (season selection) and creates the corresponding registration.
 # Intended to be used inside a popup: will returned the created Registration object, or null.

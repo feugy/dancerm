@@ -1,20 +1,42 @@
 _ = require 'underscore'
 i18n = require  '../labels/common'
-Dancer = require  '../model/dancer/dancer'
+Dancer = require  '../model/dancer'
   
 module.exports = class LayoutController
               
   # Controller dependencies
-  @$inject: ['$scope', 'import', 'dialog', '$state']
+  @$inject: ['$rootScope', 'import', 'dialog', '$state']
   
-  # Controller scope, injected within constructor
-  scope: null
+  # Global scope, for digest triggering
+  rootScope: null
 
   # Link to import service
   import: null
       
-  # Link to Angular dialog service
+  # Link to Angular's dialog service
   dialog: null
+
+  # Link to Angular's state provider
+  state: null
+
+  # indicates whether a main view is visible or not
+  hasMain: true
+
+  # dancer displayed list
+  list: []
+
+  # search criteria
+  search:
+    danceClasses: []
+    seasons: []
+    string: null
+    teachers: []
+
+  # flag indicating wether the edited main part has changed or not
+  hasChanged: false
+
+  # i18n values, for rendering
+  i18n: i18n
 
   # **private**
   # Disable concurrent search. Only first search is taken in account
@@ -22,66 +44,67 @@ module.exports = class LayoutController
 
   # Controller constructor: bind methods and attributes to current scope
   #
-  # @param scope [Object] Angular current scope
+  # @param scope [Object] Angular global scope, for digest triggering
   # @param import [import] Import service
   # @param dialog [Object] Angular dialog service
   # @param state [Object] Angular state provider
-  constructor: (@scope, @import, @dialog, state) -> 
+  constructor: (@rootScope, @import, @dialog, @state) -> 
     @_searchPending = false
     @_isExpand = false
     # updates main existance when state is loaded
-    @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
-      @scope.hasMain = state?.current?.views?.main?
+    @rootScope.$on '$stateChangeSuccess', checkMain = =>
+      @hasMain = @state?.current?.views?.main?
+    @hasMain = checkMain()
 
     # displayed dancer's list
-    @scope.list = []
+    @list = []
     # search criteria
-    @scope.search = 
+    @search = 
       danceClasses: []
       seasons: []
       string: null
       teachers: []
-    # displayed dancer.
-    @scope.displayed = null
-    @scope.hasChanged = false
-    # injects public methods into scope
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
+    @hasChanged = false
     # Ask immediately dump entry if missing
     @_loadDumpEntry()
 
-  # Trigger the search based on `scope.search` descriptor.
-  # `scope.list` will be updated at the search end.
+  # Trigger the search based on `search` descriptor.
+  # `list` will be updated at the search end.
   triggerSearch: =>
+    console.log "search for", @search
     return if @_searchPending
     conditions = {}
     # depending on criterias
-    if @scope.search.name?.length >= 3 
+    if @search.name?.length >= 3 
       # find all dancers by first name/last name
-      searched = @scope.search.name.toLowerCase()
+      searched = @search.name.toLowerCase()
       conditions.$where = () -> 
         0 is @firstname?.toLowerCase().indexOf(searched) or 
         0 is @lastname?.toLowerCase().indexOf(searched) or
         0 is @address?.city?.toLowerCase().indexOf(searched)
 
     # find all dancers by season and optionnaly by teacher for this season
-    if @scope.search.seasons?.length > 0
-      conditions['registrations.planning.season'] = $in: @scope.search.seasons
+    if @search.seasons?.length > 0
+      conditions['danceClasses.season'] = $in: @search.seasons
     
-    if @scope.search.danceClasses?.length > 0
+    if @search.danceClasses?.length > 0
       # select class students: can be combined with season and name
-      conditions['registrations.danceClassIds'] = $in: _.pluck @scope.search.danceClasses, 'id'
-    else if @scope.search.teachers?.length > 0
+      conditions['danceClassIds'] = $in: _.pluck @search.danceClasses, 'id'
+    else if @search.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
-      conditions['registrations.danceClasses.teacher'] = $in: @scope.search.teachers
+      conditions['danceClasses.teacher'] = $in: @search.teachers
     
     # clear list content
-    return @scope.list = [] if _.isEmpty conditions
+    return @list = [] if _.isEmpty conditions
     @_searchPending = true
-    Dancer.findWhere conditions, (err, dancers) =>
+    Dancer.findWhere(conditions).then((dancers) =>
       @_searchPending = false
-      return @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok] if err?
-      @scope.$apply =>
-        @scope.list = _.sortBy dancers, 'lastname'
+      @list = _.sortBy dancers, 'lastname'
+      @rootScope.$apply()
+    ).catch (err) =>
+      @_searchPending = false
+      @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
+      @rootScope.$apply()
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified
@@ -92,33 +115,31 @@ module.exports = class LayoutController
       dialog.remove()
       # dialog cancellation
       return unless filePath
-      @scope.$apply => 
+      @rootScope.$apply => 
         dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
       @import.fromFile filePath, (err, dancers) =>
         err = new Error "No dancers found" if !err? and dancers?.length is 0
         if err?
           console.error "Import failed: #{err}"
           # displays an error dialog
-          return @scope.$apply =>
+          return @rootScope.$apply =>
             dialog.close()
             @dialog.messageBox i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]
 
         # get all existing dancers
-        Dancer.findAll (err, existing) =>
-          if err?
-            @scope.$apply =>
-              dialog.close()
-            return console.error err 
-
+        Dancer.findAll().then((existing) =>
           @import.merge existing, dancers, (err, imported) =>
             console.info "#{imported}/#{dancers.length} dancers imported"
-            @scope.$apply =>
+            @rootScope.$apply =>
               dialog.close()
               msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
               @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
                 # refresh all
-                @scope.$broadcast 'model-imported'
-
+                @rootScope.$broadcast 'model-imported'
+        ).catch (err) =>
+          @rootScope.$apply =>
+            dialog.close()
+          console.error err 
     dialog.trigger 'click'
     null
 

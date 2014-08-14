@@ -2,10 +2,10 @@
   <header>{{'ttl.application'|i18n}}</header>
   
 	<div  class="column"
-        data-ng-class="hasMain ? '' : 'expanded'" 
+        data-ng-class="ctrl.hasMain ? '' : 'expanded'" 
         data-ui-view="column"></div>
 
 	<div  class="main"
-        data-ng-class="hasMain ? '' : 'empty'" 
+        data-ng-class="ctrl.hasMain ? '' : 'empty'" 
         data-ui-view="main"></div>
 </div>

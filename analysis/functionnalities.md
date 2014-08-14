@@ -92,12 +92,10 @@ Paid: 110h 10€/h
 
 ## Bugs
 
-- no refresh on F5
 - disable back support
 
 ## TODOs 
 
-! - use angular's controllerAs
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb (with new knownBy status)
 
@@ -113,6 +111,9 @@ ok - add another "known-by" choice: "old dancers"
  6 - stats on known-by dancers 
  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
 
+- incorporate/separate existing dancer to another card
+- incorporate an existing dancer on an existing address of the same card address
+
 ## Functionnal requirements
 
 - Manage mupltiple dancers in one file
@@ -127,3 +128,10 @@ ok - add another "known-by" choice: "old dancers"
 03/08 - 0,5
 04/05 - 0,5
 05/05 - 2
+08/05 - 1
+09/05 - 8
+10/05 - 8
+11/05 - 1
+12/05 - 3
+13/05 - 3
+14/05 - 1

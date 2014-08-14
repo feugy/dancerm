@@ -1,9 +1,8 @@
 _ = require 'underscore'
 moment = require 'moment'
 async = require 'async'
-Dancer = require '../model/dancer/dancer'
-Planning = require '../model/planning/planning'
-Registration = require '../model/dancer/registration'
+Dancer = require '../model/dancer'
+Registration = require '../model/registration'
 fs = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
@@ -25,6 +24,7 @@ module.exports = class Import
   # @option callback err [Error] an Error object, or null if no problem occurred
   # @option callback inported [Number] number of modified or added dancers
   merge: (existings, added, callback) =>
+    return callback new Error "to be refined"
     imported = 0
     # get existing names
     names = _.map existings, (existing) -> existing?.lastname?.toLowerCase()+existing?.firstname.toLowerCase()
@@ -78,6 +78,7 @@ module.exports = class Import
   # @option callback dancers [Array<Object>] the list (that may be empty) of extracted dancers: 
   # contains `dancer` and `lastRegistration` attributes
   fromFile: (filePath, callback) =>
+    return callback new Error "to be refined"
     return callback new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
     extension = mime.lookup filePath

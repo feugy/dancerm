@@ -3,8 +3,7 @@ moment = require 'moment'
 fs = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
-Dancer = require '../model/dancer/dancer'
-Planning = require '../model/planning/planning'
+Dancer = require '../model/dancer'
 i18n = require '../labels/common'
 {getAttr} = require '../util/common'
    
@@ -18,6 +17,7 @@ module.exports = class Export
   # @param callback [Function] dump end callback, invoked with arguments:
   # @option callback err [Error] an Error object, or null if no problem occurred
   dump: (filePath, callback) =>
+    return callback new Error "to be refined"
     return callback new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
     console.info "dump data in #{filePath}..."
@@ -47,6 +47,7 @@ module.exports = class Export
   # @param callback [Function] extraction end callback, invoked with arguments:
   # @option callback err [Error] an Error object, or null if no problem occurred
   toFile: (filePath, dancers, callback) =>
+    return callback new Error "to be refined"
     return callback new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
 

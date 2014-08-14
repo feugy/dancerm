@@ -1,30 +1,21 @@
 _ = require 'underscore'
+LayoutController = require './layout'
   
-module.exports = class ListController
-              
-  # Controller dependencies
-  @$inject: ['$scope', '$state']
+module.exports = class ListController extends LayoutController
   
-  # Controller scope, injected within constructor
-  scope: null
+  # tags displayed above dancer's list
+  tags: []
 
-  # Link to Angular state provider
-  state: null
-  
   # Controller constructor: bind methods and attributes to current scope
-  #
-  # @param scope [Object] Angular current scope
-  # @param state [Object] Angular state provider
-  constructor: (@scope, @state) -> 
-    @scope.tags = []
-    # injects public methods into scope
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
+  constructor: (parentArgs...) ->
+    super parentArgs...
+    @tags = []
 
     # detach table during transition, to avoid huge UI redraw
     table = null
     previous = null
-    @scope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
-      return unless @scope.list.length and (toState.name is 'expanded-list' or fromState.name is 'expanded-list')
+    @rootScope.$on '$stateChangeSuccess', (event, toState, toParams, fromState) =>
+      return unless @list.length and (toState.name is 'expanded-list' or fromState.name is 'expanded-list')
       _.defer =>       
         table = $('.column.expanded .table')
         previous = table.prev()
@@ -37,6 +28,6 @@ module.exports = class ListController
   # Displays a given dancer on the main part
   #
   # @param dancer [Dancer] choosen dancer
-  onDisplayDancer: (dancer) =>
+  displayDancer: (dancer) =>
     console.log "ask to display #{dancer.id}"
     @state.go 'list-and-dancer', id:dancer.id

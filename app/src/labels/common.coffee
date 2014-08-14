@@ -4,9 +4,11 @@ module.exports =
   ttl:
     address: 'Adresse'
     application: 'DanceRM'
+    card: 'Fiche danceurs'
     confirm: 'Confirmation de la suppression'
     contact: 'Contact'
     dancerList: 'Liste des danseurs'
+    dancer: 'Danceur'
     dump: 'Sauvegarde externe'
     editRegistration: "Modification de l'inscription"
     export: 'Exportation'
@@ -19,7 +21,7 @@ module.exports =
     
   # long messages with html
   msg:
-    cancelEdition: "Vous allez perdre les modification apportée à %s %s. Voulez-vous vraiment continuer ?"
+    cancelEdition: "Vous allez perdre les modification apportée à %s. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
@@ -38,6 +40,7 @@ module.exports =
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
     cancel: 'Annuler'
+    close: 'Fermer'
     edit: 'Modifier'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
@@ -62,6 +65,7 @@ module.exports =
     certified: 'Cert.'
     certifiedLong: 'Certificat'
     charged: 'Réglement de'
+    choose: '---'
     city: 'Ville'
     classTooltip: '%s (%s) %s~%s'
     currency: '€'
@@ -75,7 +79,7 @@ module.exports =
     knownBy: 'Connu par'
     lastname: 'Nom'
     Mon: 'Lundi'
-    other: 'autre'
+    other: '(autre)'
     payer: 'Par'
     phone: 'Téléphone'
     receipt: 'Encaissement'
@@ -103,8 +107,9 @@ module.exports =
 
   # date/time formats
   formats:
-    birth: 'DD/MM/YYYY'
-    receipt: 'DD/MM/YYYY'
+    birthSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
+    birth: 'DD/MM/YYYY' # moment format
+    receipt: 'DD/MM/YYYY' # moment format
 
   # print texts
   print:
@@ -130,17 +135,17 @@ module.exports =
     quarter: "au trimestre"
     year: "à l'année"
 
-  # different ways to learn the school existence (order is important)
+  # different ways to learn the school existence
   knownByMeanings:
+    associationsBiennal: 'biennale asso.'
     directory: 'annuaire'
     elders: 'anciens'
-    associationsBiennal: 'biennale des asso.'
-    mouth: 'bouche à oreille'
     groupon: 'groupon'
-    searchEngine: 'moteur de recherche'
-    website: 'notre site web'
-    pagesjaunesFr: 'pagesjaunes.fr'
     leaflets: 'tract'
+    mouth: 'bouche à oreille'
+    pagesjaunesFr: 'pagesjaunes.fr'
+    searchEngine: 'moteur de recherche'
+    website: 'site web'
 
   # planning directive configuration values
   planning:

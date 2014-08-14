@@ -88,9 +88,6 @@ body
     -webkit-user-select none
     cursor default
 
-  .btn, .btn *, a, a *, label, .btn-group
-    cursor pointer
-
   input, textarea
     -webkit-user-select text
     cursor text
@@ -115,6 +112,12 @@ body
     border-color transparent
     box-shadow none
 
+  .glyphed > .glyphicon:first-child
+      margin 0 6px 0 -3px
+
+  :focus
+    outline none
+
 /******************************************************************************
  * Left Column
  */
@@ -134,6 +137,9 @@ body
       font-size (fontSize*1.6)
       font-family headingFont
       flex 1
+
+    .btn > .glyphicon
+      margin 0
 
   .input-group
     margin 20px 0 0
@@ -265,10 +271,10 @@ body
     margin 10px 0
 
 /******************************************************************************
- * Dancer
+ * Card
  */
 
-.dancer
+.card
   overflow-x hidden
   overflow-y auto
   height 100%
@@ -279,10 +285,17 @@ body
   .registration-bar
     text-align center
 
-  article
+  > article
+    position relative
     border-top 2px solid headingColor
     margin 10px 0
     padding 0 1em 1em
+
+    > .btn
+      position absolute
+      right 15px
+      top -20px
+      box-shadow 0 0 0 3px background
     
     > h2
       border-top none
@@ -295,9 +308,61 @@ body
       left 25px
       padding 0 5px
 
+    .dancer
+    .address 
+      border-top 1px solid headingColor
+      margin-top 10px
+
+      > h4
+        font-size fontSize*1.3
+        background colBackground
+        display inline-block
+        position relative
+        margin -10px 0 0
+        bottom 11px
+        left 12px
+        padding 0 5px
+
+    .card-dancer
+      border-radius inputRadius
+      background colBackground
+      padding 6px
+      margin 6px -12px
+
+    .dancer 
+      .title
+        // cause name overlaps
+        z-index 1
+    .address
+      .zipcode input
+        min-width 60px
+      .city label
+        width 45px
+      .phone label
+        width 75px
+
+    .address .read-only
+      .zipcode, .city, .street 
+        margin-top 5px
+        margin-left 10px 
+      &.phone
+        label
+          width auto 
+        span
+          margin-top 5px 
+
     .row
       > span
         display flex
+
+      .input-group
+        flex 1
+        display flex
+
+        .input-group-addon
+          width 30px
+          height 28px
+          padding 4px
 
       input[type=text],
       input[type=email]
@@ -327,23 +392,10 @@ body
     .known-by
       display flex
       flex-flow wrap
-      margin 0 -10px
 
       > span
-        width 155px
+        min-width 128px
         margin 2px 10px 2px 0
-
-      > *:last-child
-        flex 1
-        display flex
-        margin 0 10px 0 0
-
-        label 
-          vertical-align 2px
-        input 
-          margin-left 5px
-          height 28px
-          flex 1
 
       label
         text-align left
@@ -353,6 +405,19 @@ body
 
       input[type="checkbox"]
         vertical-align -2px
+
+    .known-by-other
+      flex 1
+      display inline-flex
+
+      label 
+        vertical-align 2px
+        width auto
+        text-align left
+      input 
+        margin-right 5px
+        height 28px
+        flex 1
 
 /******************************************************************************
  * Registration popup
@@ -442,6 +507,8 @@ body
   input:not([type="radio"]):hover
     border-color tableBorderColor
 
+
+  select:focus
   textarea:focus
   input[type="text"]:focus
   input[type="number"]:focus
@@ -452,8 +519,14 @@ body
   .uneditable-input:focus
     border-color focusColor
     box-shadow 0 0 8px focusColor
-    outline-color focusColor
+    outline focusColor auto 5px
     color infoColor
+
+  a:focus
+  button:focus
+  .btn:focus
+    box-shadow 0 0 3px 1px focusColor
+    outline 0
 
   textarea
   input[type="text"]
@@ -490,6 +563,9 @@ body
         border-left 1px solid textColor
       &:first-child
         border-right 1px solid textColor
+      &[href]
+      &[href] > i
+        cursor pointer
 
   .btn > .caret
     display inline-block
@@ -542,3 +618,18 @@ body
 
   .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled] 
     background-color infoBtnBackgroundHover
+
+  [data-datepicker-popup] ~ .dropdown-menu
+  [datepicker-popup] ~ .dropdown-menu
+    background headerBackground
+    padding 5px
+
+    tbody .btn
+      background background
+      color headerColor
+
+    tbody .btn.active
+      background emphasisColor
+
+      .text-info
+        color headerColor

@@ -11,10 +11,8 @@ LayoutCtrl = require '../script/controller/layout'
 ListCtrl = require '../script/controller/list'
 ExpandedListCtrl = require '../script/controller/expandedlist'
 PlanningCtrl = require '../script/controller/planning'
-DancerCtrl = require '../script/controller/dancer'
-DancerModel = require '../script/model/dancer/dancer'
-PlanningModel = require '../script/model/planning/planning'
-initializer = require '../script/model/initializer'
+CardCtrl = require '../script/controller/card'
+initializer = require '../script/model/tools/initializer'
 
 console.log "running with angular v#{angular.version.full}"
 
@@ -31,6 +29,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
     abstract: true
     templateUrl: 'columnandmain.html'
     controller: LayoutCtrl
+    controllerAs: 'ctrl'
   states.state 'home', home
 
   states.state 'list-and-planning',
@@ -40,9 +39,11 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
       column:
         templateUrl: 'list.html'
         controller: ListCtrl
+        controllerAs: 'ctrl'
       main:
         templateUrl: 'planning.html'
         controller: PlanningCtrl
+        controllerAs: 'ctrl'
 
   states.state 'list-and-dancer',
     parent: home
@@ -51,9 +52,11 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
       column:
         templateUrl: 'list.html'
         controller: ListCtrl
+        controllerAs: 'ctrl'
       main:
-        templateUrl: 'dancer.html'
-        controller: DancerCtrl
+        templateUrl: 'card.html'
+        controller: CardCtrl
+        controllerAs: 'ctrl'
 
   states.state 'expanded-list',
     parent: home
@@ -62,13 +65,14 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
       column:
         templateUrl: 'expandedlist.html'
         controller: ExpandedListCtrl
+        controllerAs: 'ctrl'
 ]
 
 # application initialization
 app.run ['$rootScope', (rootScope) ->
   # init model
-  initializer (err, initialized) ->
-    throw err if err?
+  initializer().then -> 
+    console.log "broadcast"
     rootScope.$broadcast 'model-initialized'
 ]
 
@@ -84,6 +88,7 @@ app.close = (callback) ->
   $injector.get('$rootScope').$apply =>
     $injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping
   # export data
-  $injector.get('export').dump localStorage.getItem('dumpPath'), callback
+  # TODO $injector.get('export').dump localStorage.getItem('dumpPath'), callback
+  callback null
 
 module.exports = app

@@ -9,6 +9,7 @@
  *   vendor - get vendor libraries from the net
  *   watch (default) - clean, build, and use watcher to recompile on the fly when sources or scripts file changes
  */
+var _ = require('underscore');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var clean = require('gulp-rimraf');
@@ -30,7 +31,9 @@ var paths = {
   testsDest: 'test/script',
   vendorSrc: [
     {file:'vendor/jquery.js', url:'http://code.jquery.com/jquery-2.1.1.min.js'}, 
-    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.2.21/angular.min.js'},
+    // awaiting for angular 1.3.0-beta.17+ https://github.com/angular/angular.js/pull/7645
+    // but incompatibility with typeahead: https://github.com/angular-ui/bootstrap/pull/2557
+    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0-beta.10/angular.min.js'},
     {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.2.21/angular-animate.min.js'},
     {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.10/release/angular-ui-router.min.js'},
     {file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.min.js'},

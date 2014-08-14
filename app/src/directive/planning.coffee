@@ -13,8 +13,8 @@ app.directive 'planning', ->
   controller: PlanningDirective
   # parent scope binding.
   scope: 
-    # displayed planning
-    src: '='
+    # displayed dance classes (array)
+    danceClasses: '=src'
     # array of selected dance class ids
     # if not provided, dance class cannot be selected 
     selected: '='
@@ -64,14 +64,14 @@ class PlanningDirective
     @$el = $(element)
     @groupBy = attrs.groupBy or 'hall'
     # now, displays dance classes
-    @scope.$watch 'src', @_displayClasses
-    @_displayClasses @scope.src
+    @scope.$watch 'danceClasses', @_displayClasses
+    @_displayClasses @scope.danceClasses
 
     # bind clicks
     @$el.delegate '.danceClass', 'click', (event) =>
       danceClass = $(event.target).closest '.danceClass'
       # invoke click handler
-      @scope.onClick $event: event, danceClasses: [_.findWhere @scope.src.danceClasses, id:danceClass.data 'id']
+      @scope.onClick $event: event, danceClasses: [_.findWhere @scope.danceClasses, id:danceClass.data 'id']
 
       # disabled unless we provide a selected array
       return unless @scope.selected?
@@ -87,7 +87,7 @@ class PlanningDirective
     @$el.delegate '.legend > *', 'click', (event) =>
       color = $(event.target).attr 'class'
       # invoke click handler
-      @scope.onClick $event: event, danceClasses: _.where @scope.src.danceClasses, color:color
+      @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
     
   # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
@@ -143,17 +143,19 @@ class PlanningDirective
 
   # **private**
   # Display each available dance class on the planning
-  _displayClasses: (planning, old) =>
-    return unless planning? and planning isnt old
+  #
+  # @param danceClasses [Array<DanceClass>] list of dance class to display
+  _displayClasses: (danceClasses, old) =>
+    return unless danceClasses? and not _.isEqual danceClasses, old
     # no available classes
-    return @$el.empty() unless planning.danceClasses?.length > 0
+    return @$el.empty() unless danceClasses?.length > 0
     # analyses to find hour span and dance groups
-    @_extractSpans planning.danceClasses
+    @_extractSpans danceClasses
     # then build empty calendar
     @_buildCalendar()
 
     # positionnate each course in their respective day and group
-    for course in planning.danceClasses
+    for course in danceClasses
       day = course.start[0..2]
 
       # gets start and end hours

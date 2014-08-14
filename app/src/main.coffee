@@ -43,6 +43,7 @@ $(win.window).on 'keyup', (event) ->
   win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
   # reloads full app on Ctrl+F5
   if event.which is 116 and event.ctrlKey
+    # must clear require cache also
     delete global.require.cache[attr] for attr of global.require.cache
     win.reloadIgnoringCache() 
 
@@ -72,6 +73,8 @@ $(win.window).on 'load', ->
   global.app = require '../script/app'
   # require directives and filters immediately to allow circular dependencies
   require '../script/util/filters'
+  require '../script/directive/address'
+  require '../script/directive/dancer'
   require '../script/directive/planning'
   require '../script/directive/payment'
   require '../script/directive/tags'

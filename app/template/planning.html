@@ -1,22 +1,22 @@
 <div>
   <header>
-    <a href="" class="btn btn-primary" data-ng-click="onNewDancer()">{{'btn.newDancer'|i18n}}</a>
-    <a href="" class="btn" data-ng-click="importDancers()">{{'btn.import'|i18n}}</a>
+    <a href="" class="btn btn-primary" data-ng-click="ctrl.createDancer()">{{'btn.newDancer'|i18n}}</a>
+    <a href="" class="btn" data-ng-click="ctrl.importDancers()">{{'btn.import'|i18n}}</a>
   </header>
   <div class="commands">
     <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle">{{selected.season}}<span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle">{{ctrl.currentSeason}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="planning in plannings"><a data-ng-click="onSelectPlanning(planning)">{{planning.season}}</a></li>
+        <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.showPlanning(season)">{{season}}</a></li>
       </ul>
     </div>
     <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" >{{search.teacher || i18n.lbl.allTeachers}}<span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle" >{{ctrl.search.teacher}}<span data-ng-if="!ctrl.search.teacher">{{'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li><a data-ng-click="onSelectByTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
-        <li data-ng-repeat="teacher in teachers"><a data-ng-click="onSelectByTeacher($event, teacher)">{{teacher}}</a></li>
+        <li><a data-ng-click="ctrl.seachByTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
+        <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.searchByTeacher($event, teacher)">{{teacher}}</a></li>
       </ul>
     </div>
   </div>
-  <span data-planning data-src="selected" data-on-click="onSelectByClass($event, danceClasses)"></span>
+  <span data-planning data-src="ctrl.planning" data-on-click="ctrl.searchByClass($event, danceClasses)"></span>
 </div>

@@ -1,125 +1,111 @@
 _ = require 'underscore'
-i18n = require '../labels/common'
-Planning = require '../model/planning/planning'
-Dancer = require '../model/dancer/dancer'
+LayoutController = require './layout'
+DanceClass = require '../model/danceclass'
+Dancer = require '../model/dancer'
 
-module.exports = class PlanningController
+module.exports = class PlanningController extends LayoutController
               
   # Controller dependencies
-  @$inject: ['$scope', '$location']
-  
-  # Controller scope, injected within constructor
-  scope: null
+  @$inject: ['$location'].concat LayoutController.$inject
   
   # Link to Angular location provider
   location: null
+  
+  # List of known teachers
+  teachers: []
 
-  # **private**
-  # delay before displaying planning to avoid UI glitches
-  _planningDelay: 0
+  # List of available seasons
+  seasons: []
+
+  # currently displayed season
+  currentSeason: null
+
+  # List of dance classes currently displayed
+  planning: []
 
   # Controller constructor: bind methods and attributes to current scope
   #
-  # @param scope [Object] Angular current scope
   # @param location [Object] Angular location service
-  constructor: (@scope, @location) -> 
-    @scope.teachers = []
-    @scope.i18n = i18n
-    # injects public methods into scope
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
-    # redraw all on initialization
-    @scope.$on 'model-initialized', refreshNow = => 
-      @_planningDelay = 0
-      Planning.findAll @_onPlanningsRetrieved
-      # find also all all dancer to avoid latency at first consultation
-      Dancer.findAll()
-
-    @scope.$on 'model-imported', =>
-      @scope.triggerSearch()
-      refreshNow()
-    @scope.$on '$stateChangeSuccess', =>
-      @_planningDelay = 190
-      Planning.findAll @_onPlanningsRetrieved
+  constructor: (@location, parentArgs...) -> 
+    super parentArgs...
+    @seasons = []
+    @teachers = []
+    currentSeason = null
+    planning = []
+    @rootScope.$on 'model-initialized', init = =>
+      DanceClass.listSeasons().then (seasons) =>
+        @seasons = seasons
+        unless @seasons.length is 0
+          @currentSeason = @seasons[0]
+          @showPlanning @currentSeason
+        @rootScope.$digest()
+    init()
 
   # Invoked when clicking on a given dance class.
   # displays dancers registered into this class
   #
   # @param event [Event] click event, to check pressed keys
   # @param chosen [Array<DanceClass>] the clicked dance(s) class
-  onSelectByClass: (event, chosen) =>
+  searchByClass: (event, chosen) =>
     if event?.ctrlKey
       for danceClass in chosen
         # add or remove
-        i = _.indexOf @scope.search.danceClasses, danceClass
+        i = _.indexOf @search.danceClasses, danceClass
         if i isnt -1
-          @scope.search.danceClasses.splice i, 1
+          @search.danceClasses.splice i, 1
         else
-          @scope.search.danceClasses.push danceClass
+          @search.danceClasses.push danceClass
     else
       # changes all dance classes
-      @scope.search.danceClasses = chosen
+      @search.danceClasses = chosen
     # removes teachers because multiple classes may be held by different teachers
-    @scope.search.teachers = []
+    @search.teachers = []
     # reset season to match corresponding
-    @scope.search.seasons = [@scope.selected.season]
-    @scope.triggerSearch()
+    @search.seasons = [@currentSeason]
+    @triggerSearch()
 
   # Invoked when clicking on a given teacher name.
   # displays dancers registered for this teatcher on current year
   #
   # @param event [Event] click event, to check pressed keys
   # @param chosen [String] the clicked teacher, may be empty
-  onSelectByTeacher: (event, chosen = null) =>
-    season = @scope.selected.season
+  searchByTeacher: (event, chosen = null) =>
+    season = @selected?.season
     if event?.ctrlKey
       if chosen?
         # add or remove teacher
-        i = _.indexOf @scope.search.teachers, chosen
+        i = _.indexOf @search.teachers, chosen
         if i isnt -1
-          @scope.search.teachers.splice i, 1
+          @search.teachers.splice i, 1
         else
-          @scope.search.teachers.push chosen
+          @search.teachers.push chosen
       else 
         # add or remove season
-        i = _.indexOf @scope.search.seasons, season
+        i = _.indexOf @search.seasons, @currentSeason
         if i isnt -1
-          @scope.search.seasons.splice i, 1
+          @search.seasons.splice i, 1
         else
-          @scope.search.seasons.push season
+          @search.seasons.push @currentSeason
     else
       # changes all teachers or seasons
       if chosen?
-        @scope.search.teachers = [chosen]
+        @search.teachers = [chosen]
       else
-        @scope.search.seasons = [season]
+        @search.seasons = [@currentSeason]
     # removes danceClasses because they cannot belong to multiple plannings/teachers
-    @scope.search.danceClasses = []
-    @scope.triggerSearch()
+    @search.danceClasses = []
+    @triggerSearch()
 
   # Invoked to display an empty dancer's screen
-  onNewDancer: =>
+  createDancer: =>
     console.log "ask to display new dancer"
     @location.path "/home/dancer/"
 
-  # When a planning is selected, updates the teacher list
+  # When a season is selected, shows its planning and updates the teacher list
   #
-  # @param planning [Planning] new selected planning
-  onSelectPlanning: (planning) =>
-    @scope.selected = planning
-    @scope.teachers = []
-    return unless planning?
-    @scope.teachers = _.chain(planning.danceClasses).pluck('teacher').uniq().compact().value().sort()
-
-  # **private**
-  # Invoked when all plannings were retrieved.
-  # Update rendering and select most recent planning.
-  #
-  # @param err [Error] an error object, or null if no problem occured
-  # @param plannings [Array<Planning>] list of available plannings
-  _onPlanningsRetrieved: (err, plannings) =>
-    throw err if err?
-    _.delay =>
-      @scope.$apply =>
-        @scope.plannings = _.sortBy(plannings, 'season').reverse()
-        @onSelectPlanning(@scope.plannings?[0])
-    , @_planningDelay
+  # @param season [String] selected season
+  showPlanning: (season) =>
+    DanceClass.getPlanning(season).then (planning) =>
+      @planning = planning
+      @teachers = _.chain(planning).pluck('teacher').uniq().compact().value().sort()
+      @rootScope.$digest()
