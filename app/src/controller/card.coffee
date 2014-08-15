@@ -19,11 +19,23 @@ module.exports = class CardController extends LayoutController
   # Controller dependencies
   @$inject: ['$stateParams'].concat LayoutController.$inject
 
+  # for rendering
+  i18n: i18n
+
+  # displayed card
+  card: null
+
   # Array of dancers displaced on this card
   dancers: []
 
   # Corresponding array of dancers's address, to ensure model reuse
   addresses: []
+
+  # temporary stores known-by values
+  knownBy: {}
+
+  # temporary stores known by other value
+  knownByOther: null
 
   # **private**
   # Stores for each displayed model a change status
@@ -33,6 +45,10 @@ module.exports = class CardController extends LayoutController
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
+
+  # **private**
+  # Stores card previous values for change detection
+  _previous: {}
 
   # Controller constructor: bind methods and attributes to current scope
   #
@@ -45,38 +61,29 @@ module.exports = class CardController extends LayoutController
     @addresses = []
     @_changes = {}
     @_modalOpened = false
+    @_previous = {}
 
     if stateParams.id
       # load edited dancer
       Dancer.find(stateParams.id).then(@loadDancer)
         .catch (err) -> console.error err
     else
-      # creates an empty dancer with empty address and card
-      dancer = new Dancer()
-      # set an id to address to allow sharing with other dancers
-      address = new Address id: generateId()
-      card = new Card()
-      dancer.address = address
-      dancer.card = card
-      @dancers.push dancer
-      @addresses.push address
-      @_changes[card.id] = true
+      @_reset()
 
-    ###TODO 
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
       return unless @hasChanged
       # stop state change until user choose what to do with pending changes
       event.preventDefault()
       # confirm if dancer changed
-      @dialog.messageBox(i18n.ttl.confirm, i18n.msg.confirmGoBack, [
-          {label: i18n.btn.no, cssClass: 'btn-warning'}
-          {label: i18n.btn.yes, result: true}
+      @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.confirmGoBack, [
+          {label: @i18n.btn.no, cssClass: 'btn-warning'}
+          {label: @i18n.btn.yes, result: true}
         ]
       ).result.then (confirmed) =>
         return unless confirmed
         # if confirmed, effectively go on desired state
         @hasChanged = false
-        @state.go toState.name, toParams ###
+        @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
   back: =>
@@ -86,11 +93,10 @@ module.exports = class CardController extends LayoutController
   # Save the current values inside storage
   save: =>
     return unless @hasChanged
-    console.log @_changes
     # first, resolve addresses and card
-    Promise.all(
-      (dancer.address for dancer in @dancers).concat(@dancers[0].card)
+    Promise.all((dancer.address for dancer in @dancers)
     ).then((models) =>
+      models.push @card
       console.log "addresses resolved", models
       Promise.all((
         saved = []
@@ -109,7 +115,7 @@ module.exports = class CardController extends LayoutController
           for dancer, i in @dancers when not dancer.id? or @_changes[dancer.id]
             console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
             dancer.address = models[i]
-            dancer.card = models[-1..][0]
+            dancer.card = @card
             dancer.save()
         )).then => @rootScope.$apply =>
           console.log "dancers saved"
@@ -127,7 +133,12 @@ module.exports = class CardController extends LayoutController
     Promise.all([
       Dancer.findWhere cardId:dancer.cardId
       dancer.card
-    ]).then( ([dancers]) =>
+    ]).then( ([dancers, card]) =>
+      console.log "load card #{card.id}"
+      @card.removeListener 'change', @_onChange
+      @card = card
+      @_previous = @card.toJSON()
+      @card.on 'change', @_onChange
       console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
       @dancers = _.sortBy dancers, "firstname"
       # get addresses
@@ -142,6 +153,12 @@ module.exports = class CardController extends LayoutController
           else
             # reuse existing model
             @addresses.push unic[address.id]
+
+        # translate the "known by" possibilities into a list of boolean
+        @knownBy = {}
+        for value of @i18n.knownByMeanings 
+          @knownBy[value] = _.contains @card.knownBy, value
+        @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
         
         # reset changes and displays everything
         @hasChanged = false
@@ -155,19 +172,16 @@ module.exports = class CardController extends LayoutController
   addDancer: =>
     added = new Dancer()
     # get the existing address and card
-    last = @dancers[-1..][0]
-    Promise.all([last.address, last.card]).then ([address, card]) =>
-      added.address = address
-      added.card = card
-      # adds this new dancer to the list
-      @dancers.push added
-      @addresses.push address
-      @rootScope.$digest()
-      # scroll to last
-      elem = $('.card') 
-      _.defer => 
-        $('.card-dancer > .dropup > a').focus()
-        elem.scrollTop elem[0].scrollHeight
+    added.address = @addresses[-1..][0]
+    added.card = @card
+    # adds this new dancer to the list
+    @dancers.push added
+    @addresses.push address
+    # scroll to last
+    elem = $('.card') 
+    _.defer => 
+      $('.card-dancer > .dropup > a').focus()
+      elem.scrollTop elem[0].scrollHeight
 
   # When a dancer that share an address with another one want to separate, 
   # we affect him a brand new address
@@ -175,12 +189,10 @@ module.exports = class CardController extends LayoutController
   #
   # @param dancer [Dancer] the concerned dancer
   addAddress: (dancer) =>
-    console.log "coucou"
     return unless @isAddressReadOnly dancer
     address = new Address id: generateId()
     @addresses[@dancers.indexOf dancer] = address
     dancer.address = address
-    console.log "coucou 2"
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -193,6 +205,12 @@ module.exports = class CardController extends LayoutController
         return dancer.addressId of used
       else
         used[candidate.addressId] = true
+
+  # Invoked when the list of known-by meanings has changed.
+  # Updates the model corresponding array.
+  setKnownBy: =>
+    @card?.knownBy = (value for value of @i18n.knownByMeanings when @knownBy[value])
+    @card?.knownBy.push @knownByOther if @knownByOther
 
   # Checks if a field has been changed
   #
@@ -212,10 +230,10 @@ module.exports = class CardController extends LayoutController
     return unless @hasChanged and not @_modalOpened
     names = ("#{dancer.firstname or ''} #{dancer.lastname or ''}" for dancer in @dancers when dancer.firstname or dancer.lastname)
     @_modalOpened = true
-    @dialog.messageBox(i18n.ttl.confirm, 
-      _.sprintf(i18n.msg.cancelEdition, names.join ', '), [
-        {label: i18n.btn.no, cssClass: 'btn-warning'}
-        {label: i18n.btn.yes, result: true}
+    @dialog.messageBox(@i18n.ttl.confirm, 
+      _.sprintf(@i18n.msg.cancelEdition, names.join ', '), [
+        {label: @i18n.btn.no, cssClass: 'btn-warning'}
+        {label: @i18n.btn.yes, result: true}
       ]
     ).result.then (confirmed) =>
       @_modalOpened = false
@@ -223,11 +241,7 @@ module.exports = class CardController extends LayoutController
       # restore values by reloading first dancer from storage
       return @loadDancer @dancers[0] if @dancers[0].id?
       # or ecreate a brand new dancer if it was an empty card
-      dancer = new Dancer()
-      # set an id to address to allow sharing with other dancers
-      dancer.address = new Address id: generateId()
-      dancer.card = new Card()
-      @dancers = [dancer]
+      @_reset()
 
   # Add a new registration for the current season to the edited dancer, or edit an existing one
   # Displays the registration dialog
@@ -255,9 +269,9 @@ module.exports = class CardController extends LayoutController
     Planning.find removed.planningId, (err, planning) =>
       throw err if err?
       @rootScope.$apply =>
-        @dialog.messageBox(i18n.ttl.confirm, _.sprintf(i18n.msg.removeRegistration, planning.season), [
-          {result: false, label: i18n.btn.no}
-          {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
+        @dialog.messageBox(@i18n.ttl.confirm, _.sprintf(@i18n.msg.removeRegistration, planning.season), [
+          {result: false, label: @i18n.btn.no}
+          {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
         ]).result.then (confirm) =>
           return unless confirm
           @dancer.registrations.splice @dancer.registrations.indexOf(removed), 1
@@ -272,3 +286,28 @@ module.exports = class CardController extends LayoutController
       preview.dancer = @dancer
       preview.registration = registration
       preview.planning = planning
+
+  # **private**
+  # Reset displayed card and its relative models
+  _reset: =>
+    @knownBy = {}
+    @knownByOther = null
+    # creates an empty dancer with empty address and card
+    dancer = new Dancer()
+    # set an id to address to allow sharing with other dancers
+    address = new Address id: generateId()
+    @card?.removeListener 'change', @_onChange
+    @card = new Card()
+    @_previous = {}
+    @card.on 'change', @_onChange
+    dancer.address = address
+    dancer.card = @card
+    @dancers = [dancer]
+    @addresses = [address]
+    @_changes[@card.id] = true
+
+
+  # **private**
+  # Card change handler: check if card has changed from its previous values
+  _onChange: =>
+    @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()

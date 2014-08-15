@@ -14,12 +14,6 @@ class DancerDirective
   # Indicates whether the edited dancer has never been saved
   isNew: false
 
-  # temporary stores known-by values
-  knownBy: {}
-
-  # temporary stores known by other value
-  knownByOther: null
-
   # Option used to configure birth selection popup
   birthOpts: 
     value: null
@@ -87,14 +81,6 @@ class DancerDirective
   setBirth: =>
     @src?.birth = moment @birthOpts.value
     @_onChange()
-
-  # Invoked when the list of known-by meanings has changed.
-  # Updates the model corresponding array.
-  setKnownBy: =>
-    @src?.knownBy = (value for value of @i18n.knownByMeanings when @knownBy[value])
-    @src?.knownBy.push @knownByOther if @knownByOther
-    @_onChange()
-
   # Opens the birth selection popup
   #
   # @param event [Event] click event, prevented.
@@ -118,13 +104,6 @@ class DancerDirective
     # reset birth date to dancer's one
     @birthOpts.open = false
     @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.toDate() else null
-
-    # translate the "known by" possibilities into a list of boolean
-    @knownBy = {}
-    for value of i18n.knownByMeanings 
-      @knownBy[value] = _.contains @src?.knownBy, value
-    @knownByOther = _.find @src?.knownBy, (value) -> not(value of i18n.knownByMeanings)
-    
     @_onChange()
 
   # **private**

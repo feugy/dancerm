@@ -21,7 +21,7 @@ module.exports = class Base extends EventEmitter
     @_raw = raw
 
     # eventually, define properties aiming at raw values
-    for attr of @_raw
+    for attr of @_raw unless attr in @constructor._transient
       ((attr) =>
         Object.defineProperty @, attr,
           get: -> @_raw[attr]

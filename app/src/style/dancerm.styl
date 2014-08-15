@@ -113,7 +113,7 @@ body
     box-shadow none
 
   .glyphed > .glyphicon:first-child
-      margin 0 6px 0 -3px
+    margin 0 6px 0 -3px
 
   :focus
     outline none
@@ -291,7 +291,8 @@ body
     margin 10px 0
     padding 0 1em 1em
 
-    > .btn
+    & > .btn
+    .address > .btn
       position absolute
       right 15px
       top -20px
@@ -333,7 +334,11 @@ body
       .title
         // cause name overlaps
         z-index 1
+
     .address
+      position relative
+      > .btn
+        box-shadow 0 0 0 3px colBackground
       .zipcode input
         min-width 60px
       .city label
@@ -350,6 +355,7 @@ body
           width auto 
         span
           margin-top 5px 
+
 
     .row
       > span
@@ -454,6 +460,7 @@ body
 
   .glyphicon
     top 2px
+    cursor pointer
 
   .modal-content
     background background

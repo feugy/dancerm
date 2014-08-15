@@ -22,6 +22,16 @@
       </address>
     </article>
   </article>
+  <article>
+    <h2>{{'ttl.knownBy'|i18n}}</h2>
+    <div class="known-by">
+      <span data-ng-repeat="(value, label) in ctrl.i18n.knownByMeanings" data-ng-class="ctrl.knownBy[value] ? 'selected' : ''">
+        <input data-ng-model="ctrl.knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="ctrl.setKnownBy()"/><label for="{{value}}">{{label}}</label>
+      </span>
+      <span data-ng-class="ctrl.knownByOther ? 'selected' : ''" class="known-by-other"><input type="text" data-ng-model="ctrl.knownByOther" data-ng-change="ctrl.setKnownBy()"/><label>{{'lbl.other'|i18n}}</label></span>
+    </div>
+  </div>
+  </article>
   <!-- registrations -->
   <!--<div class="row registration-bar">
     <a href="" class="btn btn-primary" data-ng-click="ctrl.onRegister()">{{'btn.register'|i18n}}</a>

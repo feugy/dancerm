@@ -1,5 +1,6 @@
 analysis/~*.xlsx
 analysis/ribas.flac
+app/data
 app/script
 app/style
 app/vendor
