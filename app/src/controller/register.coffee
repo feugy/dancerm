@@ -11,86 +11,68 @@ Registration = require '../model/registration'
 module.exports = class RegisterController
 
   # Controller dependencies
-  @$inject: ['registration', '$scope', '$modalInstance']
+  @$inject: ['danceClasses', '$scope', '$modalInstance']
 
-  # Currently edited registration
-  registration: null
-
-  # Controller scope
+  # Current scope for digest triggering
   scope: null
+
+  # Currently modified registration
+  src: null
+
+  # Concerned dancer
+  dancer: null
+
+  # Current card available registrations
+  registrations: null
+
+  # Currently displayed planning
+  planning: null
+
+  # Currently selected season
+  currSeason: null
+
+  # List of available seasons
+  seasons: []
 
   # Current dialog instance
   _dialog: null
 
-  # existing plannings
-  _plannings: []
-
   # Controller constructor: bind methods and attributes to current scope
   #
-  # @param registration [Registration] currently edited registration
+  # @param danceClassIds [Array<String>] list of existing dance class ids
   # @param scope [Object] Angular current scope
   # @param dialog [Object] current dialog instance
-  constructor: (@registration, @scope, @_dialog) ->
-    # creates a temporary registration for work, and initialized it if necessary
-    @scope.handled = new Registration()
-    throw new Error "Register controller needs to be passed a registration" unless @registration?
-    @scope.handled.planningId = @registration.planningId
-    if @scope.handled.planningId?
-      @scope.disabledClass =  null
-      @scope.title = i18n.ttl.editRegistration
-      @scope.isNew = false
-    else
-      @scope.disabledClass = 'disabled'
-      @scope.title = i18n.ttl.newRegistration
-      @scope.isNew = true
+  constructor: (@danceClasses, @scope, @_dialog) ->
+    @scope.chooseSeason = @chooseSeason
+    @scope.close = @close
+    @scope.danceClasses = @danceClasses
 
-    @scope.handled.danceClassIds = @registration.danceClassIds.concat()
-    # gets all existing plannings
-    Planning.findAll @_onPlanningsFetched
-    # injects public methods into scope
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
+    DanceClass.listSeasons().then((seasons) =>
+      @scope.seasons = seasons
+      unless @scope.seasons.length is 0
+        @scope.chooseSeason @scope.seasons[0]
+      else
+        @scope.$apply()
+    ).catch (err) => console.error err
 
   # Invoked by view to update the selected season.
   # Refresh the available dance class list
   #
   # @param season [String] the new selected season 
-  onUpdateSeason: (season) =>
-    # gets the corresponding planning
-    @scope.planning = _.findWhere @_plannings, season: season
-    # updates id and classes if needed
-    if @scope.planning.id isnt @scope.handled.planningId
-      @scope.handled.planningId = @scope.planning.id
-      @scope.handled.danceClassIds.length = 0
-    # allow closure from now
-    @scope.disabledClass = null
-  
+  chooseSeason: (season) =>
+    DanceClass.getPlanning(season).then((planning) =>
+      @scope.planning = planning
+      @scope.currSeason = season
+      @scope.$apply()
+    ).catch (err) => console.error err
+
   # Dialog closure method: will transfer to the dialog parent the created registration if confirmed
   #
   # @param confirmed [Boolean] true if the creation is confirmed
   close: (confirmed) =>
-    # do not accept confirmed closure if no season was selected.
-    return if confirmed and @scope.disabledClass isnt null
-    # if confirmed, updates the initial registration and returns result
-    if confirmed 
-      @registration.planningId = @scope.handled.planningId
-      # replace array content without creating another array
-      @registration.danceClassIds = @scope.handled.danceClassIds.concat()
-    @_dialog.close confirmed
-
-  # **private**
-  # Invoked when the planning were retrieved.
-  # Updates the rendering with existing plannings
-  #
-  # @param err [Error] an error object, or null if no problem occured
-  # @param plannings [Array<Planning>] list of available plannings 
-  _onPlanningsFetched: (err, plannings) =>
-    throw err if err?
-    # keeps plannings for further use
-    @_plannings = plannings
-    @scope.$apply =>
-      # extracts existing seasons and select first
-      @scope.seasons = _.pluck(@_plannings, 'season').sort().reverse()
-      if @registration.planningId?
-        @onUpdateSeason _.findWhere(@_plannings, id: @registration.planningId)?.season
-      else
-        @onUpdateSeason @scope.seasons[0]
+    # do not accept confirmed closure if no registration was selected.
+    return if confirmed and @scope.src is null
+    @_dialog.close 
+      confirmed: confirmed
+      season: @scope.currSeason
+      danceClasses: @scope.danceClasses

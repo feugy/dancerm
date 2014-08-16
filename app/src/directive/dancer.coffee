@@ -81,6 +81,7 @@ class DancerDirective
   setBirth: =>
     @src?.birth = moment @birthOpts.value
     @_onChange()
+    
   # Opens the birth selection popup
   #
   # @param event [Event] click event, prevented.
@@ -112,6 +113,12 @@ class DancerDirective
     # TODO waiting for https://github.com/angular/angular.js/pull/7645
     @scope.onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
 
+  # **private**
+  # Relay the registration demand to the caller
+  _onRegister: =>
+    # TODO waiting for https://github.com/angular/angular.js/pull/7645
+    @scope.onRegister?(model: @src)
+
 # The payment directive displays and edit dancer's payment
 app.directive 'dancer', ->
   # directive template
@@ -134,3 +141,5 @@ app.directive 'dancer', ->
     onLoad: '&'
     # change handler. Concerned dancer is a 'model' parameter, change status is a 'hasChagned' parameter
     onChange: '&?'
+    # registration addition handler. Concerned dancer is a 'model' parameter
+    onRegister: '&?'

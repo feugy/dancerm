@@ -2,6 +2,89 @@ _ = require 'underscore'
 moment = require 'moment'
 i18n = require '../labels/common'
 
+class PaymentDirective
+                
+  # Controller dependencies
+  @$inject: ['$scope', '$element']
+  
+  # Labels, for rendering
+  i18n: i18n
+  
+  # Type label displayed
+  typeLabel: ''
+
+  # Option used to configure receipt selection popup
+  receiptOpts: 
+    value: null
+    open: false
+    showWeeks: false
+    startingDay: 1
+    showButtonBar: false
+  
+  # Controller constructor: bind methods and attributes to current scope
+  #
+  # @param scope [Object] directive scope
+  # @param element [DOM] directive root element
+  constructor: (@scope, element) ->
+    @$el = $(element)
+
+    @receiptOpts =
+      showWeeks: false
+      startingDay: 1
+      showButtonBar: false
+
+    # TODO waiting for https://github.com/angular/angular.js/pull/7645
+    @scope.$watch 'src', => @_updateRendering @scope.src
+    @_updateRendering @scope.src
+
+  # Updates the payment type of the source payment object
+  #
+  # @param type [String] selected type
+  setType: (type) =>
+    @src.type = type
+    @typeLabel = @i18n.paymentTypes[@src.type] or ''
+
+  # Invoked when date change in the date picker
+  # Updates the dancer's birth date
+  setReceipt: =>
+    @src?.receipt = moment @receiptOpts.value
+    @_onChange()
+    
+  # Opens the birth selection popup
+  #
+  # @param event [Event] click event, prevented.
+  toggleReceipt: (event) =>
+    # prevent, or popup won't show
+    event?.preventDefault()
+    event?.stopPropagation()
+    @receiptOpts.open = not @receiptOpts.open
+
+  # Ask to parent controller to remove this payment
+  remove: =>
+    @scope.onRemove?(model: @src)
+
+  # **private**
+  # Update internal state when displayed dancer has changed.
+  #
+  # @param value [Dancer] new dancer's value
+  _updateRendering: (value) =>
+    @src?.removeListener 'change', @_onChange
+    @src = value
+    @setType @src?.type
+    @src?.on 'change', @_onChange
+
+    # reset receipt date to payement's one
+    @receiptOpts.open = false
+    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.toDate() else null
+    
+    @_onChange()
+
+  # **private**
+  # Value change handler: relay to registration parent.
+  _onChange: =>
+    # TODO waiting for https://github.com/angular/angular.js/pull/7645
+    @scope.onChange?(model: @src)
+
 # The payment directive displays and edit dancer's payment
 app.directive 'payment', ->
   # directive template
@@ -14,66 +97,13 @@ app.directive 'payment', ->
   restrict: 'EA'
   # controller
   controller: PaymentDirective
+  controllerAs: 'ctrl'
+  bindToController: true
   # parent scope binding.
   scope: 
     # displayed payment
     src: '='
-    # ask for removal
-    onRemove: '&'
-
-class PaymentDirective
-                
-  # Controller dependencies
-  @$inject: ['$scope', '$element']
-  
-  # Controller scope, injected within constructor
-  scope: null
-  
-  # JQuery enriched element for directive root
-  $el: null
-  
-  # Controller constructor: bind methods and attributes to current scope
-  #
-  # @param scope [Object] directive scope
-  # @param element [DOM] directive root element
-  constructor: (@scope, element) ->
-    @$el = $(element)
-    @scope.i18n = i18n
-    @scope.receiptValid = true
-    @scope.$watch 'src', @_onDisplayPayment
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
-
-  # Updates the payment type of the source payment object
-  #
-  # @param type [String] selected type
-  onUpdateType: (type) =>
-    @scope.src.type = type
-    @scope.typeLabel = i18n.paymentTypes[@scope.src.type]
-
-  # Validates the value input and only accepts numbers
-  #
-  # @param event [event] key-up event
-  onValueInput: (event) =>
-    @scope.stringValue = $(event.target).val().replace /[^\d\.]/g, ''
-    # invoke method inheritted from parent scope
-    @scope.src.value = parseFloat @scope.stringValue
-    @scope.$parent.$parent.onPaymentChanged()
-
-  # Validates the receipt input and only accepts dates
-  #
-  # @param event [event] key-up event
-  onReceiptInput: =>
-    # parse input (moment does not allow empty input)
-    receipt = moment @scope.receipt or 'empty', i18n.formats.receipt
-    # set validation class
-    @scope.receiptValid = receipt.isValid()
-    #updates model only if valid
-    @scope.src.receipt = receipt if @scope.receiptValid
-
-  # **private**
-  # When displayed payment changed, refresh rendering
-  _onDisplayPayment: =>
-    # get the friendly labels for type
-    @onUpdateType @scope.src.type
-    @scope.stringValue = @scope.src.value
-    @scope.receipt = @scope.src.receipt.format i18n.formats.receipt
+    # change handler. Concerned dancer is a 'model' parameter, no change detection are performed
+    onChange: '&?'
+    # ask for removal, concerned payement as 'model' parameter
+    onRemove: '&?'

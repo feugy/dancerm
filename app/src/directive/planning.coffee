@@ -15,7 +15,7 @@ app.directive 'planning', ->
   scope: 
     # displayed dance classes (array)
     danceClasses: '=src'
-    # array of selected dance class ids
+    # array of selected dance classes
     # if not provided, dance class cannot be selected 
     selected: '='
     # event handler for dance class click. Clicked model as 'danceClass' parameter.
@@ -70,8 +70,9 @@ class PlanningDirective
     # bind clicks
     @$el.delegate '.danceClass', 'click', (event) =>
       danceClass = $(event.target).closest '.danceClass'
+      model = _.findWhere @scope.danceClasses, id:danceClass.data 'id'
       # invoke click handler
-      @scope.onClick $event: event, danceClasses: [_.findWhere @scope.danceClasses, id:danceClass.data 'id']
+      @scope.onClick $event: event, danceClasses: [model]
 
       # disabled unless we provide a selected array
       return unless @scope.selected?
@@ -79,10 +80,10 @@ class PlanningDirective
       danceClass.toggleClass 'selected'
       if selected
         # removes already selected id
-        @scope.selected.splice @scope.selected.indexOf(danceClass.data 'id'), 1
+        @scope.selected.splice @scope.selected.indexOf(_.findWhere @scope.selected, id: model.id), 1
       else
         # adds id
-        @scope.selected.push danceClass.data 'id'
+        @scope.selected.push model
 
     @$el.delegate '.legend > *', 'click', (event) =>
       color = $(event.target).attr 'class'
@@ -188,5 +189,5 @@ class PlanningDirective
       $(@$el.children()[column-1]).append render 
 
     if @scope.selected?
-      for id in @scope.selected
+      for {id} in @scope.selected
         @$el.find("[data-id='#{id}']").addClass 'selected'

@@ -1,6 +1,5 @@
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'q'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
 Dancer = require '../model/dancer'
@@ -90,6 +89,24 @@ module.exports = class CardController extends LayoutController
     console.log 'go back to list'
     @state.go 'list-and-planning'
 
+  # restore previous values
+  cancel: =>
+    return unless @hasChanged and not @_modalOpened
+    names = ("#{dancer.firstname or ''} #{dancer.lastname or ''}" for dancer in @dancers when dancer.firstname or dancer.lastname)
+    @_modalOpened = true
+    @dialog.messageBox(@i18n.ttl.confirm, 
+      _.sprintf(@i18n.msg.cancelEdition, names.join ', '), [
+        {label: @i18n.btn.no, cssClass: 'btn-warning'}
+        {label: @i18n.btn.yes, result: true}
+      ]
+    ).result.then (confirmed) =>
+      @_modalOpened = false
+      return unless confirmed
+      # restore values by reloading first dancer from storage
+      return @loadDancer @dancers[0] if @dancers[0].id?
+      # or ecreate a brand new dancer if it was an empty card
+      @_reset()
+
   # Save the current values inside storage
   save: =>
     return unless @hasChanged
@@ -141,29 +158,31 @@ module.exports = class CardController extends LayoutController
       @card.on 'change', @_onChange
       console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
       @dancers = _.sortBy dancers, "firstname"
-      # get addresses
-      Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
-        unic = {}
-        @addresses = []
-        for address in addresses
-          unless address.id of unic
-            # found a new model
-            unic[address.id] = address
-            @addresses.push address
-          else
-            # reuse existing model
-            @addresses.push unic[address.id]
+      # get dance classes
+      Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
+        # get addresses
+        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
+          unic = {}
+          @addresses = []
+          for address in addresses
+            unless address.id of unic
+              # found a new model
+              unic[address.id] = address
+              @addresses.push address
+            else
+              # reuse existing model
+              @addresses.push unic[address.id]
 
-        # translate the "known by" possibilities into a list of boolean
-        @knownBy = {}
-        for value of @i18n.knownByMeanings 
-          @knownBy[value] = _.contains @card.knownBy, value
-        @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
-        
-        # reset changes and displays everything
-        @hasChanged = false
-        @_changes = {}
-        @rootScope.$digest()
+          # translate the "known by" possibilities into a list of boolean
+          @knownBy = {}
+          for value of @i18n.knownByMeanings 
+            @knownBy[value] = _.contains @card.knownBy, value
+          @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
+          
+          # reset changes and displays everything
+          @hasChanged = false
+          @_changes = {}
+          @rootScope.$digest()
     ).catch (err) =>
       console.error err
 
@@ -193,6 +212,40 @@ module.exports = class CardController extends LayoutController
     address = new Address id: generateId()
     @addresses[@dancers.indexOf dancer] = address
     dancer.address = address
+
+  # Add a new registration for the current season to the edited dancer, or edit an existing one
+  # Displays the registration dialog
+  #
+  # @param dancer [Dancer] doncer for whom a registration is added
+  # @param registration [Registration] the edited registration, null to create a new one 
+  addRegistration: (dancer, registration = null) =>
+    # display dialog to choose registration season and dance classes
+    @dialog.modal(
+      size: 'lg'
+      keyboard: false
+      templateUrl: 'register.html'
+      controller: RegisterController
+      # TODO waiting for version angular-ui-bootstrap@0.12.0
+      # https://github.com/angular-ui/bootstrap/commit/7b7cdf842278e86a677980d29bd74a1afd467ff1
+      controllerAs: 'ctrl'
+      resolve: 
+        danceClasses: -> dancer.danceClasses
+    ).result.then ({confirmed, season, danceClasses}) =>
+      return unless confirmed
+      registration = null
+      # search for existing registration
+      for candidate in @card.registrations when candidate.season is season
+        registration = candidate
+        break
+      # or add a new registration on top
+      unless registration?
+        registration = new Registration season: season
+        @card.registrations.splice 0, 1, registration
+      # add selected class ids to dancer
+      dancer.danceClasses.then (existing) =>
+        # removes previous dance classes for that season
+        dancer.danceClasses = danceClasses.concat (danceClass for danceClass in existing when danceClass.season isnt season)
+        @rootScope.$digest()
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -225,47 +278,11 @@ module.exports = class CardController extends LayoutController
     @hasChanged = false
     return @hasChanged = true for id, changed of @_changes when changed
 
-  # restore previous values
-  onCancel: =>
-    return unless @hasChanged and not @_modalOpened
-    names = ("#{dancer.firstname or ''} #{dancer.lastname or ''}" for dancer in @dancers when dancer.firstname or dancer.lastname)
-    @_modalOpened = true
-    @dialog.messageBox(@i18n.ttl.confirm, 
-      _.sprintf(@i18n.msg.cancelEdition, names.join ', '), [
-        {label: @i18n.btn.no, cssClass: 'btn-warning'}
-        {label: @i18n.btn.yes, result: true}
-      ]
-    ).result.then (confirmed) =>
-      @_modalOpened = false
-      return unless confirmed
-      # restore values by reloading first dancer from storage
-      return @loadDancer @dancers[0] if @dancers[0].id?
-      # or ecreate a brand new dancer if it was an empty card
-      @_reset()
-
-  # Add a new registration for the current season to the edited dancer, or edit an existing one
-  # Displays the registration dialog
-  #
-  # @param registration [Registration] the edited registration, null to create a new one 
-  onRegister: (registration = null) =>
-    handled = new Registration()
-    # display dialog to choose registration season and dance classes
-    @dialog.modal(
-      size: 'lg'
-      keyboard: false
-      controller: RegisterController
-      templateUrl: 'register.html'
-      resolve: registration: -> registration or handled
-    ).result.then (confirmed) =>
-      return if !confirmed or registration?
-      # add the created registration to current dancer at the first position
-      @dancer.registrations.splice 0, 0, handled
-
   # Invoked when registration needs to be removed.
   # First display a confirmation dialog, and then removes it
   #
   # @param removed [Registration] the removed registration
-  onRemoveRegistration: (removed) =>
+  ###onRemoveRegistration: (removed) =>
     Planning.find removed.planningId, (err, planning) =>
       throw err if err?
       @rootScope.$apply =>
@@ -285,7 +302,7 @@ module.exports = class CardController extends LayoutController
       preview = window.open 'registrationprint.html'
       preview.dancer = @dancer
       preview.registration = registration
-      preview.planning = planning
+      preview.planning = planning####
 
   # **private**
   # Reset displayed card and its relative models
@@ -309,5 +326,8 @@ module.exports = class CardController extends LayoutController
 
   # **private**
   # Card change handler: check if card has changed from its previous values
-  _onChange: =>
+  #
+  # @param attr [String] modified path
+  # @param value [Any] new value
+  _onChange: (attr, value) =>
     @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()

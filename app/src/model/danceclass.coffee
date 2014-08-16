@@ -1,5 +1,4 @@
 _ = require 'underscore'
-{Promise} = require 'q'
 Persisted = require './tools/persisted'
 
 # ordered week days

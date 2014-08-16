@@ -10,7 +10,6 @@ module.exports =
     dancerList: 'Liste des danseurs'
     dancer: 'Danceur'
     dump: 'Sauvegarde externe'
-    editRegistration: "Modification de l'inscription"
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
@@ -38,6 +37,7 @@ module.exports =
 
   # buttons
   btn: 
+    addDancer: 'Nouveau danceur'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
     cancel: 'Annuler'
@@ -50,7 +50,7 @@ module.exports =
     no: 'Non'
     ok: 'Ok'
     print: 'Imprimer'
-    register: 'Nouvelle Inscription'
+    register: 'Inscription'
     remove: 'Supprimer'
     save: 'Enregistrer'
     yes: 'Oui'
@@ -70,7 +70,7 @@ module.exports =
     city: 'Ville'
     classTooltip: '%s (%s) %s~%s'
     currency: '€'
-    danceClasses: 'Cours'
+    danceClasses: 'Cours pour'
     details: 'Détails'
     due: 'Rgt.'
     email: 'E-mail'
@@ -108,6 +108,7 @@ module.exports =
   # date/time formats
   formats:
     birthSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
+    receiptSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
     birth: 'DD/MM/YYYY' # moment format
     receipt: 'DD/MM/YYYY' # moment format
 

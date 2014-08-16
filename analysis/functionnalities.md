@@ -96,8 +96,14 @@ Paid: 110h 10€/h
 
 ## TODOs 
 
+!! - certificats
+!! - danceclass popup labels for edition and removal
+!! - print registration
+! - show buttons on hover
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb (with new knownBy status)
+- incorporate/separate existing dancer to another card
+- incorporate an existing dancer on an existing address of the same card address
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
  6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -111,8 +117,6 @@ ok - add another "known-by" choice: "old dancers"
  6 - stats on known-by dancers 
  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
 
-- incorporate/separate existing dancer to another card
-- incorporate an existing dancer on an existing address of the same card address
 
 ## Functionnal requirements
 
@@ -135,3 +139,5 @@ ok - add another "known-by" choice: "old dancers"
 12/05 - 3
 13/05 - 3
 14/05 - 1
+15/05 - 0,5
+16/05 - 10

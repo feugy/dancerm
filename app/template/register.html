@@ -1,17 +1,16 @@
 <div class="modal-header">
-  <h3>{{title}}</h3>
+  <h3>{{'ttl.newRegistration'|i18n}}</h3>
 </div>
 <div class="modal-body register">
-  <span data-ng-show="isNew">{{'msg.registrationSeason'|i18n}}<div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" >{{planning.season}}<span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li data-ng-repeat="season in seasons"><a data-ng-click="onUpdateSeason(season)">{{season}}</a></li>
-      </ul>
-    </div>
-  </span>
-  <span data-planning data-src="planning" data-selected="handled.danceClassIds"></span>
+  <span>{{'msg.registrationSeason'|i18n}}<div class="btn-group" data-dropdown>
+    <a href="" class="btn dropdown-toggle" >{{currSeason}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li data-ng-repeat="season in seasons"><a data-ng-click="chooseSeason(season)">{{season}}</a></li>
+    </ul>
+  </div></span>
+  <span data-planning data-src="planning" data-selected="danceClasses"></span>
 </div>
 <div class="modal-footer">
-  <a href="" data-ng-click="close(true)" class="btn btn-primary ng-class:disabledClass;">{{'btn.save'|i18n}}</a>
+  <a href="" data-ng-click="close(true)" class="btn btn-primary {{currSeason ? '' : 'disabled'}}">{{'btn.save'|i18n}}</a>
   <a href="" data-ng-click="close()" class="btn">{{'btn.cancel'|i18n}}</a>
 </div>

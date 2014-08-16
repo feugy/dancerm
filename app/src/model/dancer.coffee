@@ -1,7 +1,6 @@
 _ = require 'underscore'
 async = require 'async'
 moment = require 'moment'
-{Promise} = require 'q'
 Persisted = require './tools/persisted'
 Address = require './address'
 DanceClass = require './danceclass'

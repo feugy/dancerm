@@ -3,6 +3,129 @@ i18n = require '../labels/common'
 DanceClass = require '../model/danceclass'
 Payment = require '../model/payment'
 
+class RegistrationDirective
+                
+  # Controller dependencies
+  @$inject: ['$scope', '$element', 'dialog']
+  
+  # Controller scope, injected within constructor
+  scope: null
+
+  # i18n labels, for rendering
+  i18n: i18n
+
+  # JQuery enriched element for directive root
+  $el: null
+
+  # Angular's dialog service
+  dialog: null
+
+  # Displayed registration
+  registration: null
+
+  # Array of card's dancer, to display dance classes
+  dancers: []
+  
+  # Selected period label
+  periodLabel: ''
+
+  # Controller constructor: bind methods and attributes to current scope
+  #
+  # @param scope [Object] directive scope
+  # @param element [DOM] directive root element
+  # @param dialog [Object] Angular's dialog service
+  constructor: (@scope, element, @dialog) ->
+    @$el = $(element)
+
+    # TODO waiting for https://github.com/angular/angular.js/pull/7645
+    @scope.$watchGroup ['scope.registration''scope.dancers'], => @_updateRendering @scope.registration, @scope.dancers
+    @_updateRendering @scope.registration, @scope.dancers
+    
+    #@scope.$watchCollection 'src.card.dancers.danceClassIds', @_onDisplayRegistration
+  
+  # Creates a new payment and adds it to the current registration
+  addPayment: =>
+    @registration.payments.push new Payment payer: @dancers[0].lastname
+    @_onChange()
+    null
+
+  # Updates the payment period of the source registration object
+  #
+  # @param period [String] selected period
+  setPeriod: (period) =>
+    @registration.period = period
+    @periodLabel = @i18n.periods[@registration.period]
+
+  # Compute the registration balance
+  #
+  # @return a class reflecting balance state
+  getBalanceState: =>
+    if @registration.balance < @registration.charged 
+      'balance-low' 
+    else if @registration.charged isnt 0 
+      'balance-right'
+    else 
+
+  # Filter dancers when displaying registered dance classes
+  #
+  # @param dancer [Dancer] tested dancer
+  # @return true if this dancer has classes for this season
+  filterDancer: (dancer) =>
+    # TODO for now, promise are not supported in filters. Use resolve dance classes
+    return unless dancer._danceClasses?
+    # quit at first class of the current season 
+    return true for danceClass in dancer._danceClasses when danceClass.season is @registration.season
+    false
+
+  # Filter dance classes when displaying them
+  #
+  # @param danceClass [DanceClass] tested class
+  # @return trur if this dance class belongs to the current season
+  filterDanceCalss: (danceClass) => danceClass?.season is @registration.season
+
+  # Invoked when a payment needs to be removed.
+  # Confirm operation with a modal popup and proceed to the removal
+  #
+  # @param removed [Payment] the removed payment model
+  removePayment: (removed) =>
+    @dialog.messageBox(@i18n.ttl.confirm, 
+      _.sprintf(@i18n.msg.removePayment, 
+        @i18n.paymentTypes[removed.type], 
+        removed.value, 
+        removed.receipt.format @i18n.formats.receipt), 
+      [
+        {result: false, label: @i18n.btn.no}
+        {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
+      ]).result.then (confirm) =>
+        return unless confirm
+        @registration.payments.splice @registration.payments.indexOf(removed), 1
+        @_onChange()
+
+  # **private**
+  # Update internal state when displayed registration or card has changed.
+  #
+  # @param registration [Registration] new registration value
+  # @param dancers [Array<Dancer>] new dancers value
+  _updateRendering: (registration, dancers) =>
+    if registration?
+      @registration?.removeListener 'change', @_onChange
+      @registration = registration 
+      @registration?.on 'change', @_onChange
+      # get the friendly labels for period
+      @setPeriod @registration.period
+    if dancers?
+      if @dancers?
+        dancer?.removeListener 'change', @_onChange for dancer in @dancers
+      @dancers = dancers
+      dancer?.on 'change', @_onChange for dancer in @dancers
+    @_onChange()
+
+  # **private**
+  # Value change handler: relay to card parent.
+  _onChange: =>
+    # TODO waiting for https://github.com/angular/angular.js/pull/7645
+    @scope.onChange?(model: @registration)
+
 # The registration directive displays dancer's registration to dance classes and their payments
 app.directive 'registration', ->
   # directive template
@@ -15,116 +138,17 @@ app.directive 'registration', ->
   restrict: 'EA'
   # controller
   controller: RegistrationDirective
+  controllerAs: 'ctrl'
+  bindToController: true
   # parent scope binding.
   scope: 
-    # concerned dancer
-    dancer: '='
+    # card's dancers
+    dancers: '='
     # displayed registration
-    src: '='
+    registration: '=src'
     # invoked when registration needs editing
-    onEdit: '&'
+    #onEdit: '&'
     # invoked when registration needs removal
-    onRemove: '&'
+    #onRemove: '&'
     # invoked when printing the registration
-    onPrint: '&'
-
-class RegistrationDirective
-                
-  # Controller dependencies
-  @$inject: ['$scope', '$element', 'dialog']
-  
-  # Controller scope, injected within constructor
-  scope: null
-  
-  # JQuery enriched element for directive root
-  $el: null
-
-  # Angular's dialog service
-  dialog: null
-  
-  # Controller constructor: bind methods and attributes to current scope
-  #
-  # @param scope [Object] directive scope
-  # @param element [DOM] directive root element
-  # @param dialog [Object] Angular's dialog service
-  constructor: (@scope, element, @dialog) ->
-    @$el = $(element)
-    # class use to highlight the balance state
-    @scope.i18n = i18n
-    @scope.balanceState = ""
-    @scope.$watch 'src', @_onDisplayRegistration
-    @scope.$watchCollection 'src.danceClassIds', @_onDisplayRegistration
-    @scope[attr] = value for attr, value of @ when _.isFunction(value) and not _.startsWith attr, '_'
-
-  # Creates a new payment and adds it to the current registration
-  onNewPayment: =>
-    @scope.src.payments.push new Payment(payer: @scope.dancer.lastname)
-    parent = @$el.parent()
-    _.defer => 
-      @$el.find('.type > .dropup > a').focus()
-      parent.scrollTop parent[0].scrollHeight
-    null
-
-  # Invoked each time a payment value changed
-  # Updates the registration balance
-  onPaymentChanged: =>
-    @scope.src.updateBalance()
-    if @scope.src.balance < @scope.src.charged 
-      @scope.balanceState = 'balance-low' 
-    else if @scope.src.charged isnt 0 
-      @scope.balanceState = 'balance-right'
-    else 
-      @scope.balanceState = ''
-
-  # Updates the payment period of the source registration object
-  #
-  # @param period [String] selected period
-  onUpdatePeriod: (period) =>
-    @scope.src.period = period
-    @scope.periodLabel = i18n.periods[@scope.src.period]
-
-  # Invoked when a payment needs to be removed.
-  # Confirm operation with a modal popup and proceed to the removal
-  #
-  # @param removed [Payment] the removed payment model
-  onRemovePayment: (removed) =>
-    @dialog.messageBox(i18n.ttl.confirm, 
-      _.sprintf(i18n.msg.removePayment, 
-        i18n.paymentTypes[removed.type], 
-        removed.value, 
-        removed.receipt.format i18n.formats.receipt), 
-      [
-        {result: false, label: i18n.btn.no}
-        {result: true, label: i18n.btn.yes, cssClass: 'btn-warning'}
-      ]).result.then (confirm) =>
-        return unless confirm
-        @scope.src.payments.splice @scope.src.payments.indexOf(removed), 1
-        @onPaymentChanged()
-
-  # Validates the charged input and only accepts numbers
-  #
-  # @param event [event] key-up event
-  onChargedInput: (event) =>
-    @scope.stringCharged = $(event.target).val().replace /[^\d\.]/g, ''
-    # invoke method inheritted from parent scope
-    @scope.src.charged = parseFloat @scope.stringCharged
-    @onPaymentChanged()
-
-  # **private**
-  # When displayed registration changed, refresh rendering by retrieving planning and selected dance classes
-  _onDisplayRegistration: =>
-    # get the friendly labels for period
-    @onUpdatePeriod @scope.src.period
-    # gets all dance classes details from the models
-    Planning.find @scope.src.planningId, (err, planning) =>
-      throw err if err?
-      # sets season for displayal
-      @scope.season = planning.season
-      # retrieves full dance class objects from their ids
-      @scope.danceClasses = (
-        for id in @scope.src.danceClassIds
-          _.findWhere planning.danceClasses, id: id
-      )
-      @scope.stringCharged = @scope.src.charged
-      @onPaymentChanged()
-      @scope.$apply()
+    #onPrint: '&'

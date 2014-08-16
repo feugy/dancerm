@@ -75,6 +75,7 @@ $(win.window).on 'load', ->
   require '../script/util/filters'
   require '../script/directive/address'
   require '../script/directive/dancer'
+  require '../script/directive/number_only'
   require '../script/directive/planning'
   require '../script/directive/payment'
   require '../script/directive/tags'

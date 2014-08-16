@@ -16,7 +16,6 @@
     "nedb": "0.10.7",
     "node-zip": "1.1.0",
     "nodewebkit": "0.10.1-1",
-    "q": "1.0.1",
     "underscore": "1.6.0",
     "underscore.string": "2.3.3",
     "xlsx.js": "2.3.1"

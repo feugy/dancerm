@@ -1,7 +1,6 @@
 _ = require 'underscore'
 Base = require './base'
 Datastore = require 'nedb'
-{Promise} = require 'q'
 {join, resolve} = require 'path'
 {generateId} = require '../../util/common'
 

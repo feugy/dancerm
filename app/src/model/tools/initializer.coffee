@@ -1,7 +1,6 @@
 _ = require 'underscore'
 moment = require 'moment'
 async = require 'async'
-{Promise} = require 'q'
 DanceClass = require '../danceclass'
 
 # Allow to initialize storage with a 2013 planning.
