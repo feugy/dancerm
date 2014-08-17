@@ -99,7 +99,6 @@ Paid: 110h 10€/h
 !! - certificats
 !! - danceclass popup labels for edition and removal
 !! - print registration
-! - show buttons on hover
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb (with new knownBy status)
 - incorporate/separate existing dancer to another card

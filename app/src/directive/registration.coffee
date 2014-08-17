@@ -38,7 +38,7 @@ class RegistrationDirective
     @$el = $(element)
 
     # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.$watchGroup ['scope.registration''scope.dancers'], => @_updateRendering @scope.registration, @scope.dancers
+    @scope.$watchGroup ['scope.registration', 'scope.dancers'], => @_updateRendering @scope.registration, @scope.dancers
     @_updateRendering @scope.registration, @scope.dancers
     
     #@scope.$watchCollection 'src.card.dancers.danceClassIds', @_onDisplayRegistration

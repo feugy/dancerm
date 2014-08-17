@@ -16,7 +16,7 @@
 html
   height 100%
   overflow auto
-  background background
+  background mainBackground
 
 
 .column-and-main
@@ -297,13 +297,13 @@ body
       position absolute
       right 15px
       top -20px
-      box-shadow 0 0 0 3px background
+      box-shadow 0 0 0 3px mainBackground
     
     > h2
       border-top none
       line-height 10px
       font-size fontSize*1.6
-      background background
+      background mainBackground
       position relative
       display inline
       top -10px
@@ -447,6 +447,34 @@ body
     font-size 10px
 
 /******************************************************************************
+ * Focusable components
+ */
+
+body
+  
+  .focusable
+    input
+    textarea
+      transition background focusDuration, border focusDuration
+    .input-group-addon
+      transition opacity focusDuration
+
+  .focusable:not(:hover)
+    
+    input:not(:focus)
+    textarea:not(:focus)
+    .btn.dropdown-toggle
+      border-color transparent
+      background transparent
+
+    .btn.dropdown-toggle
+      color textColor
+
+    a.input-group-addon
+    .btn:not(.dropdown-toggle)
+      opacity 0
+
+/******************************************************************************
  * Bootstrap overload
  */
 
@@ -468,7 +496,7 @@ body
     cursor pointer
 
   .modal-content
-    background background
+    background mainBackground
     border-radius 0 2em
 
     .modal-header
@@ -499,7 +527,7 @@ body
     background btnBackground
 
     li > a:hover
-      background background
+      background mainBackground
       color textColor
 
   .btn.dropdown-toggle:focus
@@ -637,7 +665,7 @@ body
     padding 5px
 
     tbody .btn
-      background background
+      background mainBackground
       color headerColor
 
     tbody .btn.active

@@ -28,7 +28,7 @@ module.exports = class Base extends EventEmitter
           get: -> @_raw[attr]
           set: (val) -> 
             @_raw[attr] = val
-            @emit 'change', attr, val
+            #@emit 'change', attr, val
       ) attr
 
   # Returns a json representation of the current model.
