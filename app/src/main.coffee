@@ -33,7 +33,7 @@ win.on 'close', ->
 
   localStorage.setItem 'maximized', isMaximized
 
-win.on 'maximize', -> console.log('maximized'); isMaximized = true
+win.on 'maximize', -> isMaximized = true
 win.on 'unmaximize', -> isMaximized = false
 win.on 'minimize', -> isMaximized = false
 

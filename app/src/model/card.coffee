@@ -21,7 +21,7 @@ module.exports = class Card extends Persisted
       knownBy: []
       registrations: []
     # enrich registrations with models
-    raw.registrations = (new Registration rawRegistration for rawRegistration in raw.registrations when rawRegistration?)
+    raw.registrations = (new Registration rawRegistration for rawRegistration in raw.registrations when rawRegistration?.constructor?.name isnt 'Registration')
 
     # fill attributes
     super(raw)
@@ -33,7 +33,7 @@ module.exports = class Card extends Persisted
       set: (val) -> 
         if @_raw.registrations?
           Array.unobserve @_raw.registrations, @_onRegistrationsChanged
-        @_raw.payments = val
+        @_raw.registrations = val
         if @_raw.registrations?
           Array.observe @_raw.registrations, @_onRegistrationsChanged
         @_onRegistrationsChanged [
@@ -59,7 +59,7 @@ module.exports = class Card extends Persisted
     @emit 'change', 'registrations', @_raw.registrations
 
   # **private**
-  # Emit change event when single payment changed itself
+  # Emit change event when single registration changed itself
   #
   # @param attr [String] modified path
   # @param value [Any] new value

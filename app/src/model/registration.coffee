@@ -42,7 +42,7 @@ module.exports = class Registration extends Base
       details: null
 
     # enrich object attributes
-    raw.payments = (new Payment rawPayment for rawPayment in raw.payments when rawPayment?)
+    raw.payments = (new Payment rawPayment for rawPayment in raw.payments when rawPayment?.constructor?.name isnt 'Payment')
     # fill attributes
     super(raw)
 
@@ -63,8 +63,22 @@ module.exports = class Registration extends Base
           removed: []
           type: 'splice'
         ]
+
+    # on certificat changes, trigger change event
+    Object.defineProperty @, 'certificates',
+      configurable: true
+      get: -> @_raw.certificates
+      set: (val) -> 
+        if @_raw.certificates?
+          Object.unobserve @_raw.certificates, @_onCertificatesChanged
+        @_raw.certificates = val
+        if @_raw.certificates?
+          Object.observe @_raw.certificates, @_onCertificatesChanged
+        @_onCertificatesChanged()
+
     # for bindings initialization
     @payments = @payments
+    @certificates = @certificates
 
 
   # **private**
@@ -89,6 +103,11 @@ module.exports = class Registration extends Base
   _onSinglePaymentChanged: (attr, value) =>
     @emit 'change', "payments.#{attr}", value
     @updateBalance()
+
+  # **private**
+  # Emit change event when certificates' attribute have changed.
+  _onCertificatesChanged: =>
+    @emit 'change', 'certificates', @_raw.certificates
 
   # Updates balance by summing payments.
   # Automatically invoked on payment change

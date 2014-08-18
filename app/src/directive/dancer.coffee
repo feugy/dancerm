@@ -100,7 +100,7 @@ class DancerDirective
     @src = value
     @src?.on 'change', @_onChange
     @_previous = @src?.toJSON()
-    @isNew = not @src?.id?
+    @isNew = @src?._v is -1
 
     # reset birth date to dancer's one
     @birthOpts.open = false

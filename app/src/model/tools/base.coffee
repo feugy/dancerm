@@ -5,7 +5,7 @@ _ = require 'underscore'
 module.exports = class Base extends EventEmitter
   
   # transient fields are not serialized into JSON
-  @_transient = ['$$hashKey']
+  @_transient = ['$$hashKey', '_events']
 
   # Creates a model from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
@@ -28,7 +28,7 @@ module.exports = class Base extends EventEmitter
           get: -> @_raw[attr]
           set: (val) -> 
             @_raw[attr] = val
-            #@emit 'change', attr, val
+            @emit 'change', attr, val
       ) attr
 
   # Returns a json representation of the current model.
@@ -37,11 +37,19 @@ module.exports = class Base extends EventEmitter
   # @return raw attribute of the current model
   toJSON: =>
     raw = {}
-    for attr, value of @_raw when not (attr in @constructor._transient) 
+    for attr, value of @_raw when value isnt undefined and not (attr in @constructor._transient) 
       if _.isArray value
         raw[attr] = []
         for val, i in value
           raw[attr][i] = if val?.toJSON? then val.toJSON() else val
       else
-        raw[attr] = if value?.toJSON? then value.toJSON() else value
+        raw[attr] = if value?.toJSON? then value.toJSON() else if _.isObject value then JSON.parse JSON.stringify value else value
     raw
+
+  # TODO don't known why, but some handlers are null and cause error when payement.receipt is change at dancer loading
+  # Override parent method to remove null and undefined handlers before firing event
+  emit: (kind, args...) =>
+    # purge unexisting handlers
+    if kind of @_events and Array.isArray @_events[kind]
+      @_events[kind] = @_events[kind].filter (handler) ->  handler?
+    super kind, args...

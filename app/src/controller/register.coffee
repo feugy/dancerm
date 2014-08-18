@@ -11,13 +11,16 @@ Registration = require '../model/registration'
 module.exports = class RegisterController
 
   # Controller dependencies
-  @$inject: ['danceClasses', '$scope', '$modalInstance']
+  @$inject: ['danceClasses', 'isEdit', '$scope', '$modalInstance']
 
   # Current scope for digest triggering
   scope: null
 
   # Currently modified registration
   src: null
+
+  # differentiate new registration and edition
+  isEdit: false
 
   # Concerned dancer
   dancer: null
@@ -42,7 +45,8 @@ module.exports = class RegisterController
   # @param danceClassIds [Array<String>] list of existing dance class ids
   # @param scope [Object] Angular current scope
   # @param dialog [Object] current dialog instance
-  constructor: (@danceClasses, @scope, @_dialog) ->
+  constructor: (@danceClasses, @isEdit, @scope, @_dialog) ->
+    @scope.isEdit = isEdit
     @scope.chooseSeason = @chooseSeason
     @scope.close = @close
     @scope.danceClasses = @danceClasses

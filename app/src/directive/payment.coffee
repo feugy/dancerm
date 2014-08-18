@@ -41,8 +41,8 @@ class PaymentDirective
   #
   # @param type [String] selected type
   setType: (type) =>
-    @src.type = type
-    @typeLabel = @i18n.paymentTypes[@src.type] or ''
+    @src?.type = type
+    @typeLabel = @i18n.paymentTypes[@src?.type] or ''
 
   # Invoked when date change in the date picker
   # Updates the dancer's birth date
@@ -70,8 +70,8 @@ class PaymentDirective
   _updateRendering: (value) =>
     @src?.removeListener 'change', @_onChange
     @src = value
-    @setType @src?.type
     @src?.on 'change', @_onChange
+    @setType @src?.type
 
     # reset receipt date to payement's one
     @receiptOpts.open = false

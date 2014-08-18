@@ -1,12 +1,11 @@
 <article class="registration focusable">
-  <h2>{{ctrl.registration.season}}<!--<span class="pull-right">
-    <a href="" class="btn" data-ng-click="ctrl.edit()">{{'btn.edit'|i18n}}</a>
-    <a href="" class="btn btn-warning" data-ng-click="ctrl.remove()">{{'btn.remove'|i18n}}</a>
+  <h2>{{ctrl.registration.season}}<span class="pull-right">
     <a href="" class="btn" data-ng-click="ctrl.print()"><i class="glyphicon glyphicon-print"></i></a>
-  </span>--></h2>
+  </span></h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
     <div class="dancer-classes">
-      <h4>{{'lbl.danceClasses'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}} </h4>
+      <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{'lbl.certifiedLong'|i18n}}</label>
+      <h4>{{'lbl.danceClasses'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
       <div class="dance-classes">
         <!-- TODO until angular 2, native promise cannot be used -->
         <div class="danceClass" data-ng-repeat="danceClass in dancer._danceClasses | filter: ctrl.filterClass"><span class="kind {{danceClass.color}}">{{danceClass.kind}}</span><span class="level">{{danceClass.level}}</span><span class="hour">{{danceClass.start|classDate}}</span></div>

@@ -96,8 +96,6 @@ Paid: 110h 10€/h
 
 ## TODOs 
 
-!! - certificats
-!! - danceclass popup labels for edition and removal
 !! - print registration
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb (with new knownBy status)
@@ -105,7 +103,7 @@ Paid: 110h 10€/h
 - incorporate an existing dancer on an existing address of the same card address
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
- 6 - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
+ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
  3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
 ok - add payment field: payer, prefilled with dancer's name
 11 - merge data from two different PCs
@@ -140,3 +138,5 @@ ok - add another "known-by" choice: "old dancers"
 14/05 - 1
 15/05 - 0,5
 16/05 - 10
+17/05 - 0,5
+18/05 - 3

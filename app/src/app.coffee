@@ -89,6 +89,6 @@ app.close = (callback) ->
     $injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping
   # export data
   # TODO $injector.get('export').dump localStorage.getItem('dumpPath'), callback
-  callback null
+  _.delay (=> callback null), 50
 
 module.exports = app

@@ -189,7 +189,7 @@ module.exports = class CardController extends LayoutController
   # Add a new dancer to this card.
   # Reuse address of last dancer
   addDancer: =>
-    added = new Dancer()
+    added = new Dancer id: generateId()
     # get the existing address and card
     added.address = @addresses[-1..][0]
     added.card = @card
@@ -230,6 +230,7 @@ module.exports = class CardController extends LayoutController
       controllerAs: 'ctrl'
       resolve: 
         danceClasses: -> dancer.danceClasses
+        isEdit: -> console.log(dancer.danceClassIds); dancer.danceClassIds.length > 0
     ).result.then ({confirmed, season, danceClasses}) =>
       return unless confirmed
       registration = null
@@ -331,3 +332,5 @@ module.exports = class CardController extends LayoutController
   # @param value [Any] new value
   _onChange: (attr, value) =>
     @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()
+    # because observer break the digest progresss
+    @rootScope.$digest() unless @rootScope.$$phase

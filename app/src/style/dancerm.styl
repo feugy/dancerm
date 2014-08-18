@@ -391,6 +391,7 @@ body
         display inline-block
         cursor default
         margin 5px 5px 0 0
+        color infoColor
 
       textarea
         flex 1
@@ -409,10 +410,12 @@ body
         margin 2px 10px 2px 0
 
       label
+        cursor pointer
         text-align left
         width auto
         margin 4px 0 0 2px
         display inline
+        color infoColor
 
       input[type="checkbox"]
         vertical-align -2px
@@ -541,6 +544,11 @@ body
   input:not([type="checkbox"])
   input:not([type="radio"])
     padding 4px 6px  
+
+
+  input[type="checkbox"]
+  input[type="radio"]
+    cursor pointer
 
   textarea:hover
   input:not([type="checkbox"]):hover

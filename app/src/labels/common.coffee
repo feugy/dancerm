@@ -10,6 +10,7 @@ module.exports =
     dancerList: 'Liste des danseurs'
     dancer: 'Danceur'
     dump: 'Sauvegarde externe'
+    editRegistration: 'Modification de l\'inscription'
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
@@ -26,6 +27,7 @@ module.exports =
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
+    editRegistration: "Modifier les cours du danceur"
     emptyDancerList: 'Aucun danseur pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
     exporting: 'Export en cours, veuillez patienter...'
@@ -42,7 +44,6 @@ module.exports =
     backToList: 'Retour au planning'
     cancel: 'Annuler'
     close: 'Fermer'
-    edit: 'Modifier'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
     import: 'Importer des danseurs'
@@ -64,7 +65,7 @@ module.exports =
     birth: 'Né(e) le'
     cellphone: 'Portable'
     certified: 'Cert.'
-    certifiedLong: 'Certificat'
+    certifiedLong: 'Certificat médical'
     charged: 'Réglement de'
     choose: '---'
     city: 'Ville'
