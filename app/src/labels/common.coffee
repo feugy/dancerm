@@ -5,7 +5,7 @@ module.exports =
     address: 'Adresse'
     application: 'DanceRM'
     card: 'Fiche danceurs'
-    confirm: 'Confirmation de la suppression'
+    confirm: 'Confirmation'
     contact: 'Contact'
     dancerList: 'Liste des danseurs'
     dancer: 'Danceur'
@@ -16,8 +16,8 @@ module.exports =
     import: 'Importation'
     knownBy: 'Connu par'
     newRegistration: 'Nouvelle inscription'
-    print: 'DanceRM : impression pour %s %s'
-    registrationPrint: 'Inscription année %s'
+    print: 'DanceRM : impression pour {{names}}'
+    registrationPrint: 'Inscription année {{registration.season}}'
     search: 'Recherche de danseurs'
     
   # long messages with html
@@ -36,6 +36,7 @@ module.exports =
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
+    requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
 
   # buttons
   btn: 
@@ -84,8 +85,7 @@ module.exports =
     payer: 'Par'
     phone: 'Téléphone'
     receipt: 'Encaissement'
-    registeredFemale: 'Inscrite au(x) cours'
-    registeredMale: 'Inscrit au(x) cours'
+    registered: 'Inscrit(e) au(x) cours'
     Sat: 'Samedi'
     searchPlaceholder: 'chercher par nom/prénom'
     street: 'Voie'
@@ -118,9 +118,8 @@ module.exports =
     sign: "Signature"
     what: "ai pris connaissance et approuve le règlement intérieur de l'Ecole de Danse RIBAS."
     when: "Villeurbanne, le"
-    whoFemale: "Je soussignée"
-    whoMale: "Je soussigné"
-    certificate: "Et m'engage a fournir un certificat valide pour la pratique de la danse."
+    who: "Je soussigné(e)"
+    certificate: "Et m'engage a fournir un certificat valide pour la pratique de la danse pour chaque personne inscrite."
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']

@@ -6,6 +6,7 @@ app/style
 app/vendor
 bin/debug.log
 data/
+errors.txt
 dump_dancerm.json
 installer/*.exe
 node_modules

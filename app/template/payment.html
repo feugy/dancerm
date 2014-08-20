@@ -1,13 +1,11 @@
 <div class="payment focusable">
   <a href="" class="btn remove" data-ng-click="ctrl.remove()"><i class="glyphicon glyphicon-remove"/></a>
-  <div class="type">
-    <span class="btn-group dropup" data-dropdown>
-      <a href="" class="btn dropdown-toggle">{{ctrl.typeLabel}}<span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li data-ng-repeat="(type, label) in ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{label}}</a></li>
-      </ul>
-    </span>
-  </div>
+  <span class="btn-group dropup type" data-dropdown>
+    <a href="" class="btn dropdown-toggle scrollable" data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li data-ng-repeat="(type, label) in ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{label}}</a></li>
+    </ul>
+  </span>
   <span class="receipt input-group">
     <input type="text"
       data-set-null
@@ -19,8 +17,8 @@
       data-ng-change="ctrl.setReceipt()"/>
     <a href="" class="input-group-addon" data-ng-click="ctrl.toggleReceipt($event)"><i class="glyphicon glyphicon-calendar"/></a>
   </span>
-  <input type="text" data-ng-model="ctrl.src.payer"/>
-  <input type="text" data-ng-model="ctrl.src.bank"/>
+  <input type="text" class="payer" data-ng-model="ctrl.src.payer" data-ng-class="ctrl.isRequired('payer')"/>
+  <input type="text" data-ng-model="ctrl.src.bank" data-ng-class="ctrl.isRequired('bank')"/>
   <input type="text" data-ng-model="ctrl.src.details"/>
   <span class="value input-group">
     <input class="form-control" type="text" data-number-only data-ng-model="ctrl.src.value"/>

@@ -91,6 +91,14 @@ class DancerDirective
     event?.stopPropagation()
     @birthOpts.open = not @birthOpts.open
 
+  # check if field is missing or not
+  #
+  # @param field [String] field that is tested
+  # @return a css class
+  isRequired: (field) => 
+    return 'invalid' if field in @scope?.requiredFields
+    ''
+    
   # **private**
   # Update internal state when displayed dancer has changed.
   #
@@ -120,26 +128,29 @@ class DancerDirective
     @scope.onRegister?(model: @src)
 
 # The payment directive displays and edit dancer's payment
-app.directive 'dancer', ->
-  # directive template
-  templateUrl: "dancer.html"
-  # will replace hosting element
-  replace: true
-  # transclusion is needed to be properly used within ngRepeat
-  transclude: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: DancerDirective
-  controllerAs: 'ctrl'
-  bindToController: true
-  # parent scope binding.
-  scope: 
-    # displayed dancer
-    src: '='
-    # loading handler. Invoked when a dancer was retrieve by typahead, to be changed. 'model' parameters hold the selected value
-    onLoad: '&'
-    # change handler. Concerned dancer is a 'model' parameter, change status is a 'hasChagned' parameter
-    onChange: '&?'
-    # registration addition handler. Concerned dancer is a 'model' parameter
-    onRegister: '&?'
+module.exports = (app) ->
+  app.directive 'dancer', ->
+    # directive template
+    templateUrl: "dancer.html"
+    # will replace hosting element
+    replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: DancerDirective
+    controllerAs: 'ctrl'
+    bindToController: true
+    # parent scope binding.
+    scope: 
+      # displayed dancer
+      src: '='
+      # array of missing fields
+      requiredFields: '='
+      # loading handler. Invoked when a dancer was retrieve by typahead, to be changed. 'model' parameters hold the selected value
+      onLoad: '&'
+      # change handler. Concerned dancer is a 'model' parameter, change status is a 'hasChagned' parameter
+      onChange: '&?'
+      # registration addition handler. Concerned dancer is a 'model' parameter
+      onRegister: '&?'

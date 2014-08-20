@@ -6,20 +6,22 @@
   </header>
   <!-- dancers displayal and their addresses -->
   <article>
-    <a href="" class="btn btn-primary" data-ng-click="ctrl.addDancer()"><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}</a>
+    <a href="" class="btn" data-ng-click="ctrl.addDancer()"><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}</a>
     <h2>{{'ttl.card'|i18n}}</h2>
     <article class="card-dancer" data-ng-repeat="dancer in ctrl.dancers">
       <dancer
         data-src="dancer"
         data-on-load="ctrl.loadDancer(model)"
         data-on-change="ctrl.onChange(model, hasChanged)"
-        data-on-register="ctrl.addRegistration(model)">
+        data-on-register="ctrl.addRegistration(model)"
+        data-required-fields="ctrl.required[dancer.id]">
       </dancer>
       <address
         data-src="ctrl.addresses[$index]"
         data-read-only="ctrl.isAddressReadOnly(dancer)"
         data-on-affect="ctrl.addAddress(dancer)"
-        data-on-change="ctrl.onChange(model, hasChanged)">
+        data-on-change="ctrl.onChange(model, hasChanged)"
+        data-required-fields="ctrl.required[ctrl.addresses[$index].id]">
       </address>
     </article>
   </article>
@@ -37,8 +39,7 @@
   <div data-registration 
     data-ng-repeat="registration in ctrl.card.registrations" 
     data-src="registration"
-    data-dancers="ctrl.dancers"></div>
-  <!-- data-on-edit="ctrl.onRegister(registration)"
-    data-on-remove="ctrl.onRemoveRegistration(registration)"
-    data-on-print="ctrl.onPrintRegistration(registration)" -->
+    data-dancers="ctrl.dancers"
+    data-on-print="ctrl.printRegistration(registration)"
+    data-required-fields="ctrl.required.regs[$index]"></div>
 </div>

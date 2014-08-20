@@ -103,6 +103,8 @@ body
 
   input.ng-invalid
   input.invalid
+  textarea.invalid
+  .dropdown-toggle.invalid
     background-color errorColor !important
     color errorTextColor !important
 
@@ -391,7 +393,7 @@ body
         display inline-block
         cursor default
         margin 5px 5px 0 0
-        color infoColor
+        color labelColor
 
       textarea
         flex 1
@@ -415,7 +417,7 @@ body
         width auto
         margin 4px 0 0 2px
         display inline
-        color infoColor
+        color labelColor
 
       input[type="checkbox"]
         vertical-align -2px
@@ -474,7 +476,7 @@ body
       color textColor
 
     a.input-group-addon
-    .btn:not(.dropdown-toggle)
+    .btn:not(.dropdown-toggle):not(.no-hide)
       opacity 0
 
 /******************************************************************************

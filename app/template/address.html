@@ -1,5 +1,5 @@
 <div class="address focusable">
-  <a href="" class="btn btn-primary" data-ng-if="readOnly" data-ng-click="onAffect()"><i class="glyphicon glyphicon-pencil"></i></a>
+  <a href="" class="btn" data-ng-if="readOnly" data-ng-click="onAffect()"><i class="glyphicon glyphicon-pencil"></i></a>
   <h4>{{'ttl.address'|i18n}}</h4>
   <div data-ng-if="readOnly" class="row">
     <span class="col-md-8 read-only">
@@ -10,11 +10,11 @@
     <span class="col-md-4 read-only phone"><label>{{'lbl.phone'|i18n:{sep:true} }}</label><span>{{ctrl.src.phone}}</span></span>
   </div>
   <div data-ng-if="!readOnly" class="row">
-    <span class="col-md-12 street"><label>{{'lbl.street'|i18n:{sep:true} }}</label><textarea data-ng-model="ctrl.src.street" data-set-null/></span>
+    <span class="col-md-12 street"><label>{{'lbl.street'|i18n:{sep:true} }}</label><textarea data-ng-model="ctrl.src.street" data-set-null data-ng-class="ctrl.isRequired('street')"/></span>
   </div>
   <div data-ng-if="!readOnly" class="row">
-    <span class="col-md-3 zipcode"><label>{{'lbl.zipcode'|i18n:{sep:true} }}</label><input type="text" name="zipcode" data-ng-model="ctrl.src.zipcode" data-set-null/></span>
-    <span class="col-md-5 city"><label>{{'lbl.city'|i18n:{sep:true} }}</label><input type="text" name="city" data-ng-model="ctrl.src.city" data-set-null/></span>
+    <span class="col-md-3 zipcode"><label>{{'lbl.zipcode'|i18n:{sep:true} }}</label><input type="text" name="zipcode" data-ng-model="ctrl.src.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-set-null/></span>
+    <span class="col-md-5 city"><label>{{'lbl.city'|i18n:{sep:true} }}</label><input type="text" name="city" data-ng-model="ctrl.src.city" data-ng-class="ctrl.isRequired('city')" data-set-null/></span>
     <span class="col-md-4 phone"><label>{{'lbl.phone'|i18n:{sep:true} }}</label><input type="text" name="phone" data-ng-model="ctrl.src.phone" data-set-null/></span>
   </div>
 </div>

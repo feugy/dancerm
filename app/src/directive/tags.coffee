@@ -2,23 +2,6 @@ _ = require 'underscore'
 moment = require 'moment'
 i18n = require '../labels/common'
 
-# The tags directive displays tags relative at search criteria
-app.directive 'tags', ->
-  # directive template
-  template: "<div class='tags'></div>"
-  # will replace hosting element
-  replace: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: TagsDirective
-  # parent scope binding.
-  scope: 
-    # displayed search
-    src: '='
-    # function to invoke on tag removal
-    onRemove: '&'
-
 class TagsDirective
                 
   # Controller dependencies
@@ -74,3 +57,20 @@ class TagsDirective
         day = danceClass.start[0..2]
         @$el.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
     
+# The tags directive displays tags relative at search criteria
+module.exports = (app) ->
+  app.directive 'tags', ->
+    # directive template
+    template: "<div class='tags'></div>"
+    # will replace hosting element
+    replace: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: TagsDirective
+    # parent scope binding.
+    scope: 
+      # displayed search
+      src: '='
+      # function to invoke on tag removal
+      onRemove: '&'

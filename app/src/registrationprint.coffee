@@ -2,6 +2,7 @@
 
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
+Dancer = require '../script/model/dancer'
 # merge underscore and underscore string functions
 _ = require 'underscore'
 _str = require 'underscore.string'
@@ -17,45 +18,69 @@ win = gui.Window.get()
 # size to A4 format, 3/4 height
 win.resizeTo 790, 825
 
-win.once 'loaded', ->
-  # get data from mother window
-  dancer = window.dancer
-  registration = window.registration
-  planning = window.planning
+$(win.window).on 'load', ->
 
-  formatClass = (id) ->
-    danceClass = _.findWhere planning.danceClasses, id: id
-    "#{danceClass.kind} #{danceClass.level}"
+  # Angular controller for print preview
+  class Print
 
-  # set application title
-  window.document?.title = _.sprintf i18n.ttl.print, dancer.firstname, dancer.lastname
+    @$inject: ['$filter', '$rootScope']
 
-  $('.registration').text _.sprintf i18n.ttl.registrationPrint, planning.season
+    # printed registration
+    registration: null
 
-  # fill form
-  for {selector, label, value} in [
-    {selector: '.firstname', label: i18n.lbl.firstname, value: dancer.firstname}
-    {selector: '.lastname', label: i18n.lbl.lastname, value: dancer.lastname}
-    {selector: '.address', label: i18n.lbl.address, value: "#{dancer.address?.street} #{dancer.address?.zipcode} #{dancer.address?.city}"}
-    {selector: '.phone', label: i18n.lbl.phone, value: dancer.phone or dancer.cellphone}
-    {selector: '.email', label: i18n.lbl.email, value: dancer.email}
-    {
-      selector: '.danceclass'
-      label: if dancer.title in i18n.civilityTitles[1..] then i18n.lbl.registeredFemale else i18n.lbl.registeredMale
-      value: (formatClass id for id in registration.danceClassIds).join ', '
-    }
-  ]
-    $(selector).find('label').text label+i18n.lbl.fieldSeparator
-    $(selector).find('span').text value
+    # array of printed dancers
+    dancers: []
 
-  for selector in ['who', 'what', 'when', 'certificate', 'sign']
-    if i18n.print["#{selector}Male"]
-      text = i18n.print[if dancer.title in i18n.civilityTitles[1..] then "#{selector}Female" else "#{selector}Male"]
-    else
-      text = i18n.print[selector]
-    $(".#{selector}").text text
+    # dancer's names concatenated
+    names: ''
 
-  $('.print').text(i18n.btn.print).on 'click', ->
-    $('.print').remove()
-    window.print()
-    win.close()
+    # dancer's addresses, in the same order as dancers
+    addresses: []
+
+    # dancer's classes, in the same order as dancers
+    danceClasses: []
+
+    constructor: (filter, rootScope) ->
+      # get data from mother window
+      @registration = _.findWhere window.card.registrations, season: window.season 
+      # get card dancers
+      Dancer.findWhere(cardId: window.card.id).then((dancers) =>
+        @dancers = dancers
+        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
+          Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
+            @danceClasses = danceClasses
+            @addresses = addresses
+            @names = ("#{dancer.firstname} #{dancer.lastname}" for dancer in @dancers when dancer).join ', '
+            # set window title
+            window.document?.title = filter('i18n') 'ttl.print', args: names: @names
+            rootScope.$digest()
+      ).catch (err) => console.log err
+
+    # Format a given address for displayal
+    #
+    # @param dancer [Dancer] concerned dancer
+    # @return its formated address
+    formatAddress: (dancer) =>
+      address = @addresses[@dancers.indexOf dancer]
+      "#{address.street} #{address.zipcode} #{address.city}"
+
+    # Format dance classes fro a displayal
+    #
+    # @param dancer [Dancer] concerned dancer
+    # @return its formated dance classes
+    formatClasses: (dancer) =>
+      classes = @danceClasses[@dancers.indexOf dancer]
+      ("#{danceClass.kind} #{danceClass.level}" for danceClass in classes).join ', '
+
+    # Print button, that close the print window
+    print: =>
+      $('.print').remove()
+      window.print()
+      win.close()
+
+  app = angular.module('registrationPrint', []).controller 'Print', Print
+  
+  # get filters
+  require('../script/util/filters')(app)
+
+  angular.bootstrap $('body'), ['registrationPrint']

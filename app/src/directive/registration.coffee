@@ -36,7 +36,6 @@ class RegistrationDirective
   # @param dialog [Object] Angular's dialog service
   constructor: (@scope, element, @dialog) ->
     @$el = $(element)
-
     # TODO waiting for https://github.com/angular/angular.js/pull/7645
     @scope.$watchGroup ['scope.registration', 'scope.dancers'], => @_updateRendering @scope.registration, @scope.dancers
     @_updateRendering @scope.registration, @scope.dancers
@@ -46,7 +45,11 @@ class RegistrationDirective
   # Creates a new payment and adds it to the current registration
   addPayment: =>
     @registration.payments.push new Payment payer: @dancers[0].lastname
+    @scope.requiredFields.push []
     @_onChange()
+    _.delay =>
+      @$el.find('.type .scrollable').last().focus()
+    , 100
     null
 
   # Updates the payment period of the source registration object
@@ -98,7 +101,9 @@ class RegistrationDirective
         {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
       ]).result.then (confirm) =>
         return unless confirm
-        @registration.payments.splice @registration.payments.indexOf(removed), 1
+        idx = @registration.payments.indexOf(removed)
+        @registration.payments.splice idx, 1
+        @scope.requiredFields.splice idx, 1
         @_onChange()
 
   # **private**
@@ -118,6 +123,8 @@ class RegistrationDirective
         dancer?.removeListener 'change', @_onChange for dancer in @dancers
       @dancers = dancers
       dancer?.on 'change', @_onChange for dancer in @dancers
+    # initialize required payment fields
+    @scope.requiredFields = ([] for payment in @registration.payments)
     @_onChange()
 
   # **private**
@@ -127,28 +134,27 @@ class RegistrationDirective
     @scope.onChange?(model: @registration)
 
 # The registration directive displays dancer's registration to dance classes and their payments
-app.directive 'registration', ->
-  # directive template
-  templateUrl: 'registration.html'
-  # will remplace hosting element
-  replace: true
-  # transclusion is needed to be properly used within ngRepeat
-  transclude: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: RegistrationDirective
-  controllerAs: 'ctrl'
-  bindToController: true
-  # parent scope binding.
-  scope: 
-    # card's dancers
-    dancers: '='
-    # displayed registration
-    registration: '=src'
-    # invoked when registration needs editing
-    #onEdit: '&'
-    # invoked when registration needs removal
-    #onRemove: '&'
-    # invoked when printing the registration
-    #onPrint: '&'
+module.exports = (app) ->
+  app.directive 'registration', ->
+    # directive template
+    templateUrl: 'registration.html'
+    # will remplace hosting element
+    replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: RegistrationDirective
+    controllerAs: 'ctrl'
+    bindToController: true
+    # parent scope binding.
+    scope: 
+      # card's dancers
+      dancers: '='
+      # displayed registration
+      registration: '=src'
+      # array of missing fields
+      requiredFields: '='
+      # invoked when printing the registration
+      onPrint: '&'

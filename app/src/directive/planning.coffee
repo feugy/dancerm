@@ -1,28 +1,6 @@
 _ = require 'underscore'
 i18n = require '../labels/common'
 
-# The planning directive displays a given planning in a calendar fancy way
-app.directive 'planning', ->
-  # directive template
-  template: """<div class="planning"></div>"""
-  # will replace hosting element
-  replace: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: PlanningDirective
-  # parent scope binding.
-  scope: 
-    # displayed dance classes (array)
-    danceClasses: '=src'
-    # array of selected dance classes
-    # if not provided, dance class cannot be selected 
-    selected: '='
-    # event handler for dance class click. Clicked model as 'danceClass' parameter.
-    onClick: '&'
-    # attribute used for groupBy
-    groupBy: '@'
-
 days = i18n.planning.days
     
 class PlanningDirective
@@ -191,3 +169,26 @@ class PlanningDirective
     if @scope.selected?
       for {id} in @scope.selected
         @$el.find("[data-id='#{id}']").addClass 'selected'
+
+# The planning directive displays a given planning in a calendar fancy way
+module.exports = (app) ->
+  app.directive 'planning', ->
+    # directive template
+    template: """<div class="planning"></div>"""
+    # will replace hosting element
+    replace: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: PlanningDirective
+    # parent scope binding.
+    scope: 
+      # displayed dance classes (array)
+      danceClasses: '=src'
+      # array of selected dance classes
+      # if not provided, dance class cannot be selected 
+      selected: '='
+      # event handler for dance class click. Clicked model as 'danceClass' parameter.
+      onClick: '&'
+      # attribute used for groupBy
+      groupBy: '@'

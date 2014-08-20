@@ -37,6 +37,14 @@ class PaymentDirective
     @scope.$watch 'src', => @_updateRendering @scope.src
     @_updateRendering @scope.src
 
+  # check if field is missing or not
+  #
+  # @param field [String] field that is tested
+  # @return a css class
+  isRequired: (field) => 
+    return 'invalid' if field in @scope?.requiredFields
+    ''
+    
   # Updates the payment type of the source payment object
   #
   # @param type [String] selected type
@@ -86,24 +94,27 @@ class PaymentDirective
     @scope.onChange?(model: @src)
 
 # The payment directive displays and edit dancer's payment
-app.directive 'payment', ->
-  # directive template
-  templateUrl: "payment.html"
-  # will replace hosting element
-  replace: true
-  # transclusion is needed to be properly used within ngRepeat
-  transclude: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: PaymentDirective
-  controllerAs: 'ctrl'
-  bindToController: true
-  # parent scope binding.
-  scope: 
-    # displayed payment
-    src: '='
-    # change handler. Concerned dancer is a 'model' parameter, no change detection are performed
-    onChange: '&?'
-    # ask for removal, concerned payement as 'model' parameter
-    onRemove: '&?'
+module.exports = (app) ->
+  app.directive 'payment', ->
+    # directive template
+    templateUrl: "payment.html"
+    # will replace hosting element
+    replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: PaymentDirective
+    controllerAs: 'ctrl'
+    bindToController: true
+    # parent scope binding.
+    scope: 
+      # displayed payment
+      src: '='
+      # array of missing fields
+      requiredFields: '='
+      # change handler. Concerned dancer is a 'model' parameter, no change detection are performed
+      onChange: '&?'
+      # ask for removal, concerned payement as 'model' parameter
+      onRemove: '&?'

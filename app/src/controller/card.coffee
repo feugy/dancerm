@@ -36,6 +36,9 @@ module.exports = class CardController extends LayoutController
   # temporary stores known by other value
   knownByOther: null
 
+  # for edited models (id used as key), contains an array of required fields
+  required: {}
+
   # **private**
   # Stores for each displayed model a change status
   # Model's id is used as key
@@ -58,6 +61,7 @@ module.exports = class CardController extends LayoutController
     @hasChanged = false
     @dancers = []
     @addresses = []
+    @required = {}
     @_changes = {}
     @_modalOpened = false
     @_previous = {}
@@ -108,8 +112,19 @@ module.exports = class CardController extends LayoutController
       @_reset()
 
   # Save the current values inside storage
-  save: =>
+  # 
+  # @param force [Boolean] true to ignore required fields. Default to false.
+  save: (force = false) =>
     return unless @hasChanged
+    # check required fields
+    if not force and @_checkRequired()
+      return @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.requiredFields, [
+          {label: @i18n.btn.no, cssClass: 'btn-warning'}
+          {label: @i18n.btn.yes, result: true}
+        ]
+      ).result.then (confirmed) =>
+        return unless confirmed
+        @save true
     # first, resolve addresses and card
     Promise.all((dancer.address for dancer in @dancers)
     ).then((models) =>
@@ -139,6 +154,7 @@ module.exports = class CardController extends LayoutController
           # reset change state and refresh search
           @hasChanged = false
           @_changes = {}
+          @_resetRequired()
           @triggerSearch()
     ).catch (err) => console.error err
 
@@ -157,7 +173,10 @@ module.exports = class CardController extends LayoutController
       @_previous = @card.toJSON()
       @card.on 'change', @_onChange
       console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
+      @required = {}
       @dancers = _.sortBy dancers, "firstname"
+      @required[dancer.id] = [] for dancer in @dancers
+      @required.regs = ([] for registration in @card.registrations)
       # get dance classes
       Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
         # get addresses
@@ -165,6 +184,7 @@ module.exports = class CardController extends LayoutController
           unic = {}
           @addresses = []
           for address in addresses
+            @required[address.id] = []
             unless address.id of unic
               # found a new model
               unic[address.id] = address
@@ -195,7 +215,8 @@ module.exports = class CardController extends LayoutController
     added.card = @card
     # adds this new dancer to the list
     @dancers.push added
-    @addresses.push address
+    @required[added.id] = []
+    @required[added.address.id] = []
     # scroll to last
     elem = $('.card') 
     _.defer => 
@@ -211,6 +232,7 @@ module.exports = class CardController extends LayoutController
     return unless @isAddressReadOnly dancer
     address = new Address id: generateId()
     @addresses[@dancers.indexOf dancer] = address
+    @required[address.id] = []
     dancer.address = address
 
   # Add a new registration for the current season to the edited dancer, or edit an existing one
@@ -242,11 +264,15 @@ module.exports = class CardController extends LayoutController
       unless registration?
         registration = new Registration season: season
         @card.registrations.splice 0, 1, registration
+        @required.regs.push []
       # add selected class ids to dancer
       dancer.danceClasses.then (existing) =>
         # removes previous dance classes for that season
         dancer.danceClasses = danceClasses.concat (danceClass for danceClass in existing when danceClass.season isnt season)
         @rootScope.$digest()
+        _.delay =>
+          $('.registration').last().find('.scrollable').focus()
+        , 100
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -292,32 +318,36 @@ module.exports = class CardController extends LayoutController
           {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
         ]).result.then (confirm) =>
           return unless confirm
-          @dancer.registrations.splice @dancer.registrations.indexOf(removed), 1
+          @dancer.registrations.splice @dancer.registrations.indexOf(removed), 1###
 
   # Print the registration confirmation form
   #
   # @param registration [Registration] the concerned registration
-  onPrintRegistration: (registration) =>
-    Planning.find registration.planningId, (err, planning) =>
-      console.error err if err?
+  printRegistration: (registration) =>
+    try
       preview = window.open 'registrationprint.html'
-      preview.dancer = @dancer
-      preview.registration = registration
-      preview.planning = planning####
+      preview.card = @card
+      preview.season = registration.season
+    catch err
+      console.error err
 
   # **private**
   # Reset displayed card and its relative models
   _reset: =>
     @knownBy = {}
+    @required = {}
     @knownByOther = null
     # creates an empty dancer with empty address and card
-    dancer = new Dancer()
+    dancer = new Dancer id: generateId()
+    @required[dancer.id] = []
     # set an id to address to allow sharing with other dancers
     address = new Address id: generateId()
+    @required[address.id] = []
     @card?.removeListener 'change', @_onChange
     @card = new Card()
     @_previous = {}
     @card.on 'change', @_onChange
+    @required.regs = ([] for registration in @card.registrations)
     dancer.address = address
     dancer.card = @card
     @dancers = [dancer]
@@ -334,3 +364,43 @@ module.exports = class CardController extends LayoutController
     @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()
     # because observer break the digest progresss
     @rootScope.$digest() unless @rootScope.$$phase
+
+  # **private**
+  # Check required fields when saving models
+  # 
+  # @return true if a required field is missing
+  _checkRequired: =>
+    missing = false
+    for dancer in @dancers
+      @required[dancer.id] = (
+        for field in ['title', 'firstname', 'lastname'] when not(dancer[field]?) or _.trim(dancer[field]).length is 0
+          missing = true
+          field
+      )
+    for address in @addresses
+      @required[address.id] = (
+        for field in ['street', 'zipcode', 'city'] when not(address[field]?) or _.trim(address[field]).length is 0
+          missing = true
+          field 
+      )
+    for registration, i in @card.registrations
+      @required.regs[i] = (
+        for payment in registration.payments
+          requiredFields = ['type']
+          requiredFields.push 'payer', 'bank' if payment.type is 'check'
+          tmp = (
+            for field in requiredFields when not(payment[field]?) or _.trim(payment[field]).length is 0
+              missing = true
+              field 
+          )
+          tmp
+      )
+    missing
+
+  # **private**
+  # Reset required fields
+  _resetRequired: =>
+    @required[dancer.id] = [] for dancer in @dancers
+    @required[address.id] = [] for address in @addresses
+    for registration, i in @card.registrations
+      @required.regs[i] = ([] for payment in registration.payments)

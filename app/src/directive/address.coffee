@@ -7,7 +7,9 @@ class AddressDirective
   # Controller dependencies
   @$inject: ['$scope']
 
-  
+  # edited address
+  src: null
+
   # **private**
   # Edited address's previous values
   _previous: {}
@@ -19,6 +21,14 @@ class AddressDirective
     # TODO waiting for https://github.com/angular/angular.js/pull/7645
     @scope.$watch 'src', => @_updateRendering @scope.src
     @_updateRendering @scope.src
+
+  # check if field is missing or not
+  #
+  # @param field [String] field that is tested
+  # @return a css class
+  isRequired: (field) => 
+    return 'invalid' if field in @scope?.requiredFields
+    ''
 
   # **private**
   # Update internal state when displayed dancer has changed.
@@ -39,26 +49,29 @@ class AddressDirective
     @scope.onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
 
 # The payment directive displays and edit dancer's payment
-app.directive 'address', ->
-  # directive template
-  templateUrl: "address.html"
-  # will replace hosting element
-  replace: true
-  # transclusion is needed to be properly used within ngRepeat
-  transclude: true
-  # applicable as element and attribute
-  restrict: 'EA'
-  # controller
-  controller: AddressDirective
-  controllerAs: 'ctrl'
-  bindToController: true
-  # parent scope binding.
-  scope: 
-    # address is displayed
-    src: '='
-    # read-only flag.
-    readOnly: '=?'
-    # affectation handler, used when address needs to be changed
-    onAffect: '&'
-    # change handler. Concerned address is a 'model' parameter, change status is a 'hasChagned' parameter
-    onChange: '&?'
+module.exports = (app) ->
+  app.directive 'address', ->
+    # directive template
+    templateUrl: "address.html"
+    # will replace hosting element
+    replace: true
+    # transclusion is needed to be properly used within ngRepeat
+    transclude: true
+    # applicable as element and attribute
+    restrict: 'EA'
+    # controller
+    controller: AddressDirective
+    controllerAs: 'ctrl'
+    bindToController: true
+    # parent scope binding.
+    scope: 
+      # address is displayed
+      src: '='
+      # read-only flag.
+      readOnly: '=?'
+      # array of missing fields
+      requiredFields: '='
+      # affectation handler, used when address needs to be changed
+      onAffect: '&'
+      # change handler. Concerned address is a 'model' parameter, change status is a 'hasChagned' parameter
+      onChange: '&?'

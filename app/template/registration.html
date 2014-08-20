@@ -1,7 +1,6 @@
 <article class="registration focusable">
-  <h2>{{ctrl.registration.season}}<span class="pull-right">
-    <a href="" class="btn" data-ng-click="ctrl.print()"><i class="glyphicon glyphicon-print"></i></a>
-  </span></h2>
+  <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint()"><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}</a>
+  <h2>{{ctrl.registration.season}}</h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
     <div class="dancer-classes">
       <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{'lbl.certifiedLong'|i18n}}</label>
@@ -14,7 +13,7 @@
   </article>
   <h3>{{'lbl.charged'|i18n:{sep:true} }}
     <span class="input-group">
-      <input type="text" data-number-only class="input-small" data-ng-model="ctrl.registration.charged"/>
+      <input type="text" data-number-only class="input-small scrollable" data-ng-model="ctrl.registration.charged"/>
       <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
     </span>
     <span class="btn-group" data-dropdown>
@@ -23,7 +22,7 @@
         <li data-ng-repeat="(period, label) in ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{label}}</a></li>
       </ul>
     </span>
-    <a href="" class="btn btn-primary pull-right add-payment glyphed" data-ng-click="ctrl.addPayment()"><i class="glyphicon glyphicon-plus"/>{{'btn.addPayment'|i18n}}</a>
+    <a href="" class="btn pull-right add-payment glyphed" data-ng-click="ctrl.addPayment()"><i class="glyphicon glyphicon-plus"/>{{'btn.addPayment'|i18n}}</a>
   </h3>
   <div class="payments" data-ng-if="ctrl.registration.payments.length > 0">
     <h3>
@@ -38,6 +37,7 @@
     <div data-payment 
       data-ng-repeat="payment in ctrl.registration.payments" 
       data-src="payment" 
+      data-required-fields="requiredFields[$index]"
       data-on-change="ctrl._onChange()"
       data-on-remove="ctrl.removePayment(model)"></div>
     <div class="total ng-class:ctrl.getBalanceState();">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-group"><span data-ng-bind="ctrl.registration.balance"></span><span class="input-group-addon">{{'lbl.currency'|i18n}}</span></span></div>
