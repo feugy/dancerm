@@ -96,11 +96,12 @@ Paid: 110h 10€/h
 
 ## TODOs 
 
-!! - fix lists
 ! - migrate old storage to nedb
 ! - leverage export with compacted nedb (with new knownBy status)
 - incorporate/separate existing dancer to another card
 - incorporate an existing dancer on an existing address of the same card address
+- fix import
+- fix export
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -142,3 +143,6 @@ ok - add another "known-by" choice: "old dancers"
 18/05 - 3
 19/06 - 2,5
 20/06 - 2
+21/06 - 2
+22/06 - 3
+23/06 - 7h-11h

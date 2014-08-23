@@ -96,7 +96,8 @@ class DancerDirective
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return 'invalid' if field in @scope?.requiredFields
+    return '' unless @scope?
+    return 'invalid' if field in @scope.requiredFields
     ''
     
   # **private**
@@ -113,7 +114,6 @@ class DancerDirective
     # reset birth date to dancer's one
     @birthOpts.open = false
     @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.toDate() else null
-    @_onChange()
 
   # **private**
   # Value change handler: check if dancer has changed from its previous values
@@ -126,6 +126,12 @@ class DancerDirective
   _onRegister: =>
     # TODO waiting for https://github.com/angular/angular.js/pull/7645
     @scope.onRegister?(model: @src)
+
+  # **private**
+  # Typeahead selection handler
+  _onLoad: (model) =>
+    console.log 'coucoucoucou', model
+    @scope.onLoad model?.cardId
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->

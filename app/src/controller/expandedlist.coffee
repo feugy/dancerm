@@ -6,8 +6,13 @@ i18n = require '../labels/common'
 module.exports = class ExpandedListController extends ListController
 
   # Controller dependencies
-  @$inject: ['export'].concat ListController.$inject
+  @$inject: ['export', '$list', '$search'].concat ListController.$inject
 
+  @declaration:
+    controller: ExpandedListController
+    controllerAs: 'ctrl'
+    templateUrl: 'expandedlist.html'
+  
   # Link to export service
   exporter: null
 
@@ -17,32 +22,44 @@ module.exports = class ExpandedListController extends ListController
   # Sort order: ascending if true
   sortAsc: true
 
+  # Displayed columns
+  columns: [
+    {name: 'title', title: 'lbl.title'}
+    {name: 'firstname', title: 'lbl.firstname'}
+    {name: 'lastname', title: 'lbl.lastname'}
+    {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
+      dancer.lastRegistration().then (registration) -> registration.certified dancer
+    }, {name: 'due', title: 'lbl.due', attr: (dancer) -> 
+      dancer.lastRegistration().then (registration) -> registration.due()
+    }, {name: 'age', title: 'lbl.age', attr: (dancer) -> 
+      if dancer.birth? then moment().diff dancer.birth, 'years' else ''
+    }, {name: 'birth', title: 'lbl.birth', attr: (dancer) ->  
+      if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
+    }, {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer) -> 
+      if dancer.knownBy
+        ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in dancer.knownBy).join ''
+      else
+        ''
+    }, {name: 'phone', title: 'lbl.phone', attr: (dancer) -> 
+      dancer.address.then (address) -> address?.phone
+    }, {name: 'cellphone', title: 'lbl.cellphone'}
+    {name: 'email', title: 'lbl.email'}
+    {name: 'address', title: 'lbl.address', attr: (dancer) ->
+      dancer.address.then (address) -> "#{address?.street} #{address?.zipcode} #{address?.city}"
+    }]
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular current scope
   # @param state [Object] Angular state provider
   # @param dialog [Object] Angular dialog service
   # @param export [Export] Export service
-  constructor: (@exporter, parentArgs...) -> 
+  constructor: (@exporter, @list, @search, parentArgs...) -> 
     super parentArgs...
     # keeps current sort for inversion
     @sort = null
     @sortAsc = true
-
-  # Return age of dancer from the current date
-  #
-  # @param dancer [Dancer] the concerned dancer
-  # @return the age in years
-  getAge: (dancer) => 
-    moment().diff dancer.birth, 'years'
-
-  # Return birth of dancer properly formatted
-  #
-  # @param dancer [Dancer] the concerned dancer
-  # @return the dancer's date of birth
-  getBirth: (dancer) =>
-    dancer.birth.format i18n.formats.birth
-
+   
   # Sort list by given attribute and order
   #
   # @param attr [String] sort attribute
@@ -55,14 +72,14 @@ module.exports = class ExpandedListController extends ListController
       @sortAsc = true
       @sort = attr
       # specific attributes
-      if attr is 'due'
+      ###if attr is 'due'
         attr = (model) -> model?.registrations?[0]?.due() 
       else if attr is 'address'
-        attr = (model) -> model?.address?.zipcode
+        attr = (model) -> model?.address?.zipcode###
       @list = _.sortBy @list, attr
 
   # Choose a target file and export list as xlsx
-  onExport: =>
+  export: =>
     return unless @list?.length > 0
     dialog = $('<input style="display:none;" type="file" nwsaveas accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
     dialog.change (evt) =>
@@ -88,7 +105,7 @@ module.exports = class ExpandedListController extends ListController
     dialog.trigger 'click'
 
   # Export email as string
-  onExportEmails: =>
+  exportEmails: =>
     return unless @list?.length > 0
     emails = _.uniq(dancer.email.trim() for dancer in @list when dancer.email?.trim().length > 0).sort().join ', '
     # put in the system clipboard

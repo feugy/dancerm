@@ -27,7 +27,8 @@ class AddressDirective
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return 'invalid' if field in @scope?.requiredFields
+    return '' unless @scope?
+    return 'invalid' if field in @scope.requiredFields
     ''
 
   # **private**
@@ -40,7 +41,6 @@ class AddressDirective
     @src?.on 'change', @_onChange
     @_previous = @src?.toJSON()
     # store previous version for cancellation and change detection, if editable
-    @_onChange() unless @scope.readOnly
 
   # **private**
   # Value change handler: check if dancer has changed from its previous values

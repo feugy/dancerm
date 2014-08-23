@@ -6,7 +6,12 @@ Dancer = require '../model/dancer'
 module.exports = class PlanningController extends LayoutController
               
   # Controller dependencies
-  @$inject: ['$location'].concat LayoutController.$inject
+  @$inject: ['$location', '$search'].concat LayoutController.$inject
+
+  @declaration:
+    controller: PlanningController
+    controllerAs: 'ctrl'
+    templateUrl: 'planning.html'
   
   # Link to Angular location provider
   location: null
@@ -23,13 +28,17 @@ module.exports = class PlanningController extends LayoutController
   # List of dance classes currently displayed
   planning: []
 
+  # Stores current search criteria
+  search: {}
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param location [Object] Angular location service
-  constructor: (@location, parentArgs...) -> 
+  constructor: (@location, @search, parentArgs...) -> 
     super parentArgs...
     @seasons = []
     @teachers = []
+
     currentSeason = null
     planning = []
     @rootScope.$on 'model-initialized', init = =>
@@ -38,6 +47,7 @@ module.exports = class PlanningController extends LayoutController
         unless @seasons.length is 0
           @currentSeason = @seasons[0]
           @showPlanning @currentSeason
+        console.log 'coucou', @currentSeason
         @rootScope.$digest()
     init()
 
@@ -47,6 +57,7 @@ module.exports = class PlanningController extends LayoutController
   # @param event [Event] click event, to check pressed keys
   # @param chosen [Array<DanceClass>] the clicked dance(s) class
   searchByClass: (event, chosen) =>
+    console.log "search by class #{chosen}, #{@currentSeason}"
     if event?.ctrlKey
       for danceClass in chosen
         # add or remove
@@ -62,7 +73,7 @@ module.exports = class PlanningController extends LayoutController
     @search.teachers = []
     # reset season to match corresponding
     @search.seasons = [@currentSeason]
-    @triggerSearch()
+    @rootScope.$emit 'search'
 
   # Invoked when clicking on a given teacher name.
   # displays dancers registered for this teatcher on current year
@@ -70,7 +81,7 @@ module.exports = class PlanningController extends LayoutController
   # @param event [Event] click event, to check pressed keys
   # @param chosen [String] the clicked teacher, may be empty
   searchByTeacher: (event, chosen = null) =>
-    season = @selected?.season
+    console.log "search by teacher #{chosen}, #{@currentSeason}"
     if event?.ctrlKey
       if chosen?
         # add or remove teacher
@@ -92,19 +103,21 @@ module.exports = class PlanningController extends LayoutController
         @search.teachers = [chosen]
       else
         @search.seasons = [@currentSeason]
+        @search.teachers = []
     # removes danceClasses because they cannot belong to multiple plannings/teachers
     @search.danceClasses = []
-    @triggerSearch()
+    @rootScope.$emit 'search'
 
   # Invoked to display an empty dancer's screen
   createDancer: =>
     console.log "ask to display new dancer"
-    @location.path "/home/dancer/"
+    @state.go 'list-and-card'
 
   # When a season is selected, shows its planning and updates the teacher list
   #
   # @param season [String] selected season
   showPlanning: (season) =>
+    @currentSeason = season
     DanceClass.getPlanning(season).then (planning) =>
       @planning = planning
       @teachers = _.chain(planning).pluck('teacher').uniq().compact().value().sort()

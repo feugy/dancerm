@@ -125,7 +125,6 @@ class RegistrationDirective
       dancer?.on 'change', @_onChange for dancer in @dancers
     # initialize required payment fields
     @scope.requiredFields = ([] for payment in @registration.payments)
-    @_onChange()
 
   # **private**
   # Value change handler: relay to card parent.

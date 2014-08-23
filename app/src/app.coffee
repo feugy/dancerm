@@ -24,48 +24,29 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
   # configure routing
   router.otherwise '/home'
 
-  home = 
-    url: '/home'
-    abstract: true
-    templateUrl: 'columnandmain.html'
-    controller: LayoutCtrl
-    controllerAs: 'ctrl'
+  home = _.extend {}, LayoutCtrl.declaration, url: '/home'
+
   states.state 'home', home
 
   states.state 'list-and-planning',
     parent: home
     url: ''
     views: 
-      column:
-        templateUrl: 'list.html'
-        controller: ListCtrl
-        controllerAs: 'ctrl'
-      main:
-        templateUrl: 'planning.html'
-        controller: PlanningCtrl
-        controllerAs: 'ctrl'
+      column: ListCtrl.declaration
+      main: PlanningCtrl.declaration
 
-  states.state 'list-and-dancer',
+  states.state 'list-and-card',
     parent: home
-    url: '/dancer/:id'
+    url: '/card/:id'
     views: 
-      column:
-        templateUrl: 'list.html'
-        controller: ListCtrl
-        controllerAs: 'ctrl'
-      main:
-        templateUrl: 'card.html'
-        controller: CardCtrl
-        controllerAs: 'ctrl'
+      column: ListCtrl.declaration
+      main: CardCtrl.declaration
 
   states.state 'expanded-list',
     parent: home
     url: '/list'
     views: 
-      column:
-        templateUrl: 'expandedlist.html'
-        controller: ExpandedListCtrl
-        controllerAs: 'ctrl'
+      column: ExpandedListCtrl.declaration
 ]
 
 # application initialization

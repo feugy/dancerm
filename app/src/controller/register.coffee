@@ -40,21 +40,22 @@ module.exports = class RegisterController
   # Current dialog instance
   _dialog: null
 
+  # previously selected dance classes
+  _previous: []
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param danceClassIds [Array<String>] list of existing dance class ids
   # @param scope [Object] Angular current scope
   # @param dialog [Object] current dialog instance
   constructor: (@danceClasses, @isEdit, @scope, @_dialog) ->
-    @scope.isEdit = isEdit
-    @scope.chooseSeason = @chooseSeason
-    @scope.close = @close
-    @scope.danceClasses = @danceClasses
+    @src = @scope.src
+    @_previous = (@danceClasses or []).concat()
 
     DanceClass.listSeasons().then((seasons) =>
-      @scope.seasons = seasons
-      unless @scope.seasons.length is 0
-        @scope.chooseSeason @scope.seasons[0]
+      @seasons = seasons
+      unless @seasons.length is 0
+        @chooseSeason @seasons[0]
       else
         @scope.$apply()
     ).catch (err) => console.error err
@@ -65,8 +66,8 @@ module.exports = class RegisterController
   # @param season [String] the new selected season 
   chooseSeason: (season) =>
     DanceClass.getPlanning(season).then((planning) =>
-      @scope.planning = planning
-      @scope.currSeason = season
+      @planning = planning
+      @currSeason = season
       @scope.$apply()
     ).catch (err) => console.error err
 
@@ -75,8 +76,11 @@ module.exports = class RegisterController
   # @param confirmed [Boolean] true if the creation is confirmed
   close: (confirmed) =>
     # do not accept confirmed closure if no registration was selected.
-    return if confirmed and @scope.src is null
+    return if confirmed and @src is null
+    # retore previous dance classes if not confirmed
+    @danceClasses.splice.apply @danceClasses, [0, @danceClasses.length].concat @_previous unless confirmed
+    # closes dialog
     @_dialog.close 
       confirmed: confirmed
-      season: @scope.currSeason
-      danceClasses: @scope.danceClasses
+      season: @currSeason
+      danceClasses: @danceClasses

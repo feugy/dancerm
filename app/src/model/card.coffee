@@ -21,7 +21,12 @@ module.exports = class Card extends Persisted
       knownBy: []
       registrations: []
     # enrich registrations with models
-    raw.registrations = (new Registration rawRegistration for rawRegistration in raw.registrations when rawRegistration?.constructor?.name isnt 'Registration')
+    raw.registrations = (for rawRegistration in raw.registrations 
+      if rawRegistration?.constructor?.name isnt 'Registration'
+        new Registration rawRegistration 
+      else
+        rawRegistration
+    )
 
     # fill attributes
     super(raw)

@@ -42,7 +42,12 @@ module.exports = class Registration extends Base
       details: null
 
     # enrich object attributes
-    raw.payments = (new Payment rawPayment for rawPayment in raw.payments when rawPayment?.constructor?.name isnt 'Payment')
+    raw.payments = (for rawPayment in raw.payments 
+      if rawPayment?.constructor?.name isnt 'Payment'
+        new Payment rawPayment 
+      else
+        rawPayment
+    )
     # fill attributes
     super(raw)
 
@@ -70,7 +75,10 @@ module.exports = class Registration extends Base
       get: -> @_raw.certificates
       set: (val) -> 
         if @_raw.certificates?
-          Object.unobserve @_raw.certificates, @_onCertificatesChanged
+          try
+            Object.unobserve @_raw.certificates, @_onCertificatesChanged
+          catch err
+            # silent error
         @_raw.certificates = val
         if @_raw.certificates?
           Object.observe @_raw.certificates, @_onCertificatesChanged
@@ -120,4 +128,8 @@ module.exports = class Registration extends Base
   # @return amount to be paid for this registration
   due: =>
     @charged - @balance
+
+  # @return if a dancer was certified for this registration
+  certified: (dancer) =>
+    @certificates[dancer.id] is true
     

@@ -1,11 +1,28 @@
 _ = require 'underscore'
 i18n = require  '../labels/common'
 Dancer = require  '../model/dancer'
+
+# stores current list and search criteria globaly to avoid re-searching between two states
+list = []
+search = 
+  string: null
+  teachers: []
+  seasons: []
+  danceClasses: []
   
 module.exports = class LayoutController
               
   # Controller dependencies
   @$inject: ['$rootScope', 'import', 'dialog', '$state']
+
+  @declaration:
+    abstract: true
+    controller: LayoutController
+    controllerAs: 'ctrl'
+    templateUrl: 'columnandmain.html'
+    resolve: 
+      $list: => list
+      $search: => search
   
   # Global scope, for digest triggering
   rootScope: null
@@ -22,25 +39,8 @@ module.exports = class LayoutController
   # indicates whether a main view is visible or not
   hasMain: true
 
-  # dancer displayed list
-  list: []
-
-  # search criteria
-  search:
-    danceClasses: []
-    seasons: []
-    string: null
-    teachers: []
-
-  # flag indicating wether the edited main part has changed or not
-  hasChanged: false
-
   # i18n values, for rendering
   i18n: i18n
-
-  # **private**
-  # Disable concurrent search. Only first search is taken in account
-  _searchPending: false
 
   # Controller constructor: bind methods and attributes to current scope
   #
@@ -49,62 +49,12 @@ module.exports = class LayoutController
   # @param dialog [Object] Angular dialog service
   # @param state [Object] Angular state provider
   constructor: (@rootScope, @import, @dialog, @state) -> 
-    @_searchPending = false
-    @_isExpand = false
     # updates main existance when state is loaded
     @rootScope.$on '$stateChangeSuccess', checkMain = =>
       @hasMain = @state?.current?.views?.main?
     @hasMain = checkMain()
-
-    # displayed dancer's list
-    @list = []
-    # search criteria
-    @search = 
-      danceClasses: []
-      seasons: []
-      string: null
-      teachers: []
-    @hasChanged = false
     # Ask immediately dump entry if missing
     @_loadDumpEntry()
-
-  # Trigger the search based on `search` descriptor.
-  # `list` will be updated at the search end.
-  triggerSearch: =>
-    console.log "search for", @search
-    return if @_searchPending
-    conditions = {}
-    # depending on criterias
-    if @search.name?.length >= 3 
-      # find all dancers by first name/last name
-      searched = @search.name.toLowerCase()
-      conditions.$where = () -> 
-        0 is @firstname?.toLowerCase().indexOf(searched) or 
-        0 is @lastname?.toLowerCase().indexOf(searched) or
-        0 is @address?.city?.toLowerCase().indexOf(searched)
-
-    # find all dancers by season and optionnaly by teacher for this season
-    if @search.seasons?.length > 0
-      conditions['danceClasses.season'] = $in: @search.seasons
-    
-    if @search.danceClasses?.length > 0
-      # select class students: can be combined with season and name
-      conditions['danceClassIds'] = $in: _.pluck @search.danceClasses, 'id'
-    else if @search.teachers?.length > 0
-      # add teacher if needed: can be combined with season and name
-      conditions['danceClasses.teacher'] = $in: @search.teachers
-    
-    # clear list content
-    return @list = [] if _.isEmpty conditions
-    @_searchPending = true
-    Dancer.findWhere(conditions).then((dancers) =>
-      @_searchPending = false
-      @list = _.sortBy dancers, 'lastname'
-      @rootScope.$apply()
-    ).catch (err) =>
-      @_searchPending = false
-      @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
-      @rootScope.$apply()
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified

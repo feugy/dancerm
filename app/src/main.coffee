@@ -87,6 +87,7 @@ try
     require('../script/util/filters')(app)
     require('../script/directive/address')(app)
     require('../script/directive/dancer')(app)
+    require('../script/directive/list')(app)
     require('../script/directive/planning')(app)
     require('../script/directive/payment')(app)
     require('../script/directive/tags')(app)

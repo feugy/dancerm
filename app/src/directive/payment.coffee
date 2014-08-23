@@ -42,7 +42,8 @@ class PaymentDirective
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return 'invalid' if field in @scope?.requiredFields
+    return '' unless @scope?
+    return 'invalid' if field in @scope.requiredFields
     ''
     
   # Updates the payment type of the source payment object
@@ -84,8 +85,6 @@ class PaymentDirective
     # reset receipt date to payement's one
     @receiptOpts.open = false
     @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.toDate() else null
-    
-    @_onChange()
 
   # **private**
   # Value change handler: relay to registration parent.

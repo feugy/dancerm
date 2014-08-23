@@ -11,12 +11,16 @@ RegisterController = require './register'
 
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
-#
-# Associated with the `template/dancer.html` view.
 module.exports = class CardController extends LayoutController
             
   # Controller dependencies
   @$inject: ['$stateParams'].concat LayoutController.$inject
+
+  # Route declaration
+  @declaration:
+    controller: CardController
+    controllerAs: 'ctrl'
+    templateUrl: 'card.html'
 
   # for rendering
   i18n: i18n
@@ -39,6 +43,9 @@ module.exports = class CardController extends LayoutController
   # for edited models (id used as key), contains an array of required fields
   required: {}
 
+  # flag indicating wether the card has changed or not
+  hasChanged: {}
+
   # **private**
   # Stores for each displayed model a change status
   # Model's id is used as key
@@ -55,7 +62,7 @@ module.exports = class CardController extends LayoutController
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param stateParams [Object] invokation route parameters
-  constructor: (stateParams, parentArgs...) -> 
+  constructor: (stateParams, @parentArgs...) -> 
     super parentArgs...
     # initialize global change status
     @hasChanged = false
@@ -68,8 +75,7 @@ module.exports = class CardController extends LayoutController
 
     if stateParams.id
       # load edited dancer
-      Dancer.find(stateParams.id).then(@loadDancer)
-        .catch (err) -> console.error err
+      @_loadCard stateParams.id
     else
       @_reset()
 
@@ -155,56 +161,16 @@ module.exports = class CardController extends LayoutController
           @hasChanged = false
           @_changes = {}
           @_resetRequired()
-          @triggerSearch()
+          @rootScope.$emit 'search'
     ).catch (err) => console.error err
 
-  # Load a dancer: replace current card with dancer's card, and get all other dancers of this card.
+  # Navigate to the state displaying a given card
   #
-  # @param added [Dancer] loaded dancer.
-  loadDancer: (dancer) =>
-    # get other dancers, and load card to display registrations
-    Promise.all([
-      Dancer.findWhere cardId:dancer.cardId
-      dancer.card
-    ]).then( ([dancers, card]) =>
-      console.log "load card #{card.id}"
-      @card.removeListener 'change', @_onChange
-      @card = card
-      @_previous = @card.toJSON()
-      @card.on 'change', @_onChange
-      console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
-      @required = {}
-      @dancers = _.sortBy dancers, "firstname"
-      @required[dancer.id] = [] for dancer in @dancers
-      @required.regs = ([] for registration in @card.registrations)
-      # get dance classes
-      Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
-        # get addresses
-        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
-          unic = {}
-          @addresses = []
-          for address in addresses
-            @required[address.id] = []
-            unless address.id of unic
-              # found a new model
-              unic[address.id] = address
-              @addresses.push address
-            else
-              # reuse existing model
-              @addresses.push unic[address.id]
-
-          # translate the "known by" possibilities into a list of boolean
-          @knownBy = {}
-          for value of @i18n.knownByMeanings 
-            @knownBy[value] = _.contains @card.knownBy, value
-          @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
-          
-          # reset changes and displays everything
-          @hasChanged = false
-          @_changes = {}
-          @rootScope.$digest()
-    ).catch (err) =>
-      console.error err
+  # @param cardId [String] loaded card id.
+  loadCard: (cardId) =>
+    # to avoid displaying confirmation
+    @hasChanged = false
+    @state.go 'list-and-card', id: cardId
 
   # Add a new dancer to this card.
   # Reuse address of last dancer
@@ -247,12 +213,10 @@ module.exports = class CardController extends LayoutController
       keyboard: false
       templateUrl: 'register.html'
       controller: RegisterController
-      # TODO waiting for version angular-ui-bootstrap@0.12.0
-      # https://github.com/angular-ui/bootstrap/commit/7b7cdf842278e86a677980d29bd74a1afd467ff1
       controllerAs: 'ctrl'
       resolve: 
         danceClasses: -> dancer.danceClasses
-        isEdit: -> console.log(dancer.danceClassIds); dancer.danceClassIds.length > 0
+        isEdit: -> dancer.danceClassIds.length > 0
     ).result.then ({confirmed, season, danceClasses}) =>
       return unless confirmed
       registration = null
@@ -298,7 +262,7 @@ module.exports = class CardController extends LayoutController
   # @param hasChanged [Boolean] true if this model has changed
   onChange: (model, hasChanged) =>
     # performs comparison between current and old values
-    # console.log "model #{model.id} (#{model.constructor.name}) has changed: #{hasChanged}"
+    console.log "model #{model.id} (#{model.constructor.name}) has changed: #{hasChanged}"
     return @hasChanged = true unless model.id?
     @_changes[model.id] = hasChanged
     # quit at first modification
@@ -353,7 +317,56 @@ module.exports = class CardController extends LayoutController
     @dancers = [dancer]
     @addresses = [address]
     @_changes[@card.id] = true
+    @hasChanged = false
 
+  # **private**
+  # Effectively loads a card, and get all other dancers of this card.
+  #
+  # @param cardId [String] loaded card id.
+  _loadCard: (cardId) =>
+    # get other dancers, and load card to display registrations
+    Promise.all([
+      Dancer.findWhere cardId:cardId
+      Card.find cardId
+    ]).then( ([dancers, card]) =>
+      console.log "load card #{card.id}"
+      @card?.removeListener 'change', @_onChange
+      @card = card
+      @_previous = @card.toJSON()
+      @card.on 'change', @_onChange
+      console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
+      @required = {}
+      @dancers = _.sortBy dancers, "firstname"
+      @required[dancer.id] = [] for dancer in @dancers
+      @required.regs = ([] for registration in @card.registrations)
+      # get dance classes
+      Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
+        # get addresses
+        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
+          unic = {}
+          @addresses = []
+          for address in addresses
+            @required[address.id] = []
+            unless address.id of unic
+              # found a new model
+              unic[address.id] = address
+              @addresses.push address
+            else
+              # reuse existing model
+              @addresses.push unic[address.id]
+
+          # translate the "known by" possibilities into a list of boolean
+          @knownBy = {}
+          for value of @i18n.knownByMeanings 
+            @knownBy[value] = _.contains @card.knownBy, value
+          @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
+          
+          # reset changes and displays everything
+          @hasChanged = false
+          @_changes = {}
+          @rootScope.$digest()
+    ).catch (err) =>
+      console.error err
 
   # **private**
   # Card change handler: check if card has changed from its previous values

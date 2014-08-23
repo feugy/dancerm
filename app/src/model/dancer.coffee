@@ -147,3 +147,11 @@ module.exports = class Dancer extends Persisted
     # enrich object attributes
     @created = moment @created
     @birth = moment @birth if @birth?
+
+  # Consult dancer's last registration (ordered in time)
+  #
+  # @return a promise resolve with last registration or null
+  lastRegistration: =>
+    @card.then (card) =>
+      registrations = card.registrations.concat().sort().reverse()
+      Promise.resolve registrations?[0] or null

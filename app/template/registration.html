@@ -17,7 +17,7 @@
       <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
     </span>
     <span class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle">{{ctrl.periodLabel}}<span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="(period, label) in ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{label}}</a></li>
       </ul>

@@ -46,6 +46,7 @@ class TagsDirective
   # Updates displayed tags from the search criteria
   _onUpdateTags: =>
     @$el.empty()
+    return unless @scope.src
     if @scope.src.seasons?
       for season in @scope.src.seasons
         @$el.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"

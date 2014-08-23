@@ -11,7 +11,7 @@
     <article class="card-dancer" data-ng-repeat="dancer in ctrl.dancers">
       <dancer
         data-src="dancer"
-        data-on-load="ctrl.loadDancer(model)"
+        data-on-load="ctrl.loadCard(model.cardId)"
         data-on-change="ctrl.onChange(model, hasChanged)"
         data-on-register="ctrl.addRegistration(model)"
         data-required-fields="ctrl.required[dancer.id]">
