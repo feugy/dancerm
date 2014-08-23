@@ -17,7 +17,7 @@ module.exports =
     knownBy: 'Connu par'
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
-    registrationPrint: 'Inscription année {{registration.season}}'
+    registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
     
   # long messages with html
@@ -73,6 +73,7 @@ module.exports =
     classTooltip: '%s (%s) %s~%s'
     currency: '€'
     danceClasses: 'Cours pour'
+    day: 'Jour'
     details: 'Détails'
     due: 'Rgt.'
     email: 'E-mail'
@@ -80,12 +81,13 @@ module.exports =
     firstname: 'Prénom'
     Fri: 'Vendredi'
     lastname: 'Nom'
+    hours: 'Horaire'
     Mon: 'Lundi'
     other: '(autre)'
     payer: 'Par'
     phone: 'Téléphone'
     receipt: 'Encaissement'
-    registered: 'Inscrit(e) au(x) cours'
+    registered: 'Intitulé du cours'
     Sat: 'Samedi'
     searchPlaceholder: 'chercher par nom/prénom'
     street: 'Voie'
@@ -115,11 +117,37 @@ module.exports =
 
   # print texts
   print:
-    sign: "Signature"
-    what: "ai pris connaissance et approuve le règlement intérieur de l'Ecole de Danse RIBAS."
-    when: "Villeurbanne, le"
-    who: "Je soussigné(e)"
-    certificate: "Et m'engage a fournir un certificat valide pour la pratique de la danse pour chaque personne inscrite."
+    school: """
+<p>Ecole de danse Ribas</p>
+<p>34 rue du docteur Rollet</p>
+<p>69100 Villeurbanne</p>
+"""
+    settlement: """
+<h2>Accès aux activités</h2>
+<p>L'accès aux activités est strictement réservé aux membres de l'école à jour de leurs cotisations.</p>
+<p>La direction se réserve le droit de refuser l'entrée ou le renvoi de toute personne dont le comportement ou la mauvaise tenue pourraient être contraire à la sécurité, à la réputation et aux intérêts de l'école, et ceci sans dédommagement concernant son abonnement. 
+Les abonnements sont strictement personnels.</p>
+<p>Les tarifs prennent en compte la fermeture pour congés et jours fériés.
+Les cours collectifs sont interrompus pendant les vancances scolaires.</p>
+<h2>Responsabilités</h2>
+<p>De son coté, le membre déclare souscrire une police d'assurance engageant sa responsabilité civile, le couvrant de ses activités dans l'enceinte de l'école.
+La responsabilité de l'école ne pourra être recherchée en cas d'accident résultant de la non-observation des consignes de sécurité ou de l'utilisation inappropriée du matériel.</p>
+<p>Pour chaque cours, excepté les danses de couple, l'adhérent devra founrir un certificat médical de non contre indication à la discipline.
+S'il n'est pas fourni dans les 15 jours suivants l'inscription, l'école et le professeur dégagent toute responsabilité en cas d'accident.</p>
+<p>Un trimestre payé et non suivi ne pourra être reporté ou remboursé. Une année payée et non suivie ne pourra être reportée ou remboursée.</p>
+<p>Les cours particuliers, non-annulés 48h à l'avance seront dus.</p>
+<p>Afin de ne pas perturber les cours qui se déroulent dans les salles, celle-ci sont inerdites à toute personne non concernée par le cours.</p>
+<p>Pour la tranquilité du voisinage, il est demandé de ne pas faire de bruit à la sortie de l'école.</p>
+<p>Les enfants en peuvent pas rester sans la surveillance de leurs parents tant que le cours n'est pas commencé.
+De même, les parents qui viennent chercher les enfants sont priés de bien vouloir monter à l'école.</p>
+<p>Vous acceptez de bien vouloir apparaitre sur les photos et les vidéos des différentes manifestations de l'école de dans Ribas.</p>
+<h2>L'inscription et la fréquentation de l'école de danse Ribas entrainent obligatoirement l'acceptation du présent réglement.</h2>
+"""
+    settlementTitle: "Reglement intérieur / Conditions générale d'adhesion"
+    sign: "<p>Signature de l'élève ou du responsable légal</p><p>Précédé de la mention \"lu et approuvé\"</p>"
+    stamp: "Signature et cachet de l'école"
+    where: "Fait à"
+    when: "le"
 
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']

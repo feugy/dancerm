@@ -20,21 +20,5 @@
         data-ng-click="ctrl.onSort(attr)">{{'lbl.'+attr|i18n}}<i data-ng-show="ctrl.sort === attr" data-ng-class="ctrl.sortAsc ? 'glyphicon glyphicon-chevron-up' : 'glyphicon glyphicon-chevron-down'"></i>
       </th>
     </tr>
-  </thead>
-  <tbody>
-  <tr data-ng-repeat="dancer in ctrl.list" data-ng-click="ctrl.onDisplayDancer(dancer)">
-    <td>{{dancer.title}}</td>
-    <td>{{dancer.firstname}}</td>
-    <td>{{dancer.lastname}}</td>
-    <td><i class="glyphicon" data-ng-class="dancer.certified ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-exclamation-sign'"></i></td>
-    <td data-ng-class="dancer.registrations[0].due() ? ['text-error'] : ''"><i data-ng-hide="dancer.registrations[0].due() > 0" class="glyphicon glyphicon-ok"></i><span data-ng-show="dancer.registrations[0].due()">{{dancer.registrations[0].due()}}{{'lbl.currency'|i18n}}</span></td>
-    <td>{{ctrl.getAge(dancer)}}</td>
-    <td>{{ctrl.getBirth(dancer)}}</td>
-    <td><span class="known-by" data-ng-repeat="knownBy in dancer.knownBy">{{i18n.knownByMeanings[knownBy] || knownBy}}</span>
-    <td>{{dancer.phone}}</td>
-    <td>{{dancer.cellphone}}</td>
-    <td>{{dancer.email}}</td>
-    <td>{{dancer.address.street}} {{dancer.address.zipcode}} {{dancer.address.city}}</td>
-  </tr>
-  </tbody>-->
+  </thead>-->
 </table>

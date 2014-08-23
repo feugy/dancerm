@@ -6,39 +6,59 @@
   </head>
   <body data-ng-controller="Print as ctrl">
     <header>
+      <img src="../style/img/ribas.png" class="logo"/>
+      <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
+      <div class="registration" data-ng-bind-html="'ttl.registrationPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
     </header>
-    <h1 class="registration">{{'ttl.registrationPrint'|i18n:{args:{registration:ctrl.registration} } }}</h1>
-    <article data-ng-repeat="dancer in ctrl.dancers">
-      <div class="lastname">
-        <label>{{'lbl.lastname'|i18n:{sep:true} }}</label><span>{{dancer.lastname}}</span>
-      </div>
-      <div class="firstname">
-        <label>{{'lbl.firstname'|i18n:{sep:true} }}</label><span>{{dancer.firstname}}</span>
-      </div>
-      <div class="address">
-        <label>{{'lbl.address'|i18n:{sep:true} }}</label><span>{{ctrl.formatAddress(dancer)}}</span>
-      </div>
-      <div class="phone">
-        <label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><span>{{dancer.cellphone}}</span>
-      </div>
-      <div class="email">
-        <label>{{'lbl.email'|i18n:{sep:true} }}</label><span>{{dancer.email}}</span>
-      </div>
-      <div class="danceclass">
-        <label>{{'lbl.registered'|i18n:{sep:true} }}</label><span>{{ctrl.formatClasses(dancer)}}</span>
-      </div>
-    </article>
-    <div class="pre-filled">
-      <span>{{'print.who'|i18n}}</span><span class="input"></span><span class="input"></span><span>{{'print.what'|i18n}}</span>
-      <br/>
-      <span>{{'print.certificate'|i18n}}</span>
+    <div class="dancers">
+      <article data-ng-repeat="dancer in ctrl.dancers">
+        <aside class="dancer">
+          <div class="row">
+            <label>{{'lbl.lastname'|i18n:{sep:true} }}</label><span>{{dancer.lastname}}</span>
+            <label>{{'lbl.firstname'|i18n:{sep:true} }}</label><span>{{dancer.firstname}}</span>
+          </div>
+          <div class="row">
+            <label>{{'lbl.birth'|i18n:{sep:true} }}</label><span>{{ctrl.getBirth(dancer)}}</span>
+          </div>
+          <div class="row">
+            <label>{{'lbl.address'|i18n:{sep:true} }}</label><span>{{ctrl.formatAddress(dancer)}}</span>
+          </div>
+          <div class="row">
+            <label>{{'lbl.phone'|i18n:{sep:true} }}</label><span>{{ctrl.getPhone(dancer)}}</span>
+            <label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><span>{{dancer.cellphone}}</span>
+          </div>
+          <div class="row">
+            <label>{{'lbl.email'|i18n:{sep:true} }}</label><span>{{dancer.email}}</span>
+          </div>
+        </aside>
+        <aside class="dance-classes">
+          <article data-ng-repeat="danceClass in ctrl.getClasses(dancer)">
+            <div class="row">
+              <label>{{'lbl.registered'|i18n:{sep:true} }}</label><span>{{danceClass.kind}} {{danceClass.level}}</span>
+            </div>
+            <div class="row">
+              <label>{{'lbl.day'|i18n:{sep:true} }}</label><span>{{ctrl.formatDay(danceClass)}}</span>
+              <label>{{'lbl.hours'|i18n:{sep:true} }}</label><span>{{ctrl.formatHours(danceClass)}}</span>
+            </div>
+          </article>
+        </aside>
+      </article>
     </div>
-    <div class="pre-filled last">
-      <span>{{'print.when'|i18n}}</span><span class="input"></span><span>{{'print.sign'|i18n}}</span>
+    <h1 class="settlement">{{'print.settlementTitle'|i18n}}</h1>
+    <div class="two-columns">
+      <div data-placeholder="{{'print.settlement' | i18n}}"></div>
+      <div class="pre-filled">
+        <div class="row">
+          <span>{{'print.where'|i18n}}</span><span class="input"></span><span>{{'print.when'|i18n}}</span><span class="input"></span>
+        </div>
+        <span data-placeholder="{{'print.sign' | i18n}}"></span>
+      </div>
+      <div class="pre-filled stamp">{{'print.stamp'|i18n}}</div>
     </div>
     <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
     <script type="application/javascript" src="../vendor/jquery.js"></script>
     <script type="application/javascript" src="../vendor/angular.js"></script>
+    <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
     <script type="application/javascript" src="../script/registrationprint.js"></script>
   </body>
 </html>

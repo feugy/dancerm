@@ -1,48 +1,119 @@
 @import 'variable'
 
 secondaryColor = #888
-fontSize = 15px
+fontSize = 14px
+
+box() 
+  border 1px solid secondaryColor
+  margin 0 15px
+  padding 5px
 
 html 
   background transparent
 
 body
-  padding 50px
+  padding 20px
   background transparent
 
   *
     font-family Verdana
     font-size fontSize
 
-  h1 
-    font-size fontSize*1.4
-    font-weight normal
-    margin 30px 0 0
+  p 
+    margin 0 0 0.5em 0
+  p:last-child
+    margin-bottom 0
+  
+  header
+    display flex
+    margin 0
+    justify-content center
+
+    .logo
+      width 65px
+      height 60px
+
+    .school
+    .registration
+      box()
+      width 40%
+
+    .school
+      > p 
+        margin 0
+
+      > p:first-child
+        font-weight bold
+        font-size 110%
+
+    .registration > p
+      text-align center
+      font-weight bold
+      font-size 130%
+
+  .dancers
+    articlePad = 10px
+    rowPad = 3px
+
+    > article
+      margin 15px 0 0
+      border 1px solid secondaryColor
+      display flex
+      padding (articlePad - rowPad) (articlePad - rowPad)
+    
+      > aside
+        width 50%
+        padding 0 rowPad
+
+    .dance-classes > article:not(:first-child)
+      margin-top (articlePad/2)
+      padding-top (articlePad/2)
+      border-top 1px solid secondaryColor
+
+    .row
+      margin rowPad 0
+
+      label
+        margin-right articlePad
+        display inline-block
+      label:not(:first-child)
+        margin-left articlePad * 2
+      span
+        font-weight bold
+
+  .two-columns
+    height 600px
+    margin 10px 0
+    display flex
+    flex-flow column wrap
+
+    > *
+      width 48%
+      margin-left 10px
+      margin-right 10px
+      font-size 90%
+      text-align justify
+
+  .settlement
     text-align center
-
-  label
-    padding-right 30px
-    width 100px
-    text-align right
-    display inline-block
-
-  > *
-    margin-top 30px 
+    font-variant small-caps
 
   .pre-filled
-    margin-top 120px
+    box()
+    height 150px
+
+    .row
+      display flex
+      margin-bottom 0.5em
+
+    .input
+      display inline-block
+      flex 1
+      margin 0 0.5em 0
+      border-bottom 1px dashed #888
     
-  .last
-    text-align right
-
-  .input
-    display inline-block
-    width 180px
-    margin 0 0.5em -4px
-    border-bottom 1px dashed #888
-
-  .who, .when, .what, .input
-    line-height 2.5em
+  .stamp
+    margin-top 10px
 
   .btn
     position absolute

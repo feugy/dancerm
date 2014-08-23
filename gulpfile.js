@@ -33,10 +33,11 @@ var paths = {
     {file:'vendor/jquery.js', url:'http://code.jquery.com/jquery-2.1.1.min.js'}, 
     // awaiting for angular 1.3.0-beta.19+ https://github.com/angular/angular.js/pull/7645
     {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular.min.js'},
-    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.2.21/angular-animate.min.js'},
+    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular-animate.min.js'},
+    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular-sanitize.min.js'},
     {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.10/release/angular-ui-router.min.js'},
     // unrelease yet, build from trunk
-    {file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js'},
+    //{file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js'},
     {file:'src/style/css/bootstrap.css', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'},
     {file:'src/style/fonts/glyphicons-halflings-regular.eot', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.eot'},
     {file:'src/style/fonts/glyphicons-halflings-regular.woff', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.woff'},

@@ -102,6 +102,7 @@ Paid: 110h 10€/h
 - incorporate an existing dancer on an existing address of the same card address
 - fix import
 - fix export
+- list sort
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
