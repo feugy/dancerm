@@ -81,3 +81,18 @@ module.exports = class ListController extends LayoutController
       @_searchPending = false
       @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
       @rootScope.$apply()
+
+  # @return true if the current list concerned a dance class
+  canPrintCallList: =>
+    @search.string is null and @search.danceClasses.length is 1
+
+  # Print call list from the current day
+  # 
+  # @param danceClass [DanceClass] danceClass concerned
+  printCallList: =>
+    try
+      preview = window.open 'calllistprint.html'
+      preview.danceClass = @search.danceClasses[0]
+      preview.list = @list
+    catch err
+      console.error err

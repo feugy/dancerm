@@ -136,3 +136,37 @@ body
   .btn:hover, .btn:focus, .btn:active, .btn.active
     background-color primaryBtnBackgroundHover
     outline 0
+
+body.call-list
+    
+  h1, h2
+    text-align center
+    font-size 120%
+    margin 0 0 8px 0
+
+  h2
+    font-size 100%
+
+  .table
+    border-collapse collapse
+    
+    td, th
+      padding 0.3em
+    
+    thead > tr
+      color white
+      background-color secondaryColor
+      text-align center
+    
+    tr:not(:first-child) td 
+      border-top 1px solid secondaryColor
+
+    tr > td:not(:first-child)
+      text-align center
+
+    .check
+      display inline-block
+      width 15px
+      height 15px
+      border 1px solid black
+      vertical-align -3px

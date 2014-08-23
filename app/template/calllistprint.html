@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../style/print.css"/>
+  </head>
+  <body data-ng-controller="Print as ctrl" class="call-list">
+    <h1>{{ctrl.danceClass.kind}} {{ctrl.danceClass.level}}</h1>
+    <h2>{{ctrl.danceClassHour()}}</h2>
+    <table class="table">
+      <thead>
+        <th>{{'ttl.dancer'|i18n}}</th>
+        <th data-ng-repeat="date in ctrl.dates">{{date}}</th>
+      </thead>
+      <tbody>
+        <tr data-ng-repeat="dancer in ctrl.list">
+          <td>{{dancer.title}} {{dancer.firstname}} {{dancer.lastname}}</td>
+          <td data-ng-repeat="date in ctrl.dates"><span class="check"></span></td>
+        </tr>
+      </tbody>
+    </table>
+    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
+    <script type="application/javascript" src="../vendor/jquery.js"></script>
+    <script type="application/javascript" src="../vendor/angular.js"></script>
+    <script type="application/javascript" src="../script/calllistprint.js"></script>
+  </body>
+</html>

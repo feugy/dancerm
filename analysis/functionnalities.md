@@ -106,7 +106,7 @@ Paid: 110h 10€/h
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
- 3 - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
+ok - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
 ok - add payment field: payer, prefilled with dancer's name
 11 - merge data from two different PCs
 ok - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
@@ -119,12 +119,9 @@ ok - add another "known-by" choice: "old dancers"
 
 ## Functionnal requirements
 
-- Manage mupltiple dancers in one file
 - Synchronize data from multiple PCs
 - Print stamps for mailing
 - Stats on dancers origin (known-by)
-- Have a free field in payments
-- Have mandatory fields before saving
 
 ## Hours
 
@@ -146,4 +143,4 @@ ok - add another "known-by" choice: "old dancers"
 20/06 - 2
 21/06 - 2
 22/06 - 3
-23/06 - 7h-11h
+23/06 - 10

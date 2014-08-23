@@ -52,6 +52,7 @@ module.exports =
     no: 'Non'
     ok: 'Ok'
     print: 'Imprimer'
+    callList: "Liste d'appel"
     register: 'Inscription'
     remove: 'Supprimer'
     save: 'Enregistrer'
@@ -114,6 +115,7 @@ module.exports =
     receiptSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
     birth: 'DD/MM/YYYY' # moment format
     receipt: 'DD/MM/YYYY' # moment format
+    callList: 'DD/MM'
 
   # print texts
   print:
