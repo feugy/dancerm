@@ -85,8 +85,10 @@ module.exports =
     hours: 'Horaire'
     Mon: 'Lundi'
     other: '(autre)'
+    paymentKind: 'Mode de réglement'
     payer: 'Par'
     phone: 'Téléphone'
+    rate: 'Tarif'
     receipt: 'Encaissement'
     registered: 'Intitulé du cours'
     Sat: 'Samedi'
@@ -99,6 +101,7 @@ module.exports =
     Tue: 'Mardi'
     type: 'Type'
     value: 'Valeur'
+    vat: 'dont T.V.A.'
     Wed: 'Mercredi'
     zipcode: 'Code postal'
 

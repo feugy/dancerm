@@ -20,6 +20,8 @@ win = gui.Window.get()
 win.resizeTo 790, 825
 
 $(win.window).on 'load', ->
+
+  win.showDevTools()
   
   # Angular controller for print preview
   class Print
@@ -28,6 +30,9 @@ $(win.window).on 'load', ->
 
     # printed registration
     registration: null
+
+    # for rendering
+    i18n: i18n
 
     # array of printed dancers
     dancers: []
@@ -71,6 +76,12 @@ $(win.window).on 'load', ->
     # @return list of its dance classes
     getClasses: (dancer) =>
       @danceClasses[@dancers.indexOf dancer]
+
+    # Return V.A.T. rounded to two decimals
+    #
+    # @return the V.A.T.
+    getVat: =>
+      Math.floor(@registration.charged * 0.196 * 100) / 100
 
     # Format a given address for displayal
     #

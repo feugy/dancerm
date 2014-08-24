@@ -10,6 +10,9 @@ module.exports = (app) =>
     sep = ''
     if options?.sep is true
       sep = parse('lbl.fieldSeparator') i18n
+    currency = ''
+    if options?.currency is true
+      currency = parse('lbl.currency') i18n
     try
       value = parse(input)(i18n)
       # performs replacements
@@ -17,7 +20,7 @@ module.exports = (app) =>
         value = interpolate(value)(options.args) 
     catch exc
       window.console.error "failed to parse i18n key '#{input}': #{exc}"
-    "#{value or input}#{sep}"
+    "#{value or input}#{sep}#{currency}"
   ]
     
   # classDate filter displays with friendly names start or end of a dance class
