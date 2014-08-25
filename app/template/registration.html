@@ -1,5 +1,8 @@
 <article class="registration focusable">
-  <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint()"><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}</a>
+  <div class="button-bar">
+    <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint({withVat:false})"><i class="glyphicon glyphicon-print"/>{{'btn.printWithoutVat'|i18n}}</a>
+    <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint({withVat:true})"><i class="glyphicon glyphicon-print"/>{{'btn.printWithVat'|i18n}}</a>
+  </div>
   <h2>{{ctrl.registration.season}}</h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
     <div class="dancer-classes">

@@ -21,8 +21,6 @@ win.resizeTo 790, 825
 
 $(win.window).on 'load', ->
 
-  win.showDevTools()
-  
   # Angular controller for print preview
   class Print
 
@@ -30,6 +28,9 @@ $(win.window).on 'load', ->
 
     # printed registration
     registration: null
+
+    # display V.A.T. or not
+    withVat: false
 
     # for rendering
     i18n: i18n
@@ -47,6 +48,7 @@ $(win.window).on 'load', ->
     danceClasses: []
 
     constructor: (filter, rootScope) ->
+      @withVat = window.withVat
       # get data from mother window
       @registration = _.findWhere window.card.registrations, season: window.season 
       # get card dancers
@@ -76,12 +78,6 @@ $(win.window).on 'load', ->
     # @return list of its dance classes
     getClasses: (dancer) =>
       @danceClasses[@dancers.indexOf dancer]
-
-    # Return V.A.T. rounded to two decimals
-    #
-    # @return the V.A.T.
-    getVat: =>
-      Math.floor(@registration.charged * 0.196 * 100) / 100
 
     # Format a given address for displayal
     #

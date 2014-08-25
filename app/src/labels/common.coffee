@@ -51,7 +51,8 @@ module.exports =
     newDancer: 'Inscrire un danseur'
     no: 'Non'
     ok: 'Ok'
-    print: 'Imprimer'
+    printWithoutVat: 'Sans TVA'
+    printWithVat: 'Avec TVA'
     callList: "Liste d'appel"
     register: 'Inscription'
     remove: 'Supprimer'

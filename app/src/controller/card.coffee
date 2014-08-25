@@ -287,10 +287,12 @@ module.exports = class CardController extends LayoutController
   # Print the registration confirmation form
   #
   # @param registration [Registration] the concerned registration
-  printRegistration: (registration) =>
+  # @param withVat [Boolean] true if vat is displayed
+  printRegistration: (registration, withVat = true) =>
     try
       preview = window.open 'registrationprint.html'
       preview.card = @card
+      preview.withVat = withVat
       preview.season = registration.season
     catch err
       console.error err

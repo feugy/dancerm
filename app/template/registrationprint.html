@@ -45,8 +45,8 @@
       </article>
       <article class="payment">
         <div class="row">
-          <label>{{'lbl.rate'|i18n:{sep:true} }}</label><span>{{ctrl.registration.charged|i18n:{currency:true} }}</span>
-          <label>{{'lbl.vat'|i18n:{sep:true} }}</label><span>{{ctrl.getVat()|i18n:{currency:true} }}</span>
+          <label>{{'lbl.rate'|i18n:{sep:true} }}</label><span class="input"></span>
+          <label data-ng-if="ctrl.withVat">{{'lbl.vat'|i18n:{sep:true} }}</label><span class="input" data-ng-if="ctrl.withVat"></span>
           <label>{{'lbl.paymentKind'|i18n:{sep:true} }}</label>
           <span data-ng-repeat="(value, label) in ctrl.i18n.paymentTypes">
             <span class="check"></span><label>{{label}}</label>
