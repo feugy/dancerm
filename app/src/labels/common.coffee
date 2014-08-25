@@ -53,6 +53,7 @@ module.exports =
     ok: 'Ok'
     printWithoutVat: 'Sans TVA'
     printWithVat: 'Avec TVA'
+    print: 'Imprimer'
     callList: "Liste d'appel"
     register: 'Inscription'
     remove: 'Supprimer'

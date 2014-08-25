@@ -144,3 +144,4 @@ ok - add another "known-by" choice: "old dancers"
 21/06 - 2
 22/06 - 3
 23/06 - 10
+25/06 - 1
