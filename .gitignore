@@ -15,3 +15,4 @@ test/fixture/out.*
 test/script
 test/vendor
 .sublime-*
+*.dump

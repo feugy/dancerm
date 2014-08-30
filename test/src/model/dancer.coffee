@@ -2,7 +2,7 @@
 require('chai').use require 'chai-as-promised'
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'q'
+{Promise} = require 'es6-promise'
 Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'
 Registration = require '../../../app/script/model/registration'
@@ -202,7 +202,7 @@ describe 'Dancer model tests', ->
     ballroom14 = new DanceClass season: '2014/2015', kind: 'ballroom', teacher: 'Diana'
     ballroom13 = new DanceClass season: '2013/2014', kind: 'ballroom', teacher: 'Diana'
     cardBobJack = new Card registrations: [
-      new Registration season: '2014/2015', charged: 600, 
+      new Registration season: '2014/2015', charged: 600 
       new Registration season: '2013/2014', charged: 200, period: 'quarter'
     ]
     cardLucy = new Card registrations: [
@@ -215,18 +215,30 @@ describe 'Dancer model tests', ->
     beforeEach (done) ->
       Promise.all([salsa14.save(), salsa13.save(), batchata14.save(), ballroom14.save(), ballroom13.save(), 
         cardBobJack.save(), cardLucy.save(), addressBobJack.save(), addressLucy.save()
-      ]).then ->
+      ]).then( ->
         lucy.address = addressLucy
         lucy.danceClasses = [ballroom13, ballroom14, salsa14]
+        lucy.card = cardLucy
         jack.address = addressBobJack
         jack.danceClasses = [salsa14]
+        jack.card = cardBobJack
         bob.address = addressBobJack
         bob.danceClasses = [salsa13, salsa14, batchata14]
-        Promise.all([lucy.save(), bob.save(), jack.save()]).then -> done()
+        bob.card = cardBobJack
+        Promise.all([lucy.save(), bob.save(), jack.save()]).then ->
+          console.log "lucy #{lucy.id}"
+          console.log "bob #{bob.id}"
+          console.log "jack #{jack.id}"
+          console.log "cardBobJack #{cardBobJack.id}"
+          console.log "cardLucy #{cardLucy.id}"
+          console.log "addressBobJack #{addressBobJack.id}"
+          console.log "addressLucy #{addressLucy.id}"
+          done()
+      ).catch done
 
     it 'should findWhere() resolve on dance classes', ->
-      Dancer.findWhere('danceClassIds': $in: batchata14.id).then (dancers) ->
-        expect(dancers).to.have.lengthOf 3
+      Dancer.findWhere('danceClassIds': $in: [batchata14.id]).then (dancers) ->
+        expect(dancers).to.have.lengthOf 1
         expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
         expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
         expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
@@ -243,21 +255,21 @@ describe 'Dancer model tests', ->
         expect(dancers).to.have.lengthOf 1
         expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
         expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack not found').not.to.exist
 
     it 'should findWhere() resolve on registrations', ->
       Dancer.findWhere('card.registrations.charged': 200).then (dancers) ->
-        expect(dancers).to.have.lengthOf 2
+        expect(dancers).to.have.lengthOf 3
         expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
         expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
 
     it 'should findWhere() resolve multiple criteria on on registrations', ->
       Dancer.findWhere('card.registrations.charged': 200, 'card.registrations.period': 'quarter').then (dancers) ->
-        expect(dancers).to.have.lengthOf 1
+        expect(dancers).to.have.lengthOf 2
         expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
         expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
 
     it 'should findWhere() resolve registrations and dance classes', ->
       Dancer.findWhere('card.registrations.charged': 200, 'danceClasses.kind': 'ballroom').then (dancers) ->

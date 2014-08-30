@@ -2,7 +2,7 @@
 
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
-fs = require 'fs'
+fs = require 'fs-extra'
 
 dumpError = (err) ->
   now = new Date()
@@ -35,9 +35,11 @@ try
     return @close true if hasDump
 
     hasDump = true
-    app.close (err) =>
-      console.error err if err?
+    app.close().then(() =>
       console.log 'close after save'
+      @close true
+    ).catch (err) =>
+      console.error 'close after error and save', err
       @close true
 
     console.log 'ask to close...'
@@ -45,6 +47,7 @@ try
       localStorage.setItem attr, win[attr]
 
     localStorage.setItem 'maximized', isMaximized
+    false
 
   win.on 'maximize', -> isMaximized = true
   win.on 'unmaximize', -> isMaximized = false

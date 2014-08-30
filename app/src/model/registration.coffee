@@ -3,9 +3,13 @@ _ = require 'underscore'
 Base = require './tools/base'
 Payment = require './payment'
 
+observeSupported = Object.observe?
+
 # Registration is for one or several classes and a given
 # Multiple payment may be used for the same registration: their sum is stored in `balance`
 module.exports = class Registration extends Base
+  
+  @_transient = Base._transient.concat ['balance']
 
   # corresponding season
   season: null
@@ -56,10 +60,10 @@ module.exports = class Registration extends Base
       configurable: true
       get: -> @_raw.payments
       set: (val) -> 
-        if @_raw.payments?
+        if @_raw.payments? and observeSupported
           Array.unobserve @_raw.payments, @_onPaymentsChanged
         @_raw.payments = val
-        if @_raw.payments?
+        if @_raw.payments? and observeSupported
           Array.observe @_raw.payments, @_onPaymentsChanged
         @_onPaymentsChanged [
           addedCount: @_raw.payments.length
@@ -74,13 +78,13 @@ module.exports = class Registration extends Base
       configurable: true
       get: -> @_raw.certificates
       set: (val) -> 
-        if @_raw.certificates?
+        if @_raw.certificates? and observeSupported
           try
             Object.unobserve @_raw.certificates, @_onCertificatesChanged
           catch err
             # silent error
         @_raw.certificates = val
-        if @_raw.certificates?
+        if @_raw.certificates? and observeSupported
           Object.observe @_raw.certificates, @_onCertificatesChanged
         @_onCertificatesChanged()
 

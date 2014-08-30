@@ -2,6 +2,8 @@ _ = require 'underscore'
 Persisted = require './tools/persisted'
 Registration = require './registration'
 
+observeSupported = Object.observe?
+
 # A card gather several dancers to group their registrations
 module.exports = class Card extends Persisted
 
@@ -36,10 +38,10 @@ module.exports = class Card extends Persisted
       configurable: true
       get: -> @_raw.registrations
       set: (val) -> 
-        if @_raw.registrations?
+        if @_raw.registrations? and observeSupported
           Array.unobserve @_raw.registrations, @_onRegistrationsChanged
         @_raw.registrations = val
-        if @_raw.registrations?
+        if @_raw.registrations? and observeSupported
           Array.observe @_raw.registrations, @_onRegistrationsChanged
         @_onRegistrationsChanged [
           addedCount: @_raw.registrations.length

@@ -1,4 +1,5 @@
 moment = require 'moment'
+{join, resolve} = require 'path'
 _ = require 'underscore'
 _str = require 'underscore.string'
 _.mixin _str.exports()
@@ -11,10 +12,17 @@ Function::property = (prop, desc) ->
 
 module.exports = 
 
-	# Generate a random id containing 12 characters
-	# @return a generated id
-	generateId: ->
-	  (_hexa[Math.floor Math.random()*_hexa.length] for i in [0...12]).join ''
+  # Generate a random id containing 12 characters
+  # @return a generated id
+  generateId: ->
+    (_hexa[Math.floor Math.random()*_hexa.length] for i in [0...12]).join ''
+
+  # Return folder path that will stores database files
+  #
+  # @return absolute path to store database files
+  getDbPath: ->
+    isTest = process.env.NODE_ENV?.toLowerCase()?.trim() is 'test'
+    resolve join __dirname, '..', '..', '..', 'data', "dancerm#{if isTest then '-test' else ''}"
 
   # Return current season from date
   # Searshon changes at August, 1st.

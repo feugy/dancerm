@@ -10,10 +10,12 @@ search =
   seasons: []
   danceClasses: []
   
+_dumpInProgress = false
+
 module.exports = class LayoutController
               
   # Controller dependencies
-  @$inject: ['$rootScope', 'import', 'dialog', '$state']
+  @$inject: ['$rootScope', 'import', 'dialog', '$state', '$filter']
 
   @declaration:
     abstract: true
@@ -48,7 +50,8 @@ module.exports = class LayoutController
   # @param import [import] Import service
   # @param dialog [Object] Angular dialog service
   # @param state [Object] Angular state provider
-  constructor: (@rootScope, @import, @dialog, @state) -> 
+  # @param filter [Function] Angular's filter factory
+  constructor: (@rootScope, @import, @dialog, @state, @filter) -> 
     # updates main existance when state is loaded
     @rootScope.$on '$stateChangeSuccess', checkMain = =>
       @hasMain = @state?.current?.views?.main?
@@ -59,7 +62,7 @@ module.exports = class LayoutController
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified
   importDancers: =>
-    dialog = $('<input style="display:none;" type="file" accept="application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
+    dialog = $('<input style="display:none;" type="file" accept=".dump,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
     dialog.change (evt) =>
       filePath = dialog.val()
       dialog.remove()
@@ -67,29 +70,29 @@ module.exports = class LayoutController
       return unless filePath
       @rootScope.$apply => 
         dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
-      @import.fromFile filePath, (err, dancers) =>
-        err = new Error "No dancers found" if !err? and dancers?.length is 0
-        if err?
-          console.error "Import failed: #{err}"
-          # displays an error dialog
-          return @rootScope.$apply =>
-            dialog.close()
-            @dialog.messageBox i18n.ttl.import, _.sprintf(i18n.err.importFailed, err.message), [label: i18n.btn.ok]
+      
+      msg = null
+      displayEnd = => 
+        @rootScope.$apply =>
+          dialog.close()
+          @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
+            # refresh all
+            @rootScope.$broadcast 'model-imported'
+
+      @import.fromFile(filePath).then(({models, report}) =>
+        throw new Error "No dancers found" if models?.length is 0
+        console.info "importation report:", report
 
         # get all existing dancers
-        Dancer.findAll().then((existing) =>
-          @import.merge existing, dancers, (err, imported) =>
-            console.info "#{imported}/#{dancers.length} dancers imported"
-            @rootScope.$apply =>
-              dialog.close()
-              msg = if err? then  _.sprintf(i18n.err.importFailed, err.message) else _.sprintf i18n.msg.importSuccess, imported, dancers.length
-              @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
-                # refresh all
-                @rootScope.$broadcast 'model-imported'
-        ).catch (err) =>
-          @rootScope.$apply =>
-            dialog.close()
-          console.error err 
+        @import.merge(models).then (report) =>
+          console.info "merge report:", report
+          msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
+      ).then( =>
+        displayEnd()
+      ).catch (err) => 
+        msg = _.sprintf i18n.err.importFailed, err.message
+        displayEnd()
+
     dialog.trigger 'click'
     null
 
@@ -98,6 +101,7 @@ module.exports = class LayoutController
   # @param callback [Function] invoked when dump is finished, with arguments.
   # @option callback error [Error] an error object or null if no error occurred.
   _loadDumpEntry: (callback) =>
+    return if _dumpInProgress
     # nothing in localStorage
     dumpPath = localStorage.getItem 'dumpPath'
     @_chooseDumpLocation callback unless dumpPath
@@ -108,6 +112,7 @@ module.exports = class LayoutController
   # @param callback [Function] invoked when dump is finished, with arguments.
   # @option callback error [Error] an error object or null if no error occurred.
   _chooseDumpLocation: (callback) =>
+    _dumpInProgress = true
     # first, explain what we're asking
     @dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).result.then =>
       dialog = $('<input style="display:none;" type="file" nwsaveas value="dump_dancerm.json" accept="application/json"/>')
@@ -116,6 +121,7 @@ module.exports = class LayoutController
         dialog.remove()
         # dialog cancellation
         return @_chooseDumpLocation() unless dumpPath
+        _dumpInProgress = false
         # retain entry for next loading
         localStorage.setItem 'dumpPath', dumpPath
         return callback err if err?

@@ -1,4 +1,5 @@
 _ = require 'underscore'
+{Promise} = require 'es6-promise'
 Persisted = require './tools/persisted'
 
 # ordered week days

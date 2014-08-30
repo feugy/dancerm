@@ -47,7 +47,6 @@ module.exports = class PlanningController extends LayoutController
         unless @seasons.length is 0
           @currentSeason = @seasons[0]
           @showPlanning @currentSeason
-        console.log 'coucou', @currentSeason
         @rootScope.$digest()
     init()
 

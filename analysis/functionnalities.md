@@ -97,7 +97,6 @@ Paid: 110h 10€/h
 ## TODOs 
 
 ! - migrate old storage to nedb
-! - leverage export with compacted nedb (with new knownBy status)
 - incorporate/separate existing dancer to another card
 - incorporate an existing dancer on an existing address of the same card address
 - fix import
@@ -108,7 +107,14 @@ ok - on file print, add address, phone (mobile or fix) and email, and medical ce
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
 ok - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
 ok - add payment field: payer, prefilled with dancer's name
-11 - merge data from two different PCs
+11 - merge data from two different PCs with rules: 
+     * import files is a single dump file containing all data
+     * new imported models are always added
+     * existing models not in import are not deleted
+     * imported models which id match an existing id :
+     ** existing version is above imported version: no import
+     ** imported version is above existing version: import
+     ** same version: conflict detected
 ok - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
 ok - on payement addition, automatically scroll to bottom, and put focus to first field
 ok - add age column (from current date) into expanded list
@@ -144,4 +150,4 @@ ok - add another "known-by" choice: "old dancers"
 21/06 - 2
 22/06 - 3
 23/06 - 10
-25/06 - 1
+30/06 - 2

@@ -1,5 +1,6 @@
 _ = require 'underscore'
 moment = require 'moment'
+{Promise} = require 'es6-promise'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
 Dancer = require '../model/dancer'

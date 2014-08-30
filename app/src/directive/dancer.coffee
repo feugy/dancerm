@@ -1,5 +1,6 @@
 _ = require 'underscore'
 moment = require 'moment'
+{Promise} = require 'es6-promise'
 i18n = require '../labels/common'
 Dancer = require '../model/dancer'
 
@@ -130,7 +131,6 @@ class DancerDirective
   # **private**
   # Typeahead selection handler
   _onLoad: (model) =>
-    console.log 'coucoucoucou', model
     @scope.onLoad model?.cardId
 
 # The payment directive displays and edit dancer's payment

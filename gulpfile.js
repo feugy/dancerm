@@ -10,9 +10,10 @@
  *   watch (default) - clean, build, and use watcher to recompile on the fly when sources or scripts file changes
  */
 var _ = require('underscore');
+var async = require('async');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var clean = require('gulp-rimraf');
+var rimraf = require('rimraf');
 var stylus = require('gulp-stylus');
 var coffee = require('gulp-coffee');
 var plumber = require('gulp-plumber');
@@ -31,10 +32,10 @@ var paths = {
   testsDest: 'test/script',
   vendorSrc: [
     {file:'vendor/jquery.js', url:'http://code.jquery.com/jquery-2.1.1.min.js'}, 
-    // awaiting for angular 1.3.0-beta.19+ https://github.com/angular/angular.js/pull/7645
-    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular.min.js'},
-    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular-animate.min.js'},
-    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0-beta.18/angular-sanitize.min.js'},
+    // awaiting for angular 1.3.0-beta.20+ https://github.com/angular/angular.js/pull/7645
+    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0-beta.19/angular.min.js'},
+    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0-beta.19/angular-animate.min.js'},
+    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0-beta.19/angular-sanitize.min.js'},
     {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.10/release/angular-ui-router.min.js'},
     // unrelease yet, build from trunk
     //{file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js'},
@@ -49,9 +50,8 @@ var paths = {
 gulp.task('default', ['watch']);
 
 // remove compiled folder
-gulp.task('clean', function(){
-  return gulp.src([paths.stylesDest, paths.scriptsDest, paths.testsDest], {read: false})
-    .pipe(clean());
+gulp.task('clean', function(done){
+  async.each([paths.stylesDest, paths.scriptsDest, paths.testsDest], rimraf, done);
 });
 
 // download vendor libraries from the net

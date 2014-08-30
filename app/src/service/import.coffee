@@ -1,9 +1,14 @@
 _ = require 'underscore'
+{Promise} = require 'es6-promise'
 moment = require 'moment'
-async = require 'async'
+{each} = require 'async'
+Export = require './export'
 Dancer = require '../model/dancer'
+DanceClass = require '../model/danceclass'
+Address = require '../model/address'
+Card = require '../model/card'
 Registration = require '../model/registration'
-fs = require 'fs'
+fs = require 'fs-extra'
 path = require 'path'
 xlsx = require 'xlsx.js'
 mime = require 'mime'
@@ -11,125 +16,165 @@ mime = require 'mime'
 # mandatory columns to proceed with extraction
 mandatory = ['title', 'lastname']
 
+# used to get real constructor from class name
+classes = 
+  DanceClass: DanceClass
+  Address: Address
+  Dancer: Dancer
+  Card: Card
+
 # Import utility class.
 # Allow importation of dancers from XLSX files 
 module.exports = class Import
 
-
   # Merges new dancers into existing ones
   # 
-  # @param existings [Array<Dancer>] array of existing dancers
-  # @param added [Array<Object>] array of new dancers (`fromFile()` output)
-  # @param callback [Function] merge end callback, invoked with arguments:
-  # @option callback err [Error] an Error object, or null if no problem occurred
-  # @option callback inported [Number] number of modified or added dancers
-  merge: (existings, added, callback) =>
-    return callback new Error "to be refined"
-    imported = 0
-    # get existing names
-    names = _.map existings, (existing) -> existing?.lastname?.toLowerCase()+existing?.firstname.toLowerCase()
-    # work in series to avoid concurrent planning creation
-    async.forEachSeries added, ({dancer, lastRegistration}, next) ->
-      isNew = true
-
-      # check if it already exists
-      dancerName = dancer?.lastname?.toLowerCase()+dancer?.firstname?.toLowerCase()
-      idx = names.indexOf dancerName
-      # if so, reuse all existing values
-      if idx >= 0
-        isNew = false
-        dancer = existings[idx] 
-        
-      saveDancer = (regModified) ->
-        # quit if not new and no moficiations on registrations
-        return next() unless isNew or regModified
-        imported++
-        dancer.save next
-
-      saveDancerWithPlanning = (planning) ->
-        # do not add same planning twice !
-        return saveDancer false if _.find(dancer.registrations, (reg) -> reg.planningId is planning.id)
-         
-        # add en empty registration at last position to keep newer first
-        dancer.registrations.push new Registration planningId: planning.id
-        saveDancer true
-          
-      # reuse registration if possible
-      return saveDancer false unless lastRegistration?
-      season = "#{lastRegistration}/#{lastRegistration+1}"
-      Planning.findWhere {season:season}, (err, [planning]) ->
-        return next new Error "Failed to reuse existing planning #{season}: #{err}" if err
-        return saveDancerWithPlanning planning if planning?
-          
-        # creates the unexisting planning
-        planning = new Planning season: season
-        planning.save (err) ->
-          return next new Error "Failed to save new planning #{season}: #{err}" if err
-          saveDancerWithPlanning planning
-
-    , (err) ->
-      callback err, imported
+  # @param added [Array<Base>] array of imported models
+  # @return promise with object as parameter containing
+  # @option return byClass [Object] number of modified or added models by class (name as key)
+  # @option return conflicts [Array<Object>] conflicted models, in an object containing `existing` and `imported` keys
+  merge: (imported) =>
+    report =
+      byClass: {}
+      conflicts: []
+    Promise.all((
+      for model in imported
+        # use a closure to avoid model erasure
+        ((model) -> 
+          new Promise (resolve, reject) ->
+            # try to find existing model for each imported model, and return an object with both
+            model.constructor.find(model.id).then((existing) -> 
+              resolve existing: existing, imported: model
+            ).catch (err) ->
+              unless -1 is err.message.indexOf 'not found'
+                resolve existing: null, imported: model
+              else
+                reject err
+        ) model
+    )).then (processed) =>
+      Promise.all((
+        for {existing, imported} in processed
+          if not(existing?) or existing._v < imported._v
+            # no existing model: save imported model
+            # imported version is above existing one: save imported model
+            className = imported.constructor.name
+            report.byClass[className] = 0 unless className of report.byClass
+            report.byClass[className]++
+            imported.save()
+          else 
+            if existing?._v is imported?._v
+              # existing and imported have same version: conflict detected
+              report.conflicts.push existing: existing, imported: imported
+            # else
+            # existing version is above imported version: no importation
+            new Promise (resolve) -> resolve()
+      )).then => report
 
   # Read the content of an XlsX file, and extract dancers from it
   #
   # @param filePath [String] absolute or relative path to the read file
-  # @param callback [Function] extraction end callback, invoked with arguments:
-  # @option callback err [Error] an Error object, or null if no problem occurred
-  # @option callback dancers [Array<Object>] the list (that may be empty) of extracted dancers: 
-  # contains `dancer` and `lastRegistration` attributes
-  fromFile: (filePath, callback) =>
-    return callback new Error "to be refined"
-    return callback new Error "no file selected" unless filePath?
-    filePath = path.resolve path.normalize filePath
-    extension = mime.lookup filePath
+  # @return promise with an object as resolve parameter, containing:
+  # @option return models [Array<Base>] an array of extracted models
+  # @option return report [Object] an extraction report with encountered errors
+  fromFile: (filePath) =>
+    new Promise (resolve, reject) =>
+      return reject new Error "no file selected" unless filePath?
+      filePath = path.resolve path.normalize filePath
+      extension = mime.lookup filePath
 
-    # Xlsx content
-    if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      fs.readFile filePath, (err, data) =>
-        return callback err if err?
-        try 
-          # jszip only accept base64 url encoded content
-          content = xlsx data.toString 'base64'
+      # Xlsx content
+      if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        return reject new Error "to be refined"
+        fs.readFile filePath, (err, data) =>
+          return reject err if err?
+          try 
+            # jszip only accept base64 url encoded content
+            content = xlsx data.toString 'base64'
 
-          # read at least one worksheet
-          return callback new Error "no worksheet found in file" unless content?.worksheets?.length > 0
-          
-          dancers = []
-          report =
-            readTime: content.processTime
-            modifiedBy: content.lastModifiedBy 
-            modifiedOn: moment content.modified
-            worksheets: []
-          start = Date.now()
-          # read all worksheets
-          for worksheet in content.worksheets
-            @_extractWorksheet dancers, worksheet, report
+            # read at least one worksheet
+            return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
+            
+            dancers = []
+            report =
+              readTime: content.processTime
+              modifiedBy: content.lastModifiedBy 
+              modifiedOn: moment content.modified
+              worksheets: []
+            start = Date.now()
+            # read all worksheets
+            for worksheet in content.worksheets
+              @_extractWorksheet dancers, worksheet, report
 
-          # and returns results
-          report.extractTime = Date.now() - start
-          callback null, dancers, report
-        catch exc
-          return callback exc
+            # and returns results
+            report.extractTime = Date.now()-start-report.readTime
+            resolve models: dancers, report: report
+          catch exc
+            return reject exc
 
-    # Json content
-    else if extension is 'application/json'
-      start =  Date.now()
-      fs.readFile filePath, 'utf8', (err, data) =>
-        return callback err if err?
-        try 
-          report =
-            readTime: Date.now()-start
-          # parse content
-          content = JSON.parse data
-          return callback new Error "no dancers found in file" unless content?.dancers?.length > 0
-          dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
-          # and returns results
-          report.extractTime = Date.now() - report.readTime
-          callback null, dancers, report
-        catch exc
-          return callback exc
-    else
-      callback new Error "unsupported format #{extension}"
+      # Json content
+      else if extension is 'application/json'
+        return reject new Error "to be refined"
+        start =  Date.now()
+        fs.readFile filePath, 'utf8', (err, data) =>
+          return reject err if err?
+          try 
+            report =
+              readTime: Date.now()-start
+            # parse content
+            content = JSON.parse data
+            return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
+            dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
+            # and returns results
+            report.extractTime = Date.now()-start-report.readTime
+            resolve models: dancers, report: report
+          catch exc
+            return reject exc
+
+      else 
+        # try to read dump v3
+        start = Date.now()
+        fs.readFile filePath, 'utf8', (err, data) =>
+          return reject err if err?
+          report = 
+            readTime: Date.now()-start,
+          if -1 is data.indexOf Export.separator
+            return reject new Error "unsupported format #{extension}"
+          @_dumpV3(data, report).then((models) =>
+            report.extractTime = Date.now()-start-report.readTime
+            resolve models: models, report: report
+          ).catch (err) => reject err
+
+  # Extract from version 3 dump
+  #
+  # @param data [String] imported content, as string
+  # @param report [Object] extraction report, that will be filled with encountered errors
+  # @return promise with array of object as resolve parameter. Contains the list (that may be empty) of extracted models, that may be dance classes, dancers, card or addresses.
+  _dumpV3: (data, report) =>
+    report.errors = []
+    report.byClass = {}
+    models = []
+    new Promise (resolve, reject) =>
+      # identifies model class
+      currentClass = null
+      className = ''
+      for line, i in data.split '\n'
+        if 0 is line.indexOf Export.separator
+          # get the current class
+          className = line.replace(Export.separator, '').trim()
+          currentClass = classes[className]
+          unless currentClass?
+            report.errors.push "line #{i}: unsupported model class #{className}"
+          else
+            report.byClass[className] = 0
+        else if currentClass?
+          # rehydrate model
+          try
+            models.push new currentClass JSON.parse line
+            report.byClass[className]++
+          catch err
+            report.errors.push "line #{i}: failed to parse model #{className}: #{err}"
+      # TODO check relationnal constraints
+      resolve models
     
   # **private**
   # Extract dancers from a given worksheet data matrix

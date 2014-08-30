@@ -1,7 +1,6 @@
 {expect} = require 'chai'
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'q'
 Registration = require '../../../app/script/model/registration'
 Payment = require '../../../app/script/model/payment'
 Card = require '../../../app/script/model/card'

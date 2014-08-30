@@ -32,7 +32,7 @@ module.exports =
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
     exporting: 'Export en cours, veuillez patienter...'
     importing: 'Importation en cours, veuillez patienter...'
-    importSuccess: "%d/%d danseur(s) importé(s) (les autres existaient déjà)"
+    importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"

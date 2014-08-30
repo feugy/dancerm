@@ -4,6 +4,7 @@ gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
 moment = require 'moment'
+{Promise} = require 'es6-promise'
 # merge underscore and underscore string functions
 _ = require 'underscore'
 _str = require 'underscore.string'

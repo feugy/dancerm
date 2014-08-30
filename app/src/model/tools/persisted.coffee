@@ -1,15 +1,14 @@
 _ = require 'underscore'
 Base = require './base'
 Datastore = require 'nedb'
-{join, resolve} = require 'path'
-{generateId} = require '../../util/common'
+{Promise} = require 'es6-promise'
+{join} = require 'path'
+{generateId, getDbPath} = require '../../util/common'
 
 # stores underlying collections used by models, stored by name
 cache = {}
-# store models to reuse instances when possible
 
-isTest = process.env.NODE_ENV?.toLowerCase()?.trim() is 'test'
-dbPath = resolve join __dirname, '..', '..', '..', 'data', "dancerm#{if isTest then '-test' else ''}" 
+dbPath = getDbPath()
 
 # Superclass for models that will be persisted into underlying data store
 # Automatically manage id value (created after save)
@@ -92,6 +91,9 @@ module.exports = class Persisted extends Base
   # Initialize version to 0 and id to null
   constructor: (raw) ->
     raw._v = -1 unless raw._v?
+    if raw._id?
+      raw.id = raw._id
+      delete raw._id
     raw.id = null unless raw.id?
     super raw
 
