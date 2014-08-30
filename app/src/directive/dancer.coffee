@@ -7,7 +7,7 @@ Dancer = require '../model/dancer'
 class DancerDirective
                 
   # Controller dependencies
-  @$inject: ['$scope']
+  @$inject: []
 
   # Labels for rendering
   i18n: i18n
@@ -32,9 +32,7 @@ class DancerDirective
   _previous: {}
 
   # Controller constructor: bind methods and attributes to current scope
-  #
-  # @param scope [Object] directive own scope, used to detect changes
-  constructor: (@scope) ->
+  constructor: ->
     @_reqInProgress = false
 
     @birthOpts =
@@ -42,9 +40,7 @@ class DancerDirective
       startingDay: 1
       showButtonBar: false
 
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    #@scope.$watchGroup ['src._v', 'src.id'], => @_updateRendering @scope.src
-    @_updateRendering @scope.src
+    @_updateRendering @src
 
   # Invoked by view to update dancer's title according to selected item
   #
@@ -97,8 +93,7 @@ class DancerDirective
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return '' unless @scope?
-    return 'invalid' if field in @scope.requiredFields
+    return 'invalid' if @requiredFields? and field in @requiredFields
     ''
     
   # **private**
@@ -114,24 +109,11 @@ class DancerDirective
 
     # reset birth date to dancer's one
     @birthOpts.open = false
-    @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.toDate() else null
-
+    @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.format i18n.formats.birth else null
   # **private**
   # Value change handler: check if dancer has changed from its previous values
   _onChange: =>
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
-
-  # **private**
-  # Relay the registration demand to the caller
-  _onRegister: =>
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.onRegister?(model: @src)
-
-  # **private**
-  # Typeahead selection handler
-  _onLoad: (model) =>
-    @scope.onLoad model?.cardId
+    @onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->
@@ -154,7 +136,7 @@ module.exports = (app) ->
       src: '='
       # array of missing fields
       requiredFields: '='
-      # loading handler. Invoked when a dancer was retrieve by typahead, to be changed. 'model' parameters hold the selected value
+      # loading handler. Invoked when a dancer was retrieve by typeahead, 'model' parameter containing loaded dancer
       onLoad: '&'
       # change handler. Concerned dancer is a 'model' parameter, change status is a 'hasChagned' parameter
       onChange: '&?'

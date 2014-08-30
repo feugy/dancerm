@@ -51,8 +51,6 @@ module.exports = class DialogProvider
   messageBox: (title, message, buttons = []) =>
     @_modal.open 
       templateUrl: 'dialog_message.html'
-      # TODO waiting for version angular-ui-bootstrap@0.12.0
-      # https://github.com/angular-ui/bootstrap/commit/7b7cdf842278e86a677980d29bd74a1afd467ff1
       controllerAs: 'ctrl'
       controller: MessageBox
       resolve: model: -> {title: title, message: message, buttons: buttons}

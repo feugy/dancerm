@@ -40,6 +40,7 @@ module.exports =
 
   # buttons
   btn: 
+    addAddress: 'Editer'
     addDancer: 'Nouveau danceur'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
@@ -116,8 +117,8 @@ module.exports =
 
   # date/time formats
   formats:
-    birthSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
-    receiptSelection: 'dd/MM/yyyy' # datepicker format http://angular-ui.github.io/bootstrap/#/datepicker
+    birthSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
+    receiptSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
     birth: 'DD/MM/YYYY' # moment format
     receipt: 'DD/MM/YYYY' # moment format
     callList: 'DD/MM'

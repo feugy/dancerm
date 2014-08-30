@@ -5,9 +5,6 @@ class ListDirective
   # Controller dependencies
   @$inject: ['$scope', '$element', '$filter']
   
-  # Controller scope, injected within constructor
-  scope: null
-  
   # JQuery enriched element for directive root
   $el: null
 
@@ -26,19 +23,17 @@ class ListDirective
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   # @param filter [Functino] angular's filter factory
-  constructor: (@scope, element, @filter) ->
+  constructor: (scope, element, @filter) ->
     @$el = $(element)
     @$el.on 'click', @_onClick
 
-    @scope.$watch 'columns', @_onRedrawList
-    @scope.$watchCollection 'list', @_onRedrawList
+    scope.$watch 'ctrl.columns', @_onRedrawList
+    scope.$watchCollection 'ctrl.list', @_onRedrawList
     @_onRedrawList()
 
   # **private**
   # Entierly redraw the dancer's list
   _onRedrawList: (event) =>
-    @list = @scope.list
-    @columns = @scope.columns
     return unless @columns? and @list?
     @$el.empty().append @_renderHeader()
     body = $('<tbody>').appendTo @$el
@@ -115,7 +110,7 @@ class ListDirective
     col = target.closest('td').data 'col'
     row = target.closest('tr').data 'row'
     if col? and row?
-      @scope.onClick?(model: @list[row], column: @columns[col].name)
+      @onClick?(model: @list[row], column: @columns[col].name)
     true
     
 # The tags directive displays tags relative at search criteria

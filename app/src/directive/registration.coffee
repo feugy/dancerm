@@ -6,11 +6,8 @@ Payment = require '../model/payment'
 class RegistrationDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element', 'dialog']
+  @$inject: ['$scope', '$element', 'dialog', '$rootScope']
   
-  # Controller scope, injected within constructor
-  scope: null
-
   # i18n labels, for rendering
   i18n: i18n
 
@@ -29,23 +26,28 @@ class RegistrationDirective
   # Selected period label
   periodLabel: ''
 
+  # temporary array to restore previous payment in case of cancellation
+  _previousPayments: []
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   # @param dialog [Object] Angular's dialog service
-  constructor: (@scope, element, @dialog) ->
+  constructor: (scope, element, @dialog, rootScope) ->
     @$el = $(element)
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.$watchGroup ['scope.registration', 'scope.dancers'], => @_updateRendering @scope.registration, @scope.dancers
-    @_updateRendering @scope.registration, @scope.dancers
-    
-    #@scope.$watchCollection 'src.card.dancers.danceClassIds', @_onDisplayRegistration
+    scope.$watchGroup ['ctrl.registration', 'ctrl.dancers'], => @_updateRendering @registration, @dancers
+    @_updateRendering @registration, @dancers
+
+    # on cancellation, restore previous payments
+    rootScope.$on 'cancel-edit', =>
+      return unless @registration? and @_previousPayments?
+      @registration.payments.splice.apply @registration.payments, [0, @registration.payments.length].concat @_previousPayments
   
   # Creates a new payment and adds it to the current registration
   addPayment: =>
     @registration.payments.push new Payment payer: @dancers[0].lastname
-    @scope.requiredFields.push []
+    @requiredFields.push []
     @_onChange()
     _.delay =>
       @$el.find('.type .scrollable').last().focus()
@@ -103,7 +105,7 @@ class RegistrationDirective
         return unless confirm
         idx = @registration.payments.indexOf(removed)
         @registration.payments.splice idx, 1
-        @scope.requiredFields.splice idx, 1
+        @requiredFields.splice idx, 1
         @_onChange()
 
   # **private**
@@ -124,13 +126,13 @@ class RegistrationDirective
       @dancers = dancers
       dancer?.on 'change', @_onChange for dancer in @dancers
     # initialize required payment fields
-    @scope.requiredFields = ([] for payment in @registration.payments)
+    @requiredFields = ([] for payment in @registration.payments)
+    # make a copy for cancellation
+    @_previousPayments = (new Payment payment.toJSON() for payment in @registration.payments)
 
   # **private**
   # Value change handler: relay to card parent.
-  _onChange: =>
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.onChange?(model: @registration)
+  _onChange: => @onChange?(model: @registration)
 
 # The registration directive displays dancer's registration to dance classes and their payments
 module.exports = (app) ->

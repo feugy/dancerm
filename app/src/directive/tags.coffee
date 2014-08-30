@@ -20,7 +20,7 @@ class TagsDirective
   constructor: (@scope, element) ->
     @$el = $(element)
     @$el.on 'click', '.close', @_onRemoveTag
-    @scope.$watch 'src', @_onUpdateTags, true
+    @scope.$watch 'ctrl.src', @_onUpdateTags, true
 
   # **private**
   # Removes a given tag from the search criteria
@@ -30,31 +30,31 @@ class TagsDirective
     tag = $(event.target).closest '.tag'
     @scope.$apply =>
       if tag.data('season')?
-        @scope.src.seasons.splice @scope.src.seasons.indexOf(tag.data('season')), 1
+        @src.seasons.splice @src.seasons.indexOf(tag.data('season')), 1
       else if tag.data('teacher')?
-        @scope.src.teachers.splice @scope.src.teachers.indexOf(tag.data('teacher')), 1
+        @src.teachers.splice @src.teachers.indexOf(tag.data('teacher')), 1
       else
         # remove selected class
         id = tag.data 'id'
-        for danceClass, i in @scope.src.danceClasses when danceClass.id is id
-          @scope.src.danceClasses.splice i, 1
+        for danceClass, i in @src.danceClasses when danceClass.id is id
+          @src.danceClasses.splice i, 1
           break
       # update search
-      @scope.onRemove()
+      @onRemove()
 
   # **private**
   # Updates displayed tags from the search criteria
   _onUpdateTags: =>
     @$el.empty()
-    return unless @scope.src
-    if @scope.src.seasons?
-      for season in @scope.src.seasons
+    return unless @src?
+    if @src.seasons?
+      for season in @src.seasons
         @$el.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"
-    if @scope.src.teachers?
-      for teacher in @scope.src.teachers
+    if @src.teachers?
+      for teacher in @src.teachers
         @$el.append "<div class='tag teacher' data-teacher='#{teacher}'>#{teacher}<b class='close'>&times;</b></div>"
-    if @scope.src.danceClasses?
-      for danceClass in @scope.src.danceClasses
+    if @src.danceClasses?
+      for danceClass in @src.danceClasses
         day = danceClass.start[0..2]
         @$el.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
     
@@ -69,6 +69,8 @@ module.exports = (app) ->
     restrict: 'EA'
     # controller
     controller: TagsDirective
+    controllerAs: 'ctrl'
+    bindToController: true
     # parent scope binding.
     scope: 
       # displayed search

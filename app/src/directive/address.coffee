@@ -7,9 +7,6 @@ class AddressDirective
   # Controller dependencies
   @$inject: ['$scope']
 
-  # edited address
-  src: null
-
   # **private**
   # Edited address's previous values
   _previous: {}
@@ -17,18 +14,16 @@ class AddressDirective
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive own scope, used to detect changes
-  constructor: (@scope) ->
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.$watch 'src', => @_updateRendering @scope.src
-    @_updateRendering @scope.src
+  constructor: (scope) ->
+    scope.$watch 'ctrl.src', => @_updateRendering @src
+    @_updateRendering @src
 
   # check if field is missing or not
   #
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return '' unless @scope?
-    return 'invalid' if field in @scope.requiredFields
+    return 'invalid' if @requiredFields? and field in @requiredFields
     ''
 
   # **private**
@@ -39,14 +34,13 @@ class AddressDirective
     @src?.removeListener 'change', @_onChange
     @src = value 
     @src?.on 'change', @_onChange
-    @_previous = @src?.toJSON()
     # store previous version for cancellation and change detection, if editable
+    @_previous = @src?.toJSON()
 
   # **private**
   # Value change handler: check if dancer has changed from its previous values
   _onChange: =>
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
+    @onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->

@@ -113,10 +113,15 @@ module.exports = class CardController extends LayoutController
     ).result.then (confirmed) =>
       @_modalOpened = false
       return unless confirmed
-      # restore values by reloading first dancer from storage
-      return @loadDancer @dancers[0] if @dancers[0].id?
-      # or ecreate a brand new dancer if it was an empty card
-      @_reset()
+      if @dancers[0]?.cardId?
+        # cancel payment
+        @rootScope.$broadcast 'cancel-edit'
+        console.log "reload"
+        # restore values by reloading first dancer from storage
+        @loadCard @dancers[0].cardId 
+      else
+        # or recreate a brand new dancer if it was an empty card
+        @_reset()
 
   # Save the current values inside storage
   # 
@@ -171,7 +176,7 @@ module.exports = class CardController extends LayoutController
   loadCard: (cardId) =>
     # to avoid displaying confirmation
     @hasChanged = false
-    @state.go 'list-and-card', id: cardId
+    @state.go 'list-and-card', {id: cardId}, reload: true
 
   # Add a new dancer to this card.
   # Reuse address of last dancer
@@ -263,7 +268,7 @@ module.exports = class CardController extends LayoutController
   # @param hasChanged [Boolean] true if this model has changed
   onChange: (model, hasChanged) =>
     # performs comparison between current and old values
-    console.log "model #{model.id} (#{model.constructor.name}) has changed: #{hasChanged}"
+    # console.log "model #{model.id} (#{model.constructor.name}) has changed: #{hasChanged}"
     return @hasChanged = true unless model.id?
     @_changes[model.id] = hasChanged
     # quit at first modification
@@ -332,7 +337,6 @@ module.exports = class CardController extends LayoutController
       Dancer.findWhere cardId:cardId
       Card.find cardId
     ]).then( ([dancers, card]) =>
-      console.log "load card #{card.id}"
       @card?.removeListener 'change', @_onChange
       @card = card
       @_previous = @card.toJSON()

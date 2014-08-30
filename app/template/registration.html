@@ -1,8 +1,11 @@
 <article class="registration focusable">
-  <div class="button-bar">
-    <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint({withVat:false})"><i class="glyphicon glyphicon-print"/>{{'btn.printWithoutVat'|i18n}}</a>
-    <a href="" class="btn print no-hide glyphed" data-ng-click="onPrint({withVat:true})"><i class="glyphicon glyphicon-print"/>{{'btn.printWithVat'|i18n}}</a>
-  </div>
+  <span class="btn-group hidable" data-dropdown>
+    <a href="" class="btn glyphed dropdown-toggle" data-dropdown-toggle><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a href="" data-ng-click="ctrl.onPrint({withVat:false})">{{'btn.printWithoutVat'|i18n}}</a></li>
+      <li><a href="" data-ng-click="ctrl.onPrint({withVat:true})">{{'btn.printWithVat'|i18n}}</a></li>
+    </ul>
+  </span>
   <h2>{{ctrl.registration.season}}</h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
     <div class="dancer-classes">
@@ -40,7 +43,7 @@
     <div data-payment 
       data-ng-repeat="payment in ctrl.registration.payments" 
       data-src="payment" 
-      data-required-fields="requiredFields[$index]"
+      data-required-fields="ctrl.requiredFields[$index]"
       data-on-change="ctrl._onChange()"
       data-on-remove="ctrl.removePayment(model)"></div>
     <div class="total ng-class:ctrl.getBalanceState();">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-group"><span data-ng-bind="ctrl.registration.balance"></span><span class="input-group-addon">{{'lbl.currency'|i18n}}</span></span></div>

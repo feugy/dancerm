@@ -300,12 +300,12 @@ body
     & > .btn
     .address > .btn
     .dancer > .btn
-    & > .button-bar
+    & > .btn-group
       position absolute
       right 15px
       top -20px
       box-shadow 0 0 0 3px mainBackground
-    & > .button-bar
+    & > .btn-group
       background mainBackground
     
     > h2
@@ -484,7 +484,9 @@ body
 
     a.input-group-addon
     .btn:not(.dropdown-toggle):not(.no-hide)
+    .btn-group.hidable
       opacity 0
+      background transparent
 
 /******************************************************************************
  * Bootstrap overload
@@ -504,6 +506,7 @@ body
     border-bottom 2px solid tableBorderColor
 
   .glyphicon
+  .caret
     top 2px
     cursor pointer
 

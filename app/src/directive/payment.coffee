@@ -25,7 +25,7 @@ class PaymentDirective
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
-  constructor: (@scope, element) ->
+  constructor: (scope, element) ->
     @$el = $(element)
 
     @receiptOpts =
@@ -33,17 +33,15 @@ class PaymentDirective
       startingDay: 1
       showButtonBar: false
 
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.$watch 'src', => @_updateRendering @scope.src
-    @_updateRendering @scope.src
+    scope.$watch 'ctrl.src', => @_updateRendering @src
+    @_updateRendering @src
 
   # check if field is missing or not
   #
   # @param field [String] field that is tested
   # @return a css class
   isRequired: (field) => 
-    return '' unless @scope?
-    return 'invalid' if field in @scope.requiredFields
+    return 'invalid' if @requiredFields? and field in @requiredFields
     ''
     
   # Updates the payment type of the source payment object
@@ -68,10 +66,6 @@ class PaymentDirective
     event?.stopPropagation()
     @receiptOpts.open = not @receiptOpts.open
 
-  # Ask to parent controller to remove this payment
-  remove: =>
-    @scope.onRemove?(model: @src)
-
   # **private**
   # Update internal state when displayed dancer has changed.
   #
@@ -84,13 +78,11 @@ class PaymentDirective
 
     # reset receipt date to payement's one
     @receiptOpts.open = false
-    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.toDate() else null
+    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.format i18n.formats.receipt else null
 
   # **private**
   # Value change handler: relay to registration parent.
-  _onChange: =>
-    # TODO waiting for https://github.com/angular/angular.js/pull/7645
-    @scope.onChange?(model: @src)
+  _onChange: => @onChange?(model: @src)
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->
