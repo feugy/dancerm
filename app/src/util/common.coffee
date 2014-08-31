@@ -21,8 +21,11 @@ module.exports =
   #
   # @return absolute path to store database files
   getDbPath: ->
-    isTest = process.env.NODE_ENV?.toLowerCase()?.trim() is 'test'
-    resolve join __dirname, '..', '..', '..', 'data', "dancerm#{if isTest then '-test' else ''}"
+    if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test' or not gui?
+      resolve join __dirname, '..', '..', '..', 'data-test'
+    else
+      join gui.App.dataPath, 'data'
+
 
   # Return current season from date
   # Searshon changes at August, 1st.

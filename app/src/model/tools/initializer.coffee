@@ -9,8 +9,8 @@ DanceClass = require '../danceclass'
 #
 # @return a promise without a boolean argument which is true if the planning was initialized, false if some models are already present
 module.exports = () ->
-  # update planning for season 2013/2014
-  currentSeason = '2013/2014'
+  # update planning for season 2014/2015
+  currentSeason = '2014/2015'
   DanceClass.getPlanning(currentSeason).then((danceClasses) ->
     new Promise (resolve, reject) ->
       old = _.invoke danceClasses, 'toJSON'

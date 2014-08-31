@@ -5,7 +5,7 @@ app/script
 app/style
 app/vendor
 bin/debug.log
-data/
+data-test/
 errors.txt
 dump_dancerm.json
 installer/*.exe

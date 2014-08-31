@@ -16,7 +16,6 @@
     "moment": "2.7.0",
     "nedb": "0.11.0",
     "node-zip": "1.1.0",
-    "nodewebkit": "0.10.1-1",
     "underscore": "1.6.0",
     "underscore.string": "2.3.3",
     "xlsx.js": "2.3.1"
@@ -36,8 +35,8 @@
     "source-map-support": "0.2.7"
   },
   "scripts": {
-    "start": "nodewebkit",
-    "test": "set NODE_ENV=test & nodewebkit test"
+    "start": ".\\bin\\nw.exe .",
+    "test": "set NODE_ENV=test & .\\bin\\nw.exe test"
   },
   "licence": "LGPL v3",
   "main": "app/template/app.html",

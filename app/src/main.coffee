@@ -3,10 +3,11 @@
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 fs = require 'fs-extra'
+{join} = require 'path'
 
 dumpError = (err) ->
   now = new Date()
-  fs.appendFileSync "errors.txt", """
+  fs.appendFileSync join(gui.App.dataPath, 'errors.txt'), """
 ------------
 Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
 #{err.stack}\n\n"""

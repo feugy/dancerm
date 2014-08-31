@@ -96,10 +96,13 @@ Paid: 110h 10€/h
 
 ## TODOs 
 
-! - migrate old storage to nedb
+- search by city
+!! - remove address of not first dancer
+!! - remove registration
+!! - remove dancer (with card if no dancer remains)
 - fix xlsx import and v2 import
 - fix xlsx export
-- list sort
+! - list sort
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -149,4 +152,4 @@ ok - add another "known-by" choice: "old dancers"
 22/06 - 3
 23/06 - 10
 30/06 - 9
-31/06 - 3
+31/06 - 6

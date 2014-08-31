@@ -91,6 +91,7 @@ module.exports =
     Fri: 'Vendredi'
     lastname: 'Nom'
     hours: 'Horaire'
+    knownBy: 'Connu par'
     Mon: 'Lundi'
     other: '(autre)'
     paymentKind: 'Mode de réglement'

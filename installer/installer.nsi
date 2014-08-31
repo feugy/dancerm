@@ -29,7 +29,6 @@ section
   ; define the output path files
   setOutPath $INSTDIR
   file ..\package.json
-  file ..\README.md
   file /r ..\bin
 
   setOutPath $INSTDIR\app
@@ -40,8 +39,11 @@ section
 
   setOutPath $INSTDIR\node_modules
   file /r ..\node_modules\async
+  file /r ..\node_modules\es6-promise
+  file /r ..\node_modules\fs-extra
   file /r ..\node_modules\mime
   file /r ..\node_modules\moment
+  file /r ..\node_modules\nedb
   file /r ..\node_modules\node-zip
   file /r ..\node_modules\underscore
   file /r ..\node_modules\underscore.string
@@ -69,8 +71,8 @@ section "Uninstall"
   delete $INSTDIR\uninstall.exe
   delete $INSTDIR\package.json
   delete $INSTDIR\README.md
-  rmdir /r $INSTDIR\bin
   rmdir /r $INSTDIR\app
+  rmdir /r $INSTDIR\bin
   rmdir /r $INSTDIR\node_modules
   delete $INSTDIR\DanceRM.lnk
   delete $DESKTOP\DanceRM.lnk
@@ -81,4 +83,4 @@ sectionEnd
 !define MUI_TEXT_WELCOME_INFO_TITLE "Bienvenue dans l'installation de l'application $(^NameDA)."
 !define MUI_TEXT_WELCOME_INFO_TEXT "Vous êtes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
 !insertmacro MUI_LANGUAGE ${LANG_FRENCH}
-Name "DanceRM"
+Name "DanceRM - v3.0.0"

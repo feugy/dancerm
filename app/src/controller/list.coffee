@@ -21,8 +21,13 @@ module.exports = class ListController extends LayoutController
   columns: [
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
-    {name: 'certified', title: 'lbl.certified', attr: (dancer) -> dancer.lastRegistration().then (registration) -> registration.certified dancer}
-    {name: 'due', title: 'lbl.due', attr: (dancer) -> dancer.lastRegistration().then (registration) -> registration.due()}
+    {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
+      dancer.lastRegistration().then (registration) -> registration?.certified(dancer) or false
+    }
+    {name: 'due', title: 'lbl.due', attr: (dancer) -> 
+      dancer.lastRegistration().then (registration) -> 
+        registration?.due() or 0
+    }
   ]
 
   # **private**

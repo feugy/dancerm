@@ -48,6 +48,7 @@ module.exports = class PlanningController extends LayoutController
           @currentSeason = @seasons[0]
           @showPlanning @currentSeason
         @rootScope.$digest()
+    @rootScope.$on 'model-imported', init
     init()
 
   # Invoked when clicking on a given dance class.

@@ -37,8 +37,7 @@ class ListDirective
     return unless @columns? and @list?
     @$el.empty().append @_renderHeader()
     body = $('<tbody>').appendTo @$el
-    body.append @_renderRow dancer, i for dancer, i in @list
-      
+    body.append (@_renderRow dancer, i for dancer, i in @list).join '' 
 
   # **private**
   # Creates the header line for whole list
@@ -66,7 +65,7 @@ class ListDirective
 
       if _.isObject(value) and _.isFunction value.then
         # in case of a promise, put an id to cell, and then change the value when available
-        id = Math.floor Math.random()*100000
+        id = dancer.id + Math.floor Math.random()*100000
         value.then( (value) =>
           @$el.find("##{id}").replaceWith @_renderCell dancer, i, value
         ).catch (err) => console.error "failed to resolve #{column.name} of dancer #{dancer.id}: ", err

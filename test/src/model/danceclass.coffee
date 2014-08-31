@@ -52,14 +52,14 @@ describe 'DanceClass model tests', ->
     expect(tested).not.to.have.property 'unallowed'
 
   it 'should planning be listed', ->
-    seasons = ['2012/2013', '2013/2014', '2014/2015']
+    seasons = ['2014/2015', '2013/2014', '2012/2013']
     # given classes from different seasons
     Promise.all([
-      new DanceClass(season:seasons[0], kind: 'ballroom').save()
-      new DanceClass(season:seasons[0], kind: 'salsa').save()
+      new DanceClass(season:seasons[2], kind: 'ballroom').save()
+      new DanceClass(season:seasons[2], kind: 'salsa').save()
       new DanceClass(season:seasons[1], kind: 'ballroom').save()
       new DanceClass(season:seasons[1], kind: 'salsa').save()
-      new DanceClass(season:seasons[2], kind: 'ballroom').save()
+      new DanceClass(season:seasons[0], kind: 'ballroom').save()
     ]).then ->
       DanceClass.listSeasons().then (results) ->
         expect(results).to.deep.equal seasons

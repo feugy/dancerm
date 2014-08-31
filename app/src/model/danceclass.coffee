@@ -59,7 +59,7 @@ module.exports = class DanceClass extends Persisted
       new Promise (resolve, reject) =>
         collection.find {}, (err, classes) =>
           return reject err if err?
-          resolve _.chain(classes).pluck('season').uniq().value().sort()
+          resolve _.chain(classes).pluck('season').uniq().value().sort().reverse()
 
   # Get the list of classes of a given season, named planning
   # 

@@ -28,18 +28,19 @@ module.exports = class ExpandedListController extends ListController
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
     {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration.certified dancer
+      dancer.lastRegistration().then (registration) -> registration?.certified(dancer) or false
     }, {name: 'due', title: 'lbl.due', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration.due()
+      dancer.lastRegistration().then (registration) -> registration?.due() or 0
     }, {name: 'age', title: 'lbl.age', attr: (dancer) -> 
       if dancer.birth? then moment().diff dancer.birth, 'years' else ''
     }, {name: 'birth', title: 'lbl.birth', attr: (dancer) ->  
       if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
     }, {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer) -> 
-      if dancer.knownBy
-        ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in dancer.knownBy).join ''
-      else
-        ''
+      dancer.card.then (card) ->
+        if card.knownBy
+          ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
+        else
+          ''
     }, {name: 'phone', title: 'lbl.phone', attr: (dancer) -> 
       dancer.address.then (address) -> address?.phone
     }, {name: 'cellphone', title: 'lbl.cellphone'}
