@@ -19,6 +19,7 @@ module.exports =
     print: 'DanceRM : impression pour {{names}}'
     registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
+    searchDancer: 'Fusionner deux fiches'
     
   # long messages with html
   msg:
@@ -27,7 +28,7 @@ module.exports =
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
-    editRegistration: "Modifier les cours du danceur"
+    editRegistration: "Modifier les cours du danseur"
     emptyDancerList: 'Aucun danseur pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
     exporting: 'Export en cours, veuillez patienter...'
@@ -37,11 +38,15 @@ module.exports =
     removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
+    searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
+    searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
   # buttons
   btn: 
     addAddress: 'Editer'
-    addDancer: 'Nouveau danceur'
+    addDancer: 'Ajouter un danseur'
+    addNewDancer: 'Nouveau'
+    addExistingDancer: 'Existant'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
     cancel: 'Annuler'

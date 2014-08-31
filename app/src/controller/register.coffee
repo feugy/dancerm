@@ -6,12 +6,16 @@ Registration = require '../model/registration'
 # Allow to choose a given dance class (season selection) and creates the corresponding registration.
 # Intended to be used inside a popup: will returned the created Registration object, or null.
 # Must be initianlized with an existing registration
-#
-# Associated with the `template/register.html` view, inside a dialog popup
 module.exports = class RegisterController
 
   # Controller dependencies
   @$inject: ['danceClasses', 'isEdit', '$scope', '$modalInstance']
+
+  # Popup declaration
+  @declaration:
+    controller: RegisterController
+    controllerAs: 'ctrl'
+    templateUrl: 'register.html'
 
   # Current scope for digest triggering
   scope: null

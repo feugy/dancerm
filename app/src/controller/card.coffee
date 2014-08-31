@@ -9,6 +9,7 @@ Address = require '../model/address'
 Registration = require '../model/registration'
 LayoutController = require './layout'
 RegisterController = require './register'
+SearchDancerController = require './searchdancer'
 
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
@@ -126,6 +127,7 @@ module.exports = class CardController extends LayoutController
   # Save the current values inside storage
   # 
   # @param force [Boolean] true to ignore required fields. Default to false.
+  # @return promise without any resolve parameter
   save: (force = false) =>
     return unless @hasChanged
     # check required fields
@@ -162,12 +164,13 @@ module.exports = class CardController extends LayoutController
             dancer.card = @card
             dancer.save()
         )).then => @rootScope.$apply =>
-          console.log "dancers saved"
           # reset change state and refresh search
           @hasChanged = false
           @_changes = {}
           @_resetRequired()
           @rootScope.$emit 'search'
+          console.log "dancers saved"
+          Promise.resolve()
     ).catch (err) => console.error err
 
   # Navigate to the state displaying a given card
@@ -214,15 +217,13 @@ module.exports = class CardController extends LayoutController
   # @param registration [Registration] the edited registration, null to create a new one 
   addRegistration: (dancer, registration = null) =>
     # display dialog to choose registration season and dance classes
-    @dialog.modal(
-      size: 'lg'
-      keyboard: false
-      templateUrl: 'register.html'
-      controller: RegisterController
-      controllerAs: 'ctrl'
-      resolve: 
-        danceClasses: -> dancer.danceClasses
-        isEdit: -> dancer.danceClassIds.length > 0
+    @dialog.modal(_.extend {
+        size: 'lg'
+        keyboard: false
+        resolve: 
+          danceClasses: -> dancer.danceClasses
+          isEdit: -> dancer.danceClassIds.length > 0
+      }, RegisterController.declaration
     ).result.then ({confirmed, season, danceClasses}) =>
       return unless confirmed
       registration = null
@@ -274,6 +275,21 @@ module.exports = class CardController extends LayoutController
     # quit at first modification
     @hasChanged = false
     return @hasChanged = true for id, changed of @_changes when changed
+
+  # Displays a popup to search a dancer for merging it's card with the current card
+  searchCard: =>
+    # display dialog to choose registration season and dance classes
+    @dialog.modal(_.extend {
+        resolve: 
+          existing: => @dancers[0]
+      }, SearchDancerController.declaration
+    ).result.then (dancer) =>
+      return unless dancer?
+      # merge both card and save
+      dancer.card.then((card) =>
+        @card.merge(card).then => @save(true).then => @loadCard @card.id
+      ).catch (err) =>
+        console.error err
 
   # Invoked when registration needs to be removed.
   # First display a confirmation dialog, and then removes it

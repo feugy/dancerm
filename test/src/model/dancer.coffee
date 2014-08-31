@@ -212,10 +212,10 @@ describe 'Dancer model tests', ->
     addressBobJack = new Address city: 'Lyon', street: 'rue Bellecour', zipcode: '69001'
     addressLucy = new Address city: 'Villeurbanne', street: 'cours Emile Zola', zipcode: '69100'
 
-    beforeEach (done) ->
+    beforeEach ->
       Promise.all([salsa14.save(), salsa13.save(), batchata14.save(), ballroom14.save(), ballroom13.save(), 
         cardBobJack.save(), cardLucy.save(), addressBobJack.save(), addressLucy.save()
-      ]).then( ->
+      ]).then ->
         lucy.address = addressLucy
         lucy.danceClasses = [ballroom13, ballroom14, salsa14]
         lucy.card = cardLucy
@@ -225,16 +225,7 @@ describe 'Dancer model tests', ->
         bob.address = addressBobJack
         bob.danceClasses = [salsa13, salsa14, batchata14]
         bob.card = cardBobJack
-        Promise.all([lucy.save(), bob.save(), jack.save()]).then ->
-          console.log "lucy #{lucy.id}"
-          console.log "bob #{bob.id}"
-          console.log "jack #{jack.id}"
-          console.log "cardBobJack #{cardBobJack.id}"
-          console.log "cardLucy #{cardLucy.id}"
-          console.log "addressBobJack #{addressBobJack.id}"
-          console.log "addressLucy #{addressLucy.id}"
-          done()
-      ).catch done
+        Promise.all [lucy.save(), bob.save(), jack.save()]
 
     it 'should findWhere() resolve on dance classes', ->
       Dancer.findWhere('danceClassIds': $in: [batchata14.id]).then (dancers) ->

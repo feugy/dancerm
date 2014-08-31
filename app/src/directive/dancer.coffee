@@ -54,7 +54,7 @@ class DancerDirective
   #
   # @param attr [String] matching attribute name
   # @param typed [String] typed string
-  # @return a promise of mathcing dancers
+  # @return a promise of matching dancers
   findByAttr: (attr, typed) =>
     # disable if request in progress
     return [] if @_reqInProgress

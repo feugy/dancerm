@@ -43,7 +43,7 @@ module.exports = class Import
         ((model) -> 
           new Promise (resolve, reject) ->
             # try to find existing model for each imported model, and return an object with both
-            model.constructor.find(model.id).then((existing) -> 
+            model.constructor.find(model.id).then((existing) ->
               resolve existing: existing, imported: model
             ).catch (err) ->
               unless -1 is err.message.indexOf 'not found'

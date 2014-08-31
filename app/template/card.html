@@ -6,7 +6,13 @@
   </header>
   <!-- dancers displayal and their addresses -->
   <article>
-    <a href="" class="btn" data-ng-click="ctrl.addDancer()"><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}</a>
+    <span class="btn-group hidable" data-dropdown>
+      <a href="" class="btn glyphed dropdown-toggle" data-dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li><a href="" data-ng-click="ctrl.addDancer()">{{'btn.addNewDancer'|i18n}}</a></li>
+        <li><a href="" data-ng-click="ctrl.searchCard()">{{'btn.addExistingDancer'|i18n}}</a></li>
+      </ul>
+    </span>
     <h2>{{'ttl.card'|i18n}}</h2>
     <article class="card-dancer" data-ng-repeat="dancer in ctrl.dancers">
       <dancer

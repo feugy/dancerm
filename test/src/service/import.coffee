@@ -3,6 +3,7 @@ _ = require 'underscore'
 async = require 'async'
 moment = require 'moment'
 path = require 'path'
+{Promise} = require 'es6-promise'
 Import = require '../../../app/script/service/import'
 Dancer = require '../../../app/script/model/dancer'
 Card = require '../../../app/script/model/card'
@@ -13,7 +14,7 @@ Address = require '../../../app/script/model/address'
 
 describe 'Import service tests', ->
 
-  before ->
+  beforeEach ->
     Promise.all [
       Card.drop()
       Dancer.drop()
@@ -139,9 +140,12 @@ describe 'Import service tests', ->
       new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
     ]
 
-    before ->
-      @timeout 5000
-      Promise.all (model.save() for model in existing)
+    beforeEach ->
+      Promise.all (
+        for model, i in existing
+          model._v = if i in [2, 7, 8] then 1 else 0
+          model.save() 
+      )
 
     it 'should new imported models be added', ->
       imported = [
@@ -167,7 +171,7 @@ describe 'Import service tests', ->
 
         expect(Dancer.find 'ea43920b42dc').to.eventually.have.property('lastname').that.equal 'Durand'
 
-    it 'should new imported models be added', ->
+    it 'should existing models be added with upper version', ->
       imported = [
         new Card id: '30cb3a48900e', _v: 2, knownBy: ['Groupon', 'website'], registrations: [
           new Registration season: '2013/2014', charged: 300, period: 'year'

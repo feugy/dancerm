@@ -120,6 +120,6 @@ module.exports = class Persisted extends Base
   remove: =>
     @constructor._collection().then (collection) =>
       new Promise (resolve, reject) =>
-        collection.remove {_id: raw.id}, (err) =>
+        collection.remove {_id: @_raw.id}, (err) =>
           return reject err if err?
           resolve @

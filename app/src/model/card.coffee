@@ -1,6 +1,9 @@
 _ = require 'underscore'
+{Promise} = require 'es6-promise'
 Persisted = require './tools/persisted'
 Registration = require './registration'
+# because of circular dependency
+Dancer = null
 
 observeSupported = Object.observe?
 
@@ -33,6 +36,8 @@ module.exports = class Card extends Persisted
     # fill attributes
     super(raw)
 
+    Dancer = require './dancer' unless Dancer?
+
     # on registration change, remove old listeners and add new ones
     Object.defineProperty @, 'registrations',
       configurable: true
@@ -52,6 +57,41 @@ module.exports = class Card extends Persisted
         ]
     # for bindings initialization
     @registrations = @registrations
+
+  # Merge current card with other
+  # Dancers will be moved into this card, and removed from the other.
+  # Registrations and known by will be merged
+  # The other card will be removed
+  #
+  # @param other [Card] other card that will be merged into this one
+  # @return a promise without any resolve parameter
+  merge: (other) =>
+    # find card's dancers
+    Dancer.findWhere(cardId: other.id).then (dancers) =>
+      # moves them to this card
+      Promise.all((
+        for dancer in dancers
+          dancer.cardId = @id
+          dancer.save()
+      )).then =>
+        # merge known by
+        @knownBy.push mean for mean in other.knownBy when not(mean in @knownBy)
+        # merge registrations
+        for imported in other.registrations
+          existing = _.findWhere @registrations, season: imported.season
+          if existing?
+            # merge charge and payments
+            existing.charged += imported.charged
+            existing.payments = existing.payments.concat imported.payments
+            existing.updateBalance()
+            # merge also certificates
+            existing.certificates[attr] = value for attr, value of other.certificates
+          else
+            @registrations.push imported
+        # emit global change
+        @emit 'change'
+        # removes other card, returning the promise
+        other.remove()
 
   # **private**
   # Emit change event when registration have changed

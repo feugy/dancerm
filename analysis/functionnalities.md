@@ -97,10 +97,8 @@ Paid: 110h 10€/h
 ## TODOs 
 
 ! - migrate old storage to nedb
-- incorporate/separate existing dancer to another card
-- incorporate an existing dancer on an existing address of the same card address
-- fix import
-- fix export
+- fix xlsx import and v2 import
+- fix xlsx export
 - list sort
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
@@ -150,4 +148,5 @@ ok - add another "known-by" choice: "old dancers"
 21/06 - 2
 22/06 - 3
 23/06 - 10
-30/06 - 2
+30/06 - 9
+31/06 - 3
