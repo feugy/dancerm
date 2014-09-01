@@ -13,7 +13,7 @@ global.$ = $
 win = gui.Window.get()
 
 # size to A4 format, landscape
-win.resizeTo 1131, 800
+win.resizeTo 1000, 400
 
 $(win.window).on 'load', ->
 

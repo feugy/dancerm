@@ -135,5 +135,5 @@ module.exports = class Registration extends Base
 
   # @return if a dancer was certified for this registration
   certified: (dancer) =>
-    @certificates[dancer.id] is true
+    @certificates[dancer?.id] is true
     

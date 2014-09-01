@@ -17,6 +17,7 @@
     <article class="card-dancer" data-ng-repeat="dancer in ctrl.dancers">
       <dancer
         data-src="dancer"
+        data-can-load="ctrl.dancers.length === 1"
         data-on-load="ctrl.loadCard(model.cardId)"
         data-on-change="ctrl.onChange(model, hasChanged)"
         data-on-register="ctrl.addRegistration(model)"
@@ -45,7 +46,7 @@
   </article>
   <!-- registrations -->
   <div data-registration 
-    data-ng-repeat="registration in ctrl.card.registrations" 
+    data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'" 
     data-src="registration"
     data-dancers="ctrl.dancers"
     data-on-print="ctrl.printRegistration(registration, withVat, withClasses)"

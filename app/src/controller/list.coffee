@@ -22,7 +22,10 @@ module.exports = class ListController extends LayoutController
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
     {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration?.certified(dancer) or false
+      dancer.lastRegistration().then (registration) ->
+        console.log registration.certificates, dancer.id 
+        
+        registration?.certified(dancer) or false
     }
     {name: 'due', title: 'lbl.due', attr: (dancer) -> 
       dancer.lastRegistration().then (registration) -> 

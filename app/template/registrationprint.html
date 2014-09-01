@@ -5,10 +5,12 @@
     <link rel="stylesheet" href="../style/print.css"/>
   </head>
   <body data-ng-controller="Print as ctrl">
+    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
       <div class="registration" data-ng-bind-html="'ttl.registrationPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
+      <div class="bill"></div>
     </header>
     <div class="dancers">
       <article data-ng-repeat="dancer in ctrl.dancers">
@@ -52,8 +54,10 @@
       </article>
       <article class="payment">
         <div class="row">
-          <label>{{'lbl.rate'|i18n:{sep:true} }}</label><span class="input"></span>
+          <label>{{'lbl.rate'|i18n}} {{'periods.'+ctrl.registration.period|i18n:{sep:true} }}</label><span class="input"></span>
           <label data-ng-if="ctrl.withVat">{{'lbl.vat'|i18n:{sep:true} }}</label><span class="input" data-ng-if="ctrl.withVat"></span>
+        </div>
+        <div class="row">
           <label>{{'lbl.paymentKind'|i18n:{sep:true} }}</label>
           <span data-ng-repeat="(value, label) in ctrl.i18n.paymentTypes">
             <span class="check"></span><label>{{label}}</label>
@@ -72,7 +76,6 @@
       </div>
       <div class="pre-filled stamp">{{'print.stamp'|i18n}}</div>
     </div>
-    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
     <script type="application/javascript" src="../vendor/jquery.js"></script>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>

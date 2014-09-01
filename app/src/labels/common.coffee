@@ -58,8 +58,8 @@ module.exports =
     newDancer: 'Inscrire un danseur'
     no: 'Non'
     ok: 'Ok'
-    printWithoutVat: 'Sans TVA, cours générique'
-    printWithVat: 'Avec TVA, cours générique'
+    printWithoutVat: 'Sans TVA, sans cours'
+    printWithVat: 'Avec TVA, sans cours'
     printWithoutVatWithClasses: 'Sans TVA'
     printWithVatWithClasses: 'Avec TVA'
     print: 'Imprimer'
@@ -151,8 +151,8 @@ Les cours collectifs sont interrompus pendant les vancances scolaires.</p>
 <h2>Responsabilités</h2>
 <p>De son coté, le membre déclare souscrire une police d'assurance engageant sa responsabilité civile, le couvrant de ses activités dans l'enceinte de l'école.
 La responsabilité de l'école ne pourra être recherchée en cas d'accident résultant de la non-observation des consignes de sécurité ou de l'utilisation inappropriée du matériel.</p>
-<p>Pour chaque cours, excepté les danses de couple, l'adhérent devra founrir un certificat médical de non contre indication à la discipline.
-S'il n'est pas fourni dans les 15 jours suivants l'inscription, l'école et le professeur dégagent toute responsabilité en cas d'accident.</p>
+<p>Pour chaque cours, excepté les danses de couple, l'adhérent devra fournir un certificat médical de non contre indication à la discipline.
+S'il n'est pas fourni dans les 15 jours suivant l'inscription, l'école et le professeur dégagent toute responsabilité en cas d'accident.</p>
 <p>Un trimestre payé et non suivi ne pourra être reporté ou remboursé. Une année payée et non suivie ne pourra être reportée ou remboursée.</p>
 <p>Les cours particuliers, non-annulés 48h à l'avance seront dus.</p>
 <p>Afin de ne pas perturber les cours qui se déroulent dans les salles, celles-ci sont inerdites à toute personne non concernée par le cours.</p>
@@ -175,7 +175,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
   paymentTypes: 
     cash: 'Espèces'
     check: 'Chèque'
-    traveler: 'Ch. vacance'
+    traveler: 'ANCV'
 
   # payment periods
   periods:

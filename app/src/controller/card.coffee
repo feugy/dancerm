@@ -134,7 +134,8 @@ module.exports = class CardController extends LayoutController
   # @param force [Boolean] true to ignore required fields. Default to false.
   # @return promise without any resolve parameter
   save: (force = false) =>
-    return unless @hasChanged
+    unless @hasChanged
+      return new Promise (resolve) => resolve()
     # check required fields
     if not force and @_checkRequired()
       return @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.requiredFields, [
@@ -198,16 +199,15 @@ module.exports = class CardController extends LayoutController
     added = new Dancer id: generateId()
     # get the existing address and card
     added.address = @addresses[-1..][0]
+    @addresses.push @addresses[-1..][0]
     added.card = @card
     # adds this new dancer to the list
     @dancers.push added
     @required[added.id] = []
     @required[added.address.id] = []
     # scroll to last
-    elem = $('.card') 
     _.defer => 
       $('.card-dancer > .dropup > a').focus()
-      elem.scrollTop elem[0].scrollHeight
 
   # When a dancer that share an address with another one want to separate, 
   # we affect him a brand new address
@@ -245,16 +245,11 @@ module.exports = class CardController extends LayoutController
       # or add a new registration on top
       unless registration?
         registration = new Registration season: season
-        @card.registrations.splice 0, 1, registration
+        @card.registrations.splice 0, 0, registration
         @required.regs.push []
+
       # add selected class ids to dancer
-      dancer.danceClasses.then (existing) =>
-        # removes previous dance classes for that season
-        dancer.danceClasses = danceClasses.concat (danceClass for danceClass in existing when danceClass.season isnt season)
-        @rootScope.$apply()
-        _.delay =>
-          $('.registration').last().find('.scrollable').focus()
-        , 100
+      dancer.danceClasses = danceClasses
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -335,14 +330,15 @@ module.exports = class CardController extends LayoutController
   # @param withVat [Boolean] true if vat is displayed
   # @param withClasses [Boolean] true if dance classes details are displayed
   printRegistration: (registration, withVat = true, withClasses = true) =>
-    try
-      preview = window.open 'registrationprint.html'
-      preview.card = @card
-      preview.withVat = withVat
-      preview.withClasses = withClasses
-      preview.season = registration.season
-    catch err
-      console.error err
+    @save(true).then =>
+      try
+        preview = window.open 'registrationprint.html'
+        preview.card = @card
+        preview.withVat = withVat
+        preview.withClasses = withClasses
+        preview.season = registration.season
+      catch err
+        console.error err
 
   # Invoked when address needs to be removed.
   # First display a confirmation dialog, and then reuse the first dancer's address

@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="../style/print.css"/>
   </head>
   <body data-ng-controller="Print as ctrl" class="call-list">
+    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
     <h1>{{ctrl.danceClass.kind}} {{ctrl.danceClass.level}}</h1>
     <h2>{{ctrl.danceClassHour()}}</h2>
     <table class="table">
@@ -19,7 +20,6 @@
         </tr>
       </tbody>
     </table>
-    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
     <script type="application/javascript" src="../vendor/jquery.js"></script>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../script/calllistprint.js"></script>

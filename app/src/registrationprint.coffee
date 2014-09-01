@@ -18,7 +18,7 @@ global.$ = $
 win = gui.Window.get()
 
 # size to A4 format, 3/4 height
-win.resizeTo 790, 825
+win.resizeTo 790, 400
 
 $(win.window).on 'load', ->
 
@@ -82,7 +82,7 @@ $(win.window).on 'load', ->
     # @param dancer [Dancer] concerned dancer
     # @return list of its dance classes
     getClasses: (dancer) =>
-      @danceClasses[@dancers.indexOf dancer]
+      (danceClass for danceClass in @danceClasses[@dancers.indexOf dancer] when danceClass.season is @registration.season)
 
     # Format a given address for displayal
     #

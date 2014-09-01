@@ -1,7 +1,6 @@
 'use strict'
 
 gui = require 'nw.gui'
-i18n = require '../script/labels/common'
 fs = require 'fs-extra'
 {join} = require 'path'
 
@@ -23,6 +22,8 @@ try
   global.$ = $
   global.angular = angular
   global.localStorage = localStorage
+
+  i18n = require '../script/labels/common'
 
   # 'win' is Node-Webkit's window
   # 'window' is DOM's window
@@ -54,7 +55,11 @@ try
   win.on 'unmaximize', -> isMaximized = false
   win.on 'minimize', -> isMaximized = false
 
-  $(win.window).on 'keyup', (event) ->
+  $(win.window).on 'keydown', (event) ->
+    # disable backspace support
+    if event.which is 8
+      name = event.target?.nodeName?.toLowerCase()
+      event.preventDefault() unless name in ['input', 'textarea']
     # opens dev tools on F12 or Command+Option+J
     win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
     # reloads full app on Ctrl+F5

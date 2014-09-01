@@ -154,5 +154,5 @@ module.exports = class Dancer extends Persisted
   # @return a promise resolve with last registration or null
   lastRegistration: =>
     @card.then (card) =>
-      registrations = card.registrations.concat().sort().reverse()
+      registrations = _.sortBy(card.registrations.concat(), 'season').reverse()
       Promise.resolve registrations?[0] or null

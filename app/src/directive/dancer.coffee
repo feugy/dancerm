@@ -96,6 +96,14 @@ class DancerDirective
     return 'invalid' if @requiredFields? and field in @requiredFields
     ''
     
+  disableTab: (event) =>
+    allow = true
+    if event.which is 9
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      allow =false
+    allow
+
   # **private**
   # Update internal state when displayed dancer has changed.
   #
@@ -105,7 +113,7 @@ class DancerDirective
     @src = value
     @src?.on 'change', @_onChange
     @_previous = @src?.toJSON()
-    @isNew = @src?._v is -1
+    @isNew = @src?._v is -1 and @canLoad
 
     # reset birth date to dancer's one
     @birthOpts.open = false
@@ -134,6 +142,8 @@ module.exports = (app) ->
     scope: 
       # displayed dancer
       src: '='
+      # True to enable loading capabilities
+      canLoad: '='
       # array of missing fields
       requiredFields: '='
       # loading handler. Invoked when a dancer was retrieve by typeahead, 'model' parameter containing loaded dancer

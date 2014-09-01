@@ -92,17 +92,14 @@ Paid: 110h 10€/h
 
 ## Bugs
 
-- disable back support
-
 ## TODOs 
 
 - search by city
-! - edit previous registrations
 !! - remove registration
 !! - remove dancer (with card if no dancer remains)
+! - list sort
 - fix xlsx import and v2 import
 - fix xlsx export
-! - list sort
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -122,7 +119,6 @@ ok - add age column (from current date) into expanded list
 ok - add another "known-by" choice: "old dancers"
  6 - stats on known-by dancers 
  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
-
 
 ## Functionnal requirements
 
@@ -153,4 +149,4 @@ ok - add another "known-by" choice: "old dancers"
 23/08 - 10
 30/08 - 9
 31/08 - 7
-01/09 - 1
+01/09 - 10

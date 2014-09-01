@@ -86,8 +86,9 @@ class RegistrationDirective
   # Filter dance classes when displaying them
   #
   # @param danceClass [DanceClass] tested class
-  # @return trur if this dance class belongs to the current season
-  filterDanceCalss: (danceClass) => danceClass?.season is @registration.season
+  # @return true if this dance class belongs to the current season
+  filterClass: (danceClass) => 
+    danceClass?.season is @registration.season
 
   # Invoked when a payment needs to be removed.
   # Confirm operation with a modal popup and proceed to the removal
@@ -117,15 +118,17 @@ class RegistrationDirective
   _updateRendering: (registration, dancers) =>
     if registration?
       @registration?.removeListener 'change', @_onChange
-      @registration = registration 
-      @registration?.on 'change', @_onChange
-      # get the friendly labels for period
-      @setPeriod @registration.period
+
+    @registration = registration
+    @registration?.on 'change', @_onChange
+    # get the friendly labels for period
+    @setPeriod @registration.period
+
     if dancers?
-      if @dancers?
-        dancer?.removeListener 'change', @_onChange for dancer in @dancers
-      @dancers = dancers
-      dancer?.on 'change', @_onChange for dancer in @dancers
+      dancer?.removeListener 'change', @_onChange for dancer in @dancers
+    @dancers = dancers
+
+    dancer?.on 'change', @_onChange for dancer in @dancers
     # initialize required payment fields
     @requiredFields = ([] for payment in @registration.payments)
     # make a copy for cancellation

@@ -83,4 +83,4 @@ sectionEnd
 !define MUI_TEXT_WELCOME_INFO_TITLE "Bienvenue dans l'installation de l'application $(^NameDA)."
 !define MUI_TEXT_WELCOME_INFO_TEXT "Vous êtes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
 !insertmacro MUI_LANGUAGE ${LANG_FRENCH}
-Name "DanceRM - v3.0.0"
+Name "DanceRM - v3.0.3"
