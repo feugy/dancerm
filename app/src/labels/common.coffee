@@ -58,8 +58,10 @@ module.exports =
     newDancer: 'Inscrire un danseur'
     no: 'Non'
     ok: 'Ok'
-    printWithoutVat: 'Sans TVA'
-    printWithVat: 'Avec TVA'
+    printWithoutVat: 'Sans TVA, cours générique'
+    printWithVat: 'Avec TVA, cours générique'
+    printWithoutVatWithClasses: 'Sans TVA'
+    printWithVatWithClasses: 'Avec TVA'
     print: 'Imprimer'
     callList: "Liste d'appel"
     register: 'Inscription'
@@ -91,6 +93,7 @@ module.exports =
     fieldSeparator: ' :'
     firstname: 'Prénom'
     Fri: 'Vendredi'
+    genericDanceClass: 'Abonnement danse'
     lastname: 'Nom'
     hours: 'Horaire'
     knownBy: 'Connu par'
@@ -152,7 +155,7 @@ La responsabilité de l'école ne pourra être recherchée en cas d'accident ré
 S'il n'est pas fourni dans les 15 jours suivants l'inscription, l'école et le professeur dégagent toute responsabilité en cas d'accident.</p>
 <p>Un trimestre payé et non suivi ne pourra être reporté ou remboursé. Une année payée et non suivie ne pourra être reportée ou remboursée.</p>
 <p>Les cours particuliers, non-annulés 48h à l'avance seront dus.</p>
-<p>Afin de ne pas perturber les cours qui se déroulent dans les salles, celle-ci sont inerdites à toute personne non concernée par le cours.</p>
+<p>Afin de ne pas perturber les cours qui se déroulent dans les salles, celles-ci sont inerdites à toute personne non concernée par le cours.</p>
 <p>Pour la tranquilité du voisinage, il est demandé de ne pas faire de bruit à la sortie de l'école.</p>
 <p>Les enfants en peuvent pas rester sans la surveillance de leurs parents tant que le cours n'est pas commencé.
 De même, les parents qui viennent chercher les enfants sont priés de bien vouloir monter à l'école.</p>

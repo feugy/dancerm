@@ -33,6 +33,9 @@ $(win.window).on 'load', ->
     # display V.A.T. or not
     withVat: false
 
+    # displays classes details or not
+    withClasses: true
+
     # for rendering
     i18n: i18n
 
@@ -49,6 +52,7 @@ $(win.window).on 'load', ->
     danceClasses: []
 
     constructor: (filter, rootScope) ->
+      @withClasses = window.withClasses
       @withVat = window.withVat
       # get data from mother window
       @registration = _.findWhere window.card.registrations, season: window.season 

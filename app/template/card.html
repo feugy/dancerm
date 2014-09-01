@@ -8,7 +8,7 @@
   <article>
     <span class="btn-group hidable" data-dropdown>
       <a href="" class="btn glyphed dropdown-toggle" data-dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}<span class="caret"></span></a>
-      <ul class="dropdown-menu">
+      <ul class="dropdown-menu right">
         <li><a href="" data-ng-click="ctrl.addDancer()">{{'btn.addNewDancer'|i18n}}</a></li>
         <li><a href="" data-ng-click="ctrl.searchCard()">{{'btn.addExistingDancer'|i18n}}</a></li>
       </ul>
@@ -48,6 +48,6 @@
     data-ng-repeat="registration in ctrl.card.registrations" 
     data-src="registration"
     data-dancers="ctrl.dancers"
-    data-on-print="ctrl.printRegistration(registration, withVat)"
+    data-on-print="ctrl.printRegistration(registration, withVat, withClasses)"
     data-required-fields="ctrl.required.regs[$index]"></div>
 </div>

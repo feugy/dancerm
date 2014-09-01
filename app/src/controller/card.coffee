@@ -145,17 +145,6 @@ module.exports = class CardController extends LayoutController
         return unless confirmed
         @save true
 
-    end = =>
-      # reset change state and refresh search
-      @hasChanged = false
-      @_changes = {}
-      @_resetRequired()
-      @_removable = []
-      @rootScope.$emit 'search'
-      console.log "models removed"
-      @rootScope.$apply() unless @rootScope.$$phase
-      Promise.resolve()
-
     # first, resolve addresses and card
     Promise.all((dancer.address for dancer in @dancers)
     ).then((models) =>
@@ -183,8 +172,16 @@ module.exports = class CardController extends LayoutController
         )).then => 
           console.log "dancers saved"
           # at last removes old models
-          return end() if @_removable.length is 0
-          Promise.all((model.remove() for model in @_removable)).then end
+          Promise.all((model.remove() for model in @_removable)).then =>
+            # reset change state and refresh search
+            @hasChanged = false
+            @_changes = {}
+            @_resetRequired()
+            @_removable = []
+            @rootScope.$emit 'search'
+            console.log "models removed"
+            @rootScope.$apply() unless @rootScope.$$phase
+            Promise.resolve()
     ).catch (err) => console.error err
 
   # Navigate to the state displaying a given card
@@ -336,11 +333,13 @@ module.exports = class CardController extends LayoutController
   #
   # @param registration [Registration] the concerned registration
   # @param withVat [Boolean] true if vat is displayed
-  printRegistration: (registration, withVat = true) =>
+  # @param withClasses [Boolean] true if dance classes details are displayed
+  printRegistration: (registration, withVat = true, withClasses = true) =>
     try
       preview = window.open 'registrationprint.html'
       preview.card = @card
       preview.withVat = withVat
+      preview.withClasses = withClasses
       preview.season = registration.season
     catch err
       console.error err

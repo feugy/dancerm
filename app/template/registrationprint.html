@@ -32,7 +32,14 @@
           </div>
         </aside>
         <aside class="dance-classes">
-          <article data-ng-repeat="danceClass in ctrl.getClasses(dancer)">
+          <article data-ng-if="!ctrl.withClasses">
+            <div class="row">
+              <label>{{'lbl.registered'|i18n:{sep:true} }}</label><span>{{'lbl.genericDanceClass'|i18n}}</span>
+            </div>
+            <div class="row">
+            </div>
+          </article> 
+          <article data-ng-if="ctrl.withClasses" data-ng-repeat="danceClass in ctrl.getClasses(dancer)">
             <div class="row">
               <label>{{'lbl.registered'|i18n:{sep:true} }}</label><span>{{danceClass.kind}} {{danceClass.level}}</span>
             </div>
