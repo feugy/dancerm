@@ -63,9 +63,13 @@ module.exports = (app) ->
       src: '='
       # read-only flag.
       readOnly: '=?'
+      # removal flag.
+      canRemove: '=?'
       # array of missing fields
       requiredFields: '='
       # affectation handler, used when address needs to be changed
       onAffect: '&'
+      # removal handler, used when address needs to be removed
+      onRemove: '&'
       # change handler. Concerned address is a 'model' parameter, change status is a 'hasChagned' parameter
       onChange: '&?'

@@ -2,7 +2,7 @@
   <h3>{{ctrl.isEdit ? 'ttl.editRegistration' : 'ttl.newRegistration' |i18n}}</h3>
 </div>
 <div class="modal-body register">
-  <span>{{ctrl.isEdit ? 'msg.editRegistration' : 'msg.registrationSeason' |i18n}}<div data-ng-if="!ctrl.isEdit" class="btn-group" data-dropdown>
+  <span>{{ctrl.isEdit ? 'msg.editRegistration' : 'msg.registrationSeason' |i18n}}<div class="btn-group" data-dropdown>
     <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{ctrl.currSeason}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.chooseSeason(season)">{{season}}</a></li>

@@ -62,7 +62,7 @@ $(win.window).on 'load', ->
             @names = ("#{dancer.firstname} #{dancer.lastname}" for dancer in @dancers when dancer).join ', '
             # set window title
             window.document?.title = filter('i18n') 'ttl.print', args: names: @names
-            rootScope.$digest()
+            rootScope.$apply()
       ).catch (err) => console.log err
 
     # Retrieve home phone from address

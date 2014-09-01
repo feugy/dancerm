@@ -101,7 +101,7 @@ module.exports = class ExpandedListController extends ListController
           console.error "Export failed: #{err}"
           # displays an error dialog
           @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
-          @rootScope.$digest()
+          @rootScope.$apply()
 
     dialog.trigger 'click'
 

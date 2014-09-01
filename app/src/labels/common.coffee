@@ -23,20 +23,21 @@ module.exports =
     
   # long messages with html
   msg:
-    cancelEdition: "Vous allez perdre les modification apportée à %s. Voulez-vous vraiment continuer ?"
+    cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
-    editRegistration: "Modifier les cours du danseur"
+    editRegistration: "Modifier les cours du danseur pour l'année : "
     emptyDancerList: 'Aucun danseur pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
     exporting: 'Export en cours, veuillez patienter...'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
     registrationSeason: "Choissiez l'année et le(s) cours : "
-    removeRegistration: "Vous allez supprimer l'inscription pour l'année %s. Voulez-vous vraiment continuer ?"
-    removePayment: "Vous allez supprimer le paiement par %s de %.2f € du %s. Voulez-vous vraiment continuer ?"
+    removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
+    removeRegistration: "Vous allez supprimer l'inscription pour l'année {{season}}. Voulez-vous vraiment continuer ?"
+    removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}}€ du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
@@ -63,6 +64,7 @@ module.exports =
     callList: "Liste d'appel"
     register: 'Inscription'
     remove: 'Supprimer'
+    removeAddress: 'Supprimer'
     save: 'Enregistrer'
     yes: 'Oui'
 

@@ -1,4 +1,3 @@
-_ = require 'underscore'
 i18n = require '../labels/common'
 DanceClass = require '../model/danceclass'
 Payment = require '../model/payment'
@@ -6,7 +5,7 @@ Payment = require '../model/payment'
 class RegistrationDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element', 'dialog', '$rootScope']
+  @$inject: ['$scope', '$element', 'dialog', '$filter', '$rootScope']
   
   # i18n labels, for rendering
   i18n: i18n
@@ -34,7 +33,9 @@ class RegistrationDirective
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   # @param dialog [Object] Angular's dialog service
-  constructor: (scope, element, @dialog, rootScope) ->
+  # @param filter [Function] Angular's filters factory
+  # @param rootScope [Object] Angular root scope
+  constructor: (scope, element, @dialog, @filter, rootScope) ->
     @$el = $(element)
     scope.$watchGroup ['ctrl.registration', 'ctrl.dancers'], => @_updateRendering @registration, @dancers
     @_updateRendering @registration, @dancers
@@ -49,7 +50,7 @@ class RegistrationDirective
     @registration.payments.push new Payment payer: @dancers[0].lastname
     @requiredFields.push []
     @_onChange()
-    _.delay =>
+    setTimeout =>
       @$el.find('.type .scrollable').last().focus()
     , 100
     null
@@ -94,10 +95,10 @@ class RegistrationDirective
   # @param removed [Payment] the removed payment model
   removePayment: (removed) =>
     @dialog.messageBox(@i18n.ttl.confirm, 
-      _.sprintf(@i18n.msg.removePayment, 
-        @i18n.paymentTypes[removed.type], 
-        removed.value, 
-        removed.receipt.format @i18n.formats.receipt), 
+      @filter('i18n')('msg.removePayment', args: 
+        type: @i18n.paymentTypes[removed.type]
+        value: removed.value
+        receipt: removed.receipt.format @i18n.formats.receipt), 
       [
         {result: false, label: @i18n.btn.no}
         {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}

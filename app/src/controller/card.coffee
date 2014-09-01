@@ -61,6 +61,10 @@ module.exports = class CardController extends LayoutController
   # Stores card previous values for change detection
   _previous: {}
 
+  # **private**
+  # Models that must be removed on save
+  _removable: []
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param stateParams [Object] invokation route parameters
@@ -74,6 +78,7 @@ module.exports = class CardController extends LayoutController
     @_changes = {}
     @_modalOpened = false
     @_previous = {}
+    @_removable = []
 
     if stateParams.id
       # load edited dancer
@@ -107,7 +112,7 @@ module.exports = class CardController extends LayoutController
     names = ("#{dancer.firstname or ''} #{dancer.lastname or ''}" for dancer in @dancers when dancer.firstname or dancer.lastname)
     @_modalOpened = true
     @dialog.messageBox(@i18n.ttl.confirm, 
-      _.sprintf(@i18n.msg.cancelEdition, names.join ', '), [
+      @filter('i18n')('msg.cancelEdition', args: names: names.join ', '), [
         {label: @i18n.btn.no, cssClass: 'btn-warning'}
         {label: @i18n.btn.yes, result: true}
       ]
@@ -139,6 +144,18 @@ module.exports = class CardController extends LayoutController
       ).result.then (confirmed) =>
         return unless confirmed
         @save true
+
+    end = =>
+      # reset change state and refresh search
+      @hasChanged = false
+      @_changes = {}
+      @_resetRequired()
+      @_removable = []
+      @rootScope.$emit 'search'
+      console.log "models removed"
+      @rootScope.$apply() unless @rootScope.$$phase
+      Promise.resolve()
+
     # first, resolve addresses and card
     Promise.all((dancer.address for dancer in @dancers)
     ).then((models) =>
@@ -163,14 +180,11 @@ module.exports = class CardController extends LayoutController
             dancer.address = models[i]
             dancer.card = @card
             dancer.save()
-        )).then => @rootScope.$apply =>
-          # reset change state and refresh search
-          @hasChanged = false
-          @_changes = {}
-          @_resetRequired()
-          @rootScope.$emit 'search'
+        )).then => 
           console.log "dancers saved"
-          Promise.resolve()
+          # at last removes old models
+          return end() if @_removable.length is 0
+          Promise.all((model.remove() for model in @_removable)).then end
     ).catch (err) => console.error err
 
   # Navigate to the state displaying a given card
@@ -240,7 +254,7 @@ module.exports = class CardController extends LayoutController
       dancer.danceClasses.then (existing) =>
         # removes previous dance classes for that season
         dancer.danceClasses = danceClasses.concat (danceClass for danceClass in existing when danceClass.season isnt season)
-        @rootScope.$digest()
+        @rootScope.$apply()
         _.delay =>
           $('.registration').last().find('.scrollable').focus()
         , 100
@@ -256,6 +270,18 @@ module.exports = class CardController extends LayoutController
         return dancer.addressId of used
       else
         used[candidate.addressId] = true
+
+  # Indicate whether the dancer's address can me remved or not.
+  # Only for dancers that do not share their address and that are not the first
+  #
+  # @param dancer [Dancer] tested dancer
+  # @return true if his address is removable, false if not
+  isAddressRemovable: (dancer) =>
+    used = []
+    for candidate in @dancers
+      return used.length > 0 and not(dancer.addressId in used) if candidate is dancer
+      used.push candidate.addressId unless candidate.addressId in used
+    false        
 
   # Invoked when the list of known-by meanings has changed.
   # Updates the model corresponding array.
@@ -299,7 +325,7 @@ module.exports = class CardController extends LayoutController
     Planning.find removed.planningId, (err, planning) =>
       throw err if err?
       @rootScope.$apply =>
-        @dialog.messageBox(@i18n.ttl.confirm, _.sprintf(@i18n.msg.removeRegistration, planning.season), [
+        @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')('msg.removeRegistration', args: planning), [
           {result: false, label: @i18n.btn.no}
           {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
         ]).result.then (confirm) =>
@@ -318,6 +344,22 @@ module.exports = class CardController extends LayoutController
       preview.season = registration.season
     catch err
       console.error err
+
+  # Invoked when address needs to be removed.
+  # First display a confirmation dialog, and then reuse the first dancer's address
+  #
+  # @param dancer [Dancer] dancer for which address is removed
+  removeAddress: (dancer) =>
+    @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')('msg.removeAddress', args: dancer: dancer, address: @addresses[0]), [
+      {result: false, label: @i18n.btn.no}
+      {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
+    ]).result.then (confirm) =>
+      return unless confirm
+      for addr in @addresses when addr.id is dancer.addressId
+        @_removable.push addr
+        break
+      dancer.address = @addresses[0]
+      @addresses[@dancers.indexOf dancer] = @addresses[0]
 
   # **private**
   # Reset displayed card and its relative models
@@ -387,7 +429,7 @@ module.exports = class CardController extends LayoutController
           # reset changes and displays everything
           @hasChanged = false
           @_changes = {}
-          @rootScope.$digest()
+          @rootScope.$apply()
     ).catch (err) =>
       console.error err
 
@@ -399,7 +441,7 @@ module.exports = class CardController extends LayoutController
   _onChange: (attr, value) =>
     @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()
     # because observer break the digest progresss
-    @rootScope.$digest() unless @rootScope.$$phase
+    @rootScope.$apply() unless @rootScope.$$phase
 
   # **private**
   # Check required fields when saving models

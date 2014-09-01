@@ -97,7 +97,7 @@ Paid: 110h 10€/h
 ## TODOs 
 
 - search by city
-!! - remove address of not first dancer
+! - edit previous registrations
 !! - remove registration
 !! - remove dancer (with card if no dancer remains)
 - fix xlsx import and v2 import
@@ -133,23 +133,24 @@ ok - add another "known-by" choice: "old dancers"
 ## Hours
 
 03/08 - 0,5
-04/05 - 0,5
-05/05 - 2
-08/05 - 1
-09/05 - 8
-10/05 - 8
-11/05 - 1
-12/05 - 3
-13/05 - 3
-14/05 - 1
-15/05 - 0,5
-16/05 - 10
-17/05 - 0,5
-18/05 - 3
-19/06 - 2,5
-20/06 - 2
-21/06 - 2
-22/06 - 3
-23/06 - 10
-30/06 - 9
-31/06 - 6
+04/08 - 0,5
+05/08 - 2
+08/08 - 1
+09/08 - 8
+10/08 - 8
+11/08 - 1
+12/08 - 3
+13/08 - 3
+14/08 - 1
+15/08 - 0,5
+16/08 - 10
+17/08 - 0,5
+18/08 - 3
+19/08 - 2,5
+20/08 - 2
+21/08 - 2
+22/08 - 3
+23/08 - 10
+30/08 - 9
+31/08 - 7
+01/09 - 1

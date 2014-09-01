@@ -25,7 +25,9 @@
       <address
         data-src="ctrl.addresses[$index]"
         data-read-only="ctrl.isAddressReadOnly(dancer)"
+        data-can-remove="ctrl.isAddressRemovable(dancer)"
         data-on-affect="ctrl.addAddress(dancer)"
+        data-on-remove="ctrl.removeAddress(dancer)"
         data-on-change="ctrl.onChange(model, hasChanged)"
         data-required-fields="ctrl.required[ctrl.addresses[$index].id]">
       </address>

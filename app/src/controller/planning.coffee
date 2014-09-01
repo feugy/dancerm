@@ -47,7 +47,7 @@ module.exports = class PlanningController extends LayoutController
         unless @seasons.length is 0
           @currentSeason = @seasons[0]
           @showPlanning @currentSeason
-        @rootScope.$digest()
+        @rootScope.$apply()
     @rootScope.$on 'model-imported', init
     init()
 
@@ -121,4 +121,4 @@ module.exports = class PlanningController extends LayoutController
     DanceClass.getPlanning(season).then (planning) =>
       @planning = planning
       @teachers = _.chain(planning).pluck('teacher').uniq().compact().value().sort()
-      @rootScope.$digest()
+      @rootScope.$apply()
