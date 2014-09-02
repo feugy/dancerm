@@ -54,13 +54,13 @@
       </article>
       <article class="payment">
         <div class="row">
-          <label>{{'lbl.rate'|i18n}} {{'periods.'+ctrl.registration.period|i18n:{sep:true} }}</label><span class="input"></span>
-          <label data-ng-if="ctrl.withVat">{{'lbl.vat'|i18n:{sep:true} }}</label><span class="input" data-ng-if="ctrl.withVat"></span>
+          <label>{{'lbl.rate'|i18n}} {{'periods.'+ctrl.registration.period|i18n:{sep:true} }}</label><span data-ng-if="!ctrl.withCharged" class="input"></span><span data-ng-if="ctrl.withCharged">{{ctrl.getCharged()|i18n:{currency:true} }}</span>
+          <label data-ng-if="ctrl.withVat">{{'lbl.vat'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.withVat && !ctrl.withCharged" class="input"></span><span data-ng-if="ctrl.withVat && ctrl.withCharged">{{ctrl.getVat()|i18n:{currency:true} }}</span>
         </div>
         <div class="row">
           <label>{{'lbl.paymentKind'|i18n:{sep:true} }}</label>
           <span data-ng-repeat="(value, label) in ctrl.i18n.paymentTypes">
-            <span class="check"></span><label>{{label}}</label>
+            <span class="check ng-class:ctrl.hasPayment(value)?'checked':'';"></span><label>{{label}}</label>
           </span>
         </div>
       </article>

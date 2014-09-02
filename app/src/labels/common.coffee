@@ -136,6 +136,12 @@ module.exports =
 
   # print texts
   print:
+    # to detect dancers on multiple teachers groups
+    teacherGroups: 
+      anthony: 1
+      diana: 2
+      delphine: 2
+      nassim: 2
     school: """
 <p>Ecole de danse Ribas</p>
 <p>34 rue du docteur Rollet</p>
@@ -165,6 +171,8 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     settlementTitle: "Reglement intérieur / Conditions générale d'adhesion"
     sign: "<p>Signature de l'élève ou du responsable légal</p><p>Précédé de la mention \"lu et approuvé\"</p>"
     stamp: "Signature et cachet de l'école"
+    # lower case name of teacher that need VAT
+    vatTeachers: ['delphine', 'nassim']
     where: "Fait à"
     when: "le"
 
@@ -200,3 +208,6 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     # must be same days used in DanceClass's start and end attributes
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
     legend: 'Légende :'
+
+  # VAT rate
+  vat: 0.196

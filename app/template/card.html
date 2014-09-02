@@ -49,6 +49,6 @@
     data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'" 
     data-src="registration"
     data-dancers="ctrl.dancers"
-    data-on-print="ctrl.printRegistration(registration, withVat, withClasses)"
+    data-on-print="ctrl.printRegistration(registration, auto, withVat, withClasses)"
     data-required-fields="ctrl.required.regs[$index]"></div>
 </div>

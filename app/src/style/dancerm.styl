@@ -305,8 +305,13 @@ body
       right 15px
       top -20px
       box-shadow 0 0 0 3px mainBackground
+
     & > .btn-group
       background mainBackground
+
+    .dancer:not(:hover) > .btn
+    .address:not(:hover) > .btn
+      background colBackground
     
     > h2
       border-top none
@@ -489,13 +494,12 @@ body
       background transparent
 
     .btn.dropdown-toggle
-      color textColor
+      color rgba(textColor, 50%)
 
-    a.input-group-addon
-    .btn:not(.dropdown-toggle):not(.no-hide)
-    .btn-group.hidable
-      opacity 0
+    .btn
       background transparent
+      color rgba(textColor, 50%)
+      border-color transparent
 
 /******************************************************************************
  * Bootstrap overload

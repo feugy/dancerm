@@ -327,18 +327,44 @@ module.exports = class CardController extends LayoutController
   # Print the registration confirmation form
   #
   # @param registration [Registration] the concerned registration
-  # @param withVat [Boolean] true if vat is displayed
-  # @param withClasses [Boolean] true if dance classes details are displayed
-  printRegistration: (registration, withVat = true, withClasses = true) =>
+  # @param auto [Boolean] true to guess if VAT and dance classes details are needed or not
+  # @param withVat [Boolean] true to include VAT
+  # @param withClasses [Boolean] true to include dance classes details
+  printRegistration: (registration, auto= false, withVat= true, withClasses= true) =>
     @save(true).then =>
-      try
-        preview = window.open 'registrationprint.html'
-        preview.card = @card
-        preview.withVat = withVat
-        preview.withClasses = withClasses
-        preview.season = registration.season
-      catch err
-        console.error err
+      open = =>
+        try
+          preview = window.open 'registrationprint.html'
+          preview.card = @card
+          preview.withVat = withVat
+          preview.withClasses = withClasses
+          preview.season = registration.season
+          preview.withCharged = auto
+        catch err
+          console.error err
+
+      # auto VAT/classe details computation:
+      return open() unless auto
+      # Dance class details 
+      Promise.all((dancer.danceClasses for dancer in @dancers)).then((danceClasses) =>
+        withVat = false
+        withClasses = true
+        group = null
+
+        for danceClass in _.flatten danceClasses when danceClass.season is registration.season
+          teacher = danceClass.teacher?.toLowerCase() 
+          if teacher in i18n.print.vatTeachers
+            # VAT included only if teacher is specific
+            withVat = true
+          unless group?
+            # get first dance class's group
+            group = i18n.print.teacherGroups[teacher]
+          else if withClasses and group isnt i18n.print.teacherGroups[teacher]
+            # if groups differ, do not pring classes
+            withClasses = false
+
+        open()
+      ).catch (err) => console.error err
 
   # Invoked when address needs to be removed.
   # First display a confirmation dialog, and then reuse the first dancer's address

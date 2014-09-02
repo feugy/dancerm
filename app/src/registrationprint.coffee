@@ -36,6 +36,9 @@ $(win.window).on 'load', ->
     # displays classes details or not
     withClasses: true
 
+    # displays charge or not
+    withCharged: false
+
     # for rendering
     i18n: i18n
 
@@ -54,6 +57,7 @@ $(win.window).on 'load', ->
     constructor: (filter, rootScope) ->
       @withClasses = window.withClasses
       @withVat = window.withVat
+      @withCharged = window.withCharged
       # get data from mother window
       @registration = _.findWhere window.card.registrations, season: window.season 
       # get card dancers
@@ -61,8 +65,18 @@ $(win.window).on 'load', ->
         @dancers = dancers
         Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
           Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
-            @danceClasses = danceClasses
             @addresses = addresses
+            @danceClasses = []
+            # only keep dance class for this season
+            for classes, i in danceClasses
+              seasonClasses = (danceClass for danceClass in classes when danceClass.season is @registration.season)
+              if seasonClasses.length >= 1
+                @danceClasses.push seasonClasses
+              else
+                # nothing for this season
+                @dancers.splice i, 1
+                @addresses.splice i, 1
+
             @names = ("#{dancer.firstname} #{dancer.lastname}" for dancer in @dancers when dancer).join ', '
             # set window title
             window.document?.title = filter('i18n') 'ttl.print', args: names: @names
@@ -81,8 +95,7 @@ $(win.window).on 'load', ->
     #
     # @param dancer [Dancer] concerned dancer
     # @return list of its dance classes
-    getClasses: (dancer) =>
-      (danceClass for danceClass in @danceClasses[@dancers.indexOf dancer] when danceClass.season is @registration.season)
+    getClasses: (dancer) => @danceClasses[@dancers.indexOf dancer]
 
     # Format a given address for displayal
     #
@@ -114,6 +127,24 @@ $(win.window).on 'load', ->
       start = danceClass.start[4..]
       end = danceClass.end[4..]
       "#{start}~#{end}"
+
+    # Compute charged by taking period into account
+    #
+    # @return the VAT amount
+    getCharged: => @registration.charged / (if @registration.period is 'quarter' then 3 else 1)
+
+    # Compute VAT on registration
+    #
+    # @return the VAT amount
+    getVat: => Math.floor(@getCharged()/(1+i18n.vat)*i18n.vat*100)/100
+
+    # Check if this registration contains a given payment type
+    #
+    # @param type [String] searched payment type
+    # @return true if this payment type is included, false otherwise
+    hasPayment: (type) =>
+      return true for payment in @registration.payments when payment.type is type
+      false
 
     # Print button, that close the print window
     print: =>

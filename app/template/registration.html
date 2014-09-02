@@ -1,7 +1,9 @@
 <article class="registration focusable">
-  <span class="btn-group hidable" data-dropdown>
+  
+  <span class="btn-group" data-dropdown>
     <a href="" class="btn glyphed dropdown-toggle" data-dropdown-toggle><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}<span class="caret"></span></a>
     <ul class="dropdown-menu right">
+      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})">{{'btn.print'|i18n}}</a></li>
       <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:false})">{{'btn.printWithoutVatWithClasses'|i18n}}</a></li>
       <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:true})">{{'btn.printWithVatWithClasses'|i18n}}</a></li>
       <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:false, withClasses:false})">{{'btn.printWithoutVat'|i18n}}</a></li>
