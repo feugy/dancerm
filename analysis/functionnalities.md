@@ -95,8 +95,6 @@ Paid: 110h 10€/h
 ## TODOs 
 
 - search by city
-!! - remove registration
-!! - remove dancer (with card if no dancer remains)
 ! - list sort
 - fix xlsx import and v2 import
 - fix xlsx export
@@ -150,3 +148,4 @@ ok - add another "known-by" choice: "old dancers"
 30/08 - 9
 31/08 - 7
 01/09 - 10
+06/09 - 2

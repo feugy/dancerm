@@ -152,3 +152,5 @@ module.exports = (app) ->
       onChange: '&?'
       # registration addition handler. Concerned dancer is a 'model' parameter
       onRegister: '&?'
+      # dancer removal handler. Concerned dancer is a 'model' parameter
+      onRemove: '&?'

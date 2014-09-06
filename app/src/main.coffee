@@ -3,6 +3,7 @@
 gui = require 'nw.gui'
 fs = require 'fs-extra'
 {join} = require 'path'
+{version} = require '../../package.json'
 
 dumpError = (err) ->
   now = new Date()
@@ -15,13 +16,14 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
 process.on 'uncaughtException', dumpError
 
 try
-  console.log "running on node-webkit v#{process.versions['node-webkit']}"
+  console.log "running DanceRM #{version} on node-webkit v#{process.versions['node-webkit']}"
 
   # make some variable globals for other scripts
   global.gui = gui
   global.$ = $
   global.angular = angular
   global.localStorage = localStorage
+  global.version = version
 
   i18n = require '../script/labels/common'
 

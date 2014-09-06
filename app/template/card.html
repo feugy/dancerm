@@ -19,8 +19,9 @@
         data-src="dancer"
         data-can-load="ctrl.dancers.length === 1"
         data-on-load="ctrl.loadCard(model.cardId)"
-        data-on-change="ctrl.onChange(model, hasChanged)"
         data-on-register="ctrl.addRegistration(model)"
+        data-on-remove="ctrl.removeDancer(model)"
+        data-on-change="ctrl.onChange(model, hasChanged)"
         data-required-fields="ctrl.required[dancer.id]">
       </dancer>
       <address
@@ -49,6 +50,7 @@
     data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'" 
     data-src="registration"
     data-dancers="ctrl.dancers"
+    data-on-remove="ctrl.removeRegistration(model)"
     data-on-print="ctrl.printRegistration(registration, auto, withVat, withClasses)"
-    data-required-fields="ctrl.required.regs[$index]"></div>
+    data-required-fields="ctrl.required.regs[$index]"/>
 </div>

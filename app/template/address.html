@@ -1,6 +1,6 @@
 <div class="address focusable">
   <a href="" class="btn glyphed" data-ng-if="ctrl.readOnly" data-ng-click="ctrl.onAffect()"><i class="glyphicon glyphicon-pencil"/>{{'btn.addAddress'|i18n}}</a>
-  <a href="" class="btn glyphed" data-ng-if="ctrl.canRemove" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/>{{'btn.removeAddress'|i18n}}</a>
+  <a href="" class="btn remove" data-ng-if="ctrl.canRemove" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/></a>
   <h4>{{'ttl.address'|i18n}}</h4>
   <div data-ng-if="ctrl.readOnly" class="row">
     <span class="col-md-8 read-only">

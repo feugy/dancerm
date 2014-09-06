@@ -186,6 +186,9 @@ for i in 6..20
     vertical-align top
     cursor pointer
 
+    input
+      margin-right 6px
+
   h3
     border none
     font-size fontSize*1.4
@@ -315,11 +318,6 @@ for i in 6..20
       height 27px
       margin-right 5px
       padding 4px
-      background colBackground
-      border-color textColor
-
-      .glyphicon-remove
-        color white
 
     .value.input-group
       margin-right 4px
@@ -338,3 +336,10 @@ for i in 6..20
 
       span.input-group-addon
         padding 4px
+
+// hover behaviour
+.payment.focusable:hover .remove.btn
+  background headerBackground
+  color headerColor
+  border-color textColor
+  text-shadow none

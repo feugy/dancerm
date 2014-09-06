@@ -48,6 +48,10 @@ html
     line-height 20px
     border-radius 0 1em 0 0
 
+    .version
+      padding-left 10px
+      font-size fontSize * 1.2
+
   > .column
     left 0
     width collapsedColumnWidth
@@ -297,21 +301,23 @@ body
     margin 10px 0
     padding 0 1em 1em
 
-    & > .btn
-    .address > .btn
-    .dancer > .btn
-    & > .btn-group
-      position absolute
-      right 15px
-      top -20px
-      box-shadow 0 0 0 3px mainBackground
+    for selector in "&" ".address" ".dancer"
+      {selector} > .btn
+      {selector} > .btn-group
+        position absolute
+        right 15px
+        top -20px
+        
+      {selector} > .btn
+        box-shadow 0 0 0 3px mainBackground
 
-    & > .btn-group
-      background mainBackground
+      {selector} > .btn-group
+        background mainBackground
 
-    .dancer:not(:hover) > .btn
-    .address:not(:hover) > .btn
-      background colBackground
+    for selector in ".address" ".dancer"
+      {selector}:not(:hover) > .btn
+      {selector}:not(:hover) > .btn-group
+        background colBackground
     
     > h2
       border-top none
@@ -483,17 +489,21 @@ body
     textarea
       transition background focusDuration, border focusDuration
     .input-group-addon
-      transition opacity focusDuration
+      transition background focusDuration, border focusDuration
 
   .focusable:not(:hover)
     
     input:not(:focus)
     textarea:not(:focus)
     .btn.dropdown-toggle
+    .input-group-addon:first-child
+    .input-group-addon:last-child
       border-color transparent
       background transparent
 
     .btn.dropdown-toggle
+    .input-group-addon:first-child
+    .input-group-addon:last-child
       color rgba(textColor, 50%)
 
     .btn

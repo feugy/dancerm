@@ -1,12 +1,16 @@
 !include MUI2.nsh
 
-; generated file
-outFile "DanceRM-installer.exe"
-  
+!system "readVersion.exe"
+!include "Version.txt"
+
 ; install in program files
 installDir $PROGRAMFILES\dancerm
 
 requestExecutionLevel admin
+
+; generated file and name
+Name "DanceRM - v${Version}"
+outFile "DanceRM-installer-${Version}.exe"
 
 !define LANG_FRENCH "French"
 
@@ -83,4 +87,3 @@ sectionEnd
 !define MUI_TEXT_WELCOME_INFO_TITLE "Bienvenue dans l'installation de l'application $(^NameDA)."
 !define MUI_TEXT_WELCOME_INFO_TEXT "Vous êtes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
 !insertmacro MUI_LANGUAGE ${LANG_FRENCH}
-Name "DanceRM - v3.0.4"

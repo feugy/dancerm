@@ -162,4 +162,6 @@ module.exports = (app) ->
       # array of missing fields
       requiredFields: '='
       # invoked when printing the registration
-      onPrint: '&'
+      onPrint: '&?'
+      # invoked when registration needs to be removed. Concerned registration is a 'model' parameter
+      onRemove: '&?'

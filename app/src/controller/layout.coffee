@@ -44,6 +44,9 @@ module.exports = class LayoutController
   # i18n values, for rendering
   i18n: i18n
 
+  # Application version
+  version: version
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Angular global scope, for digest triggering

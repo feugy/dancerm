@@ -263,7 +263,7 @@ module.exports = class CardController extends LayoutController
       else
         used[candidate.addressId] = true
 
-  # Indicate whether the dancer's address can me remved or not.
+  # Indicate whether the dancer's address can be removed or not.
   # Only for dancers that do not share their address and that are not the first
   #
   # @param dancer [Dancer] tested dancer
@@ -309,21 +309,6 @@ module.exports = class CardController extends LayoutController
       ).catch (err) =>
         console.error err
 
-  # Invoked when registration needs to be removed.
-  # First display a confirmation dialog, and then removes it
-  #
-  # @param removed [Registration] the removed registration
-  ###onRemoveRegistration: (removed) =>
-    Planning.find removed.planningId, (err, planning) =>
-      throw err if err?
-      @rootScope.$apply =>
-        @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')('msg.removeRegistration', args: planning), [
-          {result: false, label: @i18n.btn.no}
-          {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
-        ]).result.then (confirm) =>
-          return unless confirm
-          @dancer.registrations.splice @dancer.registrations.indexOf(removed), 1###
-
   # Print the registration confirmation form
   #
   # @param registration [Registration] the concerned registration
@@ -365,6 +350,54 @@ module.exports = class CardController extends LayoutController
 
         open()
       ).catch (err) => console.error err
+
+  # Invoked when dancer needs to be removed.
+  # First display a confirmation dialog, and then dissociate the dancer from this card
+  #
+  # @param dancer [Dancer] dancer that needs to be removed
+  removeDancer: (dancer) =>
+    isLast = @dancers.length is 1
+    msg = if isLast then 'msg.removeLastDancer' else 'msg.removeDancer'
+    @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')(msg, args: dancer), [
+      {result: false, label: @i18n.btn.no}
+      {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
+    ]).result.then (confirm) =>
+      return unless confirm
+      # remove everything and goes to list
+      if isLast
+        return Promise.all([
+          @addresses[0].remove()
+          @dancers[0].remove()
+          @card.remove()
+        ]).then( => @rootScope.$apply =>
+          @state.go 'list-and-planning'
+          @rootScope.$emit 'search'
+        ).catch (err) => console.error err      
+
+      # mark for a change
+      @_changed[dancer.id] = true
+      @hasChanged = true
+
+      idx = @dancers.indexOf dancer
+      # mark dancer to be removed, and its address if necessary
+      @_removable.push dancer
+      @_removable.push @addresses[idx] if @isAddressRemovable dancer
+
+      # removes from displayed objects
+      @dancers.splice idx, 1
+      @addresses.splice idx, 1
+
+  # Invoked when registration needs to be removed.
+  # First display a confirmation dialog, and then removes it
+  #
+  # @param registration [Registration] the removed registration 
+  removeRegistration: (registration) =>
+    @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')('msg.removeRegistration', args: registration), [
+      {result: false, label: @i18n.btn.no}
+      {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
+    ]).result.then (confirm) =>
+      return unless confirm
+      @card.registrations.splice @card.registrations.indexOf(registration), 1
 
   # Invoked when address needs to be removed.
   # First display a confirmation dialog, and then reuse the first dancer's address

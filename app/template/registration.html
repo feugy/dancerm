@@ -1,14 +1,7 @@
 <article class="registration focusable">
-  
   <span class="btn-group" data-dropdown>
-    <a href="" class="btn glyphed dropdown-toggle" data-dropdown-toggle><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}<span class="caret"></span></a>
-    <ul class="dropdown-menu right">
-      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})">{{'btn.print'|i18n}}</a></li>
-      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:false})">{{'btn.printWithoutVatWithClasses'|i18n}}</a></li>
-      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:true})">{{'btn.printWithVatWithClasses'|i18n}}</a></li>
-      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:false, withClasses:false})">{{'btn.printWithoutVat'|i18n}}</a></li>
-      <li><a href="" data-ng-click="ctrl.onPrint({registration: ctrl.registration, withVat:true, withClasses:false})">{{'btn.printWithVat'|i18n}}</a></li>
-    </ul>
+    <a href="" class="btn glyphed" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})"><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}</a>
+    <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.registration})"><i class="glyphicon glyphicon-trash"/></a>
   </span>
   <h2>{{ctrl.registration.season}}</h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
