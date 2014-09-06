@@ -90,14 +90,13 @@ Paid: 110h 10€/h
 
 # Version 3
 
-## Bugs
-
-## TODOs 
+## Bugs or regressions
 
 - search by city
-! - list sort
 - fix xlsx import and v2 import
 - fix xlsx export
+
+## TODOs 
 
 ok - on file print, add address, phone (mobile or fix) and email, and medical certificate mention (from Anthony)
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
@@ -148,4 +147,4 @@ ok - add another "known-by" choice: "old dancers"
 30/08 - 9
 31/08 - 7
 01/09 - 10
-06/09 - 2
+06/09 - 5
