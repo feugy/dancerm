@@ -1,5 +1,6 @@
 moment = require 'moment'
 {join, resolve} = require 'path'
+{appendFileSync} = require 'fs-extra'
 _ = require 'underscore'
 _str = require 'underscore.string'
 _.mixin _str.exports()
@@ -11,6 +12,17 @@ Function::property = (prop, desc) ->
   Object.defineProperty @prototype, prop, desc
 
 module.exports = 
+
+  # Used to dump errors into error file located in app data folder
+  #
+  # @param err [Error] the error to dump
+  dumpError: (err) ->
+    now = new Date()
+    fs.appendFileSync join(gui.App.dataPath, 'errors.txt'), """
+------------
+Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
+#{err.stack}\n\n"""
+    process.exit 0
 
   # Generate a random id containing 12 characters
   # @return a generated id

@@ -15,11 +15,13 @@ module.exports =
     generalInfo: 'Information'
     import: 'Importation'
     knownBy: 'Connu par'
+    knownByRepartition: 'Ils ont connus par...'
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
     registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
+    stats: 'Statistiques'
     
   # long messages with html
   msg:
@@ -52,6 +54,7 @@ module.exports =
     addExistingDancer: 'Existant'
     addPayment: 'Nouveau paiement'
     backToList: 'Retour au planning'
+    backToExpandedList: 'Retour à la liste'
     cancel: 'Annuler'
     close: 'Fermer'
     export: 'Exporter la liste'
@@ -70,6 +73,7 @@ module.exports =
     remove: 'Supprimer'
     removeAddress: 'Supprimer'
     save: 'Enregistrer'
+    stats: 'Statistiques'
     yes: 'Oui'
 
   # short labels
@@ -97,6 +101,7 @@ module.exports =
     Fri: 'Vendredi'
     genericDanceClass: 'Abonnement danse'
     lastname: 'Nom'
+    loadingData: 'chargement des données...'
     hours: 'Horaire'
     knownBy: 'Connu par'
     Mon: 'Lundi'

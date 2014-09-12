@@ -36,6 +36,10 @@ var paths = {
     {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0-rc.0/angular-animate.min.js'},
     {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0-rc.0/angular-sanitize.min.js'},
     {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.11/release/angular-ui-router.min.js'},
+    {file:'vendor/d3.js', url:'http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js'},
+    {file:'vendor/nvd3.js', url:'https://raw.githubusercontent.com/novus/nvd3/v1.1.15-beta/nv.d3.min.js'},
+    {file:'src/style/css/nvd3.css', url:'https://raw.githubusercontent.com/novus/nvd3/v1.1.15-beta/nv.d3.min.css'},
+    {file:'vendor/angular-nvd3.js', url:'https://raw.githubusercontent.com/krispo/angular-nvd3/master/dist/angular-nvd3.min.js'},
     // unrelease yet, build from trunk
     //{file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js'},
     {file:'src/style/css/bootstrap.css', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'},

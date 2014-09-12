@@ -1,5 +1,4 @@
 _ = require 'underscore'
-{Promise} = require 'es6-promise'
 async = require 'async'
 moment = require 'moment'
 Persisted = require './tools/persisted'

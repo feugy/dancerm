@@ -7,7 +7,9 @@
   <body>
     <div id="mocha"></div>
     <script type="application/javascript">
-
+      if (Promise == null) {
+        global.Promise = require('es6-promise')
+      }
 
       var Mocha = require('mocha');
       var fs = require('fs');

@@ -73,7 +73,7 @@ class ListDirective
           html.push '<th data-desc'
         else
           html.push '<th'
-        html.push " data-attr='#{name}'><i class='glyphicon glyphicon-chevron-", (if @_isDesc then 'down' else 'up'), "'/>"
+        html.push " data-attr='#{name}'><i class='glyphicon glyphicon-sort-by-alphabet", (unless @_isDesc then '-alt'), "'/>"
       else
         html.push "<th data-attr='#{name}'>"
       html.push @filter('i18n')(title), '</th>'

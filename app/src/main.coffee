@@ -1,17 +1,9 @@
 'use strict'
 
 gui = require 'nw.gui'
-fs = require 'fs-extra'
 {join} = require 'path'
 {version} = require '../../package.json'
-
-dumpError = (err) ->
-  now = new Date()
-  fs.appendFileSync join(gui.App.dataPath, 'errors.txt'), """
-------------
-Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
-#{err.stack}\n\n"""
-  process.exit 1
+{dumpError} = require '../script/util/common'
 
 process.on 'uncaughtException', dumpError
 
@@ -38,15 +30,15 @@ try
   win.on 'close', ->
     return @close true if hasDump
 
+    console.log 'ask to close...', localStorage
     hasDump = true
     app.close().then(() =>
       console.log 'close after save'
       @close true
     ).catch (err) =>
-      console.error 'close after error and save', err
-      @close true
+      console.error 'close after save error', err
+      #@close true
 
-    console.log 'ask to close...'
     for attr in ['x', 'y', 'width', 'height']
       localStorage.setItem attr, win[attr]
 

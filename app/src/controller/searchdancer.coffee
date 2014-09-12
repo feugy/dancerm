@@ -1,5 +1,4 @@
 Dancer = require '../model/dancer'
-{Promise} = require 'es6-promise'
   
 # Allow to choose a given dancer with autocompletion field
 # Intended to be used inside a popup: will returned the selected dancer, or null in case of cancellation

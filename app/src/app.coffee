@@ -12,12 +12,13 @@ ListCtrl = require '../script/controller/list'
 ExpandedListCtrl = require '../script/controller/expandedlist'
 PlanningCtrl = require '../script/controller/planning'
 CardCtrl = require '../script/controller/card'
+StatsCtrl = require '../script/controller/stats'
 initializer = require '../script/model/tools/initializer'
 
 console.log "running with angular v#{angular.version.full}"
 
 # declare main module that configures routing
-app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router']
+app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'nvd3']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
   location.html5Mode false
@@ -47,6 +48,12 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
     url: '/list'
     views: 
       column: ExpandedListCtrl.declaration
+
+  states.state 'stats',
+    parent: home
+    url: '/stats'
+    views: 
+      column: StatsCtrl.declaration
 ]
 
 # application initialization

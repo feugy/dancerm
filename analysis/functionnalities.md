@@ -148,3 +148,5 @@ ok - add another "known-by" choice: "old dancers"
 31/08 - 7
 01/09 - 10
 06/09 - 5
+09/09 - 3
+11/09 - 2

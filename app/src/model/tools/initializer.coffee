@@ -2,7 +2,6 @@ _ = require 'underscore'
 moment = require 'moment'
 async = require 'async'
 DanceClass = require '../danceclass'
-{Promise} = require 'es6-promise'
 
 # Allow to initialize storage with a 2013 planning.
 # Inefective if some plannings are already present.

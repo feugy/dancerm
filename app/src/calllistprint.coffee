@@ -2,8 +2,11 @@
 
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
+{dumpError} = require '../script/util/common'
 moment = require 'moment'
 _ = require 'underscore'
+
+process.on 'uncaughtException', dumpError
 
 # make some variable globals for other scripts
 global.gui = gui

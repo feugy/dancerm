@@ -1,7 +1,6 @@
 _ = require 'underscore'
 Base = require './base'
 Datastore = require 'nedb'
-{Promise} = require 'es6-promise'
 {join} = require 'path'
 {generateId, getDbPath} = require '../../util/common'
 

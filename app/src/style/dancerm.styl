@@ -4,6 +4,7 @@
  */
 
 @import 'css/bootstrap.css'
+@import 'css/nvd3.css'
 @import 'variable'
 @import 'mixins'
 @import 'directive'
@@ -151,7 +152,7 @@ body
       font-family headingFont
       flex 1
 
-    .btn > .glyphicon
+    .btn:not(.glyphed) > .glyphicon
       margin 0
 
   .input-group
@@ -251,7 +252,7 @@ body
     td:nth-child({i+1}), th:nth-child({i+1})
       width unit(width, '%')
 
-  .export.btn
+  h2 > *:not(:last-child)
     margin-right 7px
 
   .known-by
@@ -449,6 +450,37 @@ body
         margin-right 5px
         height 28px
         flex 1
+
+/******************************************************************************
+ * Statistics
+ */
+
+.stats-controller
+  
+  > article
+    border-radius inputRadius
+    background mainBackground
+    padding 6px
+    margin 6px
+
+  chartHeight = 250px
+
+  .content
+    display flex
+    flex-direction row
+    height chartHeight
+
+    [data-nvd3]
+      flex none
+      height 120%
+      margin -2% -2% 0 0
+
+  .values
+    display flex
+    flex-direction column
+    flex-wrap wrap
+    align-content space-around
+
 
 /******************************************************************************
  * Popups

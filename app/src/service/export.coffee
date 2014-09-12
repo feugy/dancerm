@@ -1,8 +1,7 @@
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
 {each, eachSeries} = require 'async'
-{writeFile, truncate, readFile, appendFile, ensureFile} = require 'fs-extra'
+{writeFileSync, readFileSync, appendFileSync, ensureFileSync} = require 'fs-extra'
 {join, resolve, normalize} = require 'path'
 xlsx = require 'xlsx.js'
 Dancer = require '../model/dancer'
@@ -25,45 +24,42 @@ module.exports = class Export
   # @return a promise without any resolve parameter
   dump: (filePath) =>
     new Promise (accept, reject) =>
-      return reject new Error "no file selected" unless filePath?
-      start = moment()
-      filePath = resolve normalize filePath
-      console.info "dump data in #{filePath}..."
-      start = moment()
+      try 
+        return reject new Error "no file selected" unless filePath?
+        start = moment()
+        filePath = resolve normalize filePath
+        console.info "dump data in #{filePath}..."
+        start = moment()
 
-      classes = [Address, Card, Dancer, DanceClass]
-      ### TODO buggy on windows
-      # compact each single database
-      Promise.all((clazz._collection() for clazz in classes)).then((collections) =>
-        each collections, (collection, next) =>
-          collection.persistence.persistCachedDatabase (err) =>
-            return next new Error "failed to compact data for collection #{collection.filename}: #{err}" if err?
-            console.log "#{collection.filename} compacted..."
-            next()
-        , (err) =>
-          return reject err if err###
-      # into a temporary file
-      dbPath = getDbPath()
-      ensureFile filePath, (err) =>
-        return reject err if err?
-        # read each file and writes it into
-        writeFile filePath, "", (err) =>
-          return reject err if err?
-          console.log "reinit file..."
-          eachSeries ([clazz, join dbPath, clazz.name] for clazz in classes), ([clazz, file], next) =>
-            readFile file, {encoding: "utf8"}, (err, content) =>
-              return next new Error "failed to read #{clazz.name} file: #{err}" if err?
-              console.log "#{clazz.name} model read..."
-              appendFile filePath, "#{@constructor.separator}#{clazz.name}\n#{content}", {encoding: 'utf8'}, (err) =>
-                return next new Error "failed to write #{clazz.name} data: #{err}" if err?
-                console.log "#{clazz.name} model written..."
-                next()
+        classes = [Address, Card, Dancer, DanceClass]
+        ### TODO buggy on windows
+        # compact each single database
+        Promise.all((clazz._collection() for clazz in classes)).then((collections) =>
+          each collections, (collection, next) =>
+            collection.persistence.persistCachedDatabase (err) =>
+              return next new Error "failed to compact data for collection #{collection.filename}: #{err}" if err?
+              console.log "#{collection.filename} compacted..."
+              next()
           , (err) =>
-            return reject err if err?
-            # rename dump to destination file
-            console.info "dump finished in #{moment().diff start}ms !"
-            accept()
-      #).catch reject
+            return reject err if err###
+
+        # into a temporary file
+        dbPath = getDbPath()
+
+        # sincd node-webkit 0.10.5 and nedb, using sync fs API is less error-prone than classical async API
+        ensureFileSync filePath
+        writeFileSync filePath, ""
+        console.log "reinit file..."
+        for clazz in classes
+          file = join dbPath, clazz.name
+          content = readFileSync file, encoding: 'utf8'
+          console.log "#{clazz.name} model read..."
+          appendFileSync filePath, "#{@constructor.separator}#{clazz.name}\n#{content}", encoding: 'utf8'
+          console.log "#{clazz.name} model written..."
+        console.info "dump finished in #{moment().diff start}ms !"
+        accept()
+      catch err
+        reject err
 
   # Exports a dancer list to an XlsX file
   #

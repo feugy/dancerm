@@ -1,6 +1,5 @@
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
 Dancer = require '../model/dancer'
@@ -183,7 +182,9 @@ module.exports = class CardController extends LayoutController
             console.log "models removed"
             @rootScope.$apply() unless @rootScope.$$phase
             Promise.resolve()
-    ).catch (err) => console.error err
+    ).catch (err) => 
+      console.error err
+      Promise.reject err
 
   # Navigate to the state displaying a given card
   #
@@ -317,7 +318,8 @@ module.exports = class CardController extends LayoutController
   # @param withClasses [Boolean] true to include dance classes details
   printRegistration: (registration, auto= false, withVat= true, withClasses= true) =>
     @save(true).then =>
-      open = =>
+      # node-webkit bug https://github.com/rogerwang/node-webkit/issues/2318
+      open = => setTimeout =>
         try
           preview = window.open 'registrationprint.html'
           preview.card = @card
@@ -327,6 +329,9 @@ module.exports = class CardController extends LayoutController
           preview.withCharged = auto
         catch err
           console.error err
+        # obviously, a bug !
+        global.console = window.console
+      , 1
 
       # auto VAT/classe details computation:
       return open() unless auto

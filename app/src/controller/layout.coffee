@@ -9,7 +9,11 @@ search =
   teachers: []
   seasons: []
   danceClasses: []
-  
+try 
+  search = JSON.parse localStorage.search if localStorage.search?
+catch err
+  # silent error
+
 _dumpInProgress = false
 
 module.exports = class LayoutController
@@ -61,6 +65,16 @@ module.exports = class LayoutController
     @hasMain = checkMain()
     # Ask immediately dump entry if missing
     @_loadDumpEntry()
+
+
+  # Extract and dasherize name of a controller used
+  #
+  # @param kind [String] column or main, depending on what is required
+  # @return the css class corresponding to current column/main controller
+  getClass: (kind) => 
+    name = @state?.current?.views?[kind]?.controller?.name
+    return '' unless name?
+    _.dasherize name[0].toLowerCase() + name[1..]
 
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified

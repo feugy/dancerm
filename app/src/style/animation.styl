@@ -27,6 +27,14 @@
 
       .export
         display none
+          
+    &.stats-controller.ng-enter
+      left 100%
+
+    &.stats-controller.ng-enter-active
+      transition left animationDuration
+      position absolute
+      left 0
 
     &.ng-leave
       // hide leaving column when changing main, or when expanding column

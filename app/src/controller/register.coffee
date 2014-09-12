@@ -83,6 +83,10 @@ module.exports = class RegisterController
     return if confirmed and @src is null
     # retore previous dance classes if not confirmed
     @danceClasses.splice.apply @danceClasses, [0, @danceClasses.length].concat @_previous unless confirmed
+    # remove possible duplicates
+    unic = []
+    unic.push danceClass for danceClass in @danceClasses when not (danceClass in unic)
+    @danceClasses = unic
     # closes dialog
     @_dialog.close 
       confirmed: confirmed

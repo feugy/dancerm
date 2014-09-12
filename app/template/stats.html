@@ -1,0 +1,13 @@
+<h2><span>{{'ttl.stats'|i18n}}</span><a data-ui-sref="expanded-list" class="btn glyphed"><i class="glyphicon glyphicon-arrow-left"/>{{'btn.backToExpandedList'|i18n}}</a></h2>
+<article>
+  <h3>{{'ttl.knownByRepartition'|i18n}}</h3>
+  <div class="content">
+    <div data-nvd3
+      data="ctrl.knownBy"
+      options="ctrl.knownByOpt">
+    </div>
+    <div class="values">
+      <span data-ng-repeat="knownBy in ctrl.knownBy | orderBy:'-value' ">{{knownBy.label}}{{'lbl.fieldSeparator'|i18n}}{{knownBy.value}}</span>
+    </div>
+  </div>
+</article>

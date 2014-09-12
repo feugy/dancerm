@@ -3,12 +3,14 @@
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
+{dumpError} = require '../script/util/common'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
 # merge underscore and underscore string functions
 _ = require 'underscore'
 _str = require 'underscore.string'
 _.mixin _str.exports()
+
+process.on 'uncaughtException', dumpError
 
 # make some variable globals for other scripts
 global.gui = gui

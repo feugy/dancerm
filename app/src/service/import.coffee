@@ -1,5 +1,4 @@
 _ = require 'underscore'
-{Promise} = require 'es6-promise'
 moment = require 'moment'
 {each} = require 'async'
 Export = require './export'

@@ -1,5 +1,4 @@
 _ = require 'underscore'
-{Promise} = require 'es6-promise'
 Persisted = require './tools/persisted'
 Registration = require './registration'
 # because of circular dependency

@@ -40,6 +40,7 @@ module.exports = class ListController extends LayoutController
 
     # refresh search when asked
     @rootScope.$on 'search', @makeSearch
+    @makeSearch()
 
   # Displays a given dancer on the main part
   #
@@ -53,12 +54,14 @@ module.exports = class ListController extends LayoutController
   makeSearch: =>
     return if @_searchPending
     console.log "search for", @search
+    # store into local storage for reload
+    localStorage.search = JSON.stringify @search
     conditions = {}
     # depending on criterias
     if @search.string?.length >= 3 
       # find all dancers by first name/last name
       searched = @search.string.toLowerCase()
-      conditions.$where = () -> 
+      conditions.$where = -> 
         0 is @firstname?.toLowerCase().indexOf(searched) or 
         0 is @lastname?.toLowerCase().indexOf(searched)
 
@@ -100,3 +103,5 @@ module.exports = class ListController extends LayoutController
       preview.list = @list
     catch err
       console.error err
+    # a bug obviously
+    global.console = window.console

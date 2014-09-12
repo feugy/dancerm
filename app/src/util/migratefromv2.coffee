@@ -1,6 +1,5 @@
 _ = require 'underscore'
 fs = require 'fs-extra'
-{Promise} = require 'es6-promise'
 {generateId} = require './common'
 Address = require '../model/address'
 Dancer = require '../model/dancer'
