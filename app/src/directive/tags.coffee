@@ -47,16 +47,23 @@ class TagsDirective
   _onUpdateTags: =>
     @$el.empty()
     return unless @src?
+    empties = @showEmpties?() or []
     if @src.seasons?
       for season in @src.seasons
         @$el.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"
+      if @src.seasons.length is 0 and 'season' in empties
+        @$el.append "<div class='tag season'>#{i18n.lbl.allSeasons}</div>"
     if @src.teachers?
       for teacher in @src.teachers
         @$el.append "<div class='tag teacher' data-teacher='#{teacher}'>#{teacher}<b class='close'>&times;</b></div>"
+      if @src.teachers.length is 0 and 'teacher' in empties
+        @$el.append "<div class='tag teacher'>#{i18n.lbl.allTeachers}</div>"
     if @src.danceClasses?
       for danceClass in @src.danceClasses
         day = danceClass.start[0..2]
         @$el.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
+      if @src.danceClasses.length is 0 and 'danceClass' in empties
+        @$el.append "<div class='tag dance-class'>#{i18n.lbl.allDanceClasses}</div>"
     
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->
@@ -75,5 +82,8 @@ module.exports = (app) ->
     scope: 
       # displayed search
       src: '='
+      # arrays indicating which empty criteria should be represented by unclosable tag
+      # may contain 'danceClass', 'season' and 'teacher' to show the corresponding tag
+      showEmpties: '&?'
       # function to invoke on tag removal
       onRemove: '&'

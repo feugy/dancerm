@@ -2,8 +2,9 @@
 _ = require 'underscore'
 async = require 'async'
 moment = require 'moment'
-path = require 'path'
-{Promise} = require 'es6-promise'
+{join} = require 'path'
+{remove, mkdir} = require 'fs-extra'
+{getDbPath} = require '../../../app/script/util/common'
 Import = require '../../../app/script/service/import'
 Dancer = require '../../../app/script/model/dancer'
 Card = require '../../../app/script/model/card'
@@ -14,36 +15,56 @@ Address = require '../../../app/script/model/address'
 
 describe 'Import service tests', ->
 
-  beforeEach ->
-    Promise.all [
-      Card.drop()
-      Dancer.drop()
-      DanceClass.drop()
-      Address.drop()
-    ]
+  beforeEach (done) ->
+    remove getDbPath(), (err) ->
+      return done err if err?
+      mkdir getDbPath(), done
 
   tested = new Import()
 
-  describe.skip 'given xlsx files', ->
+  describe 'given xlsx files', ->
 
-    it 'should import extract dancers', (done) ->
+    it 'should import extract dancers', ->
       expected = [
-        {lastReg: 2012, dancer: new Dancer title: 'Mlle', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', address:{ street: '31 rue séverine', city: 'Villeurbanne', zipcode:'69100'}, cellphone: '0634144728', email: 'emilieab@live.fr'}
-        {lastReg: null, dancer: new Dancer title: 'Mlle', firstname:'Nelly', lastname:'Aguilar', address:{ street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode:'69100'}, phone: '0662885285', knownBy: ['associationsBiennal']}
-        {lastReg: 2011, dancer: new Dancer title: 'Mlle', firstname:'Lila', lastname:'Ainine', birth: '1986-01-01', address:{ street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode:'69009'}, cellphone: '0640652009', email: 'lila.ainine@yahoo.fr', knownBy: ['Groupon']}
-        {lastReg: null, dancer: new Dancer title: 'M.', firstname:'Raphaël', lastname:'Azoulay', birth: '1989-01-01', address:{ street: '40 rue du rhône allée 5', city: 'Lyon', zipcode:'69007'}, cellphone: '0631063774', phone:'0478613207', email: 'rafystilmot@hotmail.fr', knownBy: ['leaflets']}
-        {lastReg: 2011, dancer: new Dancer title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-01-01', address:{ street: '2 rue clément marrot', city: 'Lyon', zipcode:'69007'}, cellphone: '0617979688'}
+        new Address street: '31 rue séverine', city: 'Villeurbanne', zipcode:'69100'
+        new Address street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode:'69100', phone: '0662885285'
+        new Address street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode:'69009'
+        new Address street: '40 rue du rhône allée 5', city: 'Lyon', zipcode:'69007', phone:'0478613207'
+        new Address street: '2 rue clément marrot', city: 'Lyon', zipcode:'69007'
+        new Card()
+        new Card knownBy: ['associationsBiennal']
+        new Card knownBy: ['groupon']
+        new Card knownBy: ['leaflets']
+        new Card()
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Nelly', lastname:'Aguilar'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Lila', lastname:'Ainine', birth: '1986-01-01', cellphone: '0640652009', email: 'lila.ainine@yahoo.fr'
+        new Dancer danceClassIds: [], title: 'M.', firstname:'Raphaël', lastname:'Azoulay', birth: '1989-01-01', cellphone: '0631063774', email: 'rafystilmot@hotmail.fr'
+        new Dancer danceClassIds: [], title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-01-01', cellphone: '0617979688'
       ]
-
-      tested.fromFile path.join(__dirname, '..', '..', 'fixture', 'import_1.xlsx'), (err, models, report) ->
+      # links between models
+      links = [{}, {}, {}, {}, {}, 
+        {}, {}, {}, {}, {},
+        {address: 0, card: 5},
+        {address: 1, card: 6},
+        {address: 2, card: 7},
+        {address: 3, card: 8},
+        {address: 4, card: 9}
+      ]
+      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_1.xlsx').then ({models, report}) ->
         return done err if err?
         # then all models are present
-        models = _.sortBy models, 'lastname'
-        expect(models).to.have.lengthOf 5
-        for {dancer, lastRegistration}, i in models
-          expect(dancer).to.be.an.instanceOf Dancer
-          expect(lastRegistration).to.be.equal expected[i].lastReg
-          expect(_.omit dancer.toJSON(), ['id', 'created']).to.be.deep.equal _.omit expected[i].dancer.toJSON(), ['id', 'created']
+        expect(models).to.have.lengthOf expected.length
+        for model, i in models
+          if i < 5
+            expect(model).to.be.an.instanceOf Address
+          else if 5 <= i < 10 
+            expect(model).to.be.an.instanceOf Card
+          else
+            expect(model).to.be.an.instanceOf Dancer
+            expected[i].cardId = models[links[i].card].id
+            expected[i].addressId = models[links[i].address].id
+          expect(JSON.stringify _.omit model.toJSON(), ['id', 'created', 'registrations', '_v']).to.be.deep.equal JSON.stringify _.omit expected[i].toJSON(), ['id', 'created', 'registrations', '_v']
         # then report should contain all informations
         expect(report.modifiedBy).to.be.equal 'Damien Feugas'
         expect(report.modifiedOn.valueOf()).to.be.closeTo moment('2013-09-04 07:54:00').valueOf(), 60000
@@ -57,30 +78,56 @@ describe 'Import service tests', ->
         expect(report.worksheets[2].extracted).to.be.equal 0
         expect(report.worksheets[2].name).to.be.equal 'Feuil3'
         expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
-        done()
 
-    it 'should import extract multiple dancers same raw', (done) ->
+    it 'should import extract multiple dancers same raw', ->
       expected = [
-        new Dancer title: 'Mme', firstname: 'Amarande', lastname: 'Gniewek', address:{ street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800'}, phone:'0472697929', cellphone: '0673284308', knownBy: ['Ancien']
-        new Dancer title: 'M.', firstname: 'Joseph', lastname: 'Gniewek', address:{ street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800'}, phone:'0472697929', cellphone: '0673284308', knownBy: ['Ancien']
-        new Dancer title: 'M.', firstname: 'Florent', lastname: 'Gros', birth: '2007-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
-        new Dancer title: 'Mlle', firstname: 'Paloma', lastname: 'Gros', birth: '2007-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
-        new Dancer title: 'Mme', firstname: 'Virginie', lastname: 'Marcolungo', birth: '1977-01-01', address:{ street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478984945', cellphone:'0662432173', email: 'vm112@hotmail.com'
-        new Dancer title: 'Mlle', firstname: 'Maeva', lastname: 'Meloni', birth: '1994-01-01', address:{ street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478853765', cellphone:'0472102290', knownBy: ['associationsBiennal', 'leaflets']
-        new Dancer title: 'Mlle', firstname: 'Melissa', lastname: 'Meloni', birth: '1998-01-01', address:{ street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100'}, phone: '0478853765', cellphone:'0472102290', knownBy: ['associationsBiennal', 'leaflets']
-        new Dancer title: 'Mlle', firstname: 'Inès', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
-        new Dancer title: 'M.', firstname: 'Jessim', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
-        new Dancer title: 'Mlle', firstname: 'Sirine', lastname: 'Mohammedi', birth: '2002-01-01', address:{ street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120'}, phone: '0472045796', cellphone:'0670823944', knownBy: ['Ancien']
+        new Address street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800', phone:'0472697929'
+        new Address street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100', phone: '0478853765'
+        new Address street: '100, rue château gaillard', city: 'Villeurbanne', zipcode: '69100', phone: '0478984945'
+        new Address street: '43 rue lamartine', city: 'Vaulx en velin', zipcode: '69120', phone: '0472045796'
+        new Card knownBy: ['elders']
+        new Card knownBy: ['associationsBiennal', 'leaflets']
+        new Card()
+        new Card knownBy: ['elders']
+        new Dancer danceClassIds: [], title: 'Mme', firstname: 'Amarande', lastname: 'Gniewek', cellphone: '0673284308'
+        new Dancer danceClassIds: [], title: 'M.', firstname: 'Joseph', lastname: 'Gniewek', cellphone: '0673284308'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Maeva', lastname: 'Meloni', birth: '1994-01-01', cellphone:'0472102290'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Melissa', lastname: 'Meloni', birth: '1998-01-01', cellphone:'0472102290'
+        new Dancer danceClassIds: [], title: 'Mme', firstname: 'Virginie', lastname: 'Marcolungo', birth: '1977-01-01', cellphone:'0662432173', email: 'vm112@hotmail.com'
+        new Dancer danceClassIds: [], title: 'M.', firstname: 'Florent', lastname: 'Gros', birth: '2007-01-01', cellphone:'0662432173', email: 'vm112@hotmail.com'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Paloma', lastname: 'Gros', birth: '2007-01-01', cellphone:'0662432173', email: 'vm112@hotmail.com'
+        new Dancer danceClassIds: [], title: 'M.', firstname: 'Jessim', lastname: 'Mohammedi', birth: '2002-01-01', cellphone:'0670823944'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Inès', lastname: 'Mohammedi', birth: '2002-01-01', cellphone:'0670823944'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Sirine', lastname: 'Mohammedi', birth: '2002-01-01', cellphone:'0670823944'
+      ]
+      # links between models
+      links = [{}, {}, {}, {}, 
+        {}, {}, {}, {},
+        {address: 0, card: 4},
+        {address: 0, card: 4},
+        {address: 1, card: 5},
+        {address: 1, card: 5},
+        {address: 2, card: 6},
+        {address: 2, card: 6},
+        {address: 2, card: 6},
+        {address: 3, card: 7},
+        {address: 3, card: 7},
+        {address: 3, card: 7}
       ]
 
-      tested.fromFile path.join(__dirname, '..', '..', 'fixture', 'import_2.xlsx'), (err, models, report) ->
-        return done err if err?
+      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_2.xlsx').then ({models, report}) ->
         # then all models are present
-        models = _.sortBy models, (model) -> model.dancer.lastname + model.dancer.firstname
-        expect(models).to.have.lengthOf 10
-        for {dancer, lastReg}, i in models
-          expect(dancer).to.be.an.instanceOf Dancer
-          expect(JSON.stringify _.omit dancer.toJSON(), ['id', 'created']).to.be.deep.equal JSON.stringify _.omit expected[i].toJSON(), ['id', 'created']
+        expect(models).to.have.lengthOf expected.length
+        for model, i in models
+          if i < 4
+            expect(model).to.be.an.instanceOf Address
+          else if 4 <= i < 8
+            expect(model).to.be.an.instanceOf Card
+          else
+            expect(model).to.be.an.instanceOf Dancer
+            expected[i].cardId = models[links[i].card].id
+            expected[i].addressId = models[links[i].address].id
+          expect(JSON.stringify _.omit model.toJSON(), ['id', 'created', 'registrations', '_v']).to.equal JSON.stringify _.omit expected[i].toJSON(), ['id', 'created', 'registrations', '_v']
         # then report should contain all informations
         expect(report.modifiedBy).to.be.equal 'Damien Feugas'
         expect(report.modifiedOn.valueOf()).to.be.closeTo moment('2013-08-24 17:07:00').valueOf(), 60000
@@ -94,9 +141,8 @@ describe 'Import service tests', ->
         expect(report.worksheets[2].extracted).to.be.equal 0
         expect(report.worksheets[2].name).to.be.equal 'Feuil3'
         expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
-        done()
 
-  describe 'given v2 dump files', ->
+  describe 'given v3 dump files', ->
 
     it 'should import extract dancers', ->
       expected = [
@@ -111,7 +157,7 @@ describe 'Import service tests', ->
         new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
       ]
 
-      tested.fromFile(path.join __dirname, '..', '..', 'fixture', 'import_1.dump').then ({models, report}) ->
+      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_1.dump').then ({models, report}) ->
         # then all models are present
         expect(report).to.have.property('errors').that.is.empty
         expect(report).to.have.property('byClass').that.is.deep.equal Address: 1, Card: 1, Dancer: 2, DanceClass: 2

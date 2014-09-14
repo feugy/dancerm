@@ -14,6 +14,14 @@
     &.ng-leave-active
       opacity 0
       right (- visibleMainWidth)
+          
+    &.expanded.ng-enter
+      left 100%
+
+    &.expanded.ng-enter-active
+      transition left animationDuration
+      position absolute
+      left 0
 
   > .column
     transition all animationDuration
@@ -27,15 +35,32 @@
 
       .export
         display none
-          
-    &.stats-controller.ng-enter
-      left 100%
-
-    &.stats-controller.ng-enter-active
-      transition left animationDuration
-      position absolute
-      left 0
 
     &.ng-leave
       // hide leaving column when changing main, or when expanding column
       display none
+
+.loader
+  
+  > *
+    display inline-block
+    size = 10px
+    width size
+    height size
+    margin 0 size
+
+  for i in (1..10)
+    > :nth-child({i})
+      -webkit-animation-name 'zoom' + i
+      -webkit-animation-duration 2000ms
+      -webkit-animation-delay (100*i)ms
+      -webkit-animation-iteration-count infinite
+      
+    @keyframes zoom{i}
+      0%
+        -webkit-transform scale(1) rotate(0deg)
+      25%
+        -webkit-transform scale(1.5) rotate(45deg)
+        background-color planningColors[i]
+      50%
+        -webkit-transform scale(1) rotate(0deg)  

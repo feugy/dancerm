@@ -92,8 +92,9 @@ Paid: 110h 10€/h
 
 ## Bugs or regressions
 
+!!! - model's availability
 - search by city
-- fix xlsx import and v2 import
+- fix v2 import
 - fix xlsx export
 
 ## TODOs 
@@ -114,14 +115,13 @@ ok - mandatory fields before saving (civilities, firstname, lastname, address, p
 ok - on payement addition, automatically scroll to bottom, and put focus to first field
 ok - add age column (from current date) into expanded list
 ok - add another "known-by" choice: "old dancers"
- 6 - stats on known-by dancers 
+ok - stats on known-by dancers 
  8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
 
 ## Functionnal requirements
 
 - Synchronize data from multiple PCs
 - Print stamps for mailing
-- Stats on dancers origin (known-by)
 
 ## Hours
 
@@ -150,3 +150,5 @@ ok - add another "known-by" choice: "old dancers"
 06/09 - 5
 09/09 - 3
 11/09 - 2
+13/09 - 3
+14/09 - 6

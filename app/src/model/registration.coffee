@@ -131,7 +131,9 @@ module.exports = class Registration extends Base
 
   # @return amount to be paid for this registration
   due: =>
-    @charged - @balance
+    amount = @charged
+    amount *= 3 if @period is 'quarter'
+    amount - @balance
 
   # @return if a dancer was certified for this registration
   certified: (dancer) =>

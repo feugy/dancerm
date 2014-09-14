@@ -1,5 +1,5 @@
 _ = require 'underscore'
-fs = require 'fs-extra'
+{readFile, writeFile} = require 'fs-extra'
 {generateId} = require './common'
 Address = require '../model/address'
 Dancer = require '../model/dancer'
@@ -34,7 +34,7 @@ module.exports =
   migrate: (input, output) ->
     new Promise (resolve, reject) ->
       # Read file
-      fs.readFile input, 'utf8', (err, content) -> 
+      readFile input, 'utf8', (err, content) -> 
         return reject err if err?
         try 
           origin = JSON.parse content
@@ -117,7 +117,7 @@ module.exports =
             '\n' + separator + 'Address\n' + addresses.join('\n') +
             '\n' + separator + 'Card\n' + cards.join('\n')
 
-          fs.writeFile output, content.replace(/"id":/g, '"_id":'), 'utf8', (err) ->
+          writeFile output, content.replace(/"id":/g, '"_id":'), 'utf8', (err) ->
             return reject err if err?
             console.log "migration finished: #{danceClasses.length} dance classes, #{dancers.length} dancers, addresses and cards processed"
             resolve()

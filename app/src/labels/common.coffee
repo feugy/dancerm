@@ -1,27 +1,114 @@
 module.exports = 
-  
-  # titles  
-  ttl:
-    address: 'Adresse'
-    application: 'DanceRM'
-    card: 'Fiche danceurs'
-    confirm: 'Confirmation'
-    contact: 'Contact'
-    dancerList: 'Liste des danseurs'
-    dancer: 'Danceur'
-    dump: 'Sauvegarde externe'
-    editRegistration: 'Modification de l\'inscription'
-    export: 'Exportation'
-    generalInfo: 'Information'
-    import: 'Importation'
-    knownBy: 'Connu par'
-    knownByRepartition: 'Ils ont connus par...'
-    newRegistration: 'Nouvelle inscription'
-    print: 'DanceRM : impression pour {{names}}'
-    registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
-    search: 'Recherche de danseurs'
-    searchDancer: 'Fusionner deux fiches'
+
+  # buttons
+  btn: 
+    addAddress: 'Editer'
+    addDancer: 'Ajouter un danseur'
+    addNewDancer: 'Nouveau'
+    addExistingDancer: 'Existant'
+    addPayment: 'Nouveau paiement'
+    backToList: 'Retour à la liste'
+    backToPlanning: 'Retour au planning'
+    cancel: 'Annuler'
+    close: 'Fermer'
+    export: 'Exporter la liste'
+    exportEmails: 'Copier les emails'
+    import: 'Importer des données'
+    newDancer: 'Inscrire un danseur'
+    no: 'Non'
+    ok: 'Ok'
+    printWithoutVat: 'Sans TVA, sans cours'
+    printWithVat: 'Avec TVA, sans cours'
+    printWithoutVatWithClasses: 'Sans TVA'
+    printWithVatWithClasses: 'Avec TVA'
+    print: 'Imprimer'
+    callList: "Liste d'appel"
+    register: 'Inscription'
+    remove: 'Supprimer'
+    removeAddress: 'Supprimer'
+    save: 'Enregistrer'
     stats: 'Statistiques'
+    yes: 'Oui'
+
+  # civility mapping
+  civilityTitles: ['M.', 'Mme', 'Mlle']
+
+  # charts colors
+  # http://paletton.com/#uid=71T0X0k7vs+1qO542-+bBoBg3kB
+  # http://paletton.com/#uid=72h0X0knUtBemH2j-xjsGq7uKk-
+  colors: [
+    'E7E7B1', '8EB98E', '8E789A', 'E7B1B1',
+    'B1DF38', '269582', 'B42E88', 'EC833C',
+    'A4A452', '418341', '5B3A6E', 'A45252',
+    '729B06', '046857', '7D0556', 'A44606',
+    'FFFFDF', 'B9D4B9', 'B0A2B7', 'FFDFDF',
+    'C8F15E', 'C8F15E', 'C54D9E', 'FFA263'
+  ]
+
+  # errors
+  err:
+    dumpFailed: "La sauvegarde externe des données à échouée: %s"
+    exportFailed: "L'export de la liste de danseurs à échoué: %s"
+    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
+    search: 'La recherche à échouée: %s'
+
+  # date/time formats
+  formats:
+    birthSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
+    receiptSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
+    birth: 'DD/MM/YYYY' # moment format
+    receipt: 'DD/MM/YYYY' # moment format
+    callList: 'DD/MM'
+
+  # short labels
+  lbl:
+    address: 'Adresse'
+    age: 'Age'
+    allDanceClasses: 'tous les cours'
+    allSeasons: 'toutes les saisons'
+    allTeachers: 'tous les professeurs'
+    bank: 'Banque'
+    birth: 'Né(e) le'
+    cellphone: 'Portable'
+    certified: 'Cert.'
+    certifiedLong: 'Certificat médical'
+    charged: 'Réglement de'
+    choose: '---'
+    city: 'Ville'
+    classTooltip: '%s (%s) %s~%s'
+    currency: '€'
+    danceClasses: 'Cours pour'
+    day: 'Jour'
+    details: 'Détails'
+    due: 'Rgt.'
+    email: 'E-mail'
+    fieldSeparator: ' :'
+    firstname: 'Prénom'
+    Fri: 'Vendredi'
+    genericDanceClass: 'Abonnement danse'
+    lastname: 'Nom'
+    hours: 'Horaire'
+    knownBy: 'Connu par'
+    Mon: 'Lundi'
+    other: '(autre)'
+    paymentKind: 'Mode de réglement'
+    payer: 'Par'
+    phone: 'Téléphone'
+    rate: 'Tarif'
+    receipt: 'Encaissement'
+    registered: 'Intitulé du cours'
+    Sat: 'Samedi'
+    street: 'Voie'
+    Sun: 'Dimanche'
+    sum: 'Total'
+    Thu: 'Jeudi'
+    title: 'Titre'
+    Tue: 'Mardi'
+    type: 'Type'
+    value: 'Valeur'
+    vat: 'dont T.V.A.'
+    Wed: 'Mercredi'
+    zipcode: 'Code postal'
     
   # long messages with html
   msg:
@@ -46,100 +133,10 @@ module.exports =
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
-  # buttons
-  btn: 
-    addAddress: 'Editer'
-    addDancer: 'Ajouter un danseur'
-    addNewDancer: 'Nouveau'
-    addExistingDancer: 'Existant'
-    addPayment: 'Nouveau paiement'
-    backToList: 'Retour au planning'
-    backToExpandedList: 'Retour à la liste'
-    cancel: 'Annuler'
-    close: 'Fermer'
-    export: 'Exporter la liste'
-    exportEmails: 'Copier les emails'
-    import: 'Importer des danseurs'
-    newDancer: 'Inscrire un danseur'
-    no: 'Non'
-    ok: 'Ok'
-    printWithoutVat: 'Sans TVA, sans cours'
-    printWithVat: 'Avec TVA, sans cours'
-    printWithoutVatWithClasses: 'Sans TVA'
-    printWithVatWithClasses: 'Avec TVA'
-    print: 'Imprimer'
-    callList: "Liste d'appel"
-    register: 'Inscription'
-    remove: 'Supprimer'
-    removeAddress: 'Supprimer'
-    save: 'Enregistrer'
-    stats: 'Statistiques'
-    yes: 'Oui'
-
-  # short labels
-  lbl:
-    address: 'Adresse'
-    age: 'Age'
-    allTeachers: 'tous les professeurs'
-    bank: 'Banque'
-    birth: 'Né(e) le'
-    cellphone: 'Portable'
-    certified: 'Cert.'
-    certifiedLong: 'Certificat médical'
-    charged: 'Réglement de'
-    choose: '---'
-    city: 'Ville'
-    classTooltip: '%s (%s) %s~%s'
-    currency: '€'
-    danceClasses: 'Cours pour'
-    day: 'Jour'
-    details: 'Détails'
-    due: 'Rgt.'
-    email: 'E-mail'
-    fieldSeparator: ' :'
-    firstname: 'Prénom'
-    Fri: 'Vendredi'
-    genericDanceClass: 'Abonnement danse'
-    lastname: 'Nom'
-    loadingData: 'chargement des données...'
-    hours: 'Horaire'
-    knownBy: 'Connu par'
-    Mon: 'Lundi'
-    other: '(autre)'
-    paymentKind: 'Mode de réglement'
-    payer: 'Par'
-    phone: 'Téléphone'
-    rate: 'Tarif'
-    receipt: 'Encaissement'
-    registered: 'Intitulé du cours'
-    Sat: 'Samedi'
-    searchPlaceholder: 'chercher par nom/prénom'
-    street: 'Voie'
-    Sun: 'Dimanche'
-    sum: 'Total'
-    Thu: 'Jeudi'
-    title: 'Titre'
-    Tue: 'Mardi'
-    type: 'Type'
-    value: 'Valeur'
-    vat: 'dont T.V.A.'
-    Wed: 'Mercredi'
-    zipcode: 'Code postal'
-
-  # errors
-  err:
-    dumpFailed: "La sauvegarde externe des données à échouée: %s"
-    exportFailed: "L'export de la liste de danseurs à échoué: %s"
-    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
-    search: 'La recherche à échouée: %s'
-
-  # date/time formats
-  formats:
-    birthSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
-    receiptSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
-    birth: 'DD/MM/YYYY' # moment format
-    receipt: 'DD/MM/YYYY' # moment format
-    callList: 'DD/MM'
+  placeholder:
+    search: 'chercher par nom/prénom'
+    selectSeason: 'saison...'
+    selectTeacher: 'professeur...'
 
   # print texts
   print:
@@ -183,9 +180,6 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     where: "Fait à"
     when: "le"
 
-  # civility mapping
-  civilityTitles: ['M.', 'Mme', 'Mlle']
-
   # payment types
   paymentTypes: 
     cash: 'Espèces'
@@ -197,6 +191,12 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     'class': "au cours"
     quarter: "au trimestre"
     year: "à l'année"
+
+  # planning directive configuration values
+  planning:
+    # must be same days used in DanceClass's start and end attributes
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    legend: 'Légende :'
 
   # different ways to learn the school existence
   knownByMeanings:
@@ -210,11 +210,31 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     searchEngine: 'moteur de recherche'
     website: 'site web'
 
-  # planning directive configuration values
-  planning:
-    # must be same days used in DanceClass's start and end attributes
-    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-    legend: 'Légende :'
+  # titles  
+  ttl:
+    address: 'Adresse'
+    application: 'DanceRM'
+    card: 'Fiche danceurs'
+    confirm: 'Confirmation'
+    contact: 'Contact'
+    danceClassesDistribution: 'Distibution des cours'
+    dancerList: 'Liste des danseurs'
+    dancer: 'Danceur'
+    duePayment: 'Impayés'
+    dump: 'Sauvegarde externe'
+    editRegistration: 'Modification de l\'inscription'
+    export: 'Exportation'
+    generalInfo: 'Information'
+    import: 'Importation'
+    knownBy: 'Connu par'
+    knownByRepartition: 'Ils ont connus par...'
+    missingCertificates: 'Certificats manquants'
+    newRegistration: 'Nouvelle inscription'
+    print: 'DanceRM : impression pour {{names}}'
+    registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
+    search: 'Recherche de danseurs'
+    searchDancer: 'Fusionner deux fiches'
+    stats: 'Statistiques (sur {{total}} danseurs)'
 
   # VAT rate
   vat: 0.196

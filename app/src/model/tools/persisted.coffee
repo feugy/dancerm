@@ -26,13 +26,17 @@ module.exports = class Persisted extends Base
   # @return a promise with collection object used to interract with persistance storage
   @_collection: ->
     new Promise (resolve, reject) =>
-      # opens store if necessary
-      unless cache[@name]?
-        cache[@name] = new Datastore
-          autoload: true
-          filename: join dbPath, @name
-      resolve cache[@name]
-
+      # reuse existing collection
+      if cache[@name]?
+        return resolve cache[@name] 
+      # creates the store
+      cache[@name] = new Datastore
+        filename: join dbPath, @name
+      # loads it
+      cache[@name].loadDatabase (err) =>
+        return reject err if err?
+        resolve cache[@name]
+      
   # **static**
   # Clear all existing models
   #

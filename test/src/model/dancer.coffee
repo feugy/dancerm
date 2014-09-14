@@ -2,7 +2,6 @@
 require('chai').use require 'chai-as-promised'
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
 Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'
 Registration = require '../../../app/script/model/registration'

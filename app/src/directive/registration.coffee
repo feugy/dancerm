@@ -66,11 +66,13 @@ class RegistrationDirective
   #
   # @return a class reflecting balance state
   getBalanceState: =>
-    if @registration.balance < @registration.charged 
+    due = @registration.due()
+    if  due > 0
       'balance-low' 
-    else if @registration.charged isnt 0 
+    else if due is 0 
       'balance-right'
-    else 
+    else
+      '' 
 
   # Filter dancers when displaying registered dance classes
   #

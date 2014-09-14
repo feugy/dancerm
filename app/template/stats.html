@@ -1,13 +1,52 @@
-<h2><span>{{'ttl.stats'|i18n}}</span><a data-ui-sref="expanded-list" class="btn glyphed"><i class="glyphicon glyphicon-arrow-left"/>{{'btn.backToExpandedList'|i18n}}</a></h2>
-<article>
-  <h3>{{'ttl.knownByRepartition'|i18n}}</h3>
-  <div class="content">
-    <div data-nvd3
-      data="ctrl.knownBy"
-      options="ctrl.knownByOpt">
-    </div>
-    <div class="values">
-      <span data-ng-repeat="knownBy in ctrl.knownBy | orderBy:'-value' ">{{knownBy.label}}{{'lbl.fieldSeparator'|i18n}}{{knownBy.value}}</span>
-    </div>
+<header>
+  <a data-ui-sref="list-and-planning" class="btn glyphed"><i class="glyphicon glyphicon-arrow-left"/>{{'btn.backToPlanning'|i18n}}</a>
+</header>
+<h2><span>{{'ttl.stats'|i18n:{args:{total:ctrl.list.length} } }}</span><div data-tags data-src="ctrl.search" 
+    data-on-remove="ctrl.makeSearch()"
+    data-show-empties="['season', 'teacher']"></div>
+  <div class="btn-group" data-dropdown>
+    <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{'placeholder.selectSeason'|i18n}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a data-ng-click="ctrl.selectSeason($event)">{{'lbl.allSeasons'|i18n}}</a></li>
+      <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.selectSeason($event, season)">{{season}}</a></li>
+    </ul>
   </div>
-</article>
+  <div class="btn-group" data-dropdown>
+    <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{'placeholder.selectTeacher'|i18n}}<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+      <li><a data-ng-click="ctrl.selectTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
+      <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.selectTeacher($event, teacher)">{{teacher}}</a></li>
+    </ul>
+  </div>
+</h2>
+<span class="loader" data-ng-if="ctrl.workInProgress"><i/><i/><i/><i/><i/></span>
+<div class="dashboard">
+  <article>
+    <h3>{{'ttl.missingCertificates'|i18n}}</h3>
+    <div class="content">
+      <span class="big-value">{{ctrl.missingCertificates}}</span>
+    </div>
+  </article>
+  <article>
+    <h3>{{'ttl.knownByRepartition'|i18n}}</h3>
+    <div class="content charted">
+      <canvas tc-chartjs-doughnut height="250px"
+        data-chart-data="ctrl.knownBy" 
+        data-chart-options="ctr.knownByOpt"></canvas>
+    </div>
+  </article>
+  <article>
+    <h3>{{'ttl.danceClassesDistribution'|i18n}}</h3>
+    <div class="content charted">
+      <canvas tc-chartjs-stacked-bar height="250px"
+        data-chart-data="ctrl.danceClasses" 
+        data-chart-options="ctr.danceClassesOpt"></canvas>
+    </div>
+  </article>
+  <article>
+    <h3>{{'ttl.duePayment'|i18n}}</h3>
+    <div class="content">
+      <span class="big-value">{{ctrl.due}}</span><span class="currency">{{'lbl.currency'|i18n}}</span>
+    </div>
+  </article>
+</div>

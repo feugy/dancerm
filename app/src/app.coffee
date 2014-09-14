@@ -18,7 +18,7 @@ initializer = require '../script/model/tools/initializer'
 console.log "running with angular v#{angular.version.full}"
 
 # declare main module that configures routing
-app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'nvd3']
+app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'tc.chartjs']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
   location.html5Mode false
@@ -53,7 +53,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
     parent: home
     url: '/stats'
     views: 
-      column: StatsCtrl.declaration
+      main: StatsCtrl.declaration
 ]
 
 # application initialization

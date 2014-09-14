@@ -1,7 +1,8 @@
 {expect} = require 'chai'
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
+{remove, mkdir} = require 'fs-extra'
+{getDbPath} = require '../../../app/script/util/common'
 Registration = require '../../../app/script/model/registration'
 Payment = require '../../../app/script/model/payment'
 Card = require '../../../app/script/model/card'
@@ -11,8 +12,11 @@ DanceClass = require '../../../app/script/model/danceclass'
 
 describe 'Card model tests', ->
 
-  beforeEach -> Promise.all [Card.drop(), Dancer.drop(), DanceClass.drop(), Address.drop()]
-  
+  beforeEach (done) ->
+    remove getDbPath(), (err) ->
+      return done err if err?
+      mkdir getDbPath(), done 
+      
   it 'should new card be created with default values', ->
     # when creating a card without values
     tested = new Card()

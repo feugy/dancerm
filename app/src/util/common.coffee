@@ -18,7 +18,7 @@ module.exports =
   # @param err [Error] the error to dump
   dumpError: (err) ->
     now = new Date()
-    fs.appendFileSync join(gui.App.dataPath, 'errors.txt'), """
+    appendFileSync join(gui.App.dataPath, 'errors.txt'), """
 ------------
 Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
 #{err.stack}\n\n"""
@@ -38,14 +38,18 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
     else
       join gui.App.dataPath, 'data'
 
-
   # Return current season from date
-  # Searshon changes at August, 1st.
+  # Season changes at August, 1st.
   # @return current season string
   currentSeason: ->
-    now = moment()
-    year = if now.month() >= 7 then now.year() else now.year()-1
+    year = module.exports.currentSeasonYear()
     "#{year}/#{year+1}"
+
+  # Return current season's first year from date
+  # @return current season first year
+  currentSeasonYear: ->
+    now = moment()
+    if now.month() >= 7 then now.year() else now.year()-1
 
   # Get the attribute value of an object along a given path
   #

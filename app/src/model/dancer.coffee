@@ -28,7 +28,7 @@ module.exports = class Dancer extends Persisted
   # @option callback err [Error] an error object, or null if no problem occured
   # @option callback dancers [Array<Base>] array (that may be empty) of models matching these conditions
   @findWhere: (conditions) ->
-    return new Promise (resolve, reject) =>
+    new Promise (resolve, reject) =>
       # check each conditions
       async.eachSeries _.pairs(conditions), ([path, expected], next) =>
         steps = path.split '.'

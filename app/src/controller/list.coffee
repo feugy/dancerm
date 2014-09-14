@@ -4,12 +4,15 @@ LayoutController = require './layout'
   
 module.exports = class ListController extends LayoutController
   
-  @$inject: ['$scope', '$list', '$search'].concat LayoutController.$inject
+  @$inject: ['$list', '$search'].concat LayoutController.$inject
 
   @declaration:
     controller: ListController
     controllerAs: 'ctrl'
     templateUrl: 'list.html'
+
+  # allow to search for empty conditions (within all database)
+  allowEmpty: false
 
   # displayed dancer's list
   list: []
@@ -34,9 +37,10 @@ module.exports = class ListController extends LayoutController
   _searchPending: false
 
   # Controller constructor: bind methods and attributes to current scope
-  constructor: (scope, @list, @search, parentArgs...) ->
+  constructor: (@list, @search, parentArgs...) ->
     super parentArgs...
     @_searchPending = false
+    @allowEmpty = false
 
     # refresh search when asked
     @rootScope.$on 'search', @makeSearch
@@ -77,12 +81,12 @@ module.exports = class ListController extends LayoutController
       conditions['danceClasses.teacher'] = $in: @search.teachers
     
     # clear list content, without reaffecting it
-    return @list.splice 0, @list.length if _.isEmpty conditions
+    return @_displayResults [] if _.isEmpty(conditions) and not @allowEmpty
     @_searchPending = true
     Dancer.findWhere(conditions).then((dancers) =>
       @_searchPending = false
       # sort and update list content, without reaffecting the list
-      @list.splice.apply @list, [0, @list.length].concat _.sortBy dancers, 'lastname'
+      @_displayResults _.sortBy dancers, 'lastname'
       @rootScope.$apply()
     ).catch (err) =>
       @_searchPending = false
@@ -105,3 +109,12 @@ module.exports = class ListController extends LayoutController
       console.error err
     # a bug obviously
     global.console = window.console
+
+  # **private**
+  # Replace classe's list with new results
+  #
+  # @param results [Array<Dancer>] new list of dancers
+  _displayResults: (results) =>
+    console.log "got #{results.length} dancers"
+    # do not update list variable because of bindings, and update content
+    @list.splice.apply @list, [0, @list.length].concat results

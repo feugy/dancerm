@@ -4,7 +4,6 @@
  */
 
 @import 'css/bootstrap.css'
-@import 'css/nvd3.css'
 @import 'variable'
 @import 'mixins'
 @import 'directive'
@@ -69,9 +68,27 @@ html
   > .column.expanded
     width expandedColumnWidth
 
-  > .main.empty
+  > .main.expanded
+    padding-top (100px+pageMargin)
+    width 100%
+
+  > .empty
     width 0
     padding 0
+
+  .column > h2
+  .main > h2
+    // header text will take all available horizontal space
+    display flex
+    align-items center
+
+    > span
+      font-size (fontSize*1.6)
+      font-family headingFont
+      flex 1
+
+    .btn:not(.glyphed) > .glyphicon
+      margin 0
 
 /******************************************************************************
  * Typography
@@ -141,19 +158,6 @@ body
   .print-call-list
     text-align center
     margin-bottom 10px
-
-  h2
-    // header text will take all available horizontal space
-    display flex
-    align-items center
-
-    span
-      font-size (fontSize*1.6)
-      font-family headingFont
-      flex 1
-
-    .btn:not(.glyphed) > .glyphicon
-      margin 0
 
   .input-group
     margin 20px 0 0
@@ -457,30 +461,41 @@ body
 
 .stats-controller
   
-  > article
-    border-radius inputRadius
-    background mainBackground
-    padding 6px
-    margin 6px
-
-  chartHeight = 250px
-
-  .content
+  .dashboard
     display flex
-    flex-direction row
-    height chartHeight
-
-    [data-nvd3]
-      flex none
-      height 120%
-      margin -2% -2% 0 0
-
-  .values
-    display flex
-    flex-direction column
     flex-wrap wrap
-    align-content space-around
+    flex-direction column
+    height 100%
+    overflow hidden
+    
+    > article
+      border-radius inputRadius
+      background colBackground
+      padding 10px
+      margin 6px
 
+      .content
+        text-align center
+
+    .big-value
+      font-size 120px
+      font-family impactFont
+      color planningColors[0]
+
+    .currency
+      font-family impactFont
+      font-size 60px
+
+  .tags
+    flex 1
+    margin-right 6px
+    text-align right
+
+  .loader
+    display block
+    width 100%
+    text-align center
+    margin 5px 0
 
 /******************************************************************************
  * Popups

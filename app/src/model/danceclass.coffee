@@ -60,6 +60,14 @@ module.exports = class DanceClass extends Persisted
           return reject err if err?
           resolve _.chain(classes).pluck('season').uniq().value().sort().reverse()
 
+  # Get the list of available teachers within a given season
+  #
+  # @param season [String] the concerned season
+  # @return a promise with the ordered list (that may be empty) of teachers for this season
+  @getTeachers: (season) ->
+    @getPlanning(season).then (planning) =>
+      _.chain(planning).pluck('teacher').uniq().compact().value().sort()
+
   # Get the list of classes of a given season, named planning
   # 
   # @param season [String] the searched season

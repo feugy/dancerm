@@ -75,3 +75,128 @@ module.exports = (app) =>
         valid = not isNaN number
         controller.$setValidity 'notANumber', valid
         if valid then number else undefined
+
+  # add directive for stacked bar charts
+  app.directive 'tcChartjsStackedBar', () ->
+    return {
+      restrict: 'A'
+      scope:
+        data: '=chartData'
+        options: '=chartOptions'
+        id: '@'
+        type: '@chartType'
+      link: ($scope, $elem) ->
+        ctx = $elem[0].getContext '2d'
+        chart = new window.Chart(ctx)
+        graph = null
+        $scope.$watch 'data', ->
+          console.log $scope.data, $scope.options
+          return unless $scope.data?.labels?
+          graph.destroy() if graph?
+          graph = chart.EnhancedStackedBar $scope.data, $scope.options
+        , true
+
+    }
+
+  # Extends StackedBar to provide our own tooltips and scale
+  window.Chart.types.StackedBar.extend 
+      name: "EnhancedStackedBar"
+
+      buildScale: (labels) ->
+        empties = ('' for i in [0...labels.length])
+        # do not display labels
+        window.Chart.types.StackedBar.prototype.buildScale.call @, empties
+
+      showTooltip: (chartElements, forceRedraw) ->
+        # Only redraw the chart if we've actually changed what we're hovering on.
+        @activeElements = [] unless @activeElements?
+
+
+        changed = true
+        if chartElements.length is @activeElements.length
+          changed = false
+          for element, i in chartElements when element isnt @activeElements[i]
+            changed = true
+        
+        return if not changed and not forceRedraw
+        @activeElements = chartElements
+        @draw()
+
+        if chartElements.length > 0
+          if @datasets?.length > 1
+            dataArray = []
+            dataIndex = -1
+            for dataset, i in @datasets
+              dataArray = dataset.points or dataset.bars or dataset.segments
+              dataIndex = dataArray.indexOf chartElements[0]
+              break unless dataIndex is -1
+            
+            tooltipLabels = []
+            tooltipColors = []
+            elements = []
+            xPositions = []
+            yPositions = []
+            for dataset in @datasets
+              dataCollection = dataset.points or dataset.bars or dataset.segments
+              # Customization: ignore 0 values
+              elements.push dataCollection[dataIndex] if dataCollection[dataIndex]?.value
+
+            for element in elements
+              xPositions.push element.x
+              yPositions.push element.y
+
+              # Customization: use datasetLabel if possible
+              tooltipLabels.push "#{element.datasetLabel} (#{element.value})" 
+              tooltipColors.push
+                fill: element._saved.fillColor or element.fillColor
+                stroke: element._saved.strokeColor or element.strokeColor
+
+            yMin = _.min yPositions
+            yMax = _.max yPositions
+
+            xMin = _.min xPositions
+            xMax = _.max xPositions
+
+            new window.Chart.MultiTooltip(
+              x: if xMin > @chart.width/2 then xMin else xMax
+              y: (yMin + yMax)/2
+              xPadding: @options.tooltipXPadding
+              yPadding: @options.tooltipYPadding
+              xOffset: @options.tooltipXOffset
+              fillColor: @options.tooltipFillColor
+              textColor: @options.tooltipFontColor
+              fontFamily: @options.tooltipFontFamily
+              fontStyle: @options.tooltipFontStyle
+              fontSize: @options.tooltipFontSize
+              titleTextColor: @options.tooltipTitleFontColor
+              titleFontFamily: @options.tooltipTitleFontFamily
+              titleFontStyle: @options.tooltipTitleFontStyle
+              titleFontSize: @options.tooltipTitleFontSize
+              cornerRadius: @options.tooltipCornerRadius
+              labels: tooltipLabels,
+              legendColors: tooltipColors,
+              legendColorBackground : @options.multiTooltipKeyBackground
+              title: chartElements[0].label
+              chart: @chart
+              ctx: @chart.ctx
+            ).draw()
+
+          else
+            for element in chartElements
+              tooltipPosition = window.Element.tooltipPosition()
+              new window.Chart.Tooltip(
+                x: Math.round tooltipPosition.x
+                y: Math.round tooltipPosition.y
+                xPadding: @options.tooltipXPadding
+                yPadding: @options.tooltipYPadding
+                fillColor: @options.tooltipFillColor
+                textColor: @options.tooltipFontColor
+                fontFamily: @options.tooltipFontFamily
+                fontStyle: @options.tooltipFontStyle
+                fontSize: @options.tooltipFontSize
+                caretHeight: @options.tooltipCaretSize
+                cornerRadius: @options.tooltipCornerRadius
+                text: window.Chart.helpers.template @options.tooltipTemplate, Element
+                chart: @chart
+              ).draw()
+        @

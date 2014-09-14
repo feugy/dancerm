@@ -1,7 +1,8 @@
 <div>
   <header>
-    <a href="" class="btn btn-primary" data-ng-click="ctrl.createDancer()">{{'btn.newDancer'|i18n}}</a>
-    <a href="" class="btn" data-ng-click="ctrl.importDancers()">{{'btn.import'|i18n}}</a>
+    <a href="" class="btn btn-primary glyphed" data-ng-click="ctrl.createDancer()"><i class="glyphicon glyphicon-user"/>{{'btn.newDancer'|i18n}}</a>
+    <a data-ui-sref="stats" class="btn glyphed"><i class="glyphicon glyphicon-stats"/>{{'btn.stats'|i18n}}</a>
+    <a href="" class="btn glyphed" data-ng-click="ctrl.importDancers()"><i class="glyphicon glyphicon glyphicon-import"/>{{'btn.import'|i18n}}</a>
   </header>
   <div class="commands">
     <div class="btn-group" data-dropdown>

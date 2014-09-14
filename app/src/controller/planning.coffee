@@ -120,5 +120,6 @@ module.exports = class PlanningController extends LayoutController
     @currentSeason = season
     DanceClass.getPlanning(season).then (planning) =>
       @planning = planning
-      @teachers = _.chain(planning).pluck('teacher').uniq().compact().value().sort()
-      @rootScope.$apply()
+      DanceClass.getTeachers(season).then (teachers) =>
+        @teachers = teachers
+        @rootScope.$apply()

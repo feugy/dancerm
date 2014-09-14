@@ -1,7 +1,6 @@
 {expect} = require 'chai'
 _ = require 'underscore'
 moment = require 'moment'
-{Promise} = require 'es6-promise'
 DanceClass = require '../../../app/script/model/danceclass'
 
 describe 'DanceClass model tests', ->

@@ -1,16 +1,17 @@
 _ = require 'underscore'
 moment = require 'moment'
 {each} = require 'async'
+{readFile, stat} = require 'fs'
+path = require 'path'
+xlsx = require 'xlsx.js'
+mime = require 'mime'
 Export = require './export'
 Dancer = require '../model/dancer'
 DanceClass = require '../model/danceclass'
 Address = require '../model/address'
 Card = require '../model/card'
 Registration = require '../model/registration'
-fs = require 'fs-extra'
-path = require 'path'
-xlsx = require 'xlsx.js'
-mime = require 'mime'
+{generateId} = require '../util/common'
 
 # mandatory columns to proceed with extraction
 mandatory = ['title', 'lastname']
@@ -81,67 +82,80 @@ module.exports = class Import
       filePath = path.resolve path.normalize filePath
       extension = mime.lookup filePath
 
-      # Xlsx content
-      if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        return reject new Error "to be refined"
-        fs.readFile filePath, (err, data) =>
-          return reject err if err?
-          try 
-            # jszip only accept base64 url encoded content
-            content = xlsx data.toString 'base64'
+      # check file size
+      console.log "tries to open #{filePath}..."
+      stat filePath, (err, stats) =>
+        return reject err if err?
+        return reject new Error 'file is empty' if stats.size is 0
 
-            # read at least one worksheet
-            return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
-            
-            dancers = []
-            report =
-              readTime: content.processTime
-              modifiedBy: content.lastModifiedBy 
-              modifiedOn: moment content.modified
-              worksheets: []
-            start = Date.now()
-            # read all worksheets
-            for worksheet in content.worksheets
-              @_extractWorksheet dancers, worksheet, report
+        # Xlsx content
+        if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          console.log "try to extract from xlsx..."
+          readFile filePath, (err, data) =>
+            return reject err if err?
+            try 
+              # jszip only accept base64 url encoded content
+              content = xlsx data.toString 'base64'
 
-            # and returns results
-            report.extractTime = Date.now()-start-report.readTime
-            resolve models: dancers, report: report
-          catch exc
-            return reject exc
+              # read at least one worksheet
+              return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
+              
+              # extracted models
+              models = 
+                Address: []
+                Card: []
+                Dancer: []
+              # extractionreport
+              report =
+                readTime: content.processTime
+                modifiedBy: content.lastModifiedBy 
+                modifiedOn: moment content.modified
+                worksheets: []
+              start = Date.now()
+              # read all worksheets
+              for worksheet in content.worksheets
+                @_extractWorksheet models, worksheet, report
 
-      # Json content
-      else if extension is 'application/json'
-        return reject new Error "to be refined"
-        start =  Date.now()
-        fs.readFile filePath, 'utf8', (err, data) =>
-          return reject err if err?
-          try 
-            report =
-              readTime: Date.now()-start
-            # parse content
-            content = JSON.parse data
-            return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
-            dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
-            # and returns results
-            report.extractTime = Date.now()-start-report.readTime
-            resolve models: dancers, report: report
-          catch exc
-            return reject exc
+              # and returns results
+              report.extractTime = Date.now()-start-report.readTime
+              resolve models: models.Address.concat(models.Card).concat(models.Dancer), report: report
+            catch exc
+              return reject exc
 
-      else 
-        # try to read dump v3
-        start = Date.now()
-        fs.readFile filePath, 'utf8', (err, data) =>
-          return reject err if err?
-          report = 
-            readTime: Date.now()-start,
-          if -1 is data.indexOf Export.separator
-            return reject new Error "unsupported format #{extension}"
-          @_dumpV3(data, report).then((models) =>
-            report.extractTime = Date.now()-start-report.readTime
-            resolve models: models, report: report
-          ).catch (err) => reject err
+        # Json content
+        else if extension is 'application/json'
+          console.log "try to extract from a v2 dump..."
+          return reject new Error "to be refined"
+          start =  Date.now()
+          readFile filePath, 'utf8', (err, data) =>
+            return reject err if err?
+            try 
+              report =
+                readTime: Date.now()-start
+              # parse content
+              content = JSON.parse data
+              return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
+              dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
+              # and returns results
+              report.extractTime = Date.now()-start-report.readTime
+              resolve models: dancers, report: report
+            catch exc
+              return reject exc
+
+        else 
+          console.log "try to extract from a v3 dump..."
+          # try to read dump v3
+          start = Date.now()
+          readFile filePath, 'utf8', (err, data) =>
+            return reject err if err?
+            report = 
+              readTime: Date.now()-start,
+            if -1 is data.indexOf Export.separator
+              return reject new Error "unsupported format #{extension}"
+            @_dumpV3(data, report).then((models) =>
+              report.extractTime = Date.now()-start-report.readTime
+              resolve models: models, report: report
+            ).catch (err) => reject err
 
   # Extract from version 3 dump
   #
@@ -149,6 +163,7 @@ module.exports = class Import
   # @param report [Object] extraction report, that will be filled with encountered errors
   # @return promise with array of object as resolve parameter. Contains the list (that may be empty) of extracted models, that may be dance classes, dancers, card or addresses.
   _dumpV3: (data, report) =>
+    start = Date.now()
     report.errors = []
     report.byClass = {}
     models = []
@@ -179,10 +194,10 @@ module.exports = class Import
   # Extract dancers from a given worksheet data matrix
   # First find column names, then creates dancers
   #
-  # @param dancers [Array<Dancer>] array in which dancers are added
+  # @param models [Object] Per class storage. Contains for each class (name as key) an array of added models
   # @param worksheet [Object] worksheet content with the `data` matrix analyzed
   # @param report [Object] extraction report: add inside the worksheet array a report
-  _extractWorksheet: (dancers, worksheet, report) =>
+  _extractWorksheet: (models, worksheet, report) =>
     result =
       extracted: 0
       details: null
@@ -206,7 +221,6 @@ module.exports = class Import
       knownBy: -1
       id: -1
       created: -1
-      # registrations
 
     # do not handle empty worksheets
     return result.details = 'Empty worksheet' unless worksheet.data?.length > 0
@@ -237,10 +251,7 @@ module.exports = class Import
       titles = [titles] unless _.isArray titles
       # process this lines as many times as titles found.
       for title, index in titles
-        dancer = @_processLine title, index, line, columns, dancers, result 
-        if dancer?
-          dancers.push dancer
-          result.extracted++
+        result.extracted += @_processLine title, index, line, columns, models 
         
   # **private**
   # Convert a given line into a dancer. 
@@ -250,24 +261,50 @@ module.exports = class Import
   # @param index [Integer] extracted values index, (firstname, lastname, phone, email), when values are multiple
   # @param line [Array] orignal line data
   # @param columns [Object] hashmap of dancer's attribute and their corresponding column
-  # @return the created dancer (object containing `dancer` and `lastRegistration` attributes) or null
-  _processLine: (title, index, line, columns, dancers, result) =>
+  # @param models [Object] Per class storage. Contains for each class (name as key) an array of added models
+  # @return how many dancers have been extracted from this lie
+  _processLine: (title, index, line, columns, models) =>
     raw = title: title
     # extract and convert each values
     for attr, col of columns when attr isnt 'title'
       raw[attr] = @_convertValue attr, line[col]?.value, index
-      #console.log "#{attr} convert '#{line[col]?.value}' -> '#{raw[attr]}'", line[col]
+      # console.log "#{attr} convert '#{line[col]?.value}' -> '#{raw[attr]}'", line[col]
 
     # check that we have all mandatory columns
-    return null unless _.every(mandatory, (attr) -> raw[attr]?)
-    # expand address
-    if 'street' of raw or 'city' of raw or 'zipcode' of raw
-      raw.address = street: raw.street, city: raw.city, zipcode: raw.zipcode
-      delete raw.city
-      delete raw.street
-      delete raw.zipcode
-    # and return new dancer
-    dancer: new Dancer(raw), lastRegistration: raw.lastRegistration or null
+    return 0 unless _.every(mandatory, (attr) -> raw[attr]?)
+    # created an address
+    addressFields = ['street', 'city', 'zipcode', 'phone']
+    for field in addressFields when field of raw
+      if index is 0
+        # on first dancer, creates new address
+        address = new Address id: generateId(), street: raw.street, city: raw.city, zipcode: raw.zipcode, phone: raw.phone
+        models.Address.push address
+        raw.addressId = address.id
+      else
+        # reuse same line address id
+        raw.addressId = models.Address[-1..].pop().id
+      delete raw[field] for field of addressFields
+      break
+
+    if index is 0
+      # creates a card for first dancer
+      card = new Card id: generateId(), knownBy: raw.knownBy
+      models.Card.push card
+      raw.cardId = card.id
+
+      # get last registration
+      if raw.lastRegistration
+        card.registrations.push new Registration season: "#{raw.lastRegistration}/#{raw.lastRegistration+1}"
+    else
+      # reuse same line card id
+      raw.cardId = models.Card[-1..].pop().id
+    delete raw.knownBy
+
+    # and at last builds dancer
+    raw.id = generateId()
+    dancer = new Dancer raw
+    models.Dancer.push dancer
+    1
 
   # **private**
   # Convert incoming column name into a supported dancer attribute

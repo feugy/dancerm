@@ -42,8 +42,10 @@ module.exports = class LayoutController
   # Link to Angular's state provider
   state: null
 
-  # indicates whether a main view is visible or not
-  hasMain: true
+  # indicates which parts are visible
+  visible:
+    main: true
+    column: true
 
   # i18n values, for rendering
   i18n: i18n
@@ -60,9 +62,10 @@ module.exports = class LayoutController
   # @param filter [Function] Angular's filter factory
   constructor: (@rootScope, @import, @dialog, @state, @filter) -> 
     # updates main existance when state is loaded
-    @rootScope.$on '$stateChangeSuccess', checkMain = =>
-      @hasMain = @state?.current?.views?.main?
-    @hasMain = checkMain()
+    @rootScope.$on '$stateChangeSuccess', checkVisible = =>
+      @visible.main = @state?.current?.views?.main?
+      @visible.column = @state?.current?.views?.column?
+    checkVisible()
     # Ask immediately dump entry if missing
     @_loadDumpEntry()
 
@@ -76,6 +79,17 @@ module.exports = class LayoutController
     return '' unless name?
     _.dasherize name[0].toLowerCase() + name[1..]
 
+  # Indicates which part is empty and which is expanded by consulting all part visibility
+  #
+  # @param kind [String] name of the tested part
+  # @return 'empty' if part isn't visible, 'expanded' if it's the only visible, an empty string otherwise
+  getVisibility: (kind) =>
+    result = 'empty'
+    for part, visible of @visible
+      result = '' if part is kind and visible and result is 'empty'
+      result = 'expanded' if part isnt kind and @visible[kind] and not visible
+    result
+
   # Read a given xlsx file to import dancers.
   # Existing dancers (same firstname/lastname) are not modified
   importDancers: =>
@@ -85,16 +99,17 @@ module.exports = class LayoutController
       dialog.remove()
       # dialog cancellation
       return unless filePath
-      @rootScope.$apply => 
-        dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
-      
+      dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
+    
       msg = null
-      displayEnd = => 
-        @rootScope.$apply =>
-          dialog.close()
-          @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
-            # refresh all
-            @rootScope.$broadcast 'model-imported'
+      displayEnd = =>
+        _.delay => 
+          @rootScope.$apply =>
+            dialog.dismiss()
+            @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
+              # refresh all
+              @rootScope.$broadcast 'model-imported'
+        , 100
 
       @import.fromFile(filePath).then(({models, report}) =>
         throw new Error "No dancers found" if models?.length is 0
@@ -107,6 +122,7 @@ module.exports = class LayoutController
       ).then( =>
         displayEnd()
       ).catch (err) => 
+        console.error "got error", err
         msg = _.sprintf i18n.err.importFailed, err.message
         displayEnd()
 
