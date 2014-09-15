@@ -43,7 +43,6 @@ section
 
   setOutPath $INSTDIR\node_modules
   file /r ..\node_modules\async
-  file /r ..\node_modules\es6-promise
   file /r ..\node_modules\fs-extra
   file /r ..\node_modules\mime
   file /r ..\node_modules\moment
