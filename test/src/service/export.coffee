@@ -41,7 +41,7 @@ describe 'Export service tests', ->
 
   cards = [
     new Card knownBy: ['associationsBiennal'], registrations: [registrations[0]]
-    new Card knownBy: ['elders', 'web'], registrations: [registrations[1]]
+    new Card knownBy: ['elders', 'Une copine'], registrations: [registrations[1]]
     new Card knownBy: [], registrations: registrations[1..2]
   ]
 
@@ -62,7 +62,7 @@ describe 'Export service tests', ->
                 dancer.card = cards[i]
                 dancer.address = addresses[i]
                 dancer.save()
-              )).then () ->
+              )).then ->
                 done()
         ).catch done
 
@@ -92,21 +92,28 @@ describe 'Export service tests', ->
           done()
     ).catch done
 
-  it.skip 'should export dancers list into xlsx file', (done) ->
-
+  it 'should export dancers list into xlsx file', (done) ->
     # when exporting the list into a file
     out = path.join(__dirname, '..', '..', 'fixture', 'out.export_1.xlsx')
-    tested.toFile out, dancers, (err) ->
-      return done "Failed to export to file #{err}" if err?
-
+    tested.toFile(out, dancers).then( ->
       # then file can be imported
-      importer.fromFile out, (err, models) ->
-        return done "Failed to import from generated file: #{err}" if err?
-        expect(models).to.have.lengthOf dancers.length
+      importer.fromFile(out).then(({models}) ->
+        expect((model for model in models when model instanceof Dancer)).to.have.lengthOf dancers.length
         # then all dancers were properly extracted
-        each dancers, (expected, next) ->
-          found = _.find(models, (model) -> model.dancer.firstname is expected.firstname)?.dancer
-          expect(found).to.exist
-          expect(_.omit found.toJSON(), 'created', 'id').to.be.deep.equal _.omit expected.toJSON(), 'created', 'id'
-          next()
-        , done
+        for expectedDancer in dancers
+          dancer = _.findWhere models, firstname: expectedDancer.firstname
+          expect(dancer, "#{expectedDancer.firstname} not found").to.exist
+          expect(JSON.stringify _.omit dancer.toJSON(), 'created', 'id', 'addressId', 'cardId', '_v').to.be.deep.equal JSON.stringify _.omit expectedDancer.toJSON(), 'created', 'id', 'addressId', 'cardId', '_v'
+          # then their addresses were exported
+          address = _.findWhere models, id: dancer.addressId
+          expectedAddress = _.findWhere addresses, id: expectedDancer.addressId
+          expect(address, "#{expectedAddress.street} not found").to.exist
+          expect(JSON.stringify _.omit address.toJSON(), 'id', '_v').to.be.deep.equal JSON.stringify _.omit expectedAddress.toJSON(), 'id', '_v'
+          # then their cards were exported
+          card = _.findWhere models, id: dancer.cardId
+          expectedCard = _.findWhere cards, id: expectedDancer.cardId
+          expect(card, "#{expectedCard.street} not found").to.exist
+          expect(JSON.stringify _.omit card.toJSON(), 'id', '_v', 'registrations').to.be.deep.equal JSON.stringify _.omit expectedCard.toJSON(), 'id', '_v', 'registrations'
+        done()
+      ).catch (err) -> done "Failed to import from generated file: #{err}"
+    ).catch (err) -> done "Failed to export to file #{err}"

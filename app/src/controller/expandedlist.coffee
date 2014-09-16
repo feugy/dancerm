@@ -72,7 +72,7 @@ module.exports = class ExpandedListController extends ListController
     else
       @sortAsc = true
       @sort = attr
-      # specific attributes
+      # TODO specific attributes
       ###if attr is 'due'
         attr = (model) -> model?.registrations?[0]?.due() 
       else if attr is 'address'
@@ -95,15 +95,19 @@ module.exports = class ExpandedListController extends ListController
         waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
       # Perform export
-      @exporter.toFile filePath, @list, (err) =>
+      @exporter.toFile(filePath, @list).then( =>
         waitingDialog.close()
-        if err?
-          console.error "Export failed: #{err}"
-          # displays an error dialog
-          @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
-          @rootScope.$apply()
+        @rootScope.$apply()
+      ).catch (err) =>
+        waitingDialog.close()
+        console.error "Export failed: #{err}"
+        # displays an error dialog
+        @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
+        @rootScope.$apply()
 
     dialog.trigger 'click'
+    # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
+    null
 
   # Export email as string
   exportEmails: =>

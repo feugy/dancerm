@@ -1,7 +1,7 @@
 _ = require 'underscore'
 moment = require 'moment'
 {each, eachSeries} = require 'async'
-{writeFileSync, readFileSync, appendFileSync, ensureFileSync} = require 'fs-extra'
+{writeFile, writeFileSync, readFileSync, appendFileSync, ensureFileSync} = require 'fs-extra'
 {join, resolve, normalize} = require 'path'
 xlsx = require 'xlsx.js'
 Dancer = require '../model/dancer'
@@ -66,77 +66,87 @@ module.exports = class Export
   # @param filePath [String] absolute or relative path to the written file
   # @param dancers [Array<Dancer>] the list of exported dancers: 
   # @param callback [Function] extraction end callback, invoked with arguments:
-  # @option callback err [Error] an Error object, or null if no problem occurred
-  toFile: (filePath, dancers, callback) =>
-    return callback new Error "to be refined"
-    return callback new Error "no file selected" unless filePath?
-    filePath = path.resolve path.normalize filePath
+  # @return a promise without any resolve arguments
+  toFile: (filePath, dancers) =>
+    new Promise (accept, reject) =>
+      return reject new Error "no file selected" unless filePath?
+      filePath = resolve normalize filePath
 
-    data = []
-    content =
-      creator: i18n.ttl.application,
-      lastModifiedBy: i18n.ttl.application,
-      worksheets : [
-        data: data
-        name: i18n.ttl.application
-      ]
+      data = []
+      content =
+        creator: i18n.ttl.application,
+        lastModifiedBy: i18n.ttl.application,
+        worksheets : [
+          data: data
+          name: i18n.ttl.application
+        ]
 
-    columns = 
-      title: i18n.lbl.title
-      firstname: i18n.lbl.firstname
-      lastname: i18n.lbl.lastname
-      'address.street': i18n.lbl.address
-      'address.city': i18n.lbl.city
-      'address.zipcode': i18n.lbl.zipcode
-      phone: i18n.lbl.phone
-      cellphone: i18n.lbl.cellphone
-      birth: i18n.lbl.birth
-      email: i18n.lbl.email
-      knownBy: i18n.lbl.knownBy
+      columns = 
+        title: i18n.lbl.title
+        firstname: i18n.lbl.firstname
+        lastname: i18n.lbl.lastname
+        'address.street': i18n.lbl.address
+        'address.city': i18n.lbl.city
+        'address.zipcode': i18n.lbl.zipcode
+        'address.phone': i18n.lbl.phone
+        cellphone: i18n.lbl.cellphone
+        birth: i18n.lbl.birth
+        email: i18n.lbl.email
+        'card.knownBy': i18n.lbl.knownBy
 
-    borderV = 'e7d8b1'
-    borderH = '403b3f'
+      borderV = 'e7d8b1'
+      borderH = '403b3f'
 
-    # header line
-    data.push (
-      first = true
-      for attr, column of columns
-        cell = 
-          value: column
-          bold: true
-          hAlign: 'center'
-        if first
-          first = false
-        else
-          cell.borders = left: borderV
-        cell
-    )
-
-    # dancers
-    for dancer in dancers
+      # header line
       data.push (
         first = true
-        for attr of columns
+        for attr, column of columns
           cell = 
-            value: getAttr dancer, attr
-            autoWidth: true
-            hAlign: 'left'
-            borders:
-              top: borderH
-          if cell.value?
-            switch attr
-              # format dates
-              when 'birth' then cell.value = cell.value.format 'DD/MM/YYYY'
-              # format phones
-              when 'phone', 'cellphone' then cell.value = _.chop(cell.value, 2).join ' '
-              # format known by
-              when 'knownBy' then cell.value = (i18n.knownByMeanings[key] or key for key in cell.value).join ','
+            value: column
+            bold: true
+            hAlign: 'center'
           if first
             first = false
           else
-            cell.borders.left = borderV
+            cell.borders = left: borderV
           cell
       )
 
-    # write file in base64
-    fs.writeFile filePath, xlsx(content).base64, 'base64', callback
+      # dancers
+      Promise.all((dancer.card for dancer in dancers)).then (cards) =>
+        Promise.all((dancer.address for dancer in dancers)).then (addresses) =>
+          for dancer, i in dancers
+            data.push (
+              first = true
+              for attr of columns
+                if 'address.' is attr[...8]
+                  value = addresses[i][attr[8..]]
+                else if 'card.' is attr[...5]
+                  value = cards[i][attr[5..]]
+                else
+                  value = dancer[attr]
+
+                cell = 
+                  value: value
+                  autoWidth: true
+                  hAlign: 'left'
+                  borders:
+                    top: borderH
+                if cell.value?
+                  switch attr
+                    # format dates
+                    when 'birth' then cell.value = cell.value.format 'DD/MM/YYYY'
+                    # format phones
+                    when 'address.phone', 'cellphone' then cell.value = _.chop(cell.value, 2).join ' '
+                    # format known by
+                    when 'card.knownBy' then cell.value = (i18n.knownByMeanings[key] or key for key in cell.value).join ','
+                if first
+                  first = false
+                else
+                  cell.borders.left = borderV
+                cell
+            )
+          # write file in base64
+          writeFile filePath, xlsx(content).base64, 'base64', (err) =>
+            return reject err if err?
+            accept()

@@ -95,7 +95,6 @@ Paid: 110h 10€/h
 !!! - model's availability
 - search by city
 - fix v2 import
-- fix xlsx export
 
 ## TODOs 
 
@@ -152,3 +151,4 @@ ok - stats on known-by dancers
 11/09 - 2
 13/09 - 3
 14/09 - 6
+16/09 - 1
