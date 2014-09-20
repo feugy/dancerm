@@ -115,12 +115,11 @@ ok - on payement addition, automatically scroll to bottom, and put focus to firs
 ok - add age column (from current date) into expanded list
 ok - add another "known-by" choice: "old dancers"
 ok - stats on known-by dancers 
- 8 - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
+ok - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
 
 ## Functionnal requirements
 
 - Synchronize data from multiple PCs
-- Print stamps for mailing
 
 ## Hours
 
@@ -152,3 +151,4 @@ ok - stats on known-by dancers
 13/09 - 3
 14/09 - 6
 16/09 - 1
+20/09 - 2

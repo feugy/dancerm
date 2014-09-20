@@ -109,6 +109,20 @@ module.exports = class ExpandedListController extends ListController
     # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
     null
 
+  # Displays addresses printing window
+  printAddresses: =>
+    return unless @list?.length > 0
+    try
+      preview = window.open 'addressesprint.html'
+      preview.list = @list
+    catch err
+      console.error err
+    # obviously, a bug !
+    global.console = window.console
+    # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
+    null
+
+
   # Export email as string
   exportEmails: =>
     return unless @list?.length > 0

@@ -186,3 +186,76 @@ body.call-list
 
     tr > td:not(:first-child)
       text-align center
+
+body.addresses-list
+  padding 0
+  margin 0
+
+  .configure
+    display flex
+    justify-content center
+    align-items center
+    background mainBackground
+    color textColor
+    padding 5px
+    margin-bottom 5px
+
+    fieldset
+      padding 0
+      border 0
+      display flex
+      flex-direction column
+      text-align right
+      margin 0 10px
+
+    input
+      flex 0 0
+      width 70px
+
+    .btn
+      position static
+      vertical-align baseline
+  
+  .stamps-container
+    display flex
+    flex-wrap wrap
+
+  .stamp
+    border 1px solid grey
+    display inline-flex
+    flex-direction column
+    justify-content flex-end
+    align-items flex-end
+    position relative
+    cursor pointer
+
+    input[type="checkbox"]
+      position absolute
+      top 5px
+      left 5px
+      cursor pointer
+
+    &.unselected
+      background grey
+      opacity 0.5
+
+    .street
+      margin 2mm 0
+
+    .lastname, .city
+      text-transform uppercase
+      //font-variant small-caps
+
+    *
+      font-size 13px
+
+  &.printing
+    // hide unselected card, configuration and checkboxes during printing
+    .unselected
+    .configure
+    input[type=checkbox]
+      display none
+
+    // also hide border
+    /*.stamp
+      border-color transparent*/

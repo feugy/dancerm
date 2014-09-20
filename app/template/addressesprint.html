@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../style/print.css"/>
+  </head>
+  <body data-ng-controller="Print as ctrl" class="addresses-list">
+    <form class="configure">
+      <fieldset>
+        <span>
+          <label>{{'lbl.stampWidth'|i18n:{sep:true} }}</label>
+          <input type="number" min="0" step="0.1" data-ng-model="ctrl.stampDim.w"/>
+        </span>
+        <span>
+          <label>{{'lbl.stampHeight'|i18n:{sep:true} }}</label>
+          <input type="number" min="0" step="0.1" data-ng-model="ctrl.stampDim.h"/>
+        </span>
+      </fieldset>
+      <fieldset>
+        <span>
+          <label>{{'lbl.verticalMargin'|i18n:{sep:true} }}</label>
+          <input type="number" min="0" step="0.1" data-ng-model="ctrl.stampDim.vm"/>
+        </span>
+        <span>
+          <label>{{'lbl.horizontalMargin'|i18n:{sep:true} }}</label>
+          <input type="number" min="0" step="0.1" data-ng-model="ctrl.stampDim.hm"/>
+        </span>
+      </fieldset>
+      <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
+    </form>
+    <div class="stamps-container">
+      <article class="stamp {{stamp.selected ? '' : 'unselected'}}" 
+        data-ng-repeat="stamp in ctrl.stamps" 
+        data-ng-click="stamp.selected = !stamp.selected"
+        style="
+          width:{{ctrl.stampDim.w-ctrl.stampDim.hp*2}}mm;
+          height:{{ctrl.stampDim.h-ctrl.stampDim.vp*2}}mm;
+          padding:{{ctrl.stampDim.vp}}mm {{ctrl.stampDim.hp}}mm;
+          margin:{{ctrl.stampDim.vm}}mm {{ctrl.stampDim.hm}}mm
+        ">
+        <input class="uncheck" type="checkbox" data-ng-model="stamp.selected" data-ng-click="ctrl.stopEvent($event)"/>
+        <div class="people" data-ng-repeat="dancer in stamp.dancers"><span class="title">{{dancer.title}}</span>&nbsp;<span class="firstname">{{dancer.firstname}}</span>&nbsp;<span class="lastname">{{dancer.lastname}}</span></div>
+        <div class="street">{{stamp.street}}</div>
+        <div><span class="zipcode">{{stamp.zipcode}}</span>&nbsp;<span class="city">{{stamp.city}}</span></div>
+      </article>
+    </div>
+    <script type="application/javascript" src="../vendor/jquery.js"></script>
+    <script type="application/javascript" src="../vendor/angular.js"></script>
+    <script type="application/javascript" src="../script/addressesprint.js"></script>
+  </body>
+</html>
