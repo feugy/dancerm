@@ -135,6 +135,7 @@ module.exports =
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}}€ du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
+    resolveConflict: "Un conflit à été détécté pour {{existing.firstname}} {{existing.lastname}}. Choissisez les valeurs que vous souhaitez conserver."
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
@@ -237,6 +238,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
     registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
+    resolveConflict: "Résolution de conflit {{rank}}/{{conflicts.length}}"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
     stats: 'Statistiques (sur {{total}} danseurs)'

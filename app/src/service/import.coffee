@@ -62,7 +62,8 @@ module.exports = class Import
             report.byClass[className]++
             imported.save()
           else 
-            if existing?._v is imported?._v
+            if existing?._v > imported?._v
+              console.log existing?._v, imported?._v
               # existing and imported have same version: conflict detected
               report.conflicts.push existing: existing, imported: imported
             # else

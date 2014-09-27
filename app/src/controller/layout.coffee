@@ -1,6 +1,7 @@
 _ = require 'underscore'
 i18n = require  '../labels/common'
 Dancer = require  '../model/dancer'
+ConflictsController = require './conflicts'
 
 # stores current list and search criteria globaly to avoid re-searching between two states
 list = []
@@ -118,7 +119,11 @@ module.exports = class LayoutController
         # get all existing dancers
         @import.merge(models).then (report) =>
           console.info "merge report:", report
-          msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
+          if report.conflicts.length is 0
+            msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
+          else
+            # resolve conflicts one by one
+            @_resolveConflicts report.conflicts
       ).then( =>
         displayEnd()
       ).catch (err) => 
@@ -139,6 +144,17 @@ module.exports = class LayoutController
     dumpPath = localStorage.getItem 'dumpPath'
     @_chooseDumpLocation callback unless dumpPath
     null
+
+  # **private**
+  # Resolve one conflict
+  #
+  # @param conflicts [Object] list of conflicts, with `existing` and `imported` properties
+  # @return a promise with no resolve arguments
+  _resolveConflicts: (conflicts) =>
+    @dialog.modal(_.extend {
+        resolve: conflicts: => conflicts
+      }, ConflictsController.declaration
+    ).result
 
   # **private**
   # Ask user to choose a dump location, and immediately dump data inside.
