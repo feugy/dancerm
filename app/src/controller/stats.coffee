@@ -160,7 +160,7 @@ module.exports = class StatsController extends ListController
               dueCards.push card.id 
 
           # cast down dance classes
-          for {kind, level} in danceClasses[i]
+          for {kind, level, season} in danceClasses[i] when @search.seasons.length is 0 or season in @search.seasons
             classes[kind] = {} unless kind of classes
             classes[kind][level] = 0 unless level of classes[kind]
             classes[kind][level]++

@@ -5,14 +5,14 @@
     data-on-remove="ctrl.makeSearch()"
     data-show-empties="['season', 'teacher']"></div>
   <div class="btn-group" data-dropdown>
-    <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{'placeholder.selectSeason'|i18n}}<span class="caret"></span></a>
+    <a href="" class="btn dropdown-toggle">{{'placeholder.selectSeason'|i18n}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li><a data-ng-click="ctrl.selectSeason($event)">{{'lbl.allSeasons'|i18n}}</a></li>
       <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.selectSeason($event, season)">{{season}}</a></li>
     </ul>
   </div>
   <div class="btn-group" data-dropdown>
-    <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{'placeholder.selectTeacher'|i18n}}<span class="caret"></span></a>
+    <a href="" class="btn dropdown-toggle">{{'placeholder.selectTeacher'|i18n}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li><a data-ng-click="ctrl.selectTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
       <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.selectTeacher($event, teacher)">{{teacher}}</a></li>
