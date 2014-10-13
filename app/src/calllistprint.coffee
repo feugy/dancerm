@@ -53,7 +53,9 @@ $(win.window).on 'load', ->
       # Compute next 11 dates
       order = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-      start = moment().day order.indexOf @danceClass.start[0..2]
+      # get the next class's day, and remove a week for loop init
+      start = moment().day(order.indexOf @danceClass.start[0..2]).subtract 7, 'day'
+      # then add a week and print for next 12 occurences
       @dates = (start.add(7, 'day').format i18n.formats.callList for i in [0..11])
 
     # Display dance class title
