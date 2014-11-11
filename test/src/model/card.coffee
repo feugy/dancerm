@@ -1,5 +1,5 @@
 {expect} = require 'chai'
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 {remove, mkdir} = require 'fs-extra'
 {getDbPath} = require '../../../app/script/util/common'

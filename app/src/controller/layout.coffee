@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 i18n = require  '../labels/common'
 Dancer = require  '../model/dancer'
 ConflictsController = require './conflicts'
@@ -106,7 +106,8 @@ module.exports = class LayoutController
       displayEnd = =>
         _.delay => 
           @rootScope.$apply =>
-            dialog.dismiss()
+            dialog.close()
+            console.log "coucou", i18n.ttl.import
             @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
               # refresh all
               @rootScope.$broadcast 'model-imported'
@@ -115,15 +116,13 @@ module.exports = class LayoutController
       @import.fromFile(filePath).then(({models, report}) =>
         throw new Error "No dancers found" if models?.length is 0
         console.info "importation report:", report
+        msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
 
         # get all existing dancers
         @import.merge(models).then (report) =>
           console.info "merge report:", report
-          if report.conflicts.length is 0
-            msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
-          else
-            # resolve conflicts one by one
-            @_resolveConflicts report.conflicts
+          # resolve conflicts one by one
+          @_resolveConflicts report.conflicts unless report.conflicts.length is 0
       ).then( =>
         displayEnd()
       ).catch (err) => 
@@ -152,6 +151,9 @@ module.exports = class LayoutController
   # @return a promise with no resolve arguments
   _resolveConflicts: (conflicts) =>
     @dialog.modal(_.extend {
+        size: 'lg'
+        backdrop: 'static'
+        keyboard: false
         resolve: conflicts: => conflicts
       }, ConflictsController.declaration
     ).result

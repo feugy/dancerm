@@ -7,7 +7,7 @@
   <div class="row">
     <span class="col-md-1 title">
       <div class="btn-group" data-dropdown>
-        <a href="" class="btn dropdown-toggle" data-dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></a>
+        <a href="" class="btn dropdown-toggle" data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></a>
         <ul class="dropdown-menu">
           <li data-ng-repeat="choice in ctrl.i18n.civilityTitles"><a data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
         </ul>

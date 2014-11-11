@@ -102,24 +102,17 @@ ok - on file print, add address, phone (mobile or fix) and email, and medical ce
 ok - add extra civilities, address and contact into a given file, and specify which person is concerned by a registration
 ok - print course's list with name/last name, and empty checkboxes for every next course occurence from the printing date
 ok - add payment field: payer, prefilled with dancer's name
-11 - merge data from two different PCs with rules: 
+ok - merge data from two different PCs with rules: 
      * import files is a single dump file containing all data
      * new imported models are always added
      * existing models not in import are not deleted
-     * imported models which id match an existing id :
-     ** existing version is above imported version: no import
-     ** imported version is above existing version: import
-     ** same version: conflict detected
+     * imported models which id match an existing id: check all fields and resolve manually in case of differences
 ok - mandatory fields before saving (civilities, firstname, lastname, address, payment's kind, payer, bank, value), no default values, manual bypass
 ok - on payement addition, automatically scroll to bottom, and put focus to first field
 ok - add age column (from current date) into expanded list
 ok - add another "known-by" choice: "old dancers"
 ok - stats on known-by dancers 
 ok - address printing from expanded list, with previous selection, file address optimization, and duplicate removal (stamp format from Michelle)
-
-## Functionnal requirements
-
-- Synchronize data from multiple PCs
 
 ## Hours
 
@@ -152,3 +145,9 @@ ok - address printing from expanded list, with previous selection, file address 
 14/09 - 6
 16/09 - 1
 20/09 - 2
+
+# Performances enhancement track
+
+1 - replace promise by callback
+2 - use raw attributes instead of getters
+3 - change NeDB for other in memory storage  

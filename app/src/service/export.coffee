@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 {each, eachSeries} = require 'async'
 {writeFile, writeFileSync, readFileSync, appendFileSync, ensureFileSync} = require 'fs-extra'

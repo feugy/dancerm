@@ -6,13 +6,13 @@
   </header>
   <div class="commands">
     <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{ctrl.currentSeason}}<span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle">{{ctrl.currentSeason}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.showPlanning(season)">{{season}}</a></li>
       </ul>
     </div>
     <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{ctrl.search.teachers[0]}}<span data-ng-if="!ctrl.search.teachers[0]">{{'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle">{{ctrl.search.teachers[0]}}<span data-ng-if="!ctrl.search.teachers[0]">{{'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li><a data-ng-click="ctrl.searchByTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
         <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.searchByTeacher($event, teacher)">{{teacher}}</a></li>

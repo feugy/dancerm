@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 ListController = require './list' 
 i18n = require '../labels/common'

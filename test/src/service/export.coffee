@@ -1,6 +1,6 @@
 {expect} = require 'chai'
 {each} = require 'async'
-_ = require 'underscore'
+_ = require 'lodash'
 path = require 'path'
 rimraf = require 'rimraf'
 {exists, readFile, ensureDir} = require 'fs-extra'

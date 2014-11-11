@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 Persisted = require './tools/persisted'
 Registration = require './registration'
 # because of circular dependency

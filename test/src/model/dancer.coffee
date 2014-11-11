@@ -1,6 +1,6 @@
 {expect} = require 'chai'
 require('chai').use require 'chai-as-promised'
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'

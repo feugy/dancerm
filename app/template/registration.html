@@ -7,7 +7,7 @@
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers | filter: ctrl.filterDancer">
     <div class="dancer-classes">
       <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{'lbl.certifiedLong'|i18n}}</label>
-      <h4>{{'lbl.danceClasses'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
+      <h4>{{'lbl.danceClassesFor'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
       <div class="dance-classes">
         <!-- TODO until angular 2, native promise cannot be used -->
         <div class="danceClass" data-ng-repeat="danceClass in dancer._danceClasses | filter: ctrl.filterClass"><span class="kind {{danceClass.color}}">{{danceClass.kind}}</span><span class="level">{{danceClass.level}}</span><span class="hour">{{danceClass.start|classDate}}</span></div>
@@ -20,7 +20,7 @@
       <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
     </span>
     <span class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" data-dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle">{{ctrl.periodLabel}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="(period, label) in ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{label}}</a></li>
       </ul>

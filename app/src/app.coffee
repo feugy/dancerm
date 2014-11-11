@@ -1,5 +1,5 @@
-# merge underscore and underscore string functions
-_ = require 'underscore'
+# merge lodash and lodash string functions
+_ = require 'lodash'
 _str = require 'underscore.string'
 _.mixin _str.exports()
 

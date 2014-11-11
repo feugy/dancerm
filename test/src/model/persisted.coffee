@@ -1,5 +1,5 @@
 {expect} = require 'chai'
-_ = require 'underscore'
+_ = require 'lodash'
 Persisted = require '../../../app/script/model/tools/persisted'
 
 describe 'Persisted model tests', ->

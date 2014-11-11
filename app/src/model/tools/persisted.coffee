@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 Base = require './base'
 Datastore = require 'nedb'
 {join} = require 'path'
@@ -25,6 +25,7 @@ module.exports = class Persisted extends Base
   #
   # @return a promise with collection object used to interract with persistance storage
   @_collection: ->
+    start = Date.now()
     new Promise (resolve, reject) =>
       # reuse existing collection
       if cache[@name]?
@@ -35,6 +36,7 @@ module.exports = class Persisted extends Base
       # loads it
       cache[@name].loadDatabase (err) =>
         return reject err if err?
+        #console.log "@_collection() #{Date.now()-start}ms"
         resolve cache[@name]
       
   # **static**
@@ -57,11 +59,13 @@ module.exports = class Persisted extends Base
   # @return a promise with the corresponding model
   @find: (id) ->
     @_collection().then (collection) =>
+      start = Date.now()
       new Promise (resolve, reject) =>
         collection.findOne {_id: id}, (err, raw) =>
           return reject err if err?
           return reject new Error "'#{id}' not found" unless raw?
           raw.id = raw._id
+          #console.log "@find() #{Date.now()-start}ms"
           resolve new @ raw
 
   # **static**
@@ -82,13 +86,16 @@ module.exports = class Persisted extends Base
   # @return a promise with an array (that may be empty) of matching models
   @findWhere: (conditions) ->
     @_collection().then (collection) =>
+      start = Date.now()
       new Promise (resolve, reject) =>
         collection.find conditions, (err, raws) =>
           return reject err if err?
-          resolve (for raw in raws
+          models = (for raw in raws
             raw.id = raw._id
             new @ raw
           )
+          #console.log "@findWhere() #{Date.now()-start}ms"
+          resolve models
 
   # Build a persisted model
   # Initialize version to 0 and id to null

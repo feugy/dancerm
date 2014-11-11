@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
 Payment = require './payment'

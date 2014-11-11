@@ -16,7 +16,6 @@ var gutil = require('gulp-util');
 var rimraf = require('rimraf');
 var stylus = require('gulp-stylus');
 var coffee = require('gulp-coffee');
-var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
 var download = require('gulp-download');
 
@@ -26,22 +25,21 @@ var paths = {
   mapsDest: '.',
   scriptsSrc: 'app/src/**/*.coffee',
   scriptsDest: 'app/script',
-  stylesSrc: 'app/src/style/**/*.styl',
+  stylesSrc: ['app/src/style/dancerm.styl', 'app/src/style/print.styl'],
   stylesDest: 'app/style',
   testsSrc: 'test/src/**/*.coffee',
   testsDest: 'test/script',
   vendorSrc: [
     {file:'vendor/jquery.js', url:'http://code.jquery.com/jquery-2.1.1.min.js'}, 
     {file:'vendor/tinycolor.js', url:'http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/bgrins/TinyColor/master/tinycolor.js'},
-    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0-rc.0/angular.min.js'},
-    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0-rc.0/angular-animate.min.js'},
-    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0-rc.0/angular-sanitize.min.js'},
+    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0/angular.min.js'},
+    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0/angular-animate.min.js'},
+    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0/angular-sanitize.min.js'},
     {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.11/release/angular-ui-router.min.js'},
     {file:'vendor/chart.js', url:'https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.min.js'},
     {file:'vendor/angular-chart.js', url:'https://raw.githubusercontent.com/carlcraig/tc-angular-chartjs/master/dist/tc-angular-chartjs.min.js'},
     {file:'vendor/chart-stackedbar.js', url:'http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/Regaddi/Chart.StackedBar.js/master/src/Chart.StackedBar.js'},
-    // unrelease yet, build from trunk
-    //{file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js'},
+    {file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.2.min.js'},
     {file:'src/style/css/bootstrap.css', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'},
     {file:'src/style/fonts/glyphicons-halflings-regular.eot', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.eot'},
     {file:'src/style/fonts/glyphicons-halflings-regular.woff', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.woff'},
@@ -74,12 +72,6 @@ gulp.task('copy-assets', ['clean'], function() {
 function buildScripts() {
   return gulp.src(paths.scriptsSrc)
     .pipe(sourcemaps.init())
-    .pipe(plumber({
-      errorHandler: function(err) {
-        gutil.log(err);
-        gutil.beep();
-      }
-    }))
     .pipe(coffee({
       bare: true
     }))
@@ -87,6 +79,10 @@ function buildScripts() {
     .pipe(gulp.dest(paths.scriptsDest))
     .on('end', function() {
       console.log('scripts rebuilt')
+    })
+    .on('error', function(err) {
+      gutil.log(err);
+      gutil.beep();
     });
 }
 gulp.task('build-scripts', ['clean'], buildScripts);
@@ -95,17 +91,14 @@ gulp.task('build-scripts', ['clean'], buildScripts);
 function buildStyles() {
   return gulp.src(paths.stylesSrc)
     .pipe(sourcemaps.init())
-    .pipe(plumber({
-      errorHandler: function(err) {
-        gutil.log(err);
-        gutil.beep();
-      }
-    }))
     .pipe(stylus())
     .pipe(sourcemaps.write({}))
     .pipe(gulp.dest(paths.stylesDest))
     .on('end', function() {
       console.log('styles rebuilt')
+    }).on('error', function(err) {
+      gutil.log(err);
+      gutil.beep();
     });
 }
 gulp.task('build-styles', ['copy-assets'], buildStyles);
@@ -116,25 +109,22 @@ gulp.task('build', ['build-styles', 'build-scripts']);
 // Build tests scripts
 function buildTests() {
   return gulp.src(paths.testsSrc)
-    .pipe(plumber({
-      errorHandler: function(err) {
-        gutil.log(err);
-        gutil.beep();
-      }
-    }))
     .pipe(coffee({
       bare: true
     }))
     .pipe(gulp.dest(paths.testsDest))
     .on('end', function() {
       console.log('test rebuilt')
+    }).on('error', function(err) {
+      gutil.log(err);
+      gutil.beep();
     });
 }
 gulp.task('build-tests', ['build'], buildTests);
 
 // Clean, build, and then watch for files changes
 gulp.task('watch', ['build-tests'], function(){
-  gulp.watch(paths.stylesSrc, buildStyles);
+  gulp.watch('app/src/style/**/*.styl', buildStyles);
   gulp.watch(paths.scriptsSrc, buildScripts);
   return gulp.watch(paths.testsSrc, buildTests);
 });

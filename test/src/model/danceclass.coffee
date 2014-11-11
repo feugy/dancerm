@@ -1,5 +1,5 @@
 {expect} = require 'chai'
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 DanceClass = require '../../../app/script/model/danceclass'
 

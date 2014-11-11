@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 {generateId} = require '../util/common'
 Address = require '../model/address'
 

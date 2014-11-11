@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 i18n = require '../labels/common'
 {currentSeasonYear} = require '../util/common'
 {map} = require 'async'

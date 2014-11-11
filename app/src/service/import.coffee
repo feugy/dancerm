@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 moment = require 'moment'
 {each} = require 'async'
 {readFile, stat} = require 'fs'
@@ -54,7 +54,7 @@ module.exports = class Import
     )).then (processed) =>
       Promise.all((
         for {existing, imported} in processed
-          if not(existing?) or existing._v < imported._v
+          unless existing?
             # no existing model: save imported model
             # imported version is above existing one: save imported model
             className = imported.constructor.name
@@ -62,9 +62,8 @@ module.exports = class Import
             report.byClass[className]++
             imported.save()
           else 
-            if existing?._v > imported?._v
-              console.log existing?._v, imported?._v
-              # existing and imported have same version: conflict detected
+            if JSON.stringify(existing.toJSON()) isnt JSON.stringify imported.toJSON()
+              # existing and imported are not equal: conflict detected
               report.conflicts.push existing: existing, imported: imported
             # else
             # existing version is above imported version: no importation
@@ -125,38 +124,31 @@ module.exports = class Import
 
         # Json content
         else if extension is 'application/json'
-          console.log "try to extract from a v2 dump..."
-          return reject new Error "to be refined"
           start =  Date.now()
           readFile filePath, 'utf8', (err, data) =>
             return reject err if err?
-            try 
-              report =
-                readTime: Date.now()-start
-              # parse content
-              content = JSON.parse data
-              return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
-              dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
-              # and returns results
-              report.extractTime = Date.now()-start-report.readTime
-              resolve models: dancers, report: report
-            catch exc
-              return reject exc
-
-        else 
-          console.log "try to extract from a v3 dump..."
-          # try to read dump v3
-          start = Date.now()
-          readFile filePath, 'utf8', (err, data) =>
-            return reject err if err?
             report = 
-              readTime: Date.now()-start,
-            if -1 is data.indexOf Export.separator
-              return reject new Error "unsupported format #{extension}"
-            @_dumpV3(data, report).then((models) =>
-              report.extractTime = Date.now()-start-report.readTime
-              resolve models: models, report: report
-            ).catch (err) => reject err
+                readTime: Date.now()-start
+            unless -1 is data.indexOf Export.separator
+              console.log "try to extract from a v3 dump..."
+              @_dumpV3(data, report).then((models) =>
+                report.extractTime = Date.now()-start-report.readTime
+                resolve models: models, report: report
+              ).catch (err) => reject err
+            else
+              console.log "try to extract from a v2 dump..."
+              try 
+                # parse content
+                content = JSON.parse data
+                return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
+                dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
+                # and returns results
+                report.extractTime = Date.now()-start-report.readTime
+                resolve models: dancers, report: report
+              catch exc
+                return reject exc
+        else
+          return reject new Error "unsupported format #{extension}"
 
   # Extract from version 3 dump
   #

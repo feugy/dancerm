@@ -1,5 +1,5 @@
 {expect} = require 'chai'
-_ = require 'underscore'
+_ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
 {join} = require 'path'
@@ -157,7 +157,7 @@ describe 'Import service tests', ->
         new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
       ]
 
-      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_1.dump').then ({models, report}) ->
+      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_3.json').then ({models, report}) ->
         # then all models are present
         expect(report).to.have.property('errors').that.is.empty
         expect(report).to.have.property('byClass').that.is.deep.equal Address: 1, Card: 1, Dancer: 2, DanceClass: 2
@@ -208,7 +208,7 @@ describe 'Import service tests', ->
         expect(Dancer.find imported[1].id).to.eventually.have.property('firstname').that.equal imported[1].firstname
         expect(Card.find imported[2].id).to.eventually.have.property('knownBy').that.deep.equal imported[2].knownBy
 
-    it 'should old imported models not be modified', ->
+    it.skip 'version is not checked anymore\nshould old imported models not be modified', ->
       tested.merge([
         new Dancer id: 'ea43920b42dc', _v: 0, cardId: '30cb3a48900e', addressId: '3900cc712ba3', title: 'Mme', firstname:'Rachel', lastname:'Toto', birth: '1970-01-01'
       ]).then (report) ->
@@ -217,7 +217,7 @@ describe 'Import service tests', ->
 
         expect(Dancer.find 'ea43920b42dc').to.eventually.have.property('lastname').that.equal 'Durand'
 
-    it 'should existing models be added with upper version', ->
+    it.skip 'version is not checked anymore\nshould existing models be added with upper version', ->
       imported = [
         new Card id: '30cb3a48900e', _v: 2, knownBy: ['Groupon', 'website'], registrations: [
           new Registration season: '2013/2014', charged: 300, period: 'year'

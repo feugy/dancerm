@@ -5,9 +5,9 @@ i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
 {dumpError} = require '../script/util/common'
 moment = require 'moment'
-# merge underscore and underscore string functions
-_ = require 'underscore'
-_str = require 'underscore.string'
+# merge lodash and lodash string functions
+_ = require 'lodash'
+_str = require 'lodash.string'
 _.mixin _str.exports()
 
 process.on 'uncaughtException', dumpError

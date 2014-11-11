@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 i18n = require '../labels/common'
 DanceClass = require '../model/danceclass'
 Registration = require '../model/registration'

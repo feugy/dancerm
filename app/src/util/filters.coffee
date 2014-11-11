@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 i18n = require '../labels/common'
   
 # exports a function that declare filters and directive on specified application

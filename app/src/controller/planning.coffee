@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 LayoutController = require './layout'
 DanceClass = require '../model/danceclass'
 Dancer = require '../model/dancer'

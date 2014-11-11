@@ -13,6 +13,7 @@ module.exports =
     close: 'Fermer'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
+    ignore: 'Ignorer'
     import: 'Importer des données'
     newDancer: 'Inscrire un danseur'
     no: 'Non'
@@ -70,7 +71,9 @@ module.exports =
     allTeachers: 'tous les professeurs'
     bank: 'Banque'
     birth: 'Né(e) le'
+    card: 'Fiche danseurs'
     cellphone: 'Portable'
+    certificates: 'Nb. certificats'
     certified: 'Cert.'
     certifiedLong: 'Certificat médical'
     charged: 'Réglement de'
@@ -78,27 +81,34 @@ module.exports =
     city: 'Ville'
     classTooltip: '%s (%s) %s~%s'
     currency: '€'
-    danceClasses: 'Cours pour'
+    danceClasses: 'Cours'
+    danceClassesFor: 'Cours pour'
     day: 'Jour'
     details: 'Détails'
     due: 'Rgt.'
     email: 'E-mail'
+    existingValue: 'Valeur actuelle'
     fieldSeparator: ' :'
     firstname: 'Prénom'
     Fri: 'Vendredi'
     genericDanceClass: 'Abonnement danse'
-    lastname: 'Nom'
     horizontalMargin: 'Marge horizontale (mm)'
     hours: 'Horaire'
+    importedValue: 'Valeur importée'
     knownBy: 'Connu par'
+    lastname: 'Nom'
     Mon: 'Lundi'
+    noValue: 'pas de valeur'
     other: '(autre)'
+    payment: 'Réglement'
     paymentKind: 'Mode de réglement'
     payer: 'Par'
+    period: 'Périodicité'
     phone: 'Téléphone'
     rate: 'Tarif'
     receipt: 'Encaissement'
     registered: 'Intitulé du cours'
+    registration: 'Inscription'
     Sat: 'Samedi'
     street: 'Voie'
     Sun: 'Dimanche'
@@ -109,6 +119,7 @@ module.exports =
     type: 'Type'
     stampWidth: 'Largeur (mm)'
     stampHeight: 'Hauteur (mm)'
+    unknown: 'Inconnu'
     value: 'Valeur'
     vat: 'dont T.V.A.'
     verticalMargin: 'Marge verticale (mm)'
@@ -135,7 +146,7 @@ module.exports =
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}}€ du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
-    resolveConflict: "Un conflit à été détécté pour {{existing.firstname}} {{existing.lastname}}. Choissisez les valeurs que vous souhaitez conserver."
+    resolveConflict: "Pour résource le conflit, sélectionnez les valeurs à conserver avant d'enregistrer. Vous pouvez aussi ignorer le conflit et passer au suivant, ou annuler pour stopper la résolution."
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
@@ -220,12 +231,12 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
   ttl:
     address: 'Adresse'
     application: 'DanceRM'
-    card: 'Fiche danceurs'
+    card: 'Fiche danseurs'
     confirm: 'Confirmation'
     contact: 'Contact'
     danceClassesDistribution: 'Distibution des cours'
     dancerList: 'Liste des danseurs'
-    dancer: 'Danceur'
+    dancer: 'Danseur'
     duePayment: 'Impayés'
     dump: 'Sauvegarde externe'
     editRegistration: 'Modification de l\'inscription'
@@ -238,7 +249,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
     registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
-    resolveConflict: "Résolution de conflit {{rank}}/{{conflicts.length}}"
+    resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
     stats: 'Statistiques (sur {{total}} danseurs)'

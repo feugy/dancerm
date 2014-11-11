@@ -1,4 +1,3 @@
 test/src/**/*.coffee
 --compilers coffee:coffee-script/register
---require ./test/script/pre_tests.js
 --reporter spec

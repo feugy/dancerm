@@ -1,4 +1,4 @@
-_ = require 'underscore'
+_ = require 'lodash'
 {readFile, writeFile} = require 'fs-extra'
 {generateId} = require './common'
 Address = require '../model/address'
