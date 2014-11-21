@@ -1,5 +1,6 @@
 _ = require 'lodash'
 Persisted = require './tools/persisted'
+{getCollection} = require './tools/initializer'
 
 # ordered week days
 days = 
@@ -52,41 +53,46 @@ module.exports = class DanceClass extends Persisted
 
   # List existing seasons, and returns them ordered (alphabetically)
   #
-  # @return a promise with the ordered list of seasons as paramter
-  @listSeasons: ->
-    @_collection().then (collection) =>
-      new Promise (resolve, reject) =>
-        collection.find {}, (err, classes) =>
-          return reject err if err?
-          resolve _.chain(classes).pluck('season').uniq().value().sort().reverse()
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done danceClasses [Array<DanceClass>] ordered list (that may be empty) of dance classes for this season
+  @listSeasons: (done) ->
+    getCollection(@name).find().toArray (err, classes) =>
+      return done err if err?
+      done null, _.chain(classes).pluck('season').uniq().value().sort().reverse()
 
   # Get the list of available teachers within a given season
   #
   # @param season [String] the concerned season
-  # @return a promise with the ordered list (that may be empty) of teachers for this season
-  @getTeachers: (season) ->
-    @getPlanning(season).then (planning) =>
-      _.chain(planning).pluck('teacher').uniq().compact().value().sort()
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done teachers [Array<String>] ordered list (that may be empty) of teachers for this season
+  @getTeachers: (season, done) ->
+    @getPlanning season, (err, planning) =>
+      return done err if err?
+      done null, _.chain(planning).pluck('teacher').uniq().compact().value().sort()
 
   # Get the list of classes of a given season, named planning
   # 
   # @param season [String] the searched season
-  # @return a promise with the ordered list (that may be empty) of dance classes for this season
-  @getPlanning: (season) ->
-    @findWhere(season: season).then (classes) =>
-      new Promise (resolve, reject) =>
-        # sort dance classes by day, hour and quarters
-        resolve classes.sort (a, b) ->
-          return -1 unless a.start?
-          return 1 unless b.start?
-          aDay = a.start[0..2]
-          aHour = parseInt a.start.replace aDay, ''
-          aQuarter = parseInt a.start[a.start.indexOf(':')+1..]
-          bDay = b.start[0..2]
-          bHour = parseInt b.start.replace bDay, ''
-          bQuarter = parseInt b.start[b.start.indexOf(':')+1..]
-          aDay = aDay.toLowerCase()
-          bDay = bDay.toLowerCase()
-          if days[aDay] < days[bDay] then -1 else if days[aDay] > days[bDay] then 1 else
-            if aHour < bHour then -1 else if aHour > bHour then 1 else
-              if aQuarter < bQuarter then -1 else if aQuarter > bQuarter then 1 else 0
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done danceClasses [Array<DanceClass>] ordered list (that may be empty) of dance classes for this season
+  @getPlanning: (season, done) ->
+    @findWhere season: season, (err, classes) =>
+      return done err if err?
+      # sort dance classes by day, hour and quarters
+      done null, classes.sort (a, b) ->
+        return -1 unless a.start?
+        return 1 unless b.start?
+        aDay = a.start[0..2]
+        aHour = parseInt a.start.replace aDay, ''
+        aQuarter = parseInt a.start[a.start.indexOf(':')+1..]
+        bDay = b.start[0..2]
+        bHour = parseInt b.start.replace bDay, ''
+        bQuarter = parseInt b.start[b.start.indexOf(':')+1..]
+        aDay = aDay.toLowerCase()
+        bDay = bDay.toLowerCase()
+        if days[aDay] < days[bDay] then -1 else if days[aDay] > days[bDay] then 1 else
+          if aHour < bHour then -1 else if aHour > bHour then 1 else
+            if aQuarter < bQuarter then -1 else if aQuarter > bQuarter then 1 else 0

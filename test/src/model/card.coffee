@@ -1,7 +1,9 @@
 {expect} = require 'chai'
 _ = require 'lodash'
+async = require 'async'
 moment = require 'moment'
 {remove, mkdir} = require 'fs-extra'
+{init} = require '../../../app/script/model/tools/initializer'
 {getDbPath} = require '../../../app/script/util/common'
 Registration = require '../../../app/script/model/registration'
 Payment = require '../../../app/script/model/payment'
@@ -12,10 +14,9 @@ DanceClass = require '../../../app/script/model/danceclass'
 
 describe 'Card model tests', ->
 
-  beforeEach (done) ->
-    remove getDbPath(), (err) ->
-      return done err if err?
-      mkdir getDbPath(), done 
+  before init
+
+  beforeEach (done) -> Card.drop done
       
   it 'should new card be created with default values', ->
     # when creating a card without values
@@ -117,33 +118,47 @@ describe 'Card model tests', ->
     ]
 
 
-    beforeEach ->
+    beforeEach (done) ->
       @timeout 5000
-      Promise.all (model.save() for model in existing)
+      async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+        clazz.drop next
+      , (err) ->
+        return done err if err?
+        async.each existing, (model, next) ->
+          model.save next
+        , done
     
-    it 'should merge with another card', ->
-      existing[0].merge(existing[1]).then ->
+    it 'should merge with another card', (done) ->
+      existing[0].merge existing[1], (err) ->
+        return done err if err?
         # all dancers have been migrated
-        for i in [2..4]
-          expect(Dancer.find existing[i].id).to.eventually.have.property('cardId').that.equal existing[0].id
-        # known by have been merge
-        expect(existing[0]).to.have.property('knownBy').that.deep.equal ['pagesjaunesFr', 'website', 'Groupon']
-        # registrations have been merged
-        expect(existing[0]).to.have.property('registrations').that.has.lengthOf 3
-        for registration, i in [
-            new Registration season: '2013/2014', charged: 500, period: 'year', payments:[ 
-              new Payment type: 'cash', value: 150, receipt: '2013-08-04', payer: 'Simonin'
-              new Payment type: 'check', value: 150, receipt: '2013-08-26', payer: 'Simonin', bank: 'La Poste'
-              new Payment type: 'cash', value: 100, receipt: '2013-08-10', payer: 'Durand'
-              new Payment type: 'cash', value: 100, receipt: '2013-09-10', payer: 'Durand'
+        async.each [2..4], (i, next) ->
+          Dancer.find existing[i].id, (err, dancer) ->
+            return next err if err?
+            expect(dancer).to.have.property('cardId').that.equal existing[0].id
+            next()
+        , (err) ->
+          return done err if err?
+          # known by have been merge
+          expect(existing[0]).to.have.property('knownBy').that.deep.equal ['pagesjaunesFr', 'website', 'Groupon']
+          # registrations have been merged
+          expect(existing[0]).to.have.property('registrations').that.has.lengthOf 3
+          for registration, i in [
+              new Registration season: '2013/2014', charged: 500, period: 'year', payments:[ 
+                new Payment type: 'cash', value: 150, receipt: '2013-08-04', payer: 'Simonin'
+                new Payment type: 'check', value: 150, receipt: '2013-08-26', payer: 'Simonin', bank: 'La Poste'
+                new Payment type: 'cash', value: 100, receipt: '2013-08-10', payer: 'Durand'
+                new Payment type: 'cash', value: 100, receipt: '2013-09-10', payer: 'Durand'
+              ]
+              new Registration season: '2014/2015', charged: 150, period: 'year', payments:[ 
+                new Payment type: 'check', value: 150, receipt: '2014-10-24', payer: 'Simonin', bank: 'Société Générale'
+              ]
+              new Registration season: '2012/2013', charged: 100, period: 'year', payments:[ 
+                new Payment type: 'check',  value: 100, receipt: '2012-09-10', payer: 'Durand', bank: 'La Poste'
+              ]
             ]
-            new Registration season: '2014/2015', charged: 150, period: 'year', payments:[ 
-              new Payment type: 'check', value: 150, receipt: '2014-10-24', payer: 'Simonin', bank: 'Société Générale'
-            ]
-            new Registration season: '2012/2013', charged: 100, period: 'year', payments:[ 
-              new Payment type: 'check',  value: 100, receipt: '2012-09-10', payer: 'Durand', bank: 'La Poste'
-            ]
-          ]
-          expect(existing[0].registrations[i].toJSON()).to.deep.equal registration.toJSON()
-        # card does not exists any more
-        expect(Card.find existing[1].id).to.eventually.be.rejectedWith "'#{existing[1].id}' not found"
+            expect(existing[0].registrations[i].toJSON()).to.deep.equal registration.toJSON()
+          # card does not exists any more
+          Card.find existing[1].id, (err, card) ->
+            expect(err).to.have.property('message').that.equal "'#{existing[1].id}' not found"
+            done()

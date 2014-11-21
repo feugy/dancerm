@@ -1,9 +1,11 @@
 'use strict'
 
+_ = require 'lodash'
 gui = require 'nw.gui'
 {join} = require 'path'
 {version} = require '../../package.json'
 {dumpError} = require '../script/util/common'
+{init} = require '../script/model/tools/initializer'
 
 process.on 'uncaughtException', dumpError
 
@@ -25,24 +27,23 @@ try
   isMaximized = false
   hasDump = false
   app = null
-
   # stores in local storage application state
   win.on 'close', ->
     return @close true if hasDump
 
-    console.log 'ask to close...', localStorage
+    console.log 'ask to close...'
     hasDump = true
-    app.close().then(() =>
-      console.log 'close after save'
+    app?.close (err) =>
+      if err?
+        console.error 'close after save error', err
+      else
+        console.log 'close after save'
       @close true
-    ).catch (err) =>
-      console.error 'close after save error', err
-      #@close true
 
     for attr in ['x', 'y', 'width', 'height']
-      localStorage.setItem attr, win[attr]
+      localStorage?.setItem attr, win[attr]
 
-    localStorage.setItem 'maximized', isMaximized
+    localStorage?.setItem 'maximized', isMaximized
     false
 
   win.on 'maximize', -> isMaximized = true
@@ -60,6 +61,7 @@ try
     if event.which is 116 and event.ctrlKey
       # must clear require cache also
       delete global.require.cache[attr] for attr of global.require.cache
+      global.reload = true
       win.reloadIgnoringCache() 
 
   # DOM is ready
@@ -80,11 +82,6 @@ try
       infos = require '../../package.json'
       win.resizeTo infos.window.min_width, infos.window.min_height,
 
-    # we are ready: shows it !
-    win.show()
-    # local storage stores strings !
-    win.maximize() if 'true' is localStorage.getItem 'maximized'
-
     app = require '../script/app'
     # require directives and filters immediately to allow circular dependencies
     require('../script/util/filters')(app)
@@ -96,7 +93,23 @@ try
     require('../script/directive/tags')(app)
     require('../script/directive/registration')(app)
 
-    # starts the application from a separate file to allow circular dependencies to application
-    angular.bootstrap $('body'), ['app']
+    anchor = $('body.app')
+
+    console.log 'init database...'
+    init (err) -> 
+      if err?
+        dumpError err
+        console.error err
+        # close all windows without dumping data
+        hasDump = true
+        return win?.close true
+      console.log 'database initialized !'
+      # we are ready: shows it !
+      win.show()
+      # local storage stores strings !
+      win.maximize() if 'true' is localStorage.getItem 'maximized'
+      # starts the application from a separate file to allow circular dependencies to application
+      angular.bootstrap anchor, ['app']
+
 catch err
   dumpError err

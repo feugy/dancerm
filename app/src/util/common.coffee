@@ -32,6 +32,16 @@ getFirstStep = (obj, path) ->
 
 module.exports = 
 
+  ###fixConsole: ->
+    # Log file
+    originals = {}
+    logFile = join gui.App.dataPath, 'log.txt'
+    ['info', 'debug', 'error', 'log'].forEach (method) ->
+      originals[method] = global.console[method]
+      global.console[method] = (args...) ->
+        appendFileSync logFile, "#{moment().format 'HH:mm:ss'} - #{method} - #{args.join ' '}\n"
+        #(originals[method] or originals.debug)?.invoke console, args###
+
   # Used to dump errors into error file located in app data folder
   #
   # @param err [Error] the error to dump

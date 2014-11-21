@@ -1,5 +1,6 @@
 _ = require 'lodash'
 moment = require 'moment'
+async = require 'async'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
 Dancer = require '../model/dancer'
@@ -131,10 +132,10 @@ module.exports = class CardController extends LayoutController
   # Save the current values inside storage
   # 
   # @param force [Boolean] true to ignore required fields. Default to false.
-  # @return promise without any resolve parameter
-  save: (force = false) =>
-    unless @hasChanged
-      return new Promise (resolve) => resolve()
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no problem occured
+  save: (force = false, done = ->) =>
+    return done null unless @hasChanged
     # check required fields
     if not force and @_checkRequired()
       return @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.requiredFields, [
@@ -146,33 +147,52 @@ module.exports = class CardController extends LayoutController
         @save true
 
     # first, resolve addresses and card
-    Promise.all((dancer.address for dancer in @dancers)
-    ).then((models) =>
+    async.each @dancers, (dancer, next) ->
+      dancer.getAddress next
+    , (err, models) =>
+      if err?
+        console.error err 
+        return done err
       models.push @card
       console.log "addresses resolved", models
-      Promise.all((
-        saved = []
-        for model in models when not (model.id in saved) and @_changes[model.id]
-          if model.constructor.name is 'Address'
-            console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
-          else
-            console.log "save card #{model.id}"
-          # to avoid saving the same address multiple times
-          saved.push model.id
-          model.save()
-      )).then =>
+      saved = []
+
+      async.each models, (model, next) ->
+        return next() if (model.id in saved) or not @_changes[model.id]
+        if model.constructor.name is 'Address'
+          console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
+        else
+          console.log "save card #{model.id}"
+        # to avoid saving the same address multiple times
+        saved.push model.id
+        model.save next
+      , (err) =>
+        if err?
+          console.error err 
+          return done err
         console.log "addresses and card saved"
         # affect to dancers (for those which address was new) and save dancers
-        Promise.all((
-          for dancer, i in @dancers when not dancer.id? or @_changes[dancer.id]
-            console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
-            dancer.address = models[i]
-            dancer.card = @card
-            dancer.save()
-        )).then => 
+        i = 0
+        async.eachSeries @dancers, (dancer, next) ->
+          i++
+          return next() unless dancer.id? and @_changes[dancer.id]
+          console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
+          dancer.setAddress models[i-1]
+          dancer.setCard @card
+          dancer.save next
+        , (err) =>
+          if err?
+            console.error err 
+            return done err
           console.log "dancers saved"
+
           # at last removes old models
-          Promise.all((model.remove() for model in @_removable)).then =>
+          async.each @_removable, (model, next) ->
+            model.remove next
+          , (err) =>
+            if err?
+              console.error err 
+              return done err
             # reset change state and refresh search
             @hasChanged = false
             @_changes = {}
@@ -181,10 +201,7 @@ module.exports = class CardController extends LayoutController
             @rootScope.$emit 'search'
             console.log "models removed"
             @rootScope.$apply() unless @rootScope.$$phase
-            Promise.resolve()
-    ).catch (err) => 
-      console.error err
-      Promise.reject err
+            done()
 
   # Navigate to the state displaying a given card
   #
@@ -199,13 +216,14 @@ module.exports = class CardController extends LayoutController
   addDancer: =>
     added = new Dancer id: generateId()
     # get the existing address and card
-    added.address = @addresses[-1..][0]
-    @addresses.push @addresses[-1..][0]
-    added.card = @card
+    address = @addresses[-1..][0]
+    added.setAddress address
+    @addresses.push address
+    added.setCard @card
     # adds this new dancer to the list
     @dancers.push added
     @required[added.id] = []
-    @required[added.address.id] = []
+    @required[address.id] = []
     # scroll to last
     _.defer => 
       $('.card-dancer > .dropup > a').focus()
@@ -220,7 +238,7 @@ module.exports = class CardController extends LayoutController
     address = new Address id: generateId()
     @addresses[@dancers.indexOf dancer] = address
     @required[address.id] = []
-    dancer.address = address
+    dancer.setAddress address
 
   # Add a new registration for the current season to the edited dancer, or edit an existing one
   # Displays the registration dialog
@@ -233,7 +251,10 @@ module.exports = class CardController extends LayoutController
         size: 'lg'
         keyboard: false
         resolve: 
-          danceClasses: -> dancer.danceClasses
+          danceClasses: -> new Promise (resolve, reject) -> 
+            dancer.danceClasses (err, classes) -> 
+              return reject err if err?
+              resolve classes
           isEdit: -> dancer.danceClassIds.length > 0
       }, RegisterController.declaration
     ).result.then ({confirmed, season, danceClasses}) =>
@@ -250,7 +271,7 @@ module.exports = class CardController extends LayoutController
         @required.regs.push []
 
       # add selected class ids to dancer
-      dancer.danceClasses = danceClasses
+      dancer.setClasses danceClasses
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -305,10 +326,13 @@ module.exports = class CardController extends LayoutController
     ).result.then (dancer) =>
       return unless dancer?
       # merge both card and save
-      dancer.card.then((card) =>
-        @card.merge(card).then => @save(true).then => @loadCard @card.id
-      ).catch (err) =>
-        console.error err
+      dancer.getCard (err, card) =>
+        return console.error err if err?
+        @card.merge card, (err) => 
+          return console.error err if err?
+          @save true, (err) => 
+            return console.error err if err?
+            @loadCard @card.id
 
   # Print the registration confirmation form
   #
@@ -317,7 +341,8 @@ module.exports = class CardController extends LayoutController
   # @param withVat [Boolean] true to include VAT
   # @param withClasses [Boolean] true to include dance classes details
   printRegistration: (registration, auto= false, withVat= true, withClasses= true) =>
-    @save(true).then =>
+    @save true, (err) =>
+      return console.error err if err?
       # node-webkit bug https://github.com/rogerwang/node-webkit/issues/2318
       open = => setTimeout =>
         try
@@ -329,14 +354,17 @@ module.exports = class CardController extends LayoutController
           preview.withCharged = auto
         catch err
           console.error err
-        # obviously, a bug !
+        # TODO obviously, a bug !
         global.console = window.console
       , 1
 
       # auto VAT/classe details computation:
       return open() unless auto
       # Dance class details 
-      Promise.all((dancer.danceClasses for dancer in @dancers)).then((danceClasses) =>
+      async.map @dancers, (dancer, next) ->
+        dancer.getClasses next
+      , (err, danceClasses) =>
+        return console.error err if err?
         withVat = false
         withClasses = true
         group = null
@@ -354,7 +382,6 @@ module.exports = class CardController extends LayoutController
             withClasses = false
 
         open()
-      ).catch (err) => console.error err
 
   # Invoked when dancer needs to be removed.
   # First display a confirmation dialog, and then dissociate the dancer from this card
@@ -370,14 +397,15 @@ module.exports = class CardController extends LayoutController
       return unless confirm
       # remove everything and goes to list
       if isLast
-        return Promise.all([
-          @addresses[0].remove()
-          @dancers[0].remove()
-          @card.remove()
-        ]).then( => @rootScope.$apply =>
-          @state.go 'list-and-planning'
-          @rootScope.$emit 'search'
-        ).catch (err) => console.error err      
+        return async.parallel [
+          (done) => @addresses[0].remove done
+          (done) => @dancers[0].remove done
+          (done) => @card.remove done
+        ], (err) => 
+          return console.error err if err?
+          @rootScope.$apply =>
+            @state.go 'list-and-planning'
+            @rootScope.$emit 'search'
 
       # mark for a change
       @_changed[dancer.id] = true
@@ -417,7 +445,7 @@ module.exports = class CardController extends LayoutController
       for addr in @addresses when addr.id is dancer.addressId
         @_removable.push addr
         break
-      dancer.address = @addresses[0]
+      dancer.setAddress @addresses[0]
       @addresses[@dancers.indexOf dancer] = @addresses[0]
 
   # **private**
@@ -437,8 +465,8 @@ module.exports = class CardController extends LayoutController
     @_previous = {}
     @card.on 'change', @_onChange
     @required.regs = ([] for registration in @card.registrations)
-    dancer.address = address
-    dancer.card = @card
+    dancer.setAddress address
+    dancer.setCard @card
     @dancers = [dancer]
     @addresses = [address]
     @_changes[@card.id] = true
@@ -450,10 +478,11 @@ module.exports = class CardController extends LayoutController
   # @param cardId [String] loaded card id.
   _loadCard: (cardId) =>
     # get other dancers, and load card to display registrations
-    Promise.all([
-      Dancer.findWhere cardId:cardId
-      Card.find cardId
-    ]).then( ([dancers, card]) =>
+    async.parallel [
+      (done) -> Dancer.findWhere cardId:cardId, done
+      (done) -> Card.find cardId, done
+    ], (err, [dancers, card]) =>
+      return console.error err if err?
       @card?.removeListener 'change', @_onChange
       @card = card
       @_previous = @card.toJSON()
@@ -464,9 +493,15 @@ module.exports = class CardController extends LayoutController
       @required[dancer.id] = [] for dancer in @dancers
       @required.regs = ([] for registration in @card.registrations)
       # get dance classes
-      Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
+      async.map @dancers, (dancer, next) ->
+        dancer.getClasses next
+      , (err, danceClasses) =>
+        return console.error err if err?
         # get addresses
-        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
+        async.map @dancers, (dancer, next) ->
+          dancer.getAddress next
+        , (err, addresses) =>
+          return console.error err if err?
           unic = {}
           @addresses = []
           for address in addresses
@@ -489,8 +524,6 @@ module.exports = class CardController extends LayoutController
           @hasChanged = false
           @_changes = {}
           @rootScope.$apply()
-    ).catch (err) =>
-      console.error err
 
   # **private**
   # Card change handler: check if card has changed from its previous values

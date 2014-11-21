@@ -5,6 +5,7 @@ i18n = require '../script/labels/common'
 {dumpError} = require '../script/util/common'
 moment = require 'moment'
 _ = require 'lodash'
+async = require 'async'
 
 process.on 'uncaughtException', dumpError
 
@@ -48,12 +49,13 @@ $(win.window).on 'load', ->
 
       # regroup by addresses and get details
       groupByAddress = {}
-      Promise.all((for dancer in dancers
+      async.map dancers, (dancer, next) ->
         # first time we got this address
         groupByAddress[dancer.addressId] = [] unless dancer.addressId of groupByAddress
         groupByAddress[dancer.addressId].push dancer
-        dancer.address
-      )).then((addresses) =>
+        dancer.getAddress next
+      , (err, addresses) =>
+        return console.error err if err?
         # then make stamps
         @stamps = (
           for id, dancers of groupByAddress
@@ -68,9 +70,7 @@ $(win.window).on 'load', ->
             }
         )
         scope.$apply()
-      ).catch (err) =>
-        console.error err
-
+        
     # Stop click propagation on checkboxes to avoid double toggleing a stamp.
     #
     # @param event [Event] the event to be stopped

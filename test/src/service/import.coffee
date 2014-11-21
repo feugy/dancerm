@@ -5,6 +5,7 @@ moment = require 'moment'
 {join} = require 'path'
 {remove, mkdir} = require 'fs-extra'
 {getDbPath} = require '../../../app/script/util/common'
+{init} = require '../../../app/script/model/tools/initializer'
 Import = require '../../../app/script/service/import'
 Dancer = require '../../../app/script/model/dancer'
 Card = require '../../../app/script/model/card'
@@ -15,16 +16,18 @@ Address = require '../../../app/script/model/address'
 
 describe 'Import service tests', ->
 
-  beforeEach (done) ->
-    remove getDbPath(), (err) ->
-      return done err if err?
-      mkdir getDbPath(), done
+  before init
 
+  beforeEach (done) -> 
+    async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+      clazz.drop next
+    , done
+      
   tested = new Import()
 
   describe 'given xlsx files', ->
 
-    it 'should import extract dancers', ->
+    it 'should import extract dancers', (done) ->
       expected = [
         new Address street: '31 rue séverine', city: 'Villeurbanne', zipcode:'69100'
         new Address street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode:'69100', phone: '0662885285'
@@ -51,7 +54,7 @@ describe 'Import service tests', ->
         {address: 3, card: 8},
         {address: 4, card: 9}
       ]
-      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_1.xlsx').then ({models, report}) ->
+      tested.fromFile join(__dirname, '..', '..', 'fixture', 'import_1.xlsx'), (err, models, report) ->
         return done err if err?
         # then all models are present
         expect(models).to.have.lengthOf expected.length
@@ -78,8 +81,9 @@ describe 'Import service tests', ->
         expect(report.worksheets[2].extracted).to.be.equal 0
         expect(report.worksheets[2].name).to.be.equal 'Feuil3'
         expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
+        done()
 
-    it 'should import extract multiple dancers same raw', ->
+    it 'should import extract multiple dancers same raw', (done) ->
       expected = [
         new Address street: '11, route de st m. de gourdans', city: 'Meximieux', zipcode:'01800', phone:'0472697929'
         new Address street: '148, cours emile zola', city: 'Villeurbanne', zipcode: '69100', phone: '0478853765'
@@ -115,7 +119,8 @@ describe 'Import service tests', ->
         {address: 3, card: 7}
       ]
 
-      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_2.xlsx').then ({models, report}) ->
+      tested.fromFile join(__dirname, '..', '..', 'fixture', 'import_2.xlsx'), (err, models, report) ->
+        return done err if err?
         # then all models are present
         expect(models).to.have.lengthOf expected.length
         for model, i in models
@@ -141,10 +146,11 @@ describe 'Import service tests', ->
         expect(report.worksheets[2].extracted).to.be.equal 0
         expect(report.worksheets[2].name).to.be.equal 'Feuil3'
         expect(report.worksheets[2].details).to.be.equal 'Empty worksheet'
+        done()
 
   describe 'given v3 dump files', ->
 
-    it 'should import extract dancers', ->
+    it 'should import extract dancers', (done) ->
       expected = [
         new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
         new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[ 
@@ -157,7 +163,8 @@ describe 'Import service tests', ->
         new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
       ]
 
-      tested.fromFile(join __dirname, '..', '..', 'fixture', 'import_3.json').then ({models, report}) ->
+      tested.fromFile join(__dirname, '..', '..', 'fixture', 'import_3.json'), (err, models, report) ->
+        return done err if err?
         # then all models are present
         expect(report).to.have.property('errors').that.is.empty
         expect(report).to.have.property('byClass').that.is.deep.equal Address: 1, Card: 1, Dancer: 2, DanceClass: 2
@@ -165,6 +172,7 @@ describe 'Import service tests', ->
         for model, i in models
           expect(model).to.be.an.instanceOf expected[i].constructor
           expect(_.omit model.toJSON(), ['created']).to.be.deep.equal _.omit expected[i].toJSON(), ['created']
+        done()
 
   describe 'merge test', ->
 
@@ -186,38 +194,51 @@ describe 'Import service tests', ->
       new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
     ]
 
-    beforeEach ->
-      Promise.all (
-        for model, i in existing
-          model._v = if i in [2, 7, 8] then 1 else 0
-          model.save() 
-      )
+    beforeEach (done) ->
+      i = 0
+      async.eachSeries existing, (model, next) ->
+        model._v = if i in [2, 7, 8] then 1 else 0
+        i++
+        model.save next
+      , done
 
-    it 'should new imported models be added', ->
+    it 'should new imported models be added', (done) ->
       imported = [
         new Address id: 'b393756e94cb', _v: 1, street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode: 69100
         new Dancer id: '0123abc398ee', v:0, cardId: '05928572039c', addressId: 'b393756e94cb', title: 'Mlle', firstname:'Nelly', lastname:'Aguilar', cellphone: '0662885285'
         new Card id: '05928572039c', _v:2, knownBy: ['associationsBiennal']
       ]
 
-      tested.merge(imported).then (report) ->
-        expect(report).to.have.property('byClass').that.deep.equal Dancer: 1, Address: 1, Card: 1
-        expect(report).to.have.property('conflicts').that.is.empty
+      tested.merge imported, (err, byClass, conflicts) ->
+        return done err if err?
+        expect(byClass).to.deep.equal Dancer: 1, Address: 1, Card: 1
+        expect(conflicts).to.be.empty
 
-        expect(Address.find imported[0].id).to.eventually.have.property('street').that.equal imported[0].street
-        expect(Dancer.find imported[1].id).to.eventually.have.property('firstname').that.equal imported[1].firstname
-        expect(Card.find imported[2].id).to.eventually.have.property('knownBy').that.deep.equal imported[2].knownBy
+        Address.find imported[0].id, (err, addr) ->
+          return done err if err?
+          expect(addr).to.have.property('street').that.equal imported[0].street
+          Dancer.find imported[1].id, (err, dancer) ->
+            return done err if err?
+            expect(dancer).to.have.property('firstname').that.equal imported[1].firstname
+            Card.find imported[2].id, (err, card) ->
+              return done err if err?
+              expect(card).to.have.property('knownBy').that.deep.equal imported[2].knownBy
+              done()
 
-    it.skip 'version is not checked anymore\nshould old imported models not be modified', ->
-      tested.merge([
+    it.skip '! version is not checked anymore !\nshould old imported models not be modified', (done) ->
+      tested.merge [
         new Dancer id: 'ea43920b42dc', _v: 0, cardId: '30cb3a48900e', addressId: '3900cc712ba3', title: 'Mme', firstname:'Rachel', lastname:'Toto', birth: '1970-01-01'
-      ]).then (report) ->
-        expect(report).to.have.property('byClass').that.deep.equal {}
-        expect(report).to.have.property('conflicts').that.is.empty
+      ], (err, byClass, conflicts) ->
+        return done err if err?
+        expect(byClass).to.deep.equal {}
+        expect(conflicts).to.be.empty
 
-        expect(Dancer.find 'ea43920b42dc').to.eventually.have.property('lastname').that.equal 'Durand'
+        Dancer.find 'ea43920b42dc', (err, dancer) ->
+          return done err if err?
+          expect(dancer).to.have.property('lastname').that.equal 'Durand'
+          done()
 
-    it.skip 'version is not checked anymore\nshould existing models be added with upper version', ->
+    it.skip '! version is not checked anymore !\nshould existing models be added with upper version', (done) ->
       imported = [
         new Card id: '30cb3a48900e', _v: 2, knownBy: ['Groupon', 'website'], registrations: [
           new Registration season: '2013/2014', charged: 300, period: 'year'
@@ -225,16 +246,19 @@ describe 'Import service tests', ->
       ]
 
       # when merging new and existing dancers
-      tested.merge(imported).then (report) ->
-        expect(report).to.have.property('byClass').that.deep.equal Card: 1
-        expect(report).to.have.property('conflicts').that.is.empty
+      tested.merge imported, (err, byClass, conflicts) ->
+        return done err if err?
+        expect(byClass).to.deep.equal Card: 1
+        expect(conflicts).to.be.empty
 
         # newest imported models have been updated
-        Card.find(imported[0].id).then (result) ->
+        Card.find imported[0].id, (err, result) ->
+          return done err if err?
           expect(result).to.have.property('knownBy').that.deep.equal ['Groupon', 'website']
           expect(result).to.have.property('registrations').that.have.lengthOf 1
+          done()
 
-    it 'should conflicts be detected', ->
+    it 'should conflicts be detected', (done) ->
       imported = [
         new Dancer id: 'ea18ba8a36c9', _v: 1, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083', '00acbfb5e7d6'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
         new Card id: '40b728d54a0d', _v: 1, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 450, period: 'year', payments:[ 
@@ -246,16 +270,22 @@ describe 'Import service tests', ->
       ]
 
       # when merging new and existing dancers
-      tested.merge(imported).then (report) ->
-        expect(report).to.have.property('byClass').that.deep.equal {}
+      tested.merge imported, (err, byClass, conflicts) ->
+        return done err if err?
+        expect(byClass).to.deep.equal {}
 
         # two conflicts have been detected
-        expect(report).to.have.property('conflicts').that.is.has.lengthOf 2
-        expect(report.conflicts[0].existing.toJSON()).to.deep.equal existing[6].toJSON()
-        expect(report.conflicts[0].imported.toJSON()).to.deep.equal imported[0].toJSON()
-        expect(report.conflicts[1].existing.toJSON()).to.deep.equal existing[3].toJSON()
-        expect(report.conflicts[1].imported.toJSON()).to.deep.equal imported[1].toJSON()
+        expect(conflicts).to.have.lengthOf 2
+        expect(conflicts[0].existing.toJSON()).to.deep.equal existing[6].toJSON()
+        expect(conflicts[0].imported.toJSON()).to.deep.equal imported[0].toJSON()
+        expect(conflicts[1].existing.toJSON()).to.deep.equal existing[3].toJSON()
+        expect(conflicts[1].imported.toJSON()).to.deep.equal imported[1].toJSON()
 
         # models have not been changed
-        expect(Dancer.find imported[0].id).to.eventually.have.property('_v').that.equal 1
-        expect(Card.find imported[1].id).to.eventually.have.property('_v').that.equal 1
+        Dancer.find imported[0].id, (err, dancer) ->
+          return done err if err?
+          expect(dancer).to.have.property('_v').that.equal 1
+          Card.find imported[1].id, (err, card) ->
+            return done err if err?
+            expect(card).to.have.property('_v').that.equal 1
+            done()

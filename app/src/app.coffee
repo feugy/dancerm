@@ -13,7 +13,6 @@ ExpandedListCtrl = require '../script/controller/expandedlist'
 PlanningCtrl = require '../script/controller/planning'
 CardCtrl = require '../script/controller/card'
 StatsCtrl = require '../script/controller/stats'
-initializer = require '../script/model/tools/initializer'
 
 console.log "running with angular v#{angular.version.full}"
 
@@ -56,14 +55,6 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
       main: StatsCtrl.declaration
 ]
 
-# application initialization
-app.run ['$rootScope', (rootScope) ->
-  # init model
-  initializer().then -> 
-    console.log "broadcast"
-    rootScope.$broadcast 'model-initialized'
-]
-
 # make export an Angular service
 app.service 'export', ExportService
 app.service 'import', ImportService
@@ -72,7 +63,7 @@ app.service 'dialog', DialogService
 # on close, dump data, with a waiting dialog message
 # @returns the dump promise
 app.close = () ->
-  $injector = angular.element('body').injector()
+  $injector = angular.element('body.app').injector()
   # display waigin message
   $injector.get('$rootScope').$apply =>
     $injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping

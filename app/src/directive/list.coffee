@@ -61,7 +61,7 @@ class ListDirective
     @_waiting = 0
     @_displayedValues = {}
     body.append (@_renderRow dancer, i for dancer, i in @list).join '' 
-    @_promiseResolved()
+    @_callbackEnded()
 
   # **private**
   # Creates the header line for whole list
@@ -91,25 +91,25 @@ class ListDirective
     @columns.forEach (column, i) =>
       value = ''
       if _.isFunction column.attr
-        value = column.attr dancer
+        if column.attr.length is 2
+          # model and callback: put an id to cell, and then change the value when available
+          id = dancer.id + Math.floor Math.random()*100000
+          @_waiting++
+          column.attr dancer, (err, value) =>
+            @_waiting--
+            if err?
+              console.error "failed to resolve #{column.name} of dancer #{dancer.id}: ", err
+            else
+              @$el.find("##{id}").replaceWith @_renderCell dancer, column.name, i, value, true
+            @_callbackEnded()
+          return html.push "<td id='", id, "'></td>"
+        else
+          # just model
+          value = column.attr dancer
       else
         value = dancer[column.attr or column.name]
-
-      if _.isObject(value) and _.isFunction value.then
-        # in case of a promise, put an id to cell, and then change the value when available
-        id = dancer.id + Math.floor Math.random()*100000
-        @_waiting++
-        value.then( (value) =>
-          @$el.find("##{id}").replaceWith @_renderCell dancer, column.name, i, value, true
-          @_waiting--
-          @_promiseResolved()
-        ).catch (err) => 
-          console.error "failed to resolve #{column.name} of dancer #{dancer.id}: ", err
-          @_waiting--
-          @_promiseResolved()
-        html.push "<td id='", id, "'></td>"
-      else
-        html.push @_renderCell dancer, column.name, i, value, column.attr?
+      
+      html.push @_renderCell dancer, column.name, i, value, column.attr?
     html.push '</tr>'
     html.join ''
 
@@ -190,7 +190,7 @@ class ListDirective
 
   # **private**
   # Enable sort when waiting is finished
-  _promiseResolved: =>
+  _callbackEnded: =>
     return unless @_waiting is 0
     @_inProgress = false 
       

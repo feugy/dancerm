@@ -1,3 +1,4 @@
+async = require 'async'
 i18n = require '../labels/common'
 DanceClass = require '../model/danceclass'
 Payment = require '../model/payment'
@@ -21,6 +22,10 @@ class RegistrationDirective
 
   # Array of card's dancer, to display dance classes
   dancers: []
+
+  # Array of arrays of dance classes for this season.
+  # Has the same number of elements as 'dancers'.
+  classesPerDancer: []
   
   # Selected period label
   periodLabel: ''
@@ -35,9 +40,9 @@ class RegistrationDirective
   # @param dialog [Object] Angular's dialog service
   # @param filter [Function] Angular's filters factory
   # @param rootScope [Object] Angular root scope
-  constructor: (scope, element, @dialog, @filter, rootScope) ->
+  constructor: (@scope, element, @dialog, @filter, rootScope) ->
     @$el = $(element)
-    scope.$watchGroup ['ctrl.registration', 'ctrl.dancers'], => @_updateRendering @registration, @dancers
+    @scope.$watchGroup ['ctrl.registration', 'ctrl.dancers'], => @_updateRendering @registration, @dancers
     @_updateRendering @registration, @dancers
 
     # on cancellation, restore previous payments
@@ -73,25 +78,6 @@ class RegistrationDirective
       'balance-right'
     else
       '' 
-
-  # Filter dancers when displaying registered dance classes
-  #
-  # @param dancer [Dancer] tested dancer
-  # @return true if this dancer has classes for this season
-  filterDancer: (dancer) =>
-    # TODO for now, promise are not supported in filters. Use resolve dance classes
-    return unless dancer._danceClasses?
-    # quit at first class of the current season 
-    return true for danceClass in dancer._danceClasses when danceClass.season is @registration.season
-    false
-
-  # Filter dance classes when displaying them
-  #
-  # @param danceClass [DanceClass] tested class
-  # @return true if this dance class belongs to the current season
-  filterClass: (danceClass) => 
-    danceClass?.season is @registration.season
-
   # Invoked when a payment needs to be removed.
   # Confirm operation with a modal popup and proceed to the removal
   #
@@ -118,23 +104,37 @@ class RegistrationDirective
   # @param registration [Registration] new registration value
   # @param dancers [Array<Dancer>] new dancers value
   _updateRendering: (registration, dancers) =>
-    if registration?
+    if @registration?
       @registration?.removeListener 'change', @_onChange
+    if @dancers?
+      dancer?.removeListener 'change', @_onChange for dancer in @dancers
 
     @registration = registration
     @registration?.on 'change', @_onChange
     # get the friendly labels for period
-    @setPeriod @registration.period
+    @setPeriod @registration?.period
 
-    if dancers?
-      dancer?.removeListener 'change', @_onChange for dancer in @dancers
-    @dancers = dancers
+    # early resolve dance class
+    async.map dancers, (dancer, next) =>
+      dancer.getClasses next
+    , (err, danceClasses) =>
+      console.error err if err?
+      @classesPerDancer = []
+      @dancers = []
+      # filter dancers that do not have classes for this registration
+      for dancer, i in dancers
+        classes =  (clazz for clazz in danceClasses[i] when clazz.season is @registration?.season)
+        if classes.length > 0
+          dancer?.on 'change', @_onChange 
+          @classesPerDancer.push classes
+          @dancers.push dancer
 
-    dancer?.on 'change', @_onChange for dancer in @dancers
-    # initialize required payment fields
-    @requiredFields = ([] for payment in @registration.payments)
-    # make a copy for cancellation
-    @_previousPayments = (new Payment payment.toJSON() for payment in @registration.payments)
+      # initialize required payment fields
+      @requiredFields = ([] for payment in @registration?.payments)
+      # make a copy for cancellation
+      @_previousPayments = (new Payment payment.toJSON() for payment in @registration?.payments)
+      # update rendering
+      @scope.apply()
 
   # **private**
   # Value change handler: relay to card parent.

@@ -1,6 +1,6 @@
 _ = require 'lodash'
 moment = require 'moment'
-{each} = require 'async'
+{each, map} = require 'async'
 {readFile, stat} = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
@@ -30,158 +30,150 @@ module.exports = class Import
   # Merges new dancers into existing ones
   # 
   # @param added [Array<Base>] array of imported models
-  # @return promise with object as parameter containing
-  # @option return byClass [Object] number of modified or added models by class (name as key)
-  # @option return conflicts [Array<Object>] conflicted models, in an object containing `existing` and `imported` keys
-  merge: (imported) =>
-    report =
-      byClass: {}
-      conflicts: []
-    Promise.all((
-      for model in imported
-        # use a closure to avoid model erasure
-        ((model) -> 
-          new Promise (resolve, reject) ->
-            # try to find existing model for each imported model, and return an object with both
-            model.constructor.find(model.id).then((existing) ->
-              resolve existing: existing, imported: model
-            ).catch (err) ->
-              unless -1 is err.message.indexOf 'not found'
-                resolve existing: null, imported: model
-              else
-                reject err
-        ) model
-    )).then (processed) =>
-      Promise.all((
-        for {existing, imported} in processed
-          unless existing?
-            # no existing model: save imported model
-            # imported version is above existing one: save imported model
-            className = imported.constructor.name
-            report.byClass[className] = 0 unless className of report.byClass
-            report.byClass[className]++
-            imported.save()
-          else 
-            if JSON.stringify(existing.toJSON()) isnt JSON.stringify imported.toJSON()
-              # existing and imported are not equal: conflict detected
-              report.conflicts.push existing: existing, imported: imported
-            # else
-            # existing version is above imported version: no importation
-            new Promise (resolve) -> resolve()
-      )).then => report
+  # @param done [Function] completion callback invoked with parameters
+  # @option done [Error] an error object or null if no error occured
+  # @option done byClass [Object] number of modified or added models by class (name as key)
+  # @option done conflicts [Array<Object>] conflicted models, in an object containing `existing` and `imported` keys
+  merge: (imported, done) =>
+    byClass = {}
+    conflicts = []
+
+    map imported, (model, next) ->
+      # try to find existing model for each imported model, and return an object with both
+      model.constructor.find model.id, (err, existing) ->
+        return next err if err? and -1 is err.message.indexOf 'not found'
+        next null, existing: existing or null, imported: model
+    , (err, processed) =>
+      return done err if err?
+      map processed, ({existing, imported}, next) ->
+        unless existing?
+          # no existing model: save imported model
+          # imported version is above existing one: save imported model
+          className = imported.constructor.name
+          byClass[className] = 0 unless className of byClass
+          byClass[className]++
+          imported.save next
+        else 
+          if JSON.stringify(existing.toJSON()) isnt JSON.stringify imported.toJSON()
+            # existing and imported are not equal: conflict detected
+            conflicts.push existing: existing, imported: imported
+          # existing version is above imported version: no importation
+          next()
+      , (err) -> done err, byClass, conflicts
 
   # Read the content of an XlsX file, and extract dancers from it
   #
   # @param filePath [String] absolute or relative path to the read file
-  # @return promise with an object as resolve parameter, containing:
-  # @option return models [Array<Base>] an array of extracted models
-  # @option return report [Object] an extraction report with encountered errors
-  fromFile: (filePath) =>
-    new Promise (resolve, reject) =>
-      return reject new Error "no file selected" unless filePath?
-      filePath = path.resolve path.normalize filePath
-      extension = mime.lookup filePath
+  # @param done [Function] a completion callback invoked with parameters:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done models [Array<Base>] an array of extracted models
+  # @option done report [Object] an extraction report with encountered errors
+  fromFile: (filePath, done) =>
+    return done new Error "no file selected" unless filePath?
+    filePath = path.resolve path.normalize filePath
+    extension = mime.lookup filePath
 
-      # check file size
-      console.log "tries to open #{filePath}..."
-      stat filePath, (err, stats) =>
-        return reject err if err?
-        return reject new Error 'file is empty' if stats.size is 0
+    # check file size
+    console.log "tries to open #{filePath}..."
+    stat filePath, (err, stats) =>
+      return done err if err?
+      return done new Error 'file is empty' if stats.size is 0
 
-        # Xlsx content
-        if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-          console.log "try to extract from xlsx..."
-          readFile filePath, (err, data) =>
-            return reject err if err?
+      # Xlsx content
+      if extension is 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        console.log "try to extract from xlsx..."
+        readFile filePath, (err, data) =>
+          return done err if err?
+          try 
+            # jszip only accept base64 url encoded content
+            content = xlsx data.toString 'base64'
+
+            # read at least one worksheet
+            return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
+            
+            # extracted models
+            models = 
+              Address: []
+              Card: []
+              Dancer: []
+            # extractionreport
+            report =
+              readTime: content.processTime
+              modifiedBy: content.lastModifiedBy 
+              modifiedOn: moment content.modified
+              worksheets: []
+            start = Date.now()
+            # read all worksheets
+            for worksheet in content.worksheets
+              @_extractWorksheet models, worksheet, report
+
+            # and returns results
+            report.extractTime = Date.now()-start-report.readTime
+            done null, models.Address.concat(models.Card).concat(models.Dancer), report
+          catch exc
+            return done exc
+
+      # Json content
+      else if extension is 'application/json'
+        start =  Date.now()
+        readFile filePath, 'utf8', (err, data) =>
+          return done err if err?
+          report = 
+              readTime: Date.now()-start
+          unless -1 is data.indexOf Export.separator
+            console.log "try to extract from a v3 dump..."
+            @_dumpV3 data, report, (err, models) =>
+              return done err if err?
+              report.extractTime = Date.now()-start-report.readTime
+              done null, models, report
+          else
+            console.log "try to extract from a v2 dump..."
             try 
-              # jszip only accept base64 url encoded content
-              content = xlsx data.toString 'base64'
-
-              # read at least one worksheet
-              return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
-              
-              # extracted models
-              models = 
-                Address: []
-                Card: []
-                Dancer: []
-              # extractionreport
-              report =
-                readTime: content.processTime
-                modifiedBy: content.lastModifiedBy 
-                modifiedOn: moment content.modified
-                worksheets: []
-              start = Date.now()
-              # read all worksheets
-              for worksheet in content.worksheets
-                @_extractWorksheet models, worksheet, report
-
+              # parse content
+              content = JSON.parse data
+              return done new Error "no dancers found in file" unless content?.dancers?.length > 0
+              dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
               # and returns results
               report.extractTime = Date.now()-start-report.readTime
-              resolve models: models.Address.concat(models.Card).concat(models.Dancer), report: report
+              done null, dancers, report
             catch exc
-              return reject exc
-
-        # Json content
-        else if extension is 'application/json'
-          start =  Date.now()
-          readFile filePath, 'utf8', (err, data) =>
-            return reject err if err?
-            report = 
-                readTime: Date.now()-start
-            unless -1 is data.indexOf Export.separator
-              console.log "try to extract from a v3 dump..."
-              @_dumpV3(data, report).then((models) =>
-                report.extractTime = Date.now()-start-report.readTime
-                resolve models: models, report: report
-              ).catch (err) => reject err
-            else
-              console.log "try to extract from a v2 dump..."
-              try 
-                # parse content
-                content = JSON.parse data
-                return reject new Error "no dancers found in file" unless content?.dancers?.length > 0
-                dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
-                # and returns results
-                report.extractTime = Date.now()-start-report.readTime
-                resolve models: dancers, report: report
-              catch exc
-                return reject exc
-        else
-          return reject new Error "unsupported format #{extension}"
+              return done exc
+      else
+        return done new Error "unsupported format #{extension}"
 
   # Extract from version 3 dump
   #
   # @param data [String] imported content, as string
   # @param report [Object] extraction report, that will be filled with encountered errors
-  # @return promise with array of object as resolve parameter. Contains the list (that may be empty) of extracted models, that may be dance classes, dancers, card or addresses.
-  _dumpV3: (data, report) =>
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done models [Array<Object>] list (that may be empty) of extracted models, that may be dance classes, dancers, card or addresses.
+  _dumpV3: (data, report, done) =>
     start = Date.now()
     report.errors = []
     report.byClass = {}
     models = []
-    new Promise (resolve, reject) =>
-      # identifies model class
-      currentClass = null
-      className = ''
-      for line, i in data.split '\n'
-        if 0 is line.indexOf Export.separator
-          # get the current class
-          className = line.replace(Export.separator, '').trim()
-          currentClass = classes[className]
-          unless currentClass?
-            report.errors.push "line #{i}: unsupported model class #{className}"
-          else
-            report.byClass[className] = 0
-        else if currentClass?
-          # rehydrate model
-          try
-            models.push new currentClass JSON.parse line
-            report.byClass[className]++
-          catch err
-            report.errors.push "line #{i}: failed to parse model #{className}: #{err}"
-      # TODO check relationnal constraints
-      resolve models
+    # identifies model class
+    currentClass = null
+    className = ''
+    for line, i in data.split '\n'
+      if 0 is line.indexOf Export.separator
+        # get the current class
+        className = line.replace(Export.separator, '').trim()
+        currentClass = classes[className]
+        unless currentClass?
+          report.errors.push "line #{i}: unsupported model class #{className}"
+        else
+          report.byClass[className] = 0
+      else if currentClass?
+        # rehydrate model
+        try
+          models.push new currentClass JSON.parse line
+          report.byClass[className]++
+        catch err
+          report.errors.push "line #{i}: failed to parse model #{className}: #{err}"
+    # TODO check relationnal constraints
+    done null, models
     
   # **private**
   # Extract dancers from a given worksheet data matrix

@@ -1,4 +1,5 @@
 _ = require 'lodash'
+async = require 'async'
 Dancer = require '../model/dancer'
 Address = require '../model/address'
 Card = require '../model/card'
@@ -52,61 +53,70 @@ module.exports = class ConflictsController
   # @param rawConflicts [Object] list of conflicts, with `existing` and `imported` properties
   # @param dialog [Object] current dialog instance
   # @param sce [Object] Angular's Strict Contextual Escaping facility
-  constructor: (@rootScope, rawConflicts, @_dialog, @sce) ->
+  #
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no problem occured
+  constructor: (@rootScope, rawConflicts, @_dialog, @sce, done = ->) ->
+    _done = (err) ->
+      console.error err if err?
+      done err
     @conflicts = []
     @rank = -1
     # first, get dancers
     dancers = (imported for {imported} in rawConflicts when imported instanceof Dancer)
     # then add missing addresses and card
-    resolvable = []
+    extraDancers = []
     resolved = []
-    for {imported} in rawConflicts 
+    async.each rawConflicts, ({imported}, next) =>
       found = false
       if imported instanceof Card
         # search for imported dancers with this card
         for dancer in dancers when dancer.cardId is imported.id
           found = true
-          dancer.card = imported
+          dancer.setCard imported
           break
         unless found
           resolved.push imported
-          resolvable.push Dancer.findWhere cardId: imported.id 
+          return Dancer.findWhere {cardId: imported.id}, (err, dancer) =>
+            extraDancers.push dancer unless err?
+            next err
       else if imported instanceof Address  
         # search for imported dancers with this address
         for dancer in dancers when dancer.addressId is imported.id
           found = true
-          dancer.address = imported
+          dancer.setAddress imported
           break
         unless found
           resolved.push imported
-          resolvable.push Dancer.findWhere addressId: imported.id
-
-    # add extra dancers to manage addresses and cards
-    Promise.all(resolvable).then((extraDancers) =>
+          return Dancer.findWhere {addressId: imported.id}, (err, dancer) =>
+            extraDancers.push dancer unless err?
+            next err  
+      next()
+    , (err) =>
+      return _done err if err?
+      # add extra dancers to manage addresses and cards
       ids = (id for {id} in dancers)
       for [dancer],i in extraDancers
         ids.push dancer.id 
         # use a fake dancer to carry the modified address or card
         fake = new Dancer dancer.toJSON()
         if resolved[i] instanceof Address
-          # TOREMOVE console.log "use imported address #{resolved[i].id} for fake dancer #{fake.id}"
-          fake.address = resolved[i]
+          fake.setAddress resolved[i]
         else
-          # TOREMOVE console.log "use imported card #{resolved[i].id} for fake dancer #{fake.id}"
-          fake.card = resolved[i]
+          fake.setCard resolved[i]
         dancers.push fake
       # for all, get existing dancers
-      Dancer.findWhere(_id: $in: ids).then (existings) =>
+      Dancer.findWhere {_id: $in: ids}, (err, existings) =>
+        return _done err if err?
         # at last, push existing and imported dancers aside with each other
         for existing in existings
           @conflicts.push existing: existing, imported: _.findWhere dancers, id: existing.id
         # get all possible dance classes for registrations
-        DanceClass.findAll().then (danceClasses) => 
+        DanceClass.findAll (err, danceClasses) => 
+          return _done err if err?
           @danceClasses = {}
           @danceClasses[danceClass.id] = danceClass for danceClass in danceClasses
-          @loadNext()
-    ).catch (err) =>
-      console.error err
+          @loadNext _done
 
   # **private**
   # Get dance class ids for a given season.
@@ -199,11 +209,13 @@ module.exports = class ConflictsController
   # - imported: imported value
   # - useImported: boolean indicating which value is selected
   #
-  # @return a promise that when fields attribute is ready.
-  loadNext: =>
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no problem occured
+  loadNext: (done = ->) =>
     @rank++
     if @rank is @conflicts.length
-      return @_dialog.close()
+      @_dialog.close()
+      return done()
     # get card
     existing = @conflicts[@rank].existing
     imported = @conflicts[@rank].imported
@@ -220,7 +232,8 @@ module.exports = class ConflictsController
         useImported: true
 
     # check address fields
-    Promise.all([existing.address, imported.address]).then( ([existingAddress, importedAddress]) =>
+    async.map [existing, imported], ((model, next) -> model.getAddress next), (err, [existingAddress, importedAddress]) =>
+      return done err if err?
       # check if address model has entierly changed
       if existing.addressId isnt imported.addressId
         @fields.push 
@@ -241,7 +254,8 @@ module.exports = class ConflictsController
             useImported: true
 
       # check card fields
-      Promise.all([existing.card, imported.card]).then( ([existingCard, importedCard]) =>
+      async.map [existing, imported], ((model, next) -> model.getCard next), (err, [existingCard, importedCard]) =>
+        return done err if err?
         # check if card model has entierly changed
         if existing.cardId isnt imported.cardId
           @fields.push 
@@ -361,12 +375,9 @@ module.exports = class ConflictsController
 
         if @fields.length is 0
           # no conflicts detected !
-          @loadNext()
-        else
-          @rootScope.$apply()
-      )
-    ).catch (err) =>
-      console.error err
+          return @loadNext done
+        @rootScope.$apply()
+        done()
 
   # Get all selected values, and save the existing model
   save: =>
@@ -399,9 +410,11 @@ module.exports = class ConflictsController
       saveable[modified.id] = modified if modified.id?
 
     # save models
-    Promise.all((model.save() for id, model of saveable))
-    .then(@loadNext)
-    .catch (err) => console.error err
+    async.each (model for id, model of saveable), (model, next) -> 
+      model.save next
+    , (err) =>
+      return console.error err if err?
+      @loadNext()
 
   # Dialog cancellation: after confirmation, stop conflict resolution.
   #

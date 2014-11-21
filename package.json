@@ -12,7 +12,7 @@
     "fs-extra": "0.10.0",
     "mime": "1.2.11",
     "moment": "2.7.0",
-    "nedb": "0.11.0",
+    "tingodb": "0.3.0",
     "node-zip": "1.1.0",
     "lodash": "2.4.1",
     "underscore.string": "2.3.3",
@@ -21,7 +21,6 @@
   "devDependencies": {
     "chai": "1.9.2",
     "chai-as-promised": "4.1.1",
-    "es6-promise": "1.0.0",
     "gulp": "3.8.9",
     "gulp-coffee": "2.2.0",
     "gulp-download": "0.0.1",

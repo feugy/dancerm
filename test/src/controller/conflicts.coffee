@@ -1,5 +1,7 @@
 _ = require 'lodash'
+async = require 'async'
 {expect} = require 'chai'
+{init} = require '../../../app/script/model/tools/initializer'
 Address = require '../../../app/script/model/address'
 Card = require '../../../app/script/model/card'
 DanceClass = require '../../../app/script/model/danceclass'
@@ -30,16 +32,24 @@ describe 'Conflicts controller tests', ->
     new DanceClass id: '00117fb1e188', _v: 0, season: '2013/2014', kind: 'Initiation', color: 'color1', level: '5/7 ans', start: 'Mon 17:00', end: 'Mon 17:45', teacher: 'Anthony', hall: 'Gratte-ciel 2'
     new DanceClass id: '0249f2c4b254', _v: 0, season: '2014/2015', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '1 8/12 ans', start: 'Wed 16:30', end: 'Wed 17:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
   ]
-  beforeEach -> 
-    Promise.all((ModelClass.drop() for ModelClass in [Card, DanceClass, Dancer, Address])).then => 
-      Promise.all (model.save() for model, i in models)
+
+  before init
+
+  beforeEach (done) -> 
+    async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+      clazz.drop next
+    , (err) ->
+      return done err if err?
+      async.each models, (model, next) ->
+        model.save next
+      , done
 
   # build tested controller
-  buildController = (conflicts, close = (->), apply = ->) ->
-    new ConflictsController {$apply: apply}, conflicts, {close: close}, {trustAsHtml: (obj) -> obj}
+  buildController = (conflicts, close, done, apply = ->) ->
+    new ConflictsController {$apply: ->}, conflicts, {close: close}, {trustAsHtml: (obj) -> obj}, done
 
   it 'should not displayed conflict if no conflicts found', (done) ->
-    buildController [], done, => done new Error '$apply must not be invoked'
+    buildController [], done, (->), => done new Error '$apply must not be invoked'
 
   it 'should displayed first conflict at construction', (done) ->
     newName = 'Mélanie'
@@ -49,7 +59,8 @@ describe 'Conflicts controller tests', ->
     },{
       existing: models[7]
       imported: new Dancer _.extend models[7].toJSON(), cellphone: '0601020304'
-    }], (=> new Error 'close must not be called'), =>
+    }], (=> done new Error 'close must not be called'), (err) =>
+      return done err if err?
       expect(ctrl.fields).to.have.lengthOf 1
       # then firstname change was identified
       expect(ctrl.fields[0]).to.have.property('label').that.equal 'firstname'
@@ -64,7 +75,8 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [
       existing: models[0]
       imported: new Address _.extend models[0].toJSON(), street: newStreet, phone: newPhone
-    ], (=> new Error 'close must not be called'), =>
+    ], (=> done new Error 'close must not be called'), (err) =>
+      return done err if err?
       expect(ctrl.fields).to.have.lengthOf 2
       # then street change was identified
       expect(ctrl.fields[0]).to.have.property('label').that.equal 'street'
@@ -95,7 +107,8 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [
       existing: models[3]
       imported: newCard
-    ], (=> new Error 'close must not be called'), =>
+    ], (=> done new Error 'close must not be called'), (err) =>
+      return done err if err?
       expect(ctrl.fields).to.have.lengthOf 3
       # then card's change was identified
       expect(ctrl.fields[0]).to.have.property('label').that.equal 'knownBy'
@@ -130,7 +143,8 @@ describe 'Conflicts controller tests', ->
       imported: new Dancer _.extend models[8].toJSON(), firstname: newName
     }], (=> 
       # then model was saved
-      Dancer.find(models[8].id).then (saved) =>
+      Dancer.find models[8].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
         done()
     ), =>
@@ -147,7 +161,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Dancer.find(models[6].id).then (saved) =>
+      Dancer.find models[6].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[6].toJSON(), _v: models[6]._v+1, danceClassIds: [models[11].id, models[12].id]
         done()
     ), =>
@@ -171,7 +186,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Dancer.find(models[7].id).then (saved) =>
+      Dancer.find models[7].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, danceClassIds: [models[10].id]
         done()
     ), =>
@@ -192,7 +208,8 @@ describe 'Conflicts controller tests', ->
       imported: new Dancer _.extend models[7].toJSON(), addressId: models[1].id
     }], (=> 
       # then model was saved
-      Dancer.find(models[7].id).then (saved) =>
+      Dancer.find models[7].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, addressId: models[1].id
         done()
     ), =>
@@ -213,7 +230,8 @@ describe 'Conflicts controller tests', ->
       imported: new Address _.extend models[1].toJSON(), zipcode: newZipcode
     }], (=> 
       # then model was saved
-      Address.find(models[1].id).then (saved) =>
+      Address.find models[1].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[1].toJSON(), _v: models[1]._v+1, zipcode: newZipcode
         done()
     ), =>
@@ -237,7 +255,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[3].id).then (saved) =>
+      Card.find models[3].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: models[3].toJSON().registrations.concat [newRegistration.toJSON()]
         done()
     ), =>
@@ -267,7 +286,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[3].id).then (saved) =>
+      Card.find models[3].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: [registration.toJSON()]
         done()
     ), =>
@@ -298,7 +318,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[3].id).then (saved) =>
+      Card.find models[3].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: []
         done()
     ), =>
@@ -329,7 +350,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[4].id).then (saved) =>
+      Card.find models[4].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[4].toJSON(), _v: models[4]._v+1, registrations: [_.extend models[4].registrations[0].toJSON(), payments: [newPayment.toJSON()]]
         done()
     ), =>
@@ -353,7 +375,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[3].id).then (saved) =>
+      Card.find models[3].id, (err, saved) =>
+        return done err if err?
         copy = _.extend models[3].toJSON(), _v: models[3]._v+1
         copy.registrations[0].payments[1].type = newType
         expect(saved.toJSON()).to.deep.equal copy
@@ -379,7 +402,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[3].id).then (saved) =>
+      Card.find models[3].id, (err, saved) =>
+        return done err if err?
         copy = _.extend models[3].toJSON(), _v: models[3]._v+1
         copy.registrations[0].payments.pop()
         expect(saved.toJSON()).to.deep.equal copy
@@ -403,7 +427,8 @@ describe 'Conflicts controller tests', ->
       imported: new Dancer _.extend models[7].toJSON(), cardId: models[4].id
     }], (=> 
       # then model was saved
-      Dancer.find(models[7].id).then (saved) =>
+      Dancer.find models[7].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, cardId: models[4].id
         done()
     ), =>
@@ -436,7 +461,8 @@ describe 'Conflicts controller tests', ->
       imported: modified
     }], (=> 
       # then model was saved
-      Card.find(models[5].id).then (saved) =>
+      Card.find models[5].id, (err, saved) =>
+        return done err if err?
         expect(saved.toJSON()).to.deep.equal _.extend modified.toJSON(), _v: models[5]._v+1
         done()
     ), =>

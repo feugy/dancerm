@@ -1,4 +1,5 @@
 _ = require 'lodash'
+async = require 'async'
 Persisted = require './tools/persisted'
 Registration = require './registration'
 # because of circular dependency
@@ -63,16 +64,18 @@ module.exports = class Card extends Persisted
   # The other card will be removed
   #
   # @param other [Card] other card that will be merged into this one
-  # @return a promise without any resolve parameter
-  merge: (other) =>
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  merge: (other, done) =>
     # find card's dancers
-    Dancer.findWhere(cardId: other.id).then (dancers) =>
+    Dancer.findWhere {cardId: other.id}, (err, dancers) =>
+      return done err if err?
       # moves them to this card
-      Promise.all((
-        for dancer in dancers
-          dancer.cardId = @id
-          dancer.save()
-      )).then =>
+      async.each dancers, (dancer, next) =>
+        dancer.cardId = @id
+        dancer.save next
+      , (err) =>
+        return done err if err?
         # merge known by
         @knownBy.push mean for mean in other.knownBy when not(mean in @knownBy)
         # merge registrations
@@ -89,8 +92,8 @@ module.exports = class Card extends Persisted
             @registrations.push imported
         # emit global change
         @emit 'change'
-        # removes other card, returning the promise
-        other.remove()
+        # removes other card
+        other.remove done
 
   # **private**
   # Emit change event when registration have changed

@@ -79,7 +79,10 @@ module.exports = class StatsController extends ListController
 
     # refresh teacher list with all possible teachers
     possibleSeasons = if @search.seasons.length is 0 then @seasons else @search.seasons
-    Promise.all((DanceClass.getTeachers season for season in possibleSeasons)).then (teachersBySeason) =>
+    map possibleSeasons, (season, next) ->
+      DanceClass.getTeachers season, next
+    , (err, teachersBySeason) =>
+      return console.error err if err?
       @search.teachers = []
       @teachers = _.chain(teachersBySeason).flatten().uniq().value().sort()
       # and at least trigger search
@@ -139,8 +142,18 @@ module.exports = class StatsController extends ListController
       @rootScope.$apply()
 
     console.log "compute statistics..."
-    Promise.all((dancer.card for dancer in @list)).then((cards) =>
-      Promise.all((dancer.danceClasses for dancer in @list)).then (danceClasses) =>
+    map @list, (dancer, next) ->
+      dancer.getCard next
+    , (err, cards) =>
+      if err?
+        @dismiss()
+        return console.error err
+      map @list, (dancer, next) ->
+        dancer.getClasses next
+      , (err, danceClasses) =>
+        if err?
+          @dismiss()
+          return console.error err
         dueCards = []
         for card, i in cards
           # cast down known by
@@ -200,6 +213,3 @@ module.exports = class StatsController extends ListController
         console.log "statistics computed in #{Date.now()-start} ms"
         @workInProgress = false
         @rootScope.$apply()
-    ).catch (err) =>
-      console.error err
-      @dismiss()

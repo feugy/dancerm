@@ -40,23 +40,23 @@ module.exports = class SearchController
   # Search within existing dancers a match on lastname
   #
   # @param typed [String] typed string
-  # @return a promise of matching dancers
-  search: (typed) =>
+  # @param done [Function] completion callback, invoked with arguments
+  # @option done err [Error] an error object or null if no error occured
+  # @option done dancers [Array<Dancer>] a list (that may be empty) of matching dancers
+  search: (typed, done) =>
     # disable if request in progress
     return [] if @_reqInProgress
     @_reqInProgress = true
     # prepare search conditions
     typed = typed.toLowerCase()
-    new Promise (resolve, reject) =>
-      # find matching dancers
-      Dancer.findWhere(lastname: new RegExp "^#{typed}", 'i').then((models) => 
-        @_reqInProgress = false
-        # removes models that belongs to the existing's card
-        resolve (model for model in models when model.cardId isnt @existing.cardId)
-      ).catch (err) ->
-        @_reqInProgress = false
+    # find matching dancers
+    Dancer.findWhere {lastname: new RegExp "^#{typed}", 'i'}, (err, models) => 
+      @_reqInProgress = false
+      if err?
         console.error err
-        reject err
+        return done err
+      # removes models that belongs to the existing's card
+      done null, (model for model in models when model.cardId isnt @existing.cardId)
 
   # Dialog closure method: will transfer to the dialog parent the searched dancer if confirmed
   #

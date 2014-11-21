@@ -1,11 +1,11 @@
 {expect} = require 'chai'
-{each} = require 'async'
+{each, map, eachSeries} = require 'async'
 _ = require 'lodash'
 path = require 'path'
-rimraf = require 'rimraf'
-{exists, readFile, ensureDir} = require 'fs-extra'
+{exists, readFile, ensureDir, remove} = require 'fs-extra'
 Export = require '../../../app/script/service/export'
 Import = require '../../../app/script/service/import'
+{init} = require '../../../app/script/model/tools/initializer'
 Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'
 Registration = require '../../../app/script/model/registration'
@@ -51,26 +51,40 @@ describe 'Export service tests', ->
 
   before (done) ->
     @timeout 10000
-    rimraf getDbPath(), ->
-      ensureDir getDbPath(), ->
-        Promise.all((danceClass.save() for danceClass in danceClasses)).then((_danceClasses) ->
-          Promise.all((address.save() for address in addresses)).then (_addresses) ->
-            Promise.all((card.save() for card in cards)).then (_cards) ->
+    init (err) ->
+      return done err if err?
+      each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+        clazz.drop next
+      , (err) -> 
+        return done err if err?
+        map danceClasses, (danceClass, next) -> 
+          danceClass.save next
+        , (err, _danceClasses) ->
+          return done err if err?
+          map addresses, (address, next) ->
+            address.save next
+          , (err, _addresses) ->
+            return done err if err?
+            map cards, (card, next) ->
+              card.save next, 
+            , (err, _cards) ->
+              return done err if err?
               cards = [_cards[0], _cards[1], _cards[2], _cards[2]]
               addresses = [_addresses[0], _addresses[0], _addresses[1], _addresses[2]]
-              Promise.all((for dancer, i in dancers
-                dancer.card = cards[i]
-                dancer.address = addresses[i]
-                dancer.save()
-              )).then ->
-                done()
-        ).catch done
+              i = 0
+              eachSeries dancers, (dancer, next) ->
+                dancer.setCard cards[i]
+                dancer.setAddress addresses[i]
+                i++
+                dancer.save next
+              , done
 
   it 'should export base as compact format', (done) ->
     @timeout 30000
     # when exporting the list into a file
     out = path.join __dirname, '..', '..', 'fixture', 'out.dump.json'
-    tested.dump(out).then(() =>
+    tested.dump out, (err) ->
+      return done err if err?
       # then file exists
       exists out, (fileExists) =>
         expect(fileExists).to.be.true
@@ -90,14 +104,17 @@ describe 'Export service tests', ->
                 else unless attr in ['registrations', 'danceClassIds']
                   expect(content).to.include "\"#{attr}\":\"#{value}\""
           done()
-    ).catch done
+
+  it.skip '! TODO !\nshould export only last saved values', ->
 
   it 'should export dancers list into xlsx file', (done) ->
     # when exporting the list into a file
     out = path.join(__dirname, '..', '..', 'fixture', 'out.export_1.xlsx')
-    tested.toFile(out, dancers).then( ->
+    tested.toFile out, dancers, (err) ->
+      return done err if err?
       # then file can be imported
-      importer.fromFile(out).then(({models}) ->
+      importer.fromFile out, (err, models) ->
+        return done err if err?
         expect((model for model in models when model instanceof Dancer)).to.have.lengthOf dancers.length
         # then all dancers were properly extracted
         for expectedDancer in dancers
@@ -115,5 +132,3 @@ describe 'Export service tests', ->
           expect(card, "#{expectedCard.street} not found").to.exist
           expect(JSON.stringify _.omit card.toJSON(), 'id', '_v', 'registrations').to.be.deep.equal JSON.stringify _.omit expectedCard.toJSON(), 'id', '_v', 'registrations'
         done()
-      ).catch (err) -> done "Failed to import from generated file: #{err}"
-    ).catch (err) -> done "Failed to export to file #{err}"

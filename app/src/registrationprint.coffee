@@ -9,6 +9,7 @@ moment = require 'moment'
 _ = require 'lodash'
 _str = require 'lodash.string'
 _.mixin _str.exports()
+async = require 'async'
 
 process.on 'uncaughtException', dumpError
 
@@ -63,10 +64,17 @@ $(win.window).on 'load', ->
       # get data from mother window
       @registration = _.findWhere window.card.registrations, season: window.season 
       # get card dancers
-      Dancer.findWhere(cardId: window.card.id).then((dancers) =>
+      Dancer.findWhere {cardId: window.card.id}, (dancers, err) =>
+        return console.error err if err?
         @dancers = dancers
-        Promise.all((dancer.address for dancer in @dancers)).then (addresses) =>
-          Promise.all((dancer.danceClasses for dancer in @dancers)).then (danceClasses) =>
+        async.map @dancers, (dancer, next) -> 
+          dancer.getAddress next
+        , (err, addresses) =>
+          return console.error err if err?
+          async.map @dancers, (dancer, next) -> 
+            dancer.getClasses next
+          , (err, danceClasses) =>
+            return console.error err if err?
             @addresses = addresses
             @danceClasses = []
             # only keep dance class for this season
@@ -83,7 +91,6 @@ $(win.window).on 'load', ->
             # set window title
             window.document?.title = filter('i18n') 'ttl.print', args: names: @names
             rootScope.$apply()
-      ).catch (err) => console.log err
 
     # Retrieve home phone from address
     #

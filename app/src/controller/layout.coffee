@@ -103,32 +103,30 @@ module.exports = class LayoutController
       dialog = @dialog.messageBox i18n.ttl.import, i18n.msg.importing
     
       msg = null
-      displayEnd = =>
+      displayEnd = (err) =>
+        if err?
+          console.error "got error", err
+          msg = _.sprintf i18n.err.importFailed, err.message
         _.delay => 
           @rootScope.$apply =>
             dialog.close()
-            console.log "coucou", i18n.ttl.import
             @dialog.messageBox(i18n.ttl.import, msg, [label: i18n.btn.ok]).result.then =>
               # refresh all
               @rootScope.$broadcast 'model-imported'
         , 100
 
-      @import.fromFile(filePath).then(({models, report}) =>
-        throw new Error "No dancers found" if models?.length is 0
+      @import.fromFile filePath, (err, models, report) =>
+        return displayEnd err if err?
         console.info "importation report:", report
         msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
 
         # get all existing dancers
-        @import.merge(models).then (report) =>
-          console.info "merge report:", report
+        @import.merge models, (err, byClass, conflicts) =>
+          return displayEnd err if err
+          console.info "merge report:", byClass, conflicts
           # resolve conflicts one by one
-          @_resolveConflicts report.conflicts unless report.conflicts.length is 0
-      ).then( =>
-        displayEnd()
-      ).catch (err) => 
-        console.error "got error", err
-        msg = _.sprintf i18n.err.importFailed, err.message
-        displayEnd()
+          return displayEnd() if conflicts.length is 0
+          @_resolveConflicts conflicts.then displayEnd
 
     dialog.trigger 'click'
     null

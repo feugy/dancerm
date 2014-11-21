@@ -53,7 +53,9 @@ class DancerDirective
   #
   # @param attr [String] matching attribute name
   # @param typed [String] typed string
-  # @return a promise of matching dancers
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done models [Array<Dancer>] list (that may be empty) of matching dancers
   findByAttr: (attr, typed) =>
     # disable if request in progress
     return [] if @_reqInProgress
@@ -62,15 +64,13 @@ class DancerDirective
     typed = typed.toLowerCase()
     condition = {}
     condition[attr] = new RegExp "^#{typed}", 'i'
-    new Promise (resolve, reject) =>
-      # find matching dancers
-      Dancer.findWhere(condition).then((models) => 
-        @_reqInProgress = false
-        resolve models
-      ).catch (err) ->
-        @_reqInProgress = false
+    # find matching dancers
+    Dancer.findWhere condition, (err, models) => 
+      @_reqInProgress = false
+      if err?
         console.error err
-        reject err
+        return done err
+      done null, models
 
   # Invoked when date change in the date picker
   # Updates the dancer's birth date

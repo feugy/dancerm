@@ -1,4 +1,5 @@
 _ = require 'lodash'
+i18n = require  '../labels/common'
 Dancer = require  '../model/dancer'
 LayoutController = require './layout'
   
@@ -24,11 +25,11 @@ module.exports = class ListController extends LayoutController
   columns: [
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
-    {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration?.certified(dancer) or false
+    {name: 'certified', title: 'lbl.certified', attr: (dancer, done) -> 
+      dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
     }
-    {name: 'due', title: 'lbl.due', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration?.due() or 0
+    {name: 'due', title: 'lbl.due', attr: (dancer, done) -> 
+      dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
     }
   ]
 
@@ -41,6 +42,7 @@ module.exports = class ListController extends LayoutController
     super parentArgs...
     @_searchPending = false
     @allowEmpty = false
+    console.log "youhou !!!"
 
     # refresh search when asked
     @rootScope.$on 'search', @makeSearch
@@ -56,8 +58,8 @@ module.exports = class ListController extends LayoutController
   # Trigger the search based on search global descriptor.
   # Global list will be updated at the search end.
   makeSearch: =>
-    return if @_searchPending
-    console.log "search for", @search
+    console.log "search for", @search, @_searchPending
+    #return if @_searchPending
     # store into local storage for reload
     localStorage.search = JSON.stringify @search
     conditions = {}
@@ -83,14 +85,13 @@ module.exports = class ListController extends LayoutController
     # clear list content, without reaffecting it
     return @_displayResults [] if _.isEmpty(conditions) and not @allowEmpty
     @_searchPending = true
-    Dancer.findWhere(conditions).then((dancers) =>
+    Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
-      # sort and update list content, without reaffecting the list
-      @_displayResults _.sortBy dancers, 'lastname'
-      @rootScope.$apply()
-    ).catch (err) =>
-      @_searchPending = false
-      @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
+      if err?
+        @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
+      else
+        # sort and update list content, without reaffecting the list
+        @_displayResults _.sortBy dancers, 'lastname'
       @rootScope.$apply()
 
   # @return true if the current list concerned a dance class
@@ -107,7 +108,7 @@ module.exports = class ListController extends LayoutController
       preview.list = @list
     catch err
       console.error err
-    # a bug obviously
+    # TODO a bug obviously
     global.console = window.console
 
   # **private**

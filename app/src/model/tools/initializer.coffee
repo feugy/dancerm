@@ -1,7 +1,8 @@
 _ = require 'lodash'
 moment = require 'moment'
 async = require 'async'
-DanceClass = require '../danceclass'
+{ensureFile} = require 'fs-extra'
+{getDbPath} = require '../../util/common'
 
 plannings = [{
   season: '2013/2014'
@@ -109,11 +110,16 @@ plannings = [{
 }]
 
 # Merge existing and expected dance classes of a given planning
+#
 # @param planning [Object] expected planning with season and classes properties
-# @return a promise without any resolve arguments
-mergePlanning = (planning) ->
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
+mergePlanning = (planning, done) ->
   console.log "check planning #{planning.season}"
-  DanceClass.getPlanning(planning.season).then (danceClasses) ->
+  # lazy request to avoid circular dependencies between persisted and initializer
+  DanceClass = require('../danceclass')
+  DanceClass.getPlanning planning.season, (err, danceClasses) ->
+    return done err if err?
     old = _.invoke danceClasses, 'toJSON'
 
     # merge with existing classes, and add new ones
@@ -133,15 +139,42 @@ mergePlanning = (planning) ->
     toRemove = (danceClass for danceClass in danceClasses when not _.findWhere(planning.classes, kind: danceClass.kind, start: danceClass.start)?)
     danceClasses = _.difference danceClasses, toRemove
 
-    if _.isEqual old, _.invoke danceClasses, 'toJSON'
-      return new Promise (resolve) -> resolve()
+    return done null if _.isEqual old, _.invoke danceClasses, 'toJSON'
     console.log "save #{planning.season} new classes"
-    Promise.all (danceClass.save() for danceClass in danceClasses)
+    async.each danceClasses, (danceClass, next) -> 
+      danceClass.save next
+    , done
 
-# Allow to initialize storage with a 2013 and 2014 planning.
-# Inefective if some plannings are already present.
-#
-# @return a promise without a boolean argument which is true if the planning was initialized, false if some models are already present
-module.exports = () ->
-  # update planning for seasons
-  Promise.all (mergePlanning planning for planning in plannings)
+db = null
+
+module.exports = 
+
+  # Retreived Unic reference to database collection, once init was called.
+  # 
+  # @param name [String] expected collection name
+  # @return the expected collection object
+  # @throw an error if database was not initialized 
+  getCollection: (name) -> 
+    throw new Error 'database not initialized !' unless db?
+    db.collection name
+
+  # Database initialization function
+  # Allow to initialize storage with a 2013 and 2014 planning.
+  # Ineffective if some plannings are already present.
+  #
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  init: (done) ->
+    return done() if db?
+    # ensure folder existence
+    {Db} = require('tingodb') searchInArray: true, cacheSize: 5000, cacheMaxObjSize: 1024*10
+    path = getDbPath()
+    ensureFile path, (err) ->
+      return done err if err?
+      db = new Db path, {}
+      db.open (err) ->
+        return done err if err?
+        # update planning for seasons
+        async.each plannings, (planning, next) ->
+          mergePlanning planning, next
+        , done

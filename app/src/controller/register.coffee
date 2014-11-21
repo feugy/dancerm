@@ -56,24 +56,24 @@ module.exports = class RegisterController
     @src = @scope.src
     @_previous = (@danceClasses or []).concat()
 
-    DanceClass.listSeasons().then((seasons) =>
+    DanceClass.listSeasons (err, seasons) =>
+      return console.error err if err?
       @seasons = seasons
       unless @seasons.length is 0
         @chooseSeason @seasons[0]
       else
         @scope.$apply()
-    ).catch (err) => console.error err
 
   # Invoked by view to update the selected season.
   # Refresh the available dance class list
   #
   # @param season [String] the new selected season 
   chooseSeason: (season) =>
-    DanceClass.getPlanning(season).then((planning) =>
+    DanceClass.getPlanning season, (err, planning) =>
+      return console.error err if err?
       @planning = planning
       @currSeason = season
       @scope.$apply()
-    ).catch (err) => console.error err
 
   # Dialog closure method: will transfer to the dialog parent the created registration if confirmed
   #

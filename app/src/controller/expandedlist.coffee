@@ -27,26 +27,24 @@ module.exports = class ExpandedListController extends ListController
     {name: 'title', title: 'lbl.title'}
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
-    {name: 'certified', title: 'lbl.certified', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration?.certified(dancer) or false
-    }, {name: 'due', title: 'lbl.due', attr: (dancer) -> 
-      dancer.lastRegistration().then (registration) -> registration?.due() or 0
+    {name: 'certified', title: 'lbl.certified', attr: (dancer, done) -> 
+      dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+    }, {name: 'due', title: 'lbl.due', attr: (dancer, done) -> 
+      dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
     }, {name: 'age', title: 'lbl.age', attr: (dancer) -> 
       if dancer.birth? then moment().diff dancer.birth, 'years' else ''
     }, {name: 'birth', title: 'lbl.birth', attr: (dancer) ->  
       if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
-    }, {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer) -> 
-      dancer.card.then (card) ->
-        if card.knownBy
-          ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
-        else
-          ''
-    }, {name: 'phone', title: 'lbl.phone', attr: (dancer) -> 
-      dancer.address.then (address) -> address?.phone
+    }, {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer, done) -> 
+      dancer.getCard (err, card) ->
+        return done err, "" if err? or not card.knownBy
+        done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
+    }, {name: 'phone', title: 'lbl.phone', attr: (dancer, done) -> 
+      dancer.getAddress (err, address) -> done err, address?.phone
     }, {name: 'cellphone', title: 'lbl.cellphone'}
     {name: 'email', title: 'lbl.email'}
-    {name: 'address', title: 'lbl.address', attr: (dancer) ->
-      dancer.address.then (address) -> "#{address?.street} #{address?.zipcode} #{address?.city}"
+    {name: 'address', title: 'lbl.address', attr: (dancer, done) ->
+      dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
     }]
 
   # Controller constructor: bind methods and attributes to current scope
@@ -95,14 +93,12 @@ module.exports = class ExpandedListController extends ListController
         waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
       # Perform export
-      @exporter.toFile(filePath, @list).then( =>
+      @exporter.toFile filePath, @list, (err) =>
         waitingDialog.close()
-        @rootScope.$apply()
-      ).catch (err) =>
-        waitingDialog.close()
-        console.error "Export failed: #{err}"
-        # displays an error dialog
-        @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
+        if err?
+          console.error "Export failed: #{err}"
+          # displays an error dialog
+          @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
         @rootScope.$apply()
 
     dialog.trigger 'click'

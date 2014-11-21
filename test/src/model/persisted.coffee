@@ -1,5 +1,6 @@
 {expect} = require 'chai'
 _ = require 'lodash'
+{init} = require '../../../app/script/model/tools/initializer'
 Persisted = require '../../../app/script/model/tools/persisted'
 
 describe 'Persisted model tests', ->
@@ -17,8 +18,10 @@ describe 'Persisted model tests', ->
 
     custom: (attr...) => attr
 
+  before init
+
   beforeEach (done) ->
-    Tested.drop().then done
+    Tested.drop done
 
   it 'should model be constructed', (done) ->
     # when creating a model
@@ -60,9 +63,11 @@ describe 'Persisted model tests', ->
     # given a model a model
     test = new Tested name: 'peter', age: 25, payments: [{type: 'check', value: 100}]
     # when saving it
-    test.save().then(->
+    test.save (err) ->
+      return done err if err?
       # then it can be retrieved by id
-      Tested.find(test.id).then (retrieved) ->
+      Tested.find test.id, (err, retrieved) ->
+        return done err if err?
         # then all its attributes were set
         expect(retrieved).to.be.an.instanceOf Tested
         expect(retrieved).to.have.property('id').that.equal test.id
@@ -70,23 +75,21 @@ describe 'Persisted model tests', ->
         expect(retrieved).to.have.property('age').that.equal 25
         expect(retrieved).to.have.property('payments').that.deep.equal [{type: 'check', value: 100}]
         done()
-    ).catch done
 
   it 'should find raise an error on unknown model', (done) ->
     # when finding unknown model
-    Tested.find('123457').then( ->
-      done new Error "an error should have been raised"
-    ).catch (err) ->
+    Tested.find '123457', (err) ->
       expect(err).to.have.property('message').that.include 'not found'
       done()
 
   it 'should version be incremented on save', (done) ->
-    new Tested(name: 'damien').save().then((saved) ->
+    new Tested(name: 'damien').save (err, saved) ->
+      return done err if err?
       expect(saved).to.have.property('_v').that.equal 0
-      saved.save().then (saved) ->
+      saved.save (err, saved) ->
+        return done err if err?
         expect(saved).to.have.property('_v').that.equal 1
         done()
-    ).catch done
 
   describe 'given an existing model', ->
 
@@ -95,24 +98,25 @@ describe 'Persisted model tests', ->
     beforeEach (done) ->
       # given no dancer
       existing = new Tested name: 'peter', age: 25, payments: [{type: 'check', value: 100}]
-      existing.save().then -> done()
+      existing.save done
 
     it 'should dancer be found by id', (done) ->
-      Tested.find(existing.id).then((retrieved) ->
+      Tested.find existing.id, (err, retrieved) ->
+        return done err if err?
         expect(retrieved).to.exist
         expect(retrieved).to.be.an.instanceOf Tested
         expect(retrieved.toJSON()).to.be.deep.equal _.omit existing.toJSON()
         done()
-      ).catch done
 
     it 'should findWhere() found within array', (done) ->
       # given two another models
-      new Tested(name: 'bob', payments: [{type: 'check', value: 100}]).save().then(->
-
-        new Tested(name: 'rob', payments: [{type: 'card', value: 100}]).save().then ->
-
+      new Tested(name: 'bob', payments: [{type: 'check', value: 100}]).save (err) ->
+        return done err if err?
+        new Tested(name: 'rob', payments: [{type: 'card', value: 100}]).save (err) ->
+          return done err if err?
           # when finding within an array
-          Tested.findWhere('payments.type': 'check').then (retrieved) ->
+          Tested.findWhere 'payments.type': 'check', (err, retrieved) ->
+            return done err if err?
             expect(retrieved).to.exist
             expect(retrieved).to.have.lengthOf 2
             expect(obj).to.be.an.instanceOf Tested for obj in retrieved
@@ -120,16 +124,17 @@ describe 'Persisted model tests', ->
             expect(_.findWhere(retrieved, name: 'peter'), 'peter should be found').to.exist
             expect(_.findWhere(retrieved, name: 'rob'), 'rob should not be found').not.to.exist
             done()
-      ).catch done
 
     it 'should be updated', (done) ->
       # given a modification
       existing.payments.push type: 'card', value: 50
       existing.age = 30
       # when saving it
-      existing.save().then( ->
+      existing.save (err) ->
+        return done err if err?
         # then it was saved in storage
-        Tested.find(existing.id).catch(done).then (retrieved) ->
+        Tested.find existing.id, (err, retrieved) ->
+          return done err if err?
           expect(retrieved).to.exist
           expect(retrieved).to.be.an.instanceOf Tested
           expect(retrieved).to.have.property('age').that.equal 30
@@ -138,6 +143,5 @@ describe 'Persisted model tests', ->
             {type: 'card', value: 50}
           ]
           done()
-      ).catch done
 
     # TODO remove, findAll, find with conditions

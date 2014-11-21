@@ -42,7 +42,8 @@ module.exports = class PlanningController extends LayoutController
     currentSeason = null
     planning = []
     @rootScope.$on 'model-initialized', init = =>
-      DanceClass.listSeasons().then (seasons) =>
+      DanceClass.listSeasons (err, seasons) =>
+        return console.error err if err?
         @seasons = seasons
         unless @seasons.length is 0
           @currentSeason = @seasons[0]
@@ -118,8 +119,10 @@ module.exports = class PlanningController extends LayoutController
   # @param season [String] selected season
   showPlanning: (season) =>
     @currentSeason = season
-    DanceClass.getPlanning(season).then (planning) =>
+    DanceClass.getPlanning season, (err, planning) =>
+      return console.error err if err?
       @planning = planning
-      DanceClass.getTeachers(season).then (teachers) =>
+      DanceClass.getTeachers season, (err, teachers) =>
+        return console.error err if err?
         @teachers = teachers
         @rootScope.$apply()

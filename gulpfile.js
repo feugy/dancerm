@@ -9,7 +9,7 @@
  *   vendor - get vendor libraries from the net
  *   watch (default) - clean, build, and use watcher to recompile on the fly when sources or scripts file changes
  */
-var _ = require('underscore');
+var _ = require('lodash');
 var async = require('async');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -25,7 +25,7 @@ var paths = {
   mapsDest: '.',
   scriptsSrc: 'app/src/**/*.coffee',
   scriptsDest: 'app/script',
-  stylesSrc: ['app/src/style/dancerm.styl', 'app/src/style/print.styl'],
+  stylesSrc: ['app/src/style/dancerm.styl', 'app/src/style/print.styl', 'app/src/style/splash.styl'],
   stylesDest: 'app/style',
   testsSrc: 'test/src/**/*.coffee',
   testsDest: 'test/script',
@@ -74,15 +74,14 @@ function buildScripts() {
     .pipe(sourcemaps.init())
     .pipe(coffee({
       bare: true
+    }).on('error', function(err) {
+      gutil.log(err.stack);
+      gutil.beep();
     }))
     .pipe(sourcemaps.write({sourceRoot: paths.mapsRoot}))
     .pipe(gulp.dest(paths.scriptsDest))
     .on('end', function() {
       console.log('scripts rebuilt')
-    })
-    .on('error', function(err) {
-      gutil.log(err);
-      gutil.beep();
     });
 }
 gulp.task('build-scripts', ['clean'], buildScripts);
@@ -91,14 +90,14 @@ gulp.task('build-scripts', ['clean'], buildScripts);
 function buildStyles() {
   return gulp.src(paths.stylesSrc)
     .pipe(sourcemaps.init())
-    .pipe(stylus())
+    .pipe(stylus().on('error', function(err) {
+      gutil.log(err);
+      gutil.beep();
+    }))
     .pipe(sourcemaps.write({}))
     .pipe(gulp.dest(paths.stylesDest))
     .on('end', function() {
       console.log('styles rebuilt')
-    }).on('error', function(err) {
-      gutil.log(err);
-      gutil.beep();
     });
 }
 gulp.task('build-styles', ['copy-assets'], buildStyles);
@@ -111,13 +110,13 @@ function buildTests() {
   return gulp.src(paths.testsSrc)
     .pipe(coffee({
       bare: true
+    }).on('error', function(err) {
+      gutil.log(err.stack);
+      gutil.beep();
     }))
     .pipe(gulp.dest(paths.testsDest))
     .on('end', function() {
       console.log('test rebuilt')
-    }).on('error', function(err) {
-      gutil.log(err);
-      gutil.beep();
     });
 }
 gulp.task('build-tests', ['build'], buildTests);
