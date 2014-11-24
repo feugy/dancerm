@@ -63,7 +63,7 @@ module.exports = class Persisted extends Base
   # @option done models [Array<Persisted>] an array (that may be empty) of matching models
   @findWhere: (conditions, done) ->
     start = Date.now()
-    getCollection(@name).find(conditions).toArray (err, raws) =>
+    getCollection(@name).find conditions, (err, raws) =>
       return done err if err?
       models = (for raw in raws
         raw.id = raw._id
@@ -105,4 +105,4 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object or null if no error occured
   # @option done model [Persisted] currently removed model
   remove: (done) =>
-    getCollection(@constructor.name).remove {_id: @_raw.id}, (err) => done err, @
+    getCollection(@constructor.name).remove {_id: @_raw.id}, {}, (err) => done err, @

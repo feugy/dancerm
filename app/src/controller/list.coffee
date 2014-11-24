@@ -42,7 +42,7 @@ module.exports = class ListController extends LayoutController
     super parentArgs...
     @_searchPending = false
     @allowEmpty = false
-    console.log "youhou !!!"
+    console.log "build ", @search, @_searchPending
 
     # refresh search when asked
     @rootScope.$on 'search', @makeSearch
@@ -59,7 +59,7 @@ module.exports = class ListController extends LayoutController
   # Global list will be updated at the search end.
   makeSearch: =>
     console.log "search for", @search, @_searchPending
-    #return if @_searchPending
+    return if @_searchPending
     # store into local storage for reload
     localStorage.search = JSON.stringify @search
     conditions = {}

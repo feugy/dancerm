@@ -1,6 +1,8 @@
 _ = require 'lodash'
 moment = require 'moment'
 async = require 'async'
+Db = require 'nedb'
+{join} = require 'path'
 {ensureFile} = require 'fs-extra'
 {getDbPath} = require '../../util/common'
 
@@ -145,7 +147,7 @@ mergePlanning = (planning, done) ->
       danceClass.save next
     , done
 
-db = null
+collections = null
 
 module.exports = 
 
@@ -155,8 +157,8 @@ module.exports =
   # @return the expected collection object
   # @throw an error if database was not initialized 
   getCollection: (name) -> 
-    throw new Error 'database not initialized !' unless db?
-    db.collection name
+    throw new Error 'database not initialized !' unless collections?
+    collections[name]
 
   # Database initialization function
   # Allow to initialize storage with a 2013 and 2014 planning.
@@ -165,14 +167,19 @@ module.exports =
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   init: (done) ->
-    return done() if db?
+    return done() if collections?
     # ensure folder existence
-    {Db} = require('tingodb') searchInArray: true, cacheSize: 5000, cacheMaxObjSize: 1024*10
     path = getDbPath()
     ensureFile path, (err) ->
       return done err if err?
-      db = new Db path, {}
-      db.open (err) ->
+      collections = {}
+      async.each ['DanceClass', 'Address', 'Dancer', 'Card', 'Tested'], (name, next) ->
+        db = new Db filename: join path, name
+        db.loadDatabase (err) ->
+          return next err if err?
+          collections[name] = db
+          next()
+      , (err) ->
         return done err if err?
         # update planning for seasons
         async.each plannings, (planning, next) ->

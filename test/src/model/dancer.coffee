@@ -330,7 +330,7 @@ describe 'Dancer model tests', ->
         done()
 
     it 'should findWhere() resolve multiple criteria on address', (done) ->
-      Dancer.findWhere {'address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': $regex: 'Zola'}, (err, dancers) ->
+      Dancer.findWhere {'address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': $regex: /Zola/}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
         expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist

@@ -57,7 +57,7 @@ module.exports = class DanceClass extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done danceClasses [Array<DanceClass>] ordered list (that may be empty) of dance classes for this season
   @listSeasons: (done) ->
-    getCollection(@name).find().toArray (err, classes) =>
+    getCollection(@name).find {}, (err, classes) =>
       return done err if err?
       done null, _.chain(classes).pluck('season').uniq().value().sort().reverse()
 
