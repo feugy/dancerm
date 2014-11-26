@@ -96,6 +96,8 @@ describe 'Dancer model tests', ->
         expect(tested).to.have.property('danceClassIds').that.deep.equal [salsa.id, ballroom.id]
         tested.getClasses (err, classes) ->
           return done err if err?
+          console.log _.invoke classes, 'toJSON'
+          console.log _.invoke [salsa, ballroom], 'toJSON'
           expect(_.invoke classes, 'toJSON').to.deep.equal _.invoke [salsa, ballroom], 'toJSON'
           # then the registrations are available
           expect(tested).to.have.property('cardId').that.equal card.id
@@ -266,7 +268,7 @@ describe 'Dancer model tests', ->
           model.save next
         , done
 
-    it 'should findWhere() resolve on dance classes', (done) ->
+    it 'should findWhere() resolve on dance classes id', (done) ->
       Dancer.findWhere {danceClassIds: $in: [batchata14.id]}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
@@ -275,7 +277,7 @@ describe 'Dancer model tests', ->
         expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
         done()
 
-    it 'should findWhere() resolve on dance classes', (done) ->
+    it 'should findWhere() resolve on dance classes teacher', (done) ->
       Dancer.findWhere {'danceClasses.teacher': 'Anthony'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 3
@@ -330,7 +332,7 @@ describe 'Dancer model tests', ->
         done()
 
     it 'should findWhere() resolve multiple criteria on address', (done) ->
-      Dancer.findWhere {'address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': $regex: /Zola/}, (err, dancers) ->
+      Dancer.findWhere {'address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': /Zola/}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
         expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist

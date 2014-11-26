@@ -63,9 +63,9 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
   # @return absolute path to store database files
   getDbPath: ->
     if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test' or not gui?
-      resolve join __dirname, '..', '..', '..', 'data-test'
+      'dancerm-test'
     else
-      join gui.App.dataPath, 'data'
+      'dancerm'
 
   # Return current season from date
   # Season changes at August, 1st.

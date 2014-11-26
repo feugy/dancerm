@@ -23,7 +23,7 @@ module.exports = class Export
   # @param filePath [String] absolute or relative to the dump file
   # @param done [Function] a completion callback, invoked with parameters:
   # @option done err [Error] an error object or null if no error occured
-  dump: (filePath, done) =>
+  dump: (filePath, done = ->) =>
     try
       return done new Error "no file selected" unless filePath?
       start = moment()
@@ -36,30 +36,19 @@ module.exports = class Export
       ensureFileSync filePath
       writeFileSync filePath, ""
       console.log "reinit file..."
-      classes.forEach (clazz) =>
+      eachSeries classes, (clazz, next) =>
         start2 = moment()
-        file = join dbPath, clazz.name
-        content = readFileSync file, encoding: 'utf8'
-        console.log "#{clazz.name} model read..."
-        newContent = ["#{@constructor.separator}#{clazz.name}"]
-        # stores for each _id its rank
-        ranks = []
-        i = 1
-        for line in content.split '\n' when not(line.substr(0, 5) in ['{"k":', '{"_id'])
-          idx = 7+line.indexOf '"_id":"'
-          # id not found
-          continue if idx is 6
-          id = line[idx...line.indexOf '"', idx]
-          # only keep the latest version of one model
-          if id of ranks
-            newContent[ranks[id]] = line
-          else
-            newContent.push line 
-            ranks[id] = i++
-        console.log "#{clazz.name} model written in #{moment().diff start2}ms"
-        appendFileSync filePath, newContent.join('\n'), encoding: 'utf8'
-      console.info "dump in #{filePath} finished in #{moment().diff start}ms !"
-      done null
+        clazz.findAllRaw (err, instances) =>
+          return next err if err?
+          console.log "#{clazz.name} model read..."
+          newContent = ["#{@constructor.separator}#{clazz.name}"]
+          newContent.push JSON.stringify instance for instance in instances
+          console.log "#{clazz.name} model written in #{moment().diff start2}ms"
+          appendFileSync filePath, newContent.join('\n'), encoding: 'utf8'
+          next()
+      , (err) =>
+        console.info "dump in #{filePath} finished in #{moment().diff start}ms !"
+        done err
     catch err
       done err
 

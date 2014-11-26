@@ -1,6 +1,7 @@
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
+{getCollection} = require './tools/initializer'
 Persisted = require './tools/persisted'
 Address = require './address'
 DanceClass = require './danceclass'
@@ -116,7 +117,7 @@ module.exports = class Dancer extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done address [Address] dancer's address
   getAddress: (done) =>
-    return done null, @_address if @_address?
+    return _.defer(=> done null, @_address) if @_address?
     return done null, null unless @addressId?
     Address.find @addressId, (err, address) => 
       return done err if err?
@@ -136,7 +137,7 @@ module.exports = class Dancer extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done card [Card] dancer's registration card
   getCard: (done) => 
-    return done null, @_card if @_card?
+    return _.defer(=> done null, @_card) if @_card?
     Card.find @cardId, (err, card) => 
       return done err if err?
       @_card = card
@@ -155,9 +156,12 @@ module.exports = class Dancer extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
   getClasses: (done) => 
-    return done null, @_danceClasses if @_danceClasses?
-    DanceClass.findWhere {_id: $in: @danceClassIds}, (err, danceClasses) => 
-      return done err if err?
+    return _.defer(=> done null, @_danceClasses) if @_danceClasses?
+    store = getCollection DanceClass.name, done
+    danceClasses = []
+    @danceClassIds.forEach (id, i) ->
+      store.get(id).onsuccess = ({target}) -> danceClasses[i] = new DanceClass target.result if target.result?
+    store.transaction.oncomplete = =>
       @_danceClasses = danceClasses
       done null, @_danceClasses
 

@@ -97,15 +97,11 @@ describe 'Export service tests', ->
               for attr, value of model.toJSON()
                 if attr in ['_v'] or value is null
                   expect(content).to.include "\"#{attr}\":#{value}"
-                else if attr is 'id'
-                  expect(content).to.include "\"_#{attr}\":\"#{value}\""
                 else if attr is 'knownBy'
                   expect(content).to.include "\"#{attr}\":[#{if value.length then "\"#{value.join('","')}\"" else ''}]"
                 else unless attr in ['registrations', 'danceClassIds']
                   expect(content).to.include "\"#{attr}\":\"#{value}\""
           done()
-
-  it.skip '! TODO !\nshould export only last saved values', ->
 
   it 'should export dancers list into xlsx file', (done) ->
     # when exporting the list into a file

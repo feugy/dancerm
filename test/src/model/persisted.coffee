@@ -100,7 +100,7 @@ describe 'Persisted model tests', ->
       existing = new Tested name: 'peter', age: 25, payments: [{type: 'check', value: 100}]
       existing.save done
 
-    it 'should dancer be found by id', (done) ->
+    it 'should model be found by id', (done) ->
       Tested.find existing.id, (err, retrieved) ->
         return done err if err?
         expect(retrieved).to.exist

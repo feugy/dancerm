@@ -134,7 +134,7 @@ class RegistrationDirective
       # make a copy for cancellation
       @_previousPayments = (new Payment payment.toJSON() for payment in @registration?.payments)
       # update rendering
-      @scope.apply()
+      @scope.$apply()
 
   # **private**
   # Value change handler: relay to card parent.

@@ -147,18 +147,15 @@ mergePlanning = (planning, done) ->
       danceClass.save next
     , done
 
-collections = null
+db = null
 
 module.exports = 
 
-  # Retreived Unic reference to database collection, once init was called.
-  # 
-  # @param name [String] expected collection name
-  # @return the expected collection object
-  # @throw an error if database was not initialized 
-  getCollection: (name) -> 
-    throw new Error 'database not initialized !' unless collections?
-    collections[name]
+  getCollection: (name, done, write = false) -> 
+    throw new Error 'database not initialized !' unless db?
+    tx = db.transaction [name], if write then 'readwrite' else 'readonly'
+    tx.onerror = (event) -> done event
+    tx.objectStore name
 
   # Database initialization function
   # Allow to initialize storage with a 2013 and 2014 planning.
@@ -167,21 +164,20 @@ module.exports =
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   init: (done) ->
-    return done() if collections?
-    # ensure folder existence
-    path = getDbPath()
-    ensureFile path, (err) ->
-      return done err if err?
-      collections = {}
-      async.each ['DanceClass', 'Address', 'Dancer', 'Card', 'Tested'], (name, next) ->
-        db = new Db filename: join path, name
-        db.loadDatabase (err) ->
-          return next err if err?
-          collections[name] = db
-          next()
-      , (err) ->
-        return done err if err?
-        # update planning for seasons
-        async.each plannings, (planning, next) ->
-          mergePlanning planning, next
-        , done
+    return done() if db?
+    request = window.indexedDB.open getDbPath()
+
+    request.onsuccess = ->
+      db = request.result
+      # update planning for seasons
+      async.each plannings, (planning, next) ->
+        mergePlanning planning, next
+      , done
+
+    request.onerror = (event)->
+      db = null
+      done request.error
+
+    request.onupgradeneeded = ({target}) ->
+      for name in ['Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
+        target.result.createObjectStore name, keyPath: 'id' 

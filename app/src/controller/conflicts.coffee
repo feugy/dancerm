@@ -106,7 +106,7 @@ module.exports = class ConflictsController
           fake.setCard resolved[i]
         dancers.push fake
       # for all, get existing dancers
-      Dancer.findWhere {_id: $in: ids}, (err, existings) =>
+      Dancer.findWhere {id: $in: ids}, (err, existings) =>
         return _done err if err?
         # at last, push existing and imported dancers aside with each other
         for existing in existings
