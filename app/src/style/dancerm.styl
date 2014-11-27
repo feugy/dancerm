@@ -366,8 +366,15 @@ body
         z-index 1
 
     .address
-      .zipcode input
-        min-width 60px
+      .zipcode 
+        input
+          min-width 60px
+          
+        input::-webkit-outer-spin-button
+        input::-webkit-inner-spin-button
+          -webkit-appearance: none
+          margin: 0
+        
       .city label
         width 45px
       .phone label
@@ -398,6 +405,7 @@ body
           padding 4px
 
       input[type=text],
+      input[type=number],
       input[type=email]
         flex 1
         margin-bottom 5px
@@ -695,7 +703,7 @@ body
 
   textarea
   input[type="text"]
-  input[type="number"]:focus
+  input[type="number"]
   input[type="email"]
   input[type="url"]
   input[type="search"]

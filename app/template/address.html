@@ -14,7 +14,7 @@
     <span class="col-md-12 street"><label>{{'lbl.street'|i18n:{sep:true} }}</label><textarea data-ng-model="ctrl.src.street" data-set-null data-ng-class="ctrl.isRequired('street')"/></span>
   </div>
   <div data-ng-if="!ctrl.readOnly" class="row">
-    <span class="col-md-3 zipcode"><label>{{'lbl.zipcode'|i18n:{sep:true} }}</label><input type="text" name="zipcode" data-ng-model="ctrl.src.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-set-null/></span>
+    <span class="col-md-3 zipcode"><label>{{'lbl.zipcode'|i18n:{sep:true} }}</label><input type="number" name="zipcode" data-ng-model="ctrl.src.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-set-null/></span>
     <span class="col-md-5 city"><label>{{'lbl.city'|i18n:{sep:true} }}</label><input type="text" name="city" data-ng-model="ctrl.src.city" data-ng-class="ctrl.isRequired('city')" data-set-null/></span>
     <span class="col-md-4 phone"><label>{{'lbl.phone'|i18n:{sep:true} }}</label><input type="text" name="phone" data-ng-model="ctrl.src.phone" data-set-null/></span>
   </div>

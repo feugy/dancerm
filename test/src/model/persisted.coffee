@@ -125,6 +125,9 @@ describe 'Persisted model tests', ->
             expect(_.findWhere(retrieved, name: 'rob'), 'rob should not be found').not.to.exist
             done()
 
+    it.skip 'should findWhere() found with $or condition', (done) ->
+      done new Error 'to be implemented'
+
     it 'should be updated', (done) ->
       # given a modification
       existing.payments.push type: 'card', value: 50

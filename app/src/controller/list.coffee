@@ -67,10 +67,11 @@ module.exports = class ListController extends LayoutController
     if @search.string?.length >= 3 
       # find all dancers by first name/last name
       searched = @search.string.toLowerCase()
-      conditions.$where = -> 
-        0 is @firstname?.toLowerCase().indexOf(searched) or 
-        0 is @lastname?.toLowerCase().indexOf(searched)
-
+      conditions.$or = [
+        {firstname: new RegExp "^#{searched}", 'i'},
+        {lastname: new RegExp "^#{searched}", 'i'}
+      ]
+      
     # find all dancers by season and optionnaly by teacher for this season
     if @search.seasons?.length > 0
       conditions['danceClasses.season'] = $in: @search.seasons

@@ -147,7 +147,7 @@ module.exports = class CardController extends LayoutController
         @save true
 
     # first, resolve addresses and card
-    async.each @dancers, (dancer, next) ->
+    async.map @dancers, (dancer, next) ->
       dancer.getAddress next
     , (err, models) =>
       if err?
@@ -157,7 +157,7 @@ module.exports = class CardController extends LayoutController
       console.log "addresses resolved", models
       saved = []
 
-      async.each models, (model, next) ->
+      async.each models, (model, next) =>
         return next() if (model.id in saved) or not @_changes[model.id]
         if model.constructor.name is 'Address'
           console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
@@ -173,7 +173,7 @@ module.exports = class CardController extends LayoutController
         console.log "addresses and card saved"
         # affect to dancers (for those which address was new) and save dancers
         i = 0
-        async.eachSeries @dancers, (dancer, next) ->
+        async.eachSeries @dancers, (dancer, next) =>
           i++
           return next() unless dancer.id? and @_changes[dancer.id]
           console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
