@@ -18,6 +18,8 @@ var stylus = require('gulp-stylus');
 var coffee = require('gulp-coffee');
 var sourcemaps = require('gulp-sourcemaps');
 var download = require('gulp-download');
+var deps = require('./package.json').frontDependencies;
+
 
 var paths = {
   assetsSrc: ['app/src/style/{css,img,fonts}/**/*'],
@@ -28,25 +30,7 @@ var paths = {
   stylesSrc: ['app/src/style/dancerm.styl', 'app/src/style/print.styl', 'app/src/style/splash.styl'],
   stylesDest: 'app/style',
   testsSrc: 'test/src/**/*.coffee',
-  testsDest: 'test/script',
-  vendorSrc: [
-    {file:'vendor/jquery.js', url:'http://code.jquery.com/jquery-2.1.1.min.js'}, 
-    {file:'vendor/tinycolor.js', url:'http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/bgrins/TinyColor/master/tinycolor.js'},
-    {file:'vendor/angular.js', url:'https://code.angularjs.org/1.3.0/angular.min.js'},
-    {file:'vendor/angular-animate.js', url:'https://code.angularjs.org/1.3.0/angular-animate.min.js'},
-    {file:'vendor/angular-sanitize.js', url:'https://code.angularjs.org/1.3.0/angular-sanitize.min.js'},
-    {file:'vendor/angular-ui-router.js', url:'https://raw.githubusercontent.com/angular-ui/ui-router/0.2.11/release/angular-ui-router.min.js'},
-    {file:'vendor/chart.js', url:'https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.min.js'},
-    {file:'vendor/angular-chart.js', url:'https://raw.githubusercontent.com/carlcraig/tc-angular-chartjs/master/dist/tc-angular-chartjs.min.js'},
-    {file:'vendor/chart-stackedbar.js', url:'http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/Regaddi/Chart.StackedBar.js/master/src/Chart.StackedBar.js'},
-    {file:'vendor/ui-bootstrap-tpls.js', url:'http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.2.min.js'},
-    {file:'src/style/css/bootstrap.css', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'},
-    {file:'src/style/fonts/glyphicons-halflings-regular.eot', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.eot'},
-    {file:'src/style/fonts/glyphicons-halflings-regular.woff', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.woff'},
-    {file:'src/style/fonts/glyphicons-halflings-regular.ttf', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.ttf'},
-    {file:'src/style/fonts/glyphicons-halflings-regular.svg', url:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/fonts/glyphicons-halflings-regular.svg'},
-    {file:'src/style/fonts/alfa-slab-one.ttf', url:'http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf'}
-  ]
+  testsDest: 'test/script'
 };
 
 gulp.task('default', ['watch']);
@@ -58,7 +42,11 @@ gulp.task('clean', function(done){
 
 // download vendor libraries from the net
 gulp.task('vendor', function(){
-  return download(paths.vendorSrc)
+  var conf = [];
+  for (var file in deps) {
+    conf.push({file: file, url: deps[file]});
+  }
+  return download(conf)
     .pipe(gulp.dest('app/'));
 });
 

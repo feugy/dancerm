@@ -66,6 +66,15 @@ findWhere = (name, conditions, done) ->
     results.push cursor.value if check conditions, cursor.value
     cursor.continue()
 
+# instance cache. used to avoid creation.
+# TODO class initialization
+cache =
+  Address: {}
+  Card: {}
+  DanceClass: {}
+  Dancer: {}
+  Tested: {}
+
 # Superclass for models that will be persisted into underlying data store
 # Automatically manage id value (created after save)
 module.exports = class Persisted extends Base
@@ -82,7 +91,10 @@ module.exports = class Persisted extends Base
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   @drop: (done) ->
-    getCollection(@name, done, true).clear().onsuccess = => done()
+    getCollection(@name, done, true).clear().onsuccess = => 
+      delete cache[@name]
+      cache[@name] = {}
+      done()
 
   # **static**
   # Find a model from the storage provider by it's id.
@@ -94,12 +106,16 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object (for example if model does not exist) or null if no error occured
   # @option done model [Persisted] the corresponding model
   @find: (id, done) ->
+    if cache[@name][id]?
+      return _.defer => done null, cache[@name][id]
     start = Date.now()
     req = getCollection(@name, done).get(id)
     req.onsuccess = => 
       # TOREMOVE console.log "#{@name}.find(#{id}) #{Date.now()-start}ms"
       return done new Error "'#{id}' not found" unless req.result?
-      done null, new @ req.result
+      model = new @ req.result
+      cache[@name][id] = model
+      done null, model
 
   # **static**
   # Find all existing models from the storage manager.
@@ -134,7 +150,9 @@ module.exports = class Persisted extends Base
     findWhere @name, conditions, (err, results) =>
       # enrich with model if results available
       if results?
-        results[i] = new @ result for result, i in results
+        for result, i in results
+          model = if cache[@name][result.id]? then cache[@name][result.id] else new @ result 
+          results[i] = model
       # TOREMOVE console.log "#{@name}.findWhere(#{JSON.stringify conditions}) #{Date.now()-start}ms"
       done err, results
 
@@ -161,6 +179,7 @@ module.exports = class Persisted extends Base
     getCollection(@constructor.name, done, true).put(raw).transaction.oncomplete = =>
       @_raw.id = raw.id
       @_raw._v = raw._v
+      cache[@constructor.name][raw.id] = @
       done null, @
 
   # Remove the current model from the persistance store.
@@ -169,4 +188,6 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object or null if no error occured
   # @option done model [Persisted] currently removed model
   remove: (done) =>
-    getCollection(@constructor.name, done, true).delete(@_raw.id).transaction.oncomplete = => done null, @
+    getCollection(@constructor.name, done, true).delete(@_raw.id).transaction.oncomplete = => 
+      delete cache[@constructor.name][@_raw.id]
+      done null, @

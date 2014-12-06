@@ -179,5 +179,6 @@ module.exports =
       done request.error
 
     request.onupgradeneeded = ({target}) ->
+      # TODO class initialization
       for name in ['Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
         target.result.createObjectStore name, keyPath: 'id' 

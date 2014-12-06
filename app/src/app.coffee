@@ -61,13 +61,13 @@ app.service 'import', ImportService
 app.service 'dialog', DialogService
 
 # on close, dump data, with a waiting dialog message
-# @returns the dump promise
-app.close = () ->
+# @param done [Function] completion callback invoked with optionnal error argument
+app.close = (done) ->
   $injector = angular.element('body.app').injector()
   # display waigin message
   $injector.get('$rootScope').$apply =>
     $injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping
   # export data
-  $injector.get('export').dump localStorage.getItem 'dumpPath'
+  $injector.get('export').dump localStorage.getItem('dumpPath'), done
 
 module.exports = app
