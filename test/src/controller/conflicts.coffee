@@ -40,9 +40,12 @@ describe 'Conflicts controller tests', ->
       clazz.drop next
     , (err) ->
       return done err if err?
-      async.each models, (model, next) ->
+      async.map models, (model, next) ->
         model.save next
-      , done
+      , (err, saved) ->
+        # make copies for comparison
+        models = (new save.constructor save.toJSON() for save in saved)
+        done err
 
   # build tested controller
   buildController = (conflicts, close, done, apply = ->) ->
@@ -145,6 +148,7 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[8].id, (err, saved) =>
         return done err if err?
+        console.log saved.toJSON(), _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
         expect(saved.toJSON()).to.deep.equal _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
         done()
     ), =>

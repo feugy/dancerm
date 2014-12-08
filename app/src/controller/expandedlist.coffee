@@ -1,18 +1,26 @@
 _ = require 'lodash'
 moment = require 'moment'
-ListController = require './list' 
 i18n = require '../labels/common'
 
-module.exports = class ExpandedListController extends ListController
+module.exports = class ExpandedListController
 
   # Controller dependencies
-  @$inject: ['export', '$list', '$search'].concat ListController.$inject
+  @$inject: ['$scope', 'cardList', 'export', 'dialog']
 
   @declaration:
     controller: ExpandedListController
     controllerAs: 'ctrl'
     templateUrl: 'expandedlist.html'
+
+  # Controller's own scope, for event listening
+  scope: null
   
+  # Link to card list service
+  cardList: null
+      
+  # Link to Angular's dialog service
+  dialog: null
+
   # Link to export service
   exporter: null
 
@@ -49,12 +57,11 @@ module.exports = class ExpandedListController extends ListController
 
   # Controller constructor: bind methods and attributes to current scope
   #
-  # @param scope [Object] Angular current scope
-  # @param state [Object] Angular state provider
-  # @param dialog [Object] Angular dialog service
-  # @param export [Export] Export service
-  constructor: (@exporter, @list, @search, parentArgs...) -> 
-    super parentArgs...
+  # @param scope [Object] controller's own scope, for event listening
+  # @param cardList [Object] Card list service
+  # @param export [Object] Export service
+  # @param dialog [Object] Angular's dialog service
+  constructor: (@scope, @cardList, @exporter, @dialog) -> 
     # keeps current sort for inversion
     @sort = null
     @sortAsc = true
@@ -65,7 +72,7 @@ module.exports = class ExpandedListController extends ListController
   onSort: (attr) =>
     # invert if using same sort.
     if attr is @sort
-      @list.reverse()
+      @cardList.list.reverse()
       @sortAsc = !@sortAsc
     else
       @sortAsc = true
@@ -75,11 +82,11 @@ module.exports = class ExpandedListController extends ListController
         attr = (model) -> model?.registrations?[0]?.due() 
       else if attr is 'address'
         attr = (model) -> model?.address?.zipcode###
-      @list = _.sortBy @list, attr
+      @cardList.list = _.sortBy @cardList.list, attr
 
   # Choose a target file and export list as xlsx
   export: =>
-    return unless @list?.length > 0
+    return unless @cardList.list?.length > 0
     dialog = $('<input style="display:none;" type="file" nwsaveas accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
     dialog.change (evt) =>
       filePath = dialog.val()
@@ -89,17 +96,17 @@ module.exports = class ExpandedListController extends ListController
 
       # waiting message box
       waitingDialog = null
-      @rootScope.$apply => 
+      @scope.$apply => 
         waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
       # Perform export
-      @exporter.toFile filePath, @list, (err) =>
+      @exporter.toFile filePath, @cardList.list, (err) =>
         waitingDialog.close()
         if err?
           console.error "Export failed: #{err}"
           # displays an error dialog
           @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
-        @rootScope.$apply()
+        @scope.$apply()
 
     dialog.trigger 'click'
     # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
@@ -107,10 +114,10 @@ module.exports = class ExpandedListController extends ListController
 
   # Displays addresses printing window
   printAddresses: =>
-    return unless @list?.length > 0
+    return unless @cardList.list?.length > 0
     try
       preview = window.open 'addressesprint.html'
-      preview.list = @list
+      preview.list = @cardList.list
     catch err
       console.error err
     # obviously, a bug !
@@ -121,8 +128,8 @@ module.exports = class ExpandedListController extends ListController
 
   # Export email as string
   exportEmails: =>
-    return unless @list?.length > 0
-    emails = _.uniq(dancer.email.trim() for dancer in @list when dancer.email?.trim().length > 0).sort().join ', '
+    return unless @cardList.list?.length > 0
+    emails = _.uniq(dancer.email.trim() for dancer in @cardList.list when dancer.email?.trim().length > 0).sort().join ', '
     # put in the system clipboard
     clipboard = gui.Clipboard.get()
     clipboard.set emails, 'text'

@@ -148,6 +148,4 @@ ok - address printing from expanded list, with previous selection, file address 
 
 # Performances enhancement track
 
-1 - replace promise by callback
-2 - use raw attributes instead of getters
-3 - change NeDB for other in memory storage -> TingoDB: compact before export, fix left list search  
+- use raw attributes instead of getters

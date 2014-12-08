@@ -7,12 +7,15 @@ i18n = require '../script/labels/common'
 ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
-LayoutCtrl = require '../script/controller/layout'
-ListCtrl = require '../script/controller/list'
-ExpandedListCtrl = require '../script/controller/expandedlist'
-PlanningCtrl = require '../script/controller/planning'
-CardCtrl = require '../script/controller/card'
+CardListService = require '../script/service/cardlist'
+
+###LayoutCtrl = require '../script/controller/layout'
+ListCtrl = require '../script/controller/list'###
 StatsCtrl = require '../script/controller/stats'
+ListLayoutCtrl = require '../script/controller/listlayout'
+CardCtrl = require '../script/controller/card'
+PlanningCtrl = require '../script/controller/planning'
+ExpandedListCtrl = require '../script/controller/expandedlist'
 
 console.log "running with angular v#{angular.version.full}"
 
@@ -20,45 +23,53 @@ console.log "running with angular v#{angular.version.full}"
 app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'tc.chartjs']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
-  location.html5Mode false
+  # html5 mode raise problems when loading templates
+  location.html5Mode false 
   # configure routing
-  router.otherwise '/home'
+  router.otherwise '/list/planning'
 
-  home = _.extend {}, LayoutCtrl.declaration, url: '/home'
+  states.state 'list', _.extend {url: '/list', abstract:true}, ListLayoutCtrl.declaration
+  states.state 'stats', _.extend {url: '/stats'}, StatsCtrl.declaration
+  states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
 
-  states.state 'home', home
-
-  states.state 'list-and-planning',
-    parent: home
-    url: ''
-    views: 
-      column: ListCtrl.declaration
-      main: PlanningCtrl.declaration
-
-  states.state 'list-and-card',
-    parent: home
+  states.state 'list.card', 
     url: '/card/:id'
     views: 
-      column: ListCtrl.declaration
       main: CardCtrl.declaration
 
-  states.state 'expanded-list',
-    parent: home
-    url: '/list'
+  states.state 'list.planning', 
+    url: '/planning'
     views: 
-      column: ExpandedListCtrl.declaration
-
-  states.state 'stats',
-    parent: home
-    url: '/stats'
-    views: 
-      main: StatsCtrl.declaration
+      main: PlanningCtrl.declaration
 ]
 
 # make export an Angular service
 app.service 'export', ExportService
 app.service 'import', ImportService
 app.service 'dialog', DialogService
+app.service 'cardList', CardListService
+
+# at startup, check that dump path is defined 
+app.run ['dialog', (dialog) ->
+  chooseDumpLocation = ->
+    dumpDialog = $('<input style="display:none;" type="file" nwsaveas value="dump_dancerm.json" accept="application/json"/>')
+    dumpDialog.change (evt) =>
+      dumpPath = dumpDialog.val()
+      dumpDialog.remove()
+      # dialog cancellation
+      return askDumpLocation() unless dumpPath
+      # retain entry for next loading
+      localStorage.setItem 'dumpPath', dumpPath
+    dumpDialog.trigger 'click'
+
+  askDumpLocation = ->
+    # first, explain what we're asking, then display file selection, wether the user accepted or not
+    dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).result.then(chooseDumpLocation).catch chooseDumpLocation
+
+  # nothing in localStorage
+  dumpPath = localStorage.getItem 'dumpPath'
+  askDumpLocation() unless dumpPath
+]
 
 # on close, dump data, with a waiting dialog message
 # @param done [Function] completion callback invoked with optionnal error argument

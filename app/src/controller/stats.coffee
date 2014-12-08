@@ -2,18 +2,26 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 {currentSeasonYear} = require '../util/common'
 {map} = require 'async'
-ListController = require './list'
 DanceClass = require '../model/danceclass'
 tinycolor = window.tinycolor
 
 # Displays statistics on a given list
-module.exports = class StatsController extends ListController
+module.exports = class StatsController
   
+  # Controller dependencies
+  @$inject: ['$scope', 'cardList']
+
   # Route declaration
   @declaration:
     controller: StatsController
     controllerAs: 'ctrl'
     templateUrl: 'stats.html'
+
+  # Controller's own scope, for event listening
+  scope: null
+
+  # Link to card list service
+  cardList: null
 
   # missing certificates
   missingCertificates: null
@@ -46,14 +54,23 @@ module.exports = class StatsController extends ListController
   workInProgress: false
 
   # On loading, search for current season 
-  constructor:(parentArgs...) ->
-    super parentArgs...
+  #
+  # @param scope [Object] controller's own scope, for event listening
+  # @param cardList [Object] card list service
+  constructor: (@scope, @cardList) ->
     @seasons = ("#{year}/#{year+1}" for year in [currentSeasonYear()..2006])
     @selectSeason null, @seasons[0]
     # reset text search and dance classes selection
-    @search.string = null
-    @search.danceClasses = []
+    @cardList.criteria.string = null
+    @cardList.criteria.danceClasses = []
     @allowEmpty = true
+    console.log "qdsfsqdf"
+    # bind listeners on search events
+    @cardList.on 'search-start', @_onSearch
+    @cardList.on 'search-end', @_onSearchResults
+    @scope.$on 'destroy', => 
+      @cardList.removeListener 'search-start', @_onSearch
+      @cardList.removeListener 'search-end', @_onSearchResults
 
   # On season selection, updates teacher list (with all possible teachers of selected seasons)
   # and trigger search.
@@ -64,30 +81,29 @@ module.exports = class StatsController extends ListController
   selectSeason: (event, season = null) =>
     if season is null
       # select all seasons
-      @search.seasons = []
+      @cardList.criteria.seasons = []
     else
       # with ctrl, toggle selected in list
       if event?.ctrlKey
-        idx = @search.seasons.indexOf season
+        idx = @cardList.criteria.seasons.indexOf season
         if idx isnt -1
-          @search.seasons.splice idx, 1
+          @cardList.criteria.seasons.splice idx, 1
         else
-          @search.seasons.push season
+          @cardList.criteria.seasons.push season
       else
         # on search this season
-        @search.seasons = [season]
+        @cardList.criteria.seasons = [season]
 
     # refresh teacher list with all possible teachers
-    possibleSeasons = if @search.seasons.length is 0 then @seasons else @search.seasons
+    possibleSeasons = if @cardList.criteria.seasons.length is 0 then @seasons else @cardList.criteria.seasons
     map possibleSeasons, (season, next) ->
       DanceClass.getTeachers season, next
     , (err, teachersBySeason) =>
       return console.error err if err?
-      @search.teachers = []
+      @cardList.criteria.teachers = []
       @teachers = _.chain(teachersBySeason).flatten().uniq().value().sort()
       # and at least trigger search
-      @rootScope.$emit 'search'
-
+      @cardList.performSearch()
 
   # On teacher selection, triggers search.
   # Use ctrl key to toggle teacher in the current searched list
@@ -97,36 +113,30 @@ module.exports = class StatsController extends ListController
   selectTeacher: (event, teacher = null) =>
     if teacher is null
       # select all teachers
-      @search.teachers = []
+      @cardList.criteria.teachers = []
     else
       # with ctrl, toggle selected in list
       if event?.ctrlKey
-        idx = @search.teachers.indexOf teacher
+        idx = @cardList.criteria.teachers.indexOf teacher
         if idx isnt -1
-          @search.teachers.splice idx, 1
+          @cardList.criteria.teachers.splice idx, 1
         else
-          @search.teachers.push teacher
+          @cardList.criteria.teachers.push teacher
       else
         # on search this teacher
-        @search.teachers = [teacher]
+        @cardList.criteria.teachers = [teacher]
 
     # and at least trigger search
-    @rootScope.$emit 'search'
+    @cardList.performSearch()
 
+  # **private**
   # Extends to init the work in progress flag
-  makeSearch: (args...) =>
+  _onSearch: =>
     @workInProgress = true
-    super args...
 
   # **private**
   # Computes known by stats right after displaying the new list
-  _displayResults: (args...) =>
-    super args...
-    @_computeStats()
-
-  # **private**
-  # Compute stats in a single pass
-  _computeStats: =>
+  _onSearchResults: (args...) =>
     start = Date.now()
     knownBy =
       values: {}
@@ -139,16 +149,16 @@ module.exports = class StatsController extends ListController
       @knownBy = []
       @danceClasses = []
       @workInProgress = false
-      @rootScope.$apply()
+      @scope.$apply()
 
     console.log "compute statistics..."
-    map @list, (dancer, next) ->
+    map @cardList.list, (dancer, next) ->
       dancer.getCard next
     , (err, cards) =>
       if err?
         @dismiss()
         return console.error err
-      map @list, (dancer, next) ->
+      map @cardList.list, (dancer, next) ->
         dancer.getClasses next
       , (err, danceClasses) =>
         if err?
@@ -164,16 +174,16 @@ module.exports = class StatsController extends ListController
               knownBy.values[value] = 1
             knownBy.total++
           # get missing certificates and due for selected seasons
-          for reg in card.registrations when @search.seasons.length is 0 or reg?.season in @search.seasons
+          for reg in card.registrations when @cardList.criteria.seasons.length is 0 or reg?.season in @cardList.criteria.seasons
             # only for selected dancer
-            @missingCertificates++ unless reg.certificates[@list[i].id]
+            @missingCertificates++ unless reg.certificates[@cardList.list[i].id]
             # add due if card was not already processed
             unless card.id in dueCards
               @due += reg.due()
               dueCards.push card.id 
 
           # cast down dance classes
-          for {kind, level, season} in danceClasses[i] when @search.seasons.length is 0 or season in @search.seasons
+          for {kind, level, season} in danceClasses[i] when @cardList.criteria.seasons.length is 0 or season in @cardList.criteria.seasons
             classes[kind] = {} unless kind of classes
             classes[kind][level] = 0 unless level of classes[kind]
             classes[kind][level]++
@@ -212,4 +222,4 @@ module.exports = class StatsController extends ListController
         
         console.log "statistics computed in #{Date.now()-start} ms"
         @workInProgress = false
-        @rootScope.$apply()
+        @scope.$apply()

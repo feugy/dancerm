@@ -160,5 +160,5 @@ describe 'Card model tests', ->
             expect(existing[0].registrations[i].toJSON()).to.deep.equal registration.toJSON()
           # card does not exists any more
           Card.find existing[1].id, (err, card) ->
-            expect(err).to.have.property('message').that.equal "'#{existing[1].id}' not found"
+            expect(err).to.have.property('message').that.equal "Card '#{existing[1].id}' not found"
             done()

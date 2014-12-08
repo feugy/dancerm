@@ -6,7 +6,7 @@ Dancer = require '../model/dancer'
 class DancerDirective
                 
   # Controller dependencies
-  @$inject: []
+  @$inject: ['$q']
 
   # Labels for rendering
   i18n: i18n
@@ -31,7 +31,9 @@ class DancerDirective
   _previous: {}
 
   # Controller constructor: bind methods and attributes to current scope
-  constructor: ->
+  #
+  # @param q [Object] Angular's promise factory
+  constructor: (@q) ->
     @_reqInProgress = false
 
     @birthOpts =
@@ -53,12 +55,11 @@ class DancerDirective
   #
   # @param attr [String] matching attribute name
   # @param typed [String] typed string
-  # @param done [Function] completion callback, invoked with arguments:
-  # @option done err [Error] an error object or null if no error occured
-  # @option done models [Array<Dancer>] list (that may be empty) of matching dancers
-  findByAttr: (attr, typed) =>
+  # @return a promise resolved with relevant models
+  findByAttr: (attr, typed, done) =>
     # disable if request in progress
     return [] if @_reqInProgress
+    deffered = @q.defer()
     @_reqInProgress = true
     # prepare search conditions
     typed = typed.toLowerCase()
@@ -69,8 +70,9 @@ class DancerDirective
       @_reqInProgress = false
       if err?
         console.error err
-        return done err
-      done null, models
+        return deffered.reject err
+      deffered.resolve models
+    deffered.promise
 
   # Invoked when date change in the date picker
   # Updates the dancer's birth date

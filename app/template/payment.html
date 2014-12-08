@@ -1,7 +1,7 @@
 <div class="payment focusable">
   <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model:ctrl.src})"><i class="glyphicon glyphicon-trash"/></a>
   <span class="btn-group dropup type" data-dropdown>
-    <a href="" class="btn dropdown-toggle scrollable" data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></a>
+    <a href="" class="btn dropdown-toggle scrollable" dropdown-toggle data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li data-ng-repeat="(type, label) in ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{label}}</a></li>
     </ul>

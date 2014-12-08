@@ -51,7 +51,7 @@ module.exports =
   err:
     dumpFailed: "La sauvegarde externe des données à échouée: %s"
     exportFailed: "L'export de la liste de danseurs à échoué: %s"
-    importFailed: "L'imporation du fichier de danseurs à échouée: %s"
+    importFailed: "L'imporation du fichier de danseurs à échouée: {{message}}"
     search: 'La recherche à échouée: %s'
 
   # date/time formats

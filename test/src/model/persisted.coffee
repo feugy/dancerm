@@ -1,5 +1,6 @@
 {expect} = require 'chai'
 _ = require 'lodash'
+{each} = require 'async' 
 {init} = require '../../../app/script/model/tools/initializer'
 Persisted = require '../../../app/script/model/tools/persisted'
 
@@ -96,9 +97,10 @@ describe 'Persisted model tests', ->
     existing = null
 
     beforeEach (done) ->
-      # given no dancer
-      existing = new Tested name: 'peter', age: 25, payments: [{type: 'check', value: 100}]
-      existing.save done
+      Tested.drop (err) ->
+        # given no dancer
+        existing = new Tested name: 'peter', age: 25, payments: [{type: 'check', value: 100}]
+        existing.save done
 
     it 'should model be found by id', (done) ->
       Tested.find existing.id, (err, retrieved) ->
@@ -125,8 +127,28 @@ describe 'Persisted model tests', ->
             expect(_.findWhere(retrieved, name: 'rob'), 'rob should not be found').not.to.exist
             done()
 
-    it.skip 'should findWhere() found with $or condition', (done) ->
-      done new Error 'to be implemented'
+    it 'should findWhere() found with $or condition', (done) ->
+      # given several models
+      each [
+        new Tested name: 'luc', payments: [{type: 'cash', value: 100}]
+        new Tested name: 'lucie', payments: []
+        new Tested name: 'babette', payments: [{type: 'cash', value: 150}]
+        new Tested name: 'marie', payments: [{type: 'ancv', value: 50}, {type: 'cash', value: 100}]
+        new Tested name: 'jean', payments: [{type: 'check', value: 100}]
+      ], ((model, next) -> model.save next), (err) ->
+        return done err if err?
+        # when selecting with an $or condition
+        Tested.findWhere $or: [{name: /^lu/}, {'payments.type': 'cash'}], (err, retrieved) ->
+          return done err if err?
+          expect(retrieved).to.exist
+          expect(retrieved).to.have.lengthOf 4
+          expect(obj).to.be.an.instanceOf Tested for obj in retrieved
+          expect(_.findWhere(retrieved, name: 'luc'), 'luc should be found').to.exist
+          expect(_.findWhere(retrieved, name: 'lucie'), 'lucie should be found').to.exist
+          expect(_.findWhere(retrieved, name: 'babette'), 'babette should be found').to.exist
+          expect(_.findWhere(retrieved, name: 'marie'), 'marie should be found').to.exist
+          expect(_.findWhere(retrieved, name: 'jean'), 'jean should not be found').not.to.exist
+          done()
 
     it 'should be updated', (done) ->
       # given a modification

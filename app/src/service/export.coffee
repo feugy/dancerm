@@ -41,7 +41,7 @@ module.exports = class Export
         clazz.findAllRaw (err, instances) =>
           return next err if err?
           console.log "#{clazz.name} model read..."
-          newContent = ["#{@constructor.separator}#{clazz.name}"]
+          newContent = ["\n#{@constructor.separator}#{clazz.name}"]
           newContent.push JSON.stringify instance for instance in instances
           console.log "#{clazz.name} model written in #{moment().diff start2}ms"
           appendFileSync filePath, newContent.join('\n'), encoding: 'utf8'

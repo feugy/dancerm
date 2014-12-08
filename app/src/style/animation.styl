@@ -22,21 +22,22 @@
       transition left animationDuration
       position absolute
       left 0
-
-  > .column
+  
+.main-view 
+  
+  .expanded
     transition all animationDuration
 
-    &.expanded.ng-enter
+  &.ng-enter 
+    .column.expanded
       width collapsedColumnWidth
 
-    &.expanded.ng-enter-active
-    &.expanded.ng-leave-active 
+  &.ng-enter-active,  &.ng-leave-active
+    .column.expanded
       width expandedColumnWidth
 
-      .export
-        display none
-
-    &.ng-leave
+  &.ng-leave 
+    .column.expanded
       // hide leaving column when changing main, or when expanding column
       display none
 

@@ -50,6 +50,7 @@ try
   win.on 'unmaximize', -> isMaximized = false
   win.on 'minimize', -> isMaximized = false
 
+  win.showDevTools()
   $(win.window).on 'keydown', (event) ->
     # disable backspace support
     if event.which is 8
@@ -87,6 +88,7 @@ try
     require('../script/util/filters')(app)
     require('../script/directive/address')(app)
     require('../script/directive/dancer')(app)
+    require('../script/directive/layout')(app)
     require('../script/directive/list')(app)
     require('../script/directive/planning')(app)
     require('../script/directive/payment')(app)

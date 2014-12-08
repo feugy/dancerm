@@ -23,7 +23,8 @@ checkSingle = (expected, actual) ->
     actual is expected
 
 # Synchronously check if a raw model match given conditions
-# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $in operator and exact match
+# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $or, $in operators 
+# and exact match.
 # Array values are automatically expanded
 # 
 # @param conditions [Object] condition to match
@@ -32,23 +33,27 @@ checkSingle = (expected, actual) ->
 check = (conditions, model) ->
   for attr of conditions
     expected = conditions[attr]
-    actual = model
-    isArray = false
-    path = attr.split '.'
-    for step, i in path
-      actual = actual[step]
-      return false unless actual?
-      if isA actual, 'Array'
-        isArray = true
-        if i is path.length-1
-          return false unless (checkSingle expected, value for value in actual).some (_) -> _
-        else
-          subCondition = {}
-          subCondition[path.slice(i+1).join '.'] = expected
-          return false unless (check subCondition, value for value in actual).some (_) -> _
-        break
-    continue if isArray
-    return false unless checkSingle expected, actual
+    if attr is '$or'
+      # check each possibilities
+      return false unless _.any expected, (choice) -> check choice, model
+    else
+      actual = model
+      isArray = false
+      path = attr.split '.'
+      for step, i in path
+        actual = actual[step]
+        return false unless actual?
+        if isA actual, 'Array'
+          isArray = true
+          if i is path.length-1
+            return false unless (checkSingle expected, value for value in actual).some (_) -> _
+          else
+            subCondition = {}
+            subCondition[path.slice(i+1).join '.'] = expected
+            return false unless (check subCondition, value for value in actual).some (_) -> _
+          break
+      continue if isArray
+      return false unless checkSingle expected, actual
   true
 
 # find raw models from object store
@@ -112,7 +117,7 @@ module.exports = class Persisted extends Base
     req = getCollection(@name, done).get(id)
     req.onsuccess = => 
       # TOREMOVE console.log "#{@name}.find(#{id}) #{Date.now()-start}ms"
-      return done new Error "'#{id}' not found" unless req.result?
+      return done new Error "#{@name} '#{id}' not found" unless req.result?
       model = new @ req.result
       cache[@name][id] = model
       done null, model

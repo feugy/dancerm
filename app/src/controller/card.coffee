@@ -7,16 +7,15 @@ Dancer = require '../model/dancer'
 Card = require '../model/card'
 Address = require '../model/address'
 Registration = require '../model/registration'
-LayoutController = require './layout'
 RegisterController = require './register'
 SearchDancerController = require './searchdancer'
 
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
-module.exports = class CardController extends LayoutController
+module.exports = class CardController
             
   # Controller dependencies
-  @$inject: ['$stateParams'].concat LayoutController.$inject
+  @$inject: ['$rootScope', 'cardList', 'dialog', '$state', '$filter', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -26,6 +25,18 @@ module.exports = class CardController extends LayoutController
 
   # for rendering
   i18n: i18n
+
+  # Global scope, for digest triggering
+  rootScope: null
+
+  # Angular's state service
+  state: null
+
+  # Angular's filters factory
+  filter: null
+
+  # Link to modal popup service
+  dialog: null
 
   # displayed card
   card: null
@@ -67,9 +78,13 @@ module.exports = class CardController extends LayoutController
 
   # Controller constructor: bind methods and attributes to current scope
   #
+  # @param scope [Object] Angular global scope, for digest triggering
+  # @param cardList [CardListService] service responsible for card list
+  # @param dialog [Object] Angular dialog service
+  # @param state [Object] Angular state provider
+  # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (stateParams, @parentArgs...) -> 
-    super parentArgs...
+  constructor: (@rootScope, @cardList, @dialog, @state, @filter, stateParams) -> 
     # initialize global change status
     @hasChanged = false
     @dancers = []
@@ -103,8 +118,8 @@ module.exports = class CardController extends LayoutController
 
   # Goes back to list, after a confirmation if dancer has changed
   back: =>
-    console.log 'go back to list'
-    @state.go 'list-and-planning'
+    console.log 'go back to planning'
+    @state.go 'list.planning'
 
   # restore previous values
   cancel: =>
@@ -198,8 +213,8 @@ module.exports = class CardController extends LayoutController
             @_changes = {}
             @_resetRequired()
             @_removable = []
-            @rootScope.$emit 'search'
-            console.log "models removed"
+            @cardList.performSearch()
+            console.log "models removed" if @_removable.length
             @rootScope.$apply() unless @rootScope.$$phase
             done()
 
@@ -209,7 +224,7 @@ module.exports = class CardController extends LayoutController
   loadCard: (cardId) =>
     # to avoid displaying confirmation
     @hasChanged = false
-    @state.go 'list-and-card', {id: cardId}, reload: true
+    @state.go 'list.card', {id: cardId}, reload: true
 
   # Add a new dancer to this card.
   # Reuse address of last dancer
@@ -252,12 +267,12 @@ module.exports = class CardController extends LayoutController
         keyboard: false
         resolve: 
           danceClasses: -> new Promise (resolve, reject) -> 
-            dancer.danceClasses (err, classes) -> 
+            dancer.getClasses (err, classes) -> 
               return reject err if err?
               resolve classes
           isEdit: -> dancer.danceClassIds.length > 0
       }, RegisterController.declaration
-    ).result.then ({confirmed, season, danceClasses}) =>
+    ).result.then(({confirmed, season, danceClasses}) =>
       return unless confirmed
       registration = null
       # search for existing registration
@@ -272,6 +287,7 @@ module.exports = class CardController extends LayoutController
 
       # add selected class ids to dancer
       dancer.setClasses danceClasses
+    ).catch (err) => console.error err
 
   # Indicates whether this dancer's address was reused or not
   #
@@ -404,8 +420,8 @@ module.exports = class CardController extends LayoutController
         ], (err) => 
           return console.error err if err?
           @rootScope.$apply =>
-            @state.go 'list-and-planning'
-            @rootScope.$emit 'search'
+            @state.go 'list.planning'
+            @cardList.performSearch()
 
       # mark for a change
       @_changed[dancer.id] = true
