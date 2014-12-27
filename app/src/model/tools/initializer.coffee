@@ -1,5 +1,4 @@
 _ = require 'lodash'
-moment = require 'moment'
 async = require 'async'
 Db = require 'nedb'
 {join} = require 'path'

@@ -41,3 +41,4 @@ module.exports = class Payment extends Base
     super(raw)
     # enrich object attributes
     @receipt = moment @receipt
+    @value = +@value

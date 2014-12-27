@@ -1,47 +1,47 @@
 <article class="registration focusable">
   <span class="btn-group" data-dropdown>
-    <a href="" class="btn glyphed" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})"><i class="glyphicon glyphicon-print"/>{{'btn.print'|i18n}}</a>
+    <a href="" class="btn glyphed" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})"><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}</a>
     <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.registration})"><i class="glyphicon glyphicon-trash"/></a>
   </span>
-  <h2>{{ctrl.registration.season}}</h2>
+  <h2>{{::ctrl.registration.season}}</h2>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers">
     <div class="dancer-classes">
-      <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{'lbl.certifiedLong'|i18n}}</label>
-      <h4>{{'lbl.danceClassesFor'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
+      <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{::'lbl.certifiedLong'|i18n}}</label>
+      <h4>{{::'lbl.danceClassesFor'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
       <div class="dance-classes">
-        <div class="danceClass" data-ng-repeat="danceClass in ctrl.classesPerDancer[$index]"><span class="kind {{danceClass.color}}">{{danceClass.kind}}</span><span class="level">{{danceClass.level}}</span><span class="hour">{{danceClass.start|classDate}}</span></div>
+        <div class="danceClass" data-ng-repeat="danceClass in ctrl.classesPerDancer[$index]"><span class="kind {{::danceClass.color}}">{{::danceClass.kind}}</span><span class="level">{{::danceClass.level}}</span><span class="hour">{{::danceClass.start|classDate}}</span></div>
       </div>
     </div>
   </article>
-  <h3>{{'lbl.charged'|i18n:{sep:true} }}
+  <h3>{{::'lbl.charged'|i18n:{sep:true} }}
     <span class="input-group">
-      <input type="text" data-number-only class="input-small scrollable" data-ng-model="ctrl.registration.charged"/>
-      <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
+      <input type="text" data-number-only class="input-small scrollable" data-ng-model="ctrl.registration.charged" data-ng-change="ctrl._onChange('charged')"/>
+      <span class="input-group-addon">{{::'lbl.currency'|i18n}}</span>
     </span>
     <span class="btn-group" data-dropdown>
       <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="(period, label) in ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{label}}</a></li>
+        <li data-ng-repeat="(period, label) in ::ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{::label}}</a></li>
       </ul>
     </span>
-    <a href="" class="btn pull-right add-payment glyphed" data-ng-click="ctrl.addPayment()"><i class="glyphicon glyphicon-plus"/>{{'btn.addPayment'|i18n}}</a>
+    <a href="" class="btn pull-right add-payment glyphed" data-ng-click="ctrl.addPayment()"><i class="glyphicon glyphicon-plus"/>{{::'btn.addPayment'|i18n}}</a>
   </h3>
   <div class="payments" data-ng-if="ctrl.registration.payments.length > 0">
     <h3>
       <div class="remove"></div>
-      <div class="type">{{'lbl.type'|i18n}}</div>
-      <div class="receipt">{{'lbl.receipt'|i18n}}</div>
-      <div>{{'lbl.payer'|i18n}}</div>
-      <div>{{'lbl.bank'|i18n}}</div>
-      <div>{{'lbl.details'|i18n}}</div>
-      <div class="value">{{'lbl.value'|i18n}}</div>
+      <div class="type">{{::'lbl.type'|i18n}}</div>
+      <div class="receipt">{{::'lbl.receipt'|i18n}}</div>
+      <div>{{::'lbl.payer'|i18n}}</div>
+      <div>{{::'lbl.bank'|i18n}}</div>
+      <div>{{::'lbl.details'|i18n}}</div>
+      <div class="value">{{::'lbl.value'|i18n}}</div>
     </h3>
     <div data-payment 
       data-ng-repeat="payment in ctrl.registration.payments" 
       data-src="payment" 
       data-required-fields="ctrl.requiredFields[$index]"
-      data-on-change="ctrl._onChange()"
-      data-on-remove="ctrl.removePayment(model)"></div>
-    <div class="total ng-class:ctrl.getBalanceState();">{{'lbl.sum'|i18n:{sep:true} }}<span class="input-group"><span data-ng-bind="ctrl.registration.balance"></span><span class="input-group-addon">{{'lbl.currency'|i18n}}</span></span></div>
+      data-on-remove="ctrl.removePayment(model)"
+      data-on-change="ctrl._onChange('payments['+$index+'].'+$field)"></div>
+    <div class="total ng-class:ctrl.getBalanceState();">{{::'lbl.sum'|i18n:{sep:true} }}<span class="input-group"><span data-ng-bind="ctrl.registration.balance"></span><span class="input-group-addon">{{::'lbl.currency'|i18n}}</span></span></div>
   </div>
 </article>

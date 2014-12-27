@@ -22,3 +22,4 @@ module.exports = class Address extends Persisted
       phone: null
     # fill attributes
     super(raw)
+    @zipcode = +@zipcode

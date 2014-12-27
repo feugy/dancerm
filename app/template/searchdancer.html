@@ -1,10 +1,10 @@
 <div class="modal-header">
-  <h3>{{'ttl.searchDancer'|i18n}}</h3>
+  <h3>{{::'ttl.searchDancer'|i18n}}</h3>
 </div>
 <div class="modal-body search-dancer">
-  <div>{{'msg.searchDancer'|i18n:{args:ctrl.existing} }}</div>
+  <div>{{::'msg.searchDancer'|i18n:{args:ctrl.existing} }}</div>
   <div>
-    <label>{{'lbl.lastname'|i18n:{sep:true} }}</label><input 
+    <label>{{::'lbl.lastname'|i18n:{sep:true} }}</label><input 
       type="text" 
       data-ng-model="ctrl.dancer"
       data-typeahead="choice.firstname+' '+choice.lastname for choice in ctrl.search($viewValue) | filter:$viewValue | limitTo:20" 
@@ -12,9 +12,9 @@
       data-typeahead-input-formatter="ctrl.formatDancer()"
       data-typeahead-on-select="ctrl.dancer = $item"/>
   </div>
-  <div>{{'msg.searchDancerWarn'|i18n}}</div>
+  <div>{{::'msg.searchDancerWarn'|i18n}}</div>
 </div>
 <div class="modal-footer">
-  <a href="" data-ng-click="ctrl.close(true)" class="btn btn-primary {{ctrl.dancer ? '' : 'disabled'}}">{{'btn.save'|i18n}}</a>
-  <a href="" data-ng-click="ctrl.close()" class="btn">{{'btn.cancel'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.close(true)" class="btn btn-primary {{ctrl.dancer ? '' : 'disabled'}}">{{::'btn.save'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.close()" class="btn">{{::'btn.cancel'|i18n}}</a>
 </div>

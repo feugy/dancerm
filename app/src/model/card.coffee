@@ -5,8 +5,6 @@ Registration = require './registration'
 # because of circular dependency
 Dancer = null
 
-observeSupported = Object.observe?
-
 # A card gather several dancers to group their registrations
 module.exports = class Card extends Persisted
 
@@ -35,28 +33,7 @@ module.exports = class Card extends Persisted
 
     # fill attributes
     super(raw)
-
     Dancer = require './dancer' unless Dancer?
-
-    # on registration change, remove old listeners and add new ones
-    Object.defineProperty @, 'registrations',
-      configurable: true
-      get: -> @_raw.registrations
-      set: (val) -> 
-        if @_raw.registrations? and observeSupported
-          Array.unobserve @_raw.registrations, @_onRegistrationsChanged
-        @_raw.registrations = val
-        if @_raw.registrations? and observeSupported
-          Array.observe @_raw.registrations, @_onRegistrationsChanged
-        @_onRegistrationsChanged [
-          addedCount: @_raw.registrations.length
-          index: 0
-          object: @_raw.registrations
-          removed: []
-          type: 'splice'
-        ]
-    # for bindings initialization
-    @registrations = @registrations
 
   # Merge current card with other
   # Dancers will be moved into this card, and removed from the other.
@@ -90,27 +67,5 @@ module.exports = class Card extends Persisted
             existing.certificates[attr] = value for attr, value of other.certificates
           else
             @registrations.push imported
-        # emit global change
-        @emit 'change'
         # removes other card
         other.remove done
-
-  # **private**
-  # Emit change event when registration have changed
-  #
-  # @param details [Object] change details, containing added 'object' array, and 'removed' object array.
-  _onRegistrationsChanged: ([details]) =>
-    # update bindings
-    if details?.removed?
-      removed.removeListener 'change', @_onSingleRegistrationChanged for removed in details.removed when removed?.removeListener
-    if details?.object
-      added.on 'change', @_onSingleRegistrationChanged for added in details.object when added?.on
-    @emit 'change', 'registrations', @_raw.registrations
-
-  # **private**
-  # Emit change event when single registration changed itself
-  #
-  # @param attr [String] modified path
-  # @param value [Any] new value
-  _onSingleRegistrationChanged: (attr, value) =>
-    @emit 'change', "registrations.#{attr}", value

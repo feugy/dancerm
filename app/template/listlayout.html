@@ -1,19 +1,19 @@
 <div data-layout>
   <div class="column">
-    <h2><span>{{'ttl.dancerList'|i18n}}</span><a data-ui-sref="detailed" class="btn"><i class="glyphicon glyphicon-chevron-right"></i></a></h2>
+    <h2><span>{{::'ttl.dancerList'|i18n}}</span><a data-ui-sref="detailed" class="btn"><i class="glyphicon glyphicon-chevron-right"></i></a></h2>
     <div class="input-group">
-      <input class="form-control" type="text" data-ng-model="ctrl.cardList.criteria.string" data-ng-keyup="ctrl.cardList.performSearch()" placeholder="{{'placeholder.search'|i18n}}"/>
+      <input class="form-control" type="text" data-ng-model="ctrl.cardList.criteria.string" data-ng-keyup="ctrl.cardList.performSearch()" placeholder="{{::'placeholder.search'|i18n}}"/>
       <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
     </div>
     <div data-tags data-src="ctrl.cardList.criteria" data-on-remove="ctrl.cardList.performSearch()"></div>
-    <div class="list-length" data-ng-hide="ctrl.cardList.list.length > 0">{{'msg.emptyDancerList'|i18n}}</div>
+    <div class="list-length" data-ng-hide="ctrl.cardList.list.length > 0">{{::'msg.emptyDancerList'|i18n}}</div>
     <div class="list-length" data-ng-show="ctrl.cardList.list.length > 0">{{ctrl.cardList.list.length}}{{'msg.dancerListLength'|i18n}}</div>
     <div class="print-call-list" data-ng-if="ctrl.canPrintCallList()">
-      <a href="" class="btn glyphed" data-ng-click="ctrl.printCallList()"><i class="glyphicon glyphicon-print"/>{{'btn.callList'|i18n}}</a>
+      <a href="" class="btn glyphed" data-ng-click="ctrl.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>
     </div>
     <div data-list 
       data-src="ctrl.cardList.list" 
-      data-columns="ctrl.columns"
+      data-columns="::ctrl.columns"
       data-ng-show="ctrl.cardList.list.length > 0" 
       data-on-click="ctrl.displayCard(model)"></div>
   </div>

@@ -5,7 +5,7 @@ i18n = require '../labels/common'
 class PaymentDirective
                 
   # Controller dependencies
-  @$inject: ['$scope', '$element']
+  @$inject: []
   
   # Labels, for rendering
   i18n: i18n
@@ -25,16 +25,16 @@ class PaymentDirective
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
-  constructor: (scope, element) ->
-    @$el = $(element)
-
+  constructor: () ->
     @receiptOpts =
       showWeeks: false
       startingDay: 1
       showButtonBar: false
+    @setType @src?.type
 
-    scope.$watch 'ctrl.src', => @_updateRendering @src
-    @_updateRendering @src
+    # reset receipt date to payement's one
+    @receiptOpts.open = false
+    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.format i18n.formats.receipt else null
 
   # check if field is missing or not
   #
@@ -50,12 +50,13 @@ class PaymentDirective
   setType: (type) =>
     @src?.type = type
     @typeLabel = @i18n.paymentTypes[@src?.type] or ''
+    @onChange $field: 'type'
 
   # Invoked when date change in the date picker
   # Updates the dancer's birth date
   setReceipt: =>
     @src?.receipt = moment @receiptOpts.value
-    @_onChange()
+    @onChange $field: 'receipt'
     
   # Opens the birth selection popup
   #
@@ -65,24 +66,6 @@ class PaymentDirective
     event?.preventDefault()
     event?.stopPropagation()
     @receiptOpts.open = not @receiptOpts.open
-
-  # **private**
-  # Update internal state when displayed dancer has changed.
-  #
-  # @param value [Dancer] new dancer's value
-  _updateRendering: (value) =>
-    @src?.removeListener 'change', @_onChange
-    @src = value
-    @src?.on 'change', @_onChange
-    @setType @src?.type
-
-    # reset receipt date to payement's one
-    @receiptOpts.open = false
-    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.format i18n.formats.receipt else null
-
-  # **private**
-  # Value change handler: relay to registration parent.
-  _onChange: => @onChange?(model: @src)
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->
@@ -105,7 +88,7 @@ module.exports = (app) ->
       src: '='
       # array of missing fields
       requiredFields: '='
-      # change handler. Concerned dancer is a 'model' parameter, no change detection are performed
-      onChange: '&?'
       # ask for removal, concerned payement as 'model' parameter
       onRemove: '&?'
+      # used to propagate model modifications, invoked with $field as parameter
+      onChange: '&?'

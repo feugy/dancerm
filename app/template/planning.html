@@ -1,21 +1,21 @@
 <div>
   <header>
-    <a href="" class="btn btn-primary glyphed" data-ng-click="ctrl.createCard()"><i class="glyphicon glyphicon-user"/>{{'btn.newDancer'|i18n}}</a>
-    <a data-ui-sref="stats" class="btn glyphed"><i class="glyphicon glyphicon-stats"/>{{'btn.stats'|i18n}}</a>
-    <a href="" class="btn glyphed" data-ng-click="ctrl.importDancers()"><i class="glyphicon glyphicon glyphicon-import"/>{{'btn.import'|i18n}}</a>
+    <a href="" class="btn btn-primary glyphed" data-ng-click="ctrl.createCard()"><i class="glyphicon glyphicon-user"/>{{::'btn.newDancer'|i18n}}</a>
+    <a data-ui-sref="stats" class="btn glyphed"><i class="glyphicon glyphicon-stats"/>{{::'btn.stats'|i18n}}</a>
+    <a href="" class="btn glyphed" data-ng-click="ctrl.importDancers()"><i class="glyphicon glyphicon glyphicon-import"/>{{::'btn.import'|i18n}}</a>
   </header>
   <div class="commands">
     <div class="btn-group" data-dropdown>
       <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.currentSeason}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.loadPlanning(season)">{{season}}</a></li>
+        <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.loadPlanning(season)">{{::season}}</a></li>
       </ul>
     </div>
     <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.cardList.criteria.teachers[0]}}<span data-ng-if="!ctrl.cardList.criteria.teachers[0]">{{'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
+      <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.cardList.criteria.teachers[0]}}<span data-ng-if="!ctrl.cardList.criteria.teachers[0]">{{::'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li><a data-ng-click="ctrl.searchByTeacher($event)">{{'lbl.allTeachers'|i18n}}</a></li>
-        <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.searchByTeacher($event, teacher)">{{teacher}}</a></li>
+        <li><a data-ng-click="ctrl.searchByTeacher($event)">{{::'lbl.allTeachers'|i18n}}</a></li>
+        <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.searchByTeacher($event, teacher)">{{::teacher}}</a></li>
       </ul>
     </div>
   </div>

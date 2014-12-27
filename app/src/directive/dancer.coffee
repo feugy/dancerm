@@ -26,10 +26,6 @@ class DancerDirective
   # Dancers's search request in progress
   _reqInProgress: false
 
-  # **private**
-  # stores previous values for changes detections
-  _previous: {}
-
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param q [Object] Angular's promise factory
@@ -49,6 +45,7 @@ class DancerDirective
   setTitle: (selected) =>
     unless selected is i18n.lbl.choose
       @src?.title = selected 
+    @onChange?($field: 'title')
 
   # Search within existing models a match on given attribute
   # Only available when dancer is not saved yet.
@@ -78,7 +75,7 @@ class DancerDirective
   # Updates the dancer's birth date
   setBirth: =>
     @src?.birth = moment @birthOpts.value
-    @_onChange()
+    @onChange?($field: 'birth')
     
   # Opens the birth selection popup
   #
@@ -96,33 +93,17 @@ class DancerDirective
   isRequired: (field) => 
     return 'invalid' if @requiredFields? and field in @requiredFields
     ''
-    
-  disableTab: (event) =>
-    allow = true
-    if event.which is 9
-      event.preventDefault()
-      event.stopImmediatePropagation()
-      allow =false
-    allow
-
   # **private**
   # Update internal state when displayed dancer has changed.
   #
   # @param value [Dancer] new dancer's value
   _updateRendering: (value) =>
-    @src?.removeListener 'change', @_onChange
     @src = value
-    @src?.on 'change', @_onChange
-    @_previous = @src?.toJSON()
     @isNew = @src?._v is -1 and @canLoad
 
     # reset birth date to dancer's one
     @birthOpts.open = false
     @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.format i18n.formats.birth else null
-  # **private**
-  # Value change handler: check if dancer has changed from its previous values
-  _onChange: =>
-    @onChange?(model: @src, hasChanged: @src?._v is -1 or not _.isEqual @_previous, @src?.toJSON())
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->
@@ -149,9 +130,9 @@ module.exports = (app) ->
       requiredFields: '='
       # loading handler. Invoked when a dancer was retrieve by typeahead, 'model' parameter containing loaded dancer
       onLoad: '&'
-      # change handler. Concerned dancer is a 'model' parameter, change status is a 'hasChagned' parameter
-      onChange: '&?'
       # registration addition handler. Concerned dancer is a 'model' parameter
       onRegister: '&?'
       # dancer removal handler. Concerned dancer is a 'model' parameter
       onRemove: '&?'
+      # used to propagate model modifications, invoked with $field as parameter
+      onChange: '&?'

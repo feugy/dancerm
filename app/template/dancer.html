@@ -9,11 +9,11 @@
       <div class="btn-group" data-dropdown>
         <a href="" class="btn dropdown-toggle" dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li data-ng-repeat="choice in ctrl.i18n.civilityTitles"><a data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
+          <li data-ng-repeat="choice in ::ctrl.i18n.civilityTitles"><a data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
         </ul>
       </div>
     </span>
-    <span class="col-md-5 firstname"><label>{{'lbl.firstname'|i18n:{sep:true} }}</label><input 
+    <span class="col-md-5 firstname"><label>{{::'lbl.firstname'|i18n:{sep:true} }}</label><input 
       type="text"
       data-ng-if="ctrl.isNew" 
       data-set-null
@@ -22,8 +22,9 @@
       data-typeahead="choice.firstname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('firstname', $viewValue) | filter:$viewValue | limitTo:20" 
       data-typeahead-min-length="3" 
       data-typeahead-on-select="ctrl.onLoad({evt:$event, model:$item})"
-      data-disable-tab/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.firstname" data-ng-class="ctrl.isRequired('firstname')" data-set-null/></span>
-    <span class="col-md-6 lastname"><label>{{'lbl.lastname'|i18n:{sep:true} }}</label><input 
+      data-ng-change="ctrl.onChange({$field:'firstname'})"
+      data-disable-tab/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.firstname" data-ng-class="ctrl.isRequired('firstname')" data-ng-change="ctrl.onChange({$field:'firstname'})" data-set-null/></span>
+    <span class="col-md-6 lastname"><label>{{::'lbl.lastname'|i18n:{sep:true} }}</label><input 
       type="text" 
       data-ng-if="ctrl.isNew" 
       data-set-null
@@ -32,21 +33,22 @@
       data-typeahead="choice.lastname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('lastname', $viewValue) | filter:$viewValue | limitTo:20" 
       data-typeahead-min-length="3" 
       data-typeahead-on-select="ctrl.onLoad({evt:$event, model:$item})"
-      data-disable-tab/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.lastname" data-ng-class="ctrl.isRequired('lastname')" data-set-null></span>
+      data-ng-change="ctrl.onChange({$field:'lastname'})"
+      data-disable-tab/><input type="text" data-ng-if="!ctrl.isNew" data-ng-model="ctrl.src.lastname" data-ng-class="ctrl.isRequired('lastname')" data-ng-change="ctrl.onChange({$field:'lastname'})" data-set-null></span>
   </div>
   <div class="row">
-    <span class="col-md-6 cellphone"><label>{{'lbl.cellphone'|i18n:{sep:true} }}</label><input type="text" name="cellphone" data-ng-model="ctrl.src.cellphone" data-set-null/></span>
-    <span class="col-md-6 email"><label>{{'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email" data-ng-model="ctrl.src.email" data-set-null/></span>
+    <span class="col-md-6 cellphone"><label>{{::'lbl.cellphone'|i18n:{sep:true} }}</label><input type="text" name="cellphone" data-ng-model="ctrl.src.cellphone" data-ng-change="ctrl.onChange({$field:'cellphone'})" data-set-null/></span>
+    <span class="col-md-6 email"><label>{{::'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email" data-ng-model="ctrl.src.email" data-ng-change="ctrl.onChange({$field:'cellphone'})" data-set-null/></span>
   </div>
   <div class="row">
-    <span class="col-md-6 birth"><label>{{'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group">
+    <span class="col-md-6 birth"><label>{{::'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group">
         <input type="text"
           data-set-null
-          data-datepicker-popup="{{'formats.birthSelection'|i18n}}" 
+          data-datepicker-popup="{{::'formats.birthSelection'|i18n}}" 
           data-is-open="ctrl.birthOpts.open"
           data-ng-model="ctrl.birthOpts.value"
           data-show-button-bar="false"
-          data-datepicker-options="ctrl.birthOpts"
+          data-datepicker-options="::ctrl.birthOpts"
           data-ng-change="ctrl.setBirth()"/>
         <a href="" class="input-group-addon" data-ng-click="ctrl.toggleBirth($event)"><i class="glyphicon glyphicon-calendar"></i></a>
       </span>

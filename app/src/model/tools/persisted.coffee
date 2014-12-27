@@ -182,8 +182,8 @@ module.exports = class Persisted extends Base
     # increment version
     raw.id = raw.id or generateId()
     getCollection(@constructor.name, done, true).put(raw).transaction.oncomplete = =>
-      @_raw.id = raw.id
-      @_raw._v = raw._v
+      @id = raw.id
+      @_v = raw._v
       cache[@constructor.name][raw.id] = @
       done null, @
 
@@ -193,6 +193,6 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object or null if no error occured
   # @option done model [Persisted] currently removed model
   remove: (done) =>
-    getCollection(@constructor.name, done, true).delete(@_raw.id).transaction.oncomplete = => 
-      delete cache[@constructor.name][@_raw.id]
+    getCollection(@constructor.name, done, true).delete(@id).transaction.oncomplete = => 
+      delete cache[@constructor.name][@id]
       done null, @

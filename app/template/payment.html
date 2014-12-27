@@ -3,13 +3,13 @@
   <span class="btn-group dropup type" data-dropdown>
     <a href="" class="btn dropdown-toggle scrollable" dropdown-toggle data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></a>
     <ul class="dropdown-menu">
-      <li data-ng-repeat="(type, label) in ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{label}}</a></li>
+      <li data-ng-repeat="(type, label) in ::ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{::label}}</a></li>
     </ul>
   </span>
   <span class="receipt input-group">
     <input type="text"
       data-set-null
-      data-datepicker-popup="{{'formats.receiptSelection'|i18n}}" 
+      data-datepicker-popup="{{::'formats.receiptSelection'|i18n}}" 
       data-is-open="ctrl.receiptOpts.open"
       data-ng-model="ctrl.receiptOpts.value"
       data-show-button-bar="false"
@@ -17,11 +17,11 @@
       data-ng-change="ctrl.setReceipt()"/>
     <a href="" class="input-group-addon" data-ng-click="ctrl.toggleReceipt($event)"><i class="glyphicon glyphicon-calendar"/></a>
   </span>
-  <input type="text" class="payer" data-ng-model="ctrl.src.payer" data-ng-class="ctrl.isRequired('payer')"/>
-  <input type="text" data-ng-model="ctrl.src.bank" data-ng-class="ctrl.isRequired('bank')"/>
-  <input type="text" data-ng-model="ctrl.src.details"/>
+  <input type="text" class="payer" data-ng-model="ctrl.src.payer" data-ng-class="ctrl.isRequired('payer')" data-ng-change="ctrl.onChange({$field:'payer'})"/>
+  <input type="text" data-ng-model="ctrl.src.bank" data-ng-class="ctrl.isRequired('bank')" data-ng-change="ctrl.onChange({$field:'bank'})"/>
+  <input type="text" data-ng-model="ctrl.src.details" data-ng-change="ctrl.onChange({$field:'details'})"/>
   <span class="value input-group">
-    <input class="form-control" type="text" data-number-only data-ng-model="ctrl.src.value"/>
-    <span class="input-group-addon">{{'lbl.currency'|i18n}}</span>
+    <input class="form-control" type="text" data-number-only data-ng-model="ctrl.src.value" data-ng-change="ctrl.onChange({$field:'value'})"/>
+    <span class="input-group-addon">{{::'lbl.currency'|i18n}}</span>
   </span>
 </div>

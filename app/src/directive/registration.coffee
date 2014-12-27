@@ -11,8 +11,8 @@ class RegistrationDirective
   # i18n labels, for rendering
   i18n: i18n
 
-  # JQuery enriched element for directive root
-  $el: null
+  # enriched element for directive root
+  element: null
 
   # Angular's dialog service
   dialog: null
@@ -40,13 +40,16 @@ class RegistrationDirective
   # @param dialog [Object] Angular's dialog service
   # @param filter [Function] Angular's filters factory
   # @param rootScope [Object] Angular root scope
-  constructor: (@scope, element, @dialog, @filter, rootScope) ->
-    @$el = $(element)
-    @scope.$watchGroup ['ctrl.registration', 'ctrl.dancers'], => @_updateRendering @registration, @dancers
-    @_updateRendering @registration, @dancers
+  constructor: (@scope, @element, @dialog, @filter, rootScope) ->
+    @_updateRendering()
+    unwatches = []
+    unwatches.push @scope.$on 'dance-classes-changed', (event, dancer) =>
+      @_updateRendering() if dancer in @dancers
+
+    @scope.$on '$destroy', -> unwatch?() for unwatch in unwatches
 
     # on cancellation, restore previous payments
-    rootScope.$on 'cancel-edit', =>
+    unwatches.push rootScope.$on 'cancel-edit', =>
       return unless @registration? and @_previousPayments?
       @registration.payments.splice.apply @registration.payments, [0, @registration.payments.length].concat @_previousPayments
   
@@ -54,10 +57,11 @@ class RegistrationDirective
   addPayment: =>
     @registration.payments.push new Payment payer: @dancers[0].lastname
     @requiredFields.push []
-    @_onChange()
     setTimeout =>
-      @$el.find('.type .scrollable').last().focus()
+      @element.find('.type .scrollable').last().focus()
     , 100
+    @_onChange 'payments'
+    # to be used directly in DOM
     null
 
   # Updates the payment period of the source registration object
@@ -66,6 +70,7 @@ class RegistrationDirective
   setPeriod: (period) =>
     @registration.period = period
     @periodLabel = @i18n.periods[@registration.period]
+    @_onChange 'period'
 
   # Compute the registration balance
   #
@@ -96,36 +101,26 @@ class RegistrationDirective
         idx = @registration.payments.indexOf(removed)
         @registration.payments.splice idx, 1
         @requiredFields.splice idx, 1
-        @_onChange()
+        @_onChange "payments"
 
   # **private**
   # Update internal state when displayed registration or card has changed.
-  #
-  # @param registration [Registration] new registration value
-  # @param dancers [Array<Dancer>] new dancers value
   _updateRendering: (registration, dancers) =>
-    if @registration?
-      @registration?.removeListener 'change', @_onChange
-    if @dancers?
-      dancer?.removeListener 'change', @_onChange for dancer in @dancers
-
-    @registration = registration
-    @registration?.on 'change', @_onChange
     # get the friendly labels for period
     @setPeriod @registration?.period
 
     # early resolve dance class
-    async.map dancers, (dancer, next) =>
+    async.map @dancers, (dancer, next) =>
       dancer.getClasses next
     , (err, danceClasses) =>
       console.error err if err?
       @classesPerDancer = []
+      dancers = @dancers.concat()
       @dancers = []
       # filter dancers that do not have classes for this registration
       for dancer, i in dancers
         classes =  (clazz for clazz in danceClasses[i] when clazz.season is @registration?.season)
         if classes.length > 0
-          dancer?.on 'change', @_onChange 
           @classesPerDancer.push classes
           @dancers.push dancer
 
@@ -137,8 +132,10 @@ class RegistrationDirective
       @scope.$apply()
 
   # **private**
-  # Value change handler: relay to card parent.
-  _onChange: => @onChange?(model: @registration)
+  # Relay change events
+  # 
+  # @param field [String] modified field
+  _onChange: (field) => @onChange $field: field
 
 # The registration directive displays dancer's registration to dance classes and their payments
 module.exports = (app) ->
@@ -167,3 +164,5 @@ module.exports = (app) ->
       onPrint: '&?'
       # invoked when registration needs to be removed. Concerned registration is a 'model' parameter
       onRemove: '&?'
+      # used to propagate model modifications, invoked with $field as parameter
+      onChange: '&?'

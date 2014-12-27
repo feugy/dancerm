@@ -7,7 +7,7 @@ Dancer = require '../script/model/dancer'
 moment = require 'moment'
 # merge lodash and lodash string functions
 _ = require 'lodash'
-_str = require 'lodash.string'
+_str = require 'underscore.string'
 _.mixin _str.exports()
 async = require 'async'
 

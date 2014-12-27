@@ -2,20 +2,20 @@
   <h3>{{'ttl.resolveConflict'|i18n:{args:ctrl} }}</h3>
 </div>
 <div class="modal-body conflict">
-  <div>{{'msg.resolveConflict'|i18n}}</div>
+  <div>{{::'msg.resolveConflict'|i18n}}</div>
   <h4>{{ctrl.name}}</h4>
   <table class="table conflict-table">
     <thead>
-      <tr><th/><th>{{'lbl.existingValue'|i18n}}</th><th>{{'lbl.importedValue'|i18n}}</th></tr>
+      <tr><th/><th>{{::'lbl.existingValue'|i18n}}</th><th>{{::'lbl.importedValue'|i18n}}</th></tr>
     </thead>
     <tbody>
       <tr data-ng-repeat="field in ctrl.fields">
         <td>
           <span data-ng-if="field.season" class="tag season">{{field.season}}</span>
-          <span data-ng-if="field.kind === 'payment'">{{'lbl.payment'|i18n:{sep:true} }}</span>
-          <span data-ng-if="field.kind === 'registration'">{{'lbl.registration'|i18n:{sep:true} }}</span>
-          <span data-ng-if="field.kind === 'address'">{{'lbl.address'|i18n:{sep:true} }}</span>
-          <span data-ng-if="field.kind === 'card'">{{'lbl.card'|i18n:{sep:true} }}</span>
+          <span data-ng-if="field.kind === 'payment'">{{::'lbl.payment'|i18n:{sep:true} }}</span>
+          <span data-ng-if="field.kind === 'registration'">{{::'lbl.registration'|i18n:{sep:true} }}</span>
+          <span data-ng-if="field.kind === 'address'">{{::'lbl.address'|i18n:{sep:true} }}</span>
+          <span data-ng-if="field.kind === 'card'">{{::'lbl.card'|i18n:{sep:true} }}</span>
           <span data-ng-if="!field.kind">{{'lbl.' + field.label|i18n:{sep:true} }}</span>
         </td>
         <td>
@@ -31,7 +31,7 @@
   </table>
 </div>
 <div class="modal-footer">
-  <a href="" data-ng-click="ctrl.save()" class="btn btn-primary">{{'btn.save'|i18n}}</a>
-  <a href="" data-ng-click="ctrl.loadNext()" class="btn">{{'btn.ignore'|i18n}}</a>
-  <a href="" data-ng-click="ctrl.cancel()" class="btn">{{'btn.cancel'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.save()" class="btn btn-primary">{{::'btn.save'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.loadNext()" class="btn">{{::'btn.ignore'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.cancel()" class="btn">{{::'btn.cancel'|i18n}}</a>
 </div>

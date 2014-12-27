@@ -21,8 +21,8 @@
         data-on-load="ctrl.loadCard(model.cardId)"
         data-on-register="ctrl.addRegistration(model)"
         data-on-remove="ctrl.removeDancer(model)"
-        data-on-change="ctrl.onChange(model, hasChanged)"
-        data-required-fields="ctrl.required[dancer.id]">
+        data-required-fields="ctrl.required[dancer.id]"
+        data-on-change="ctrl._onChange('dancers['+$item+'].'+$field)">
       </dancer>
       <address
         data-src="ctrl.addresses[$index]"
@@ -30,8 +30,8 @@
         data-can-remove="ctrl.isAddressRemovable(dancer)"
         data-on-affect="ctrl.addAddress(dancer)"
         data-on-remove="ctrl.removeAddress(dancer)"
-        data-on-change="ctrl.onChange(model, hasChanged)"
-        data-required-fields="ctrl.required[ctrl.addresses[$index].id]">
+        data-required-fields="ctrl.required[ctrl.addresses[$index].id]"
+        data-on-change="ctrl._onChange('addresses['+$item+'].'+$field)">
       </address>
     </article>
   </article>
@@ -52,5 +52,6 @@
     data-dancers="ctrl.dancers"
     data-on-remove="ctrl.removeRegistration(model)"
     data-on-print="ctrl.printRegistration(registration, auto, withVat, withClasses)"
-    data-required-fields="ctrl.required.regs[$index]"/>
+    data-required-fields="ctrl.required.regs[$index]"
+    data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
 </div>

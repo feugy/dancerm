@@ -3,7 +3,6 @@
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 {dumpError} = require '../script/util/common'
-moment = require 'moment'
 _ = require 'lodash'
 async = require 'async'
 

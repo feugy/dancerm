@@ -1,5 +1,4 @@
 _ = require 'lodash'
-moment = require 'moment'
 async = require 'async'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
@@ -15,7 +14,7 @@ SearchDancerController = require './searchdancer'
 module.exports = class CardController
             
   # Controller dependencies
-  @$inject: ['$rootScope', 'cardList', 'dialog', '$state', '$filter', '$stateParams']
+  @$inject: ['$scope', '$rootScope', 'cardList', 'dialog', '$state', '$filter', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -26,7 +25,10 @@ module.exports = class CardController
   # for rendering
   i18n: i18n
 
-  # Global scope, for digest triggering
+  # Controller's own scope, for change detection
+  scope: null
+  
+  # Angular's global scope, for digest triggering
   rootScope: null
 
   # Angular's state service
@@ -57,19 +59,14 @@ module.exports = class CardController
   required: {}
 
   # flag indicating wether the card has changed or not
-  hasChanged: {}
-
-  # **private**
-  # Stores for each displayed model a change status
-  # Model's id is used as key
-  _changed: {}
+  hasChanged: false
 
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
 
   # **private**
-  # Stores card previous values for change detection
+  # Stores previous models values (model id used as key) for change detection
   _previous: {}
 
   # **private**
@@ -78,19 +75,19 @@ module.exports = class CardController
 
   # Controller constructor: bind methods and attributes to current scope
   #
-  # @param scope [Object] Angular global scope, for digest triggering
+  # @param scope [Object] Controller's own scope, for change detection
+  # @param rootscope [Object] Angular global scope for digest triggering
   # @param cardList [CardListService] service responsible for card list
   # @param dialog [Object] Angular dialog service
   # @param state [Object] Angular state provider
   # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@rootScope, @cardList, @dialog, @state, @filter, stateParams) -> 
+  constructor: (@scope, @rootScope, @cardList, @dialog, @state, @filter, stateParams) -> 
     # initialize global change status
     @hasChanged = false
     @dancers = []
     @addresses = []
     @required = {}
-    @_changes = {}
     @_modalOpened = false
     @_previous = {}
     @_removable = []
@@ -117,9 +114,7 @@ module.exports = class CardController
         @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
-  back: =>
-    console.log 'go back to planning'
-    @state.go 'list.planning'
+  back: => @state.go 'list.planning'
 
   # restore previous values
   cancel: =>
@@ -137,7 +132,6 @@ module.exports = class CardController
       if @dancers[0]?.cardId?
         # cancel payment
         @rootScope.$broadcast 'cancel-edit'
-        console.log "reload"
         # restore values by reloading first dancer from storage
         @loadCard @dancers[0].cardId 
       else
@@ -173,14 +167,16 @@ module.exports = class CardController
       saved = []
 
       async.each models, (model, next) =>
-        return next() if (model.id in saved) or not @_changes[model.id]
+        return next() if (model.id in saved) or _.isEqual model.toJSON(), @_previous[model.id]
         if model.constructor.name is 'Address'
           console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
         else
           console.log "save card #{model.id}"
         # to avoid saving the same address multiple times
         saved.push model.id
-        model.save next
+        model.save (err) =>
+          @_previous[model.id] = model.toJSON() unless err?
+          next err
       , (err) =>
         if err?
           console.error err 
@@ -190,11 +186,13 @@ module.exports = class CardController
         i = 0
         async.eachSeries @dancers, (dancer, next) =>
           i++
-          return next() unless dancer.id? and @_changes[dancer.id]
+          return next() unless dancer.id? and not _.isEqual dancer.toJSON(), @_previous[dancer.id]
           console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
           dancer.setAddress models[i-1]
           dancer.setCard @card
-          dancer.save next
+          dancer.save (err) =>
+            @_previous[dancer.id] = dancer.toJSON() unless err?
+            next err
         , (err) =>
           if err?
             console.error err 
@@ -209,13 +207,12 @@ module.exports = class CardController
               console.error err 
               return done err
             # reset change state and refresh search
-            @hasChanged = false
-            @_changes = {}
+            @_onChange()
             @_resetRequired()
             @_removable = []
             @cardList.performSearch()
             console.log "models removed" if @_removable.length
-            @rootScope.$apply() unless @rootScope.$$phase
+            @scope.$apply() unless @scope.$$phase
             done()
 
   # Navigate to the state displaying a given card
@@ -239,6 +236,9 @@ module.exports = class CardController
     @dancers.push added
     @required[added.id] = []
     @required[address.id] = []
+    @_previous[added.id] = added.toJSON()
+    @_previous[address.id] = address.toJSON()
+    @_onChange 'dancers'
     # scroll to last
     _.defer => 
       $('.card-dancer > .dropup > a').focus()
@@ -253,7 +253,9 @@ module.exports = class CardController
     address = new Address id: generateId()
     @addresses[@dancers.indexOf dancer] = address
     @required[address.id] = []
+    @_previous[address.id] = address.toJSON()
     dancer.setAddress address
+    @_onChange 'addresses'
 
   # Add a new registration for the current season to the edited dancer, or edit an existing one
   # Displays the registration dialog
@@ -283,10 +285,13 @@ module.exports = class CardController
       unless registration?
         registration = new Registration season: season
         @card.registrations.splice 0, 0, registration
+        @_previous[registration.id] = registration.toJSON()
         @required.regs.push []
 
       # add selected class ids to dancer
       dancer.setClasses danceClasses
+      @scope.$broadcast 'dance-classes-changed', dancer
+      @_onChange "dancer[#{@dancers.indexOf dancer}].danceClassIds"
     ).catch (err) => console.error err
 
   # Indicates whether this dancer's address was reused or not
@@ -318,19 +323,7 @@ module.exports = class CardController
   setKnownBy: =>
     @card?.knownBy = (value for value of @i18n.knownByMeanings when @knownBy[value])
     @card?.knownBy.push @knownByOther if @knownByOther
-
-  # Checks if a field has been changed
-  #
-  # @param model [Base] model that has changed
-  # @param hasChanged [Boolean] true if this model has changed
-  onChange: (model, hasChanged) =>
-    # performs comparison between current and old values
-    # console.log "model #{model.id} (#{model.constructor.name}) has changed: #{hasChanged}"
-    return @hasChanged = true unless model.id?
-    @_changes[model.id] = hasChanged
-    # quit at first modification
-    @hasChanged = false
-    return @hasChanged = true for id, changed of @_changes when changed
+    @_onChange 'knownBy'
 
   # Displays a popup to search a dancer for merging it's card with the current card
   searchCard: =>
@@ -419,12 +412,12 @@ module.exports = class CardController
           (done) => @card.remove done
         ], (err) => 
           return console.error err if err?
-          @rootScope.$apply =>
+          @scope.$apply =>
             @state.go 'list.planning'
             @cardList.performSearch()
 
       # mark for a change
-      @_changed[dancer.id] = true
+      @_previous[dancer.id] = {}
       @hasChanged = true
 
       idx = @dancers.indexOf dancer
@@ -435,6 +428,7 @@ module.exports = class CardController
       # removes from displayed objects
       @dancers.splice idx, 1
       @addresses.splice idx, 1
+      @_onChange 'dancers'
 
   # Invoked when registration needs to be removed.
   # First display a confirmation dialog, and then removes it
@@ -447,6 +441,7 @@ module.exports = class CardController
     ]).result.then (confirm) =>
       return unless confirm
       @card.registrations.splice @card.registrations.indexOf(registration), 1
+      @_onChange 'registrations'
 
   # Invoked when address needs to be removed.
   # First display a confirmation dialog, and then reuse the first dancer's address
@@ -463,6 +458,7 @@ module.exports = class CardController
         break
       dancer.setAddress @addresses[0]
       @addresses[@dancers.indexOf dancer] = @addresses[0]
+      @_onChange 'addresses'
 
   # **private**
   # Reset displayed card and its relative models
@@ -476,17 +472,18 @@ module.exports = class CardController
     # set an id to address to allow sharing with other dancers
     address = new Address id: generateId()
     @required[address.id] = []
-    @card?.removeListener 'change', @_onChange
     @card = new Card()
-    @_previous = {}
-    @card.on 'change', @_onChange
     @required.regs = ([] for registration in @card.registrations)
     dancer.setAddress address
     dancer.setCard @card
     @dancers = [dancer]
     @addresses = [address]
-    @_changes[@card.id] = true
-    @hasChanged = false
+    @_previous = {}
+    # store previous values
+    @_previous[@card.id] = @card.toJSON()
+    @_previous[dancer.id] = dancer.toJSON()
+    @_previous[address.id] = address.toJSON()
+    @_onChange()
 
   # **private**
   # Effectively loads a card, and get all other dancers of this card.
@@ -499,14 +496,15 @@ module.exports = class CardController
       (done) -> Card.find cardId, done
     ], (err, [dancers, card]) =>
       return console.error err if err?
-      @card?.removeListener 'change', @_onChange
       @card = card
-      @_previous = @card.toJSON()
-      @card.on 'change', @_onChange
+      @_previous = {}
+      @_previous[@card.id] = @card.toJSON()
       console.log "load dancer #{dancer.lastname} #{dancer.firstname} (#{dancer.id})" for dancer in dancers
       @required = {}
       @dancers = _.sortBy dancers, "firstname"
-      @required[dancer.id] = [] for dancer in @dancers
+      for dancer in @dancers
+        @required[dancer.id] = [] 
+        @_previous[dancer.id] = dancer.toJSON()
       @required.regs = ([] for registration in @card.registrations)
       # get dance classes
       async.map @dancers, (dancer, next) ->
@@ -526,6 +524,7 @@ module.exports = class CardController
               # found a new model
               unic[address.id] = address
               @addresses.push address
+              @_previous[address.id] = address.toJSON()
             else
               # reuse existing model
               @addresses.push unic[address.id]
@@ -538,18 +537,19 @@ module.exports = class CardController
           
           # reset changes and displays everything
           @hasChanged = false
-          @_changes = {}
-          @rootScope.$apply()
+          @scope.$apply()
 
   # **private**
-  # Card change handler: check if card has changed from its previous values
+  # Change handler: check if any displayed model has changed from its previous values
   #
-  # @param attr [String] modified path
-  # @param value [Any] new value
-  _onChange: (attr, value) =>
-    @onChange @card, @card._v is -1 or not _.isEqual @_previous, @card.toJSON()
-    # because observer break the digest progresss
-    @rootScope.$apply() unless @rootScope.$$phase
+  # @param field [String] modified field
+  _onChange: (field) =>
+    # performs comparison between current and old values
+    @hasChanged = false
+    for model in [@card].concat @dancers, @addresses when not _.isEqual @_previous[model.id], model.toJSON()
+      console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
+      # quit at first modification
+      return @hasChanged = true
 
   # **private**
   # Check required fields when saving models

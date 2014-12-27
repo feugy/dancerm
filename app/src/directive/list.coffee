@@ -46,10 +46,17 @@ class ListDirective
     @_waiting = 0
     @_onRedrawList = _.debounce @_onRedrawList, 100
 
-    scope.$watch 'ctrl.columns', @_onRedrawList
-    scope.$watchCollection 'ctrl.list', @_onRedrawList
+    unwatchs = [
+      scope.$watch 'ctrl.columns', @_onRedrawList
+      scope.$watchCollection 'ctrl.list', @_onRedrawList
+    ]
     # default sort is last name
     @_currentSort = 'lastname'
+    
+    # free listeners
+    scope.$on '$destroy', => 
+      unwatch?() for unwatch in unwatchs
+      @$el.off()
 
   # **private**
   # Entierly redraw the dancer's list

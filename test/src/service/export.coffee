@@ -19,8 +19,8 @@ describe 'Export service tests', ->
   importer = new Import()
 
   addresses = [
-    new Address street: '31 rue séverine', city: 'Villeurbanne', zipcode:'69100', phone: '0458291048'
-    new Address street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode:'69100'
+    new Address street: '31 rue séverine', city: 'Villeurbanne', zipcode: '69100', phone: '0458291048'
+    new Address street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode: '69100'
     new Address street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode: '69009', phone: '0478613207'
   ]
 
@@ -95,7 +95,7 @@ describe 'Export service tests', ->
             expect(content).to.include "------#{clazz.name}"
             for model in addresses.concat cards, dancers
               for attr, value of model.toJSON()
-                if attr in ['_v'] or value is null
+                if attr in ['_v', 'zipcode'] or value is null
                   expect(content).to.include "\"#{attr}\":#{value}"
                 else if attr is 'knownBy'
                   expect(content).to.include "\"#{attr}\":[#{if value.length then "\"#{value.join('","')}\"" else ''}]"

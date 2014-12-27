@@ -1,5 +1,4 @@
 _ = require 'lodash'
-moment = require 'moment'
 i18n = require '../labels/common'
 
 class TagsDirective
@@ -11,16 +10,19 @@ class TagsDirective
   scope: null
   
   # JQuery enriched element for directive root
-  $el: null
+  element: null
   
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
-  constructor: (@scope, element) ->
-    @$el = $(element)
-    @$el.on 'click', '.close', @_onRemoveTag
-    @scope.$watch 'ctrl.src', @_onUpdateTags, true
+  constructor: (@scope, @element) ->
+    @element.on 'click', '.close', @_onRemoveTag
+    unwatch = @scope.$watch 'ctrl.src', @_onUpdateTags, true
+    # free listeners
+    scope.$on '$destroy', => 
+      unwatch?()
+      @element.off()
 
   # **private**
   # Removes a given tag from the search criteria
@@ -45,25 +47,25 @@ class TagsDirective
   # **private**
   # Updates displayed tags from the search criteria
   _onUpdateTags: =>
-    @$el.empty()
+    @element.empty()
     return unless @src?
     empties = @showEmpties?() or []
     if @src.seasons?
       for season in @src.seasons
-        @$el.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"
+        @element.append "<div class='tag season' data-season='#{season}'>#{season}<b class='close'>&times;</b></div>"
       if @src.seasons.length is 0 and 'season' in empties
-        @$el.append "<div class='tag season'>#{i18n.lbl.allSeasons}</div>"
+        @element.append "<div class='tag season'>#{i18n.lbl.allSeasons}</div>"
     if @src.teachers?
       for teacher in @src.teachers
-        @$el.append "<div class='tag teacher' data-teacher='#{teacher}'>#{teacher}<b class='close'>&times;</b></div>"
+        @element.append "<div class='tag teacher' data-teacher='#{teacher}'>#{teacher}<b class='close'>&times;</b></div>"
       if @src.teachers.length is 0 and 'teacher' in empties
-        @$el.append "<div class='tag teacher'>#{i18n.lbl.allTeachers}</div>"
+        @element.append "<div class='tag teacher'>#{i18n.lbl.allTeachers}</div>"
     if @src.danceClasses?
       for danceClass in @src.danceClasses
         day = danceClass.start[0..2]
-        @$el.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
+        @element.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
       if @src.danceClasses.length is 0 and 'danceClass' in empties
-        @$el.append "<div class='tag dance-class'>#{i18n.lbl.allDanceClasses}</div>"
+        @element.append "<div class='tag dance-class'>#{i18n.lbl.allDanceClasses}</div>"
     
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->

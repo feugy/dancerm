@@ -148,4 +148,5 @@ ok - address printing from expanded list, with previous selection, file address 
 
 # Performances enhancement track
 
-- use raw attributes instead of getters
+- use web workers
+- remove watcher when possible

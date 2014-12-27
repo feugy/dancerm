@@ -89,13 +89,14 @@ module.exports = (app) =>
         ctx = $elem[0].getContext '2d'
         chart = new window.Chart(ctx)
         graph = null
-        $scope.$watch 'data', ->
+        unwatch = $scope.$watch 'data', ->
           console.log $scope.data, $scope.options
           return unless $scope.data?.labels?
           graph.destroy() if graph?
           graph = chart.EnhancedStackedBar $scope.data, $scope.options
         , true
-
+        # free listeners
+        $scope.$on '$destroy', -> unwatch?()
     }
 
   # Extends StackedBar to provide our own tooltips and scale

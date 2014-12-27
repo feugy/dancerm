@@ -12,7 +12,7 @@ class PlanningDirective
   scope: null
   
   # JQuery enriched element for directive root
-  $el: null
+  element: null
 
   # span of displayed hours
   hours: []
@@ -35,18 +35,17 @@ class PlanningDirective
   # @param element [DOM] directive root element
   # @param attrs [Object] values of attributes
   # @param compile [Object] Angular directive compiler
-  constructor: (@scope, element, attrs, @compile) ->
+  constructor: (@scope, @element, attrs, @compile) ->
     @groups = {}
     @hours = []
     @legend = {}
-    @$el = $(element)
     @groupBy = attrs.groupBy or 'hall'
     # now, displays dance classes
-    @scope.$watch 'danceClasses', @_displayClasses
+    unwatch = @scope.$watch 'danceClasses', @_displayClasses
     @_displayClasses @scope.danceClasses
 
     # bind clicks
-    @$el.delegate '.danceClass', 'click', (event) =>
+    @element.on 'click', '.danceClass', (event) =>
       danceClass = $(event.target).closest '.danceClass'
       model = _.findWhere @scope.danceClasses, id:danceClass.data 'id'
       # invoke click handler
@@ -63,10 +62,15 @@ class PlanningDirective
         # adds id
         @scope.selected.push model
 
-    @$el.delegate '.legend > *', 'click', (event) =>
+    @element.on 'clock', '.legend > *', (event) =>
       color = $(event.target).attr 'class'
       # invoke click handler
       @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
+
+    # free listeners
+    @scope.$on '$destroy', => 
+      unwatch?()
+      @element.off()
     
   # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
@@ -94,8 +98,8 @@ class PlanningDirective
     html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
     html.push '</div>'
     
-    @$el.empty().append html.join ''
-    @$el.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
+    @element.empty().append html.join ''
+    @element.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
 
   # **private**
   # Extracts hour span and different dance groups, as well as legend
@@ -127,7 +131,7 @@ class PlanningDirective
   _displayClasses: (danceClasses, old) =>
     return unless danceClasses? and not _.isEqual danceClasses, old
     # no available classes
-    return @$el.empty() unless danceClasses?.length > 0
+    return @element.empty() unless danceClasses?.length > 0
     # analyses to find hour span and dance groups
     @_extractSpans danceClasses
     # then build empty calendar
@@ -145,8 +149,8 @@ class PlanningDirective
       
       # gets horizontal positionning
       column = days.indexOf(day)+2
-      start = @$el.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
-      end = @$el.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
+      start = @element.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
+      end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
             
       # gets vertical positionning
       width = 100/@groups[day].length
@@ -164,11 +168,11 @@ class PlanningDirective
         left: "#{groupCol*width}%"
         width: "#{width}%"
         'line-height': "#{height}px"
-      $(@$el.children()[column-1]).append render 
+      $(@element.children()[column-1]).append render 
 
     if @scope.selected?
       for {id} in @scope.selected
-        @$el.find("[data-id='#{id}']").addClass 'selected'
+        @element.find("[data-id='#{id}']").addClass 'selected'
 
 # The planning directive displays a given planning in a calendar fancy way
 module.exports = (app) ->
