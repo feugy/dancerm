@@ -7,7 +7,7 @@ module.exports = class ListLayoutController
     #abstract: true
     controller: ListLayoutController
     controllerAs: 'ctrl'
-    templateUrl: 'listlayout.html'
+    templateUrl: 'list_layout.html'
 
   # Link to card list service
   cardList: null
@@ -49,7 +49,7 @@ module.exports = class ListLayoutController
   # @param danceClass [DanceClass] danceClass concerned
   printCallList: =>
     try
-      preview = window.open 'calllistprint.html'
+      preview = window.open 'call_list_print.html'
       preview.danceClass = @cardList.criteria.danceClasses[0]
       preview.list = @cardList.list
     catch err

@@ -7,7 +7,7 @@ Card = require '../model/card'
 Address = require '../model/address'
 Registration = require '../model/registration'
 RegisterController = require './register'
-SearchDancerController = require './searchdancer'
+SearchDancerController = require './search_dancer'
 
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
@@ -355,7 +355,7 @@ module.exports = class CardController
       # node-webkit bug https://github.com/rogerwang/node-webkit/issues/2318
       open = => setTimeout =>
         try
-          preview = window.open 'registrationprint.html'
+          preview = window.open 'registration_print.html'
           preview.card = @card
           preview.withVat = withVat
           preview.withClasses = withClasses

@@ -7,7 +7,7 @@ Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'
 Registration = require '../../../app/script/model/registration'
 Payment = require '../../../app/script/model/payment'
-DanceClass = require '../../../app/script/model/danceclass'
+DanceClass = require '../../../app/script/model/dance_class'
 Card = require '../../../app/script/model/card'
 
 describe 'Dancer model tests', ->

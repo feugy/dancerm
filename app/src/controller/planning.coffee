@@ -1,5 +1,5 @@
 _ = require 'lodash'
-DanceClass = require '../model/danceclass'
+DanceClass = require '../model/dance_class'
 ConflictsController = require './conflicts'
 
 module.exports = class PlanningController

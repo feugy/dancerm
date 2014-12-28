@@ -1,6 +1,6 @@
 _ = require 'lodash'
 i18n = require '../labels/common'
-DanceClass = require '../model/danceclass'
+DanceClass = require '../model/dance_class'
 Registration = require '../model/registration'
   
 # Allow to choose a given dance class (season selection) and creates the corresponding registration.

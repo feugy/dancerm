@@ -1,6 +1,6 @@
 async = require 'async'
 i18n = require '../labels/common'
-DanceClass = require '../model/danceclass'
+DanceClass = require '../model/dance_class'
 Payment = require '../model/payment'
 
 class RegistrationDirective

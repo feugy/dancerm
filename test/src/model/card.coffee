@@ -10,7 +10,7 @@ Payment = require '../../../app/script/model/payment'
 Card = require '../../../app/script/model/card'
 Dancer = require '../../../app/script/model/dancer'
 Address = require '../../../app/script/model/address'
-DanceClass = require '../../../app/script/model/danceclass'
+DanceClass = require '../../../app/script/model/dance_class'
 
 describe 'Card model tests', ->
 

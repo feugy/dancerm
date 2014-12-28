@@ -12,7 +12,7 @@ module.exports = class SearchController
   @declaration:
     controller: SearchController
     controllerAs: 'ctrl'
-    templateUrl: 'searchdancer.html'
+    templateUrl: 'search_dancer.html'
 
   # selected dancer
   dancer: null

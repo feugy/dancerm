@@ -3,7 +3,7 @@ async = require 'async'
 Dancer = require '../model/dancer'
 Address = require '../model/address'
 Card = require '../model/card'
-DanceClass = require '../model/danceclass'
+DanceClass = require '../model/dance_class'
 i18n = require '../labels/common'
 {setAttr, getAttr} = require '../util/common'
 

@@ -10,7 +10,7 @@ module.exports = class ExpandedListController
   @declaration:
     controller: ExpandedListController
     controllerAs: 'ctrl'
-    templateUrl: 'expandedlist.html'
+    templateUrl: 'expanded_list.html'
 
   # Controller's own scope, for event listening
   scope: null
@@ -116,7 +116,7 @@ module.exports = class ExpandedListController
   printAddresses: =>
     return unless @cardList.list?.length > 0
     try
-      preview = window.open 'addressesprint.html'
+      preview = window.open 'addresses_print.html'
       preview.list = @cardList.list
     catch err
       console.error err

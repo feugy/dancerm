@@ -7,15 +7,15 @@ i18n = require '../script/labels/common'
 ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
-CardListService = require '../script/service/cardlist'
+CardListService = require '../script/service/card_list'
 
 ###LayoutCtrl = require '../script/controller/layout'
 ListCtrl = require '../script/controller/list'###
 StatsCtrl = require '../script/controller/stats'
-ListLayoutCtrl = require '../script/controller/listlayout'
+ListLayoutCtrl = require '../script/controller/list_layout'
 CardCtrl = require '../script/controller/card'
 PlanningCtrl = require '../script/controller/planning'
-ExpandedListCtrl = require '../script/controller/expandedlist'
+ExpandedListCtrl = require '../script/controller/expanded_list'
 
 console.log "running with angular v#{angular.version.full}"
 

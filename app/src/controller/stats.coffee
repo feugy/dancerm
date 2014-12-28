@@ -2,7 +2,7 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 {currentSeasonYear} = require '../util/common'
 {map} = require 'async'
-DanceClass = require '../model/danceclass'
+DanceClass = require '../model/dance_class'
 tinycolor = window.tinycolor
 
 # Displays statistics on a given list

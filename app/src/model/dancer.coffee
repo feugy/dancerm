@@ -4,7 +4,7 @@ moment = require 'moment'
 {getCollection} = require './tools/initializer'
 Persisted = require './tools/persisted'
 Address = require './address'
-DanceClass = require './danceclass'
+DanceClass = require './dance_class'
 Card = require './card'
 
 # Dancers keeps information relative to person attended to dance class, and card

@@ -118,7 +118,7 @@ plannings = [{
 mergePlanning = (planning, done) ->
   console.log "check planning #{planning.season}"
   # lazy request to avoid circular dependencies between persisted and initializer
-  DanceClass = require('../danceclass')
+  DanceClass = require('../dance_class')
   DanceClass.getPlanning planning.season, (err, danceClasses) ->
     return done err if err?
     old = _.invoke danceClasses, 'toJSON'

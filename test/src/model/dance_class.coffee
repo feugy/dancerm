@@ -3,7 +3,7 @@ _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
 {init} = require '../../../app/script/model/tools/initializer'
-DanceClass = require '../../../app/script/model/danceclass'
+DanceClass = require '../../../app/script/model/dance_class'
 
 describe 'DanceClass model tests', ->
 
