@@ -96,8 +96,6 @@ describe 'Dancer model tests', ->
         expect(tested).to.have.property('danceClassIds').that.deep.equal [salsa.id, ballroom.id]
         tested.getClasses (err, classes) ->
           return done err if err?
-          console.log _.invoke classes, 'toJSON'
-          console.log _.invoke [salsa, ballroom], 'toJSON'
           expect(_.invoke classes, 'toJSON').to.deep.equal _.invoke [salsa, ballroom], 'toJSON'
           # then the registrations are available
           expect(tested).to.have.property('cardId').that.equal card.id

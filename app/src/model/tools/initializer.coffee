@@ -146,15 +146,9 @@ mergePlanning = (planning, done) ->
       danceClass.save next
     , done
 
-db = null
+merged = false
 
 module.exports = 
-
-  getCollection: (name, done, write = false) -> 
-    throw new Error 'database not initialized !' unless db?
-    tx = db.transaction [name], if write then 'readwrite' else 'readonly'
-    tx.onerror = (event) -> done event
-    tx.objectStore name
 
   # Database initialization function
   # Allow to initialize storage with a 2013 and 2014 planning.
@@ -163,21 +157,9 @@ module.exports =
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   init: (done) ->
-    return done() if db?
-    request = window.indexedDB.open getDbPath()
-
-    request.onsuccess = ->
-      db = request.result
-      # update planning for seasons
-      async.each plannings, (planning, next) ->
-        mergePlanning planning, next
-      , done
-
-    request.onerror = (event)->
-      db = null
-      done request.error
-
-    request.onupgradeneeded = ({target}) ->
-      # TODO class initialization
-      for name in ['Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
-        target.result.createObjectStore name, keyPath: 'id' 
+    return done() if merged
+    merged = true
+    # update planning for seasons
+    async.each plannings, (planning, next) ->
+      mergePlanning planning, next
+    , done

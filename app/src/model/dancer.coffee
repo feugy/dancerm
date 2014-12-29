@@ -1,7 +1,6 @@
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
-{getCollection} = require './tools/initializer'
 Persisted = require './tools/persisted'
 Address = require './address'
 DanceClass = require './dance_class'
@@ -157,13 +156,11 @@ module.exports = class Dancer extends Persisted
   # @option done danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
   getClasses: (done) => 
     return _.defer(=> done null, @_danceClasses) if @_danceClasses?
-    store = getCollection DanceClass.name, done
-    danceClasses = []
-    @danceClassIds.forEach (id, i) ->
-      store.get(id).onsuccess = ({target}) -> danceClasses[i] = new DanceClass target.result if target.result?
-    store.transaction.oncomplete = =>
-      @_danceClasses = danceClasses
-      done null, @_danceClasses
+    async.map @danceClassIds, (id, next) ->
+      DanceClass.find id, next
+    , (err, results) =>
+      @_danceClasses = results unless err?
+      done err , @_danceClasses
 
   # Set dancer's classes
   #

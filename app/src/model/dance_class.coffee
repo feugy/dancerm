@@ -1,6 +1,6 @@
 _ = require 'lodash'
 Persisted = require './tools/persisted'
-{getCollection} = require './tools/initializer'
+persistance = require './tools/persistance'
 
 # ordered week days
 days = 
@@ -57,12 +57,9 @@ module.exports = class DanceClass extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done danceClasses [Array<DanceClass>] ordered list (that may be empty) of dance classes for this season
   @listSeasons: (done) ->
-    seasons = []
-    getCollection(@name, done).openCursor().onsuccess = ({target}) -> 
-      cursor = target.result
-      return done null, _.chain(seasons).uniq().value().sort().reverse() unless cursor?
-      seasons.push cursor.value.season
-      cursor.continue()
+    persistance.find @name, {}, (err, classes) -> 
+      return done err if err?
+      done null, _.chain(season for {season} in classes).uniq().value().sort().reverse()
 
   # Get the list of available teachers within a given season
   #

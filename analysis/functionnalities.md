@@ -148,5 +148,4 @@ ok - address printing from expanded list, with previous selection, file address 
 
 # Performances enhancement track
 
-- use web workers
 - remove watcher when possible

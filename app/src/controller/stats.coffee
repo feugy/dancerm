@@ -156,13 +156,13 @@ module.exports = class StatsController
       dancer.getCard next
     , (err, cards) =>
       if err?
-        @dismiss()
+        dismiss()
         return console.error err
       map @cardList.list, (dancer, next) ->
         dancer.getClasses next
       , (err, danceClasses) =>
         if err?
-          @dismiss()
+          dismiss()
           return console.error err
         dueCards = []
         for card, i in cards
