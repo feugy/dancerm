@@ -184,7 +184,6 @@ class ListDirective
   _sortList: (column) =>
     # use model value or rendered value
     for {name, attr} in @columns when column is name
-      console.log 'sort by attribute', name
       if attr?
         # sort by displayed values, and get ordered indexes.
         ordered = _.sortBy (model for id, model of @_displayedValues), column

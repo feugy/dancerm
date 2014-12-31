@@ -64,7 +64,6 @@ module.exports = class StatsController
     @cardList.criteria.string = null
     @cardList.criteria.danceClasses = []
     @allowEmpty = true
-    console.log "qdsfsqdf"
     # bind listeners on search events
     @cardList.on 'search-start', @_onSearch
     @cardList.on 'search-end', @_onSearchResults

@@ -22,6 +22,9 @@ class DancerDirective
     startingDay: 1
     showButtonBar: false
 
+  # Angular's promise factory
+  q: null
+
   # **private**
   # Dancers's search request in progress
   _reqInProgress: false
@@ -37,7 +40,11 @@ class DancerDirective
       startingDay: 1
       showButtonBar: false
 
-    @_updateRendering @src
+    @isNew = @src?._v is -1 and @canLoad
+
+    # reset birth date to dancer's one
+    @birthOpts.open = false
+    @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.format i18n.formats.birth else null
 
   # Invoked by view to update dancer's title according to selected item
   #
@@ -93,17 +100,6 @@ class DancerDirective
   isRequired: (field) => 
     return 'invalid' if @requiredFields? and field in @requiredFields
     ''
-  # **private**
-  # Update internal state when displayed dancer has changed.
-  #
-  # @param value [Dancer] new dancer's value
-  _updateRendering: (value) =>
-    @src = value
-    @isNew = @src?._v is -1 and @canLoad
-
-    # reset birth date to dancer's one
-    @birthOpts.open = false
-    @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.format i18n.formats.birth else null
 
 # The payment directive displays and edit dancer's payment
 module.exports = (app) ->

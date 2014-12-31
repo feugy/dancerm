@@ -145,7 +145,3 @@ ok - address printing from expanded list, with previous selection, file address 
 14/09 - 6
 16/09 - 1
 20/09 - 2
-
-# Performances enhancement track
-
-- remove watcher when possible

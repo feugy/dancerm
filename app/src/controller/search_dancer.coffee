@@ -6,7 +6,7 @@ Dancer = require '../model/dancer'
 module.exports = class SearchController
 
   # Controller dependencies
-  @$inject: ['existing', '$modalInstance']
+  @$inject: ['$q', 'existing', '$modalInstance']
 
   # Popup declaration
   @declaration:
@@ -20,13 +20,18 @@ module.exports = class SearchController
   # existing dancer, that will be merged with selected dancer
   existing: null
 
+  # Angular's promise factory
+  q: null
+  
   # avoid tirggering multiple search simultaneously
   _reqInProgress: false
 
   # Controller constructor: bind methods and attributes to current scope
   #
+  # @param q [Object] Angular's promise factory
+  # @param existing [Dancer] Existing dancer, that will be merged with selected dancer
   # @param dialog [Object] current dialog instance
-  constructor: (@existing, @_dialog) ->
+  constructor: (@q, @existing, @_dialog) ->
     @dancer = null
     @_reqInProgress = false
 
@@ -40,12 +45,11 @@ module.exports = class SearchController
   # Search within existing dancers a match on lastname
   #
   # @param typed [String] typed string
-  # @param done [Function] completion callback, invoked with arguments
-  # @option done err [Error] an error object or null if no error occured
-  # @option done dancers [Array<Dancer>] a list (that may be empty) of matching dancers
-  search: (typed, done) =>
+  # @return a promise resolved with relevant models
+  search: (typed) =>
     # disable if request in progress
     return [] if @_reqInProgress
+    deffered = @q.defer()
     @_reqInProgress = true
     # prepare search conditions
     typed = typed.toLowerCase()
@@ -54,9 +58,10 @@ module.exports = class SearchController
       @_reqInProgress = false
       if err?
         console.error err
-        return done err
+        return deffered.reject err
       # removes models that belongs to the existing's card
-      done null, (model for model in models when model.cardId isnt @existing.cardId)
+      deffered.resolve (model for model in models when model.cardId isnt @existing.cardId)
+    deffered.promise
 
   # Dialog closure method: will transfer to the dialog parent the searched dancer if confirmed
   #

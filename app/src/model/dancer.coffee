@@ -156,11 +156,17 @@ module.exports = class Dancer extends Persisted
   # @option done danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
   getClasses: (done) => 
     return _.defer(=> done null, @_danceClasses) if @_danceClasses?
-    async.map @danceClassIds, (id, next) ->
-      DanceClass.find id, next
+    # avoid possible duplicates
+    @danceClassIds = _.uniq @danceClassIds
+    # resolve models
+    async.map @danceClassIds, (id, next) =>
+      DanceClass.find id, (err, result) =>
+        console.log "failed to get dance class #{id} of dancer #{@firstname} #{@lastname} (#{@id}): #{err}" if err?
+        next null, result
     , (err, results) =>
-      @_danceClasses = results unless err?
-      done err , @_danceClasses
+      # remove undefined values (occured when a dance class was not found)
+      @_danceClasses = _.compact results
+      done null, @_danceClasses
 
   # Set dancer's classes
   #

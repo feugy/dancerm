@@ -5,12 +5,12 @@
     <link rel="stylesheet" href="../style/print.css"/>
   </head>
   <body data-ng-controller="Print as ctrl" class="call-list">
-    <a class="btn print" data-ng-click="ctrl.print()">{{'btn.print'|i18n}}</a>
+    <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
     <h1>{{ctrl.danceClass.kind}} {{ctrl.danceClass.level}}</h1>
     <h2>{{ctrl.danceClassHour()}}</h2>
     <table class="table">
       <thead>
-        <th>{{'ttl.dancer'|i18n}}</th>
+        <th>{{::'ttl.dancer'|i18n}}</th>
         <th data-ng-repeat="date in ctrl.dates">{{date}}</th>
       </thead>
       <tbody>

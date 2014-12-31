@@ -4,7 +4,6 @@ module.exports = class ListLayoutController
   @$inject: ['cardList', '$state']
 
   @declaration:
-    #abstract: true
     controller: ListLayoutController
     controllerAs: 'ctrl'
     templateUrl: 'list_layout.html'

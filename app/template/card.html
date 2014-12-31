@@ -1,19 +1,19 @@
 <div class="card">
   <header>
-    <a href="" class="btn glyphed" data-ng-click="ctrl.back()"><i class="glyphicon glyphicon-arrow-left"/>{{'btn.backToList'|i18n}}</a>
-    <a href="" class="btn btn-primary glyphed" data-ng-show="ctrl.hasChanged" data-ng-click="ctrl.save()"><i class="glyphicon glyphicon-floppy-disk"/>{{'btn.save'|i18n}}</a>
-    <a href="" class="btn btn-warning glyphed" data-ng-show="ctrl.hasChanged" data-ng-click="ctrl.cancel()"><i class="glyphicon glyphicon-ban-circle"/>{{'btn.cancel'|i18n}}</a>
+    <a href="" class="btn glyphed" data-ng-click="ctrl.back()"><i class="glyphicon glyphicon-arrow-left"/>{{::'btn.backToList'|i18n}}</a>
+    <a href="" class="btn btn-primary glyphed" data-ng-show="ctrl.hasChanged" data-ng-click="ctrl.save()"><i class="glyphicon glyphicon-floppy-disk"/>{{::'btn.save'|i18n}}</a>
+    <a href="" class="btn btn-warning glyphed" data-ng-show="ctrl.hasChanged" data-ng-click="ctrl.cancel()"><i class="glyphicon glyphicon-ban-circle"/>{{::'btn.cancel'|i18n}}</a>
   </header>
   <!-- dancers displayal and their addresses -->
   <article>
     <span class="btn-group hidable" data-dropdown>
-      <a href="" class="btn glyphed dropdown-toggle" dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{'btn.addDancer'|i18n}}<span class="caret"></span></a>
+      <a href="" class="btn glyphed dropdown-toggle" dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{::'btn.addDancer'|i18n}}<span class="caret"></span></a>
       <ul class="dropdown-menu right">
-        <li><a href="" data-ng-click="ctrl.addDancer()">{{'btn.addNewDancer'|i18n}}</a></li>
-        <li><a href="" data-ng-click="ctrl.searchCard()">{{'btn.addExistingDancer'|i18n}}</a></li>
+        <li><a href="" data-ng-click="ctrl.addDancer()">{{::'btn.addNewDancer'|i18n}}</a></li>
+        <li><a href="" data-ng-click="ctrl.searchCard()">{{::'btn.addExistingDancer'|i18n}}</a></li>
       </ul>
     </span>
-    <h2>{{'ttl.card'|i18n}}</h2>
+    <h2>{{::'ttl.card'|i18n}}</h2>
     <article class="card-dancer" data-ng-repeat="dancer in ctrl.dancers">
       <dancer
         data-src="dancer"
@@ -37,12 +37,12 @@
   </article>
   <!-- card common fields -->
   <article>
-    <h2>{{'ttl.knownBy'|i18n}}</h2>
+    <h2>{{::'ttl.knownBy'|i18n}}</h2>
     <div class="known-by">
       <span data-ng-repeat="(value, label) in ctrl.i18n.knownByMeanings" data-ng-class="ctrl.knownBy[value] ? 'selected' : ''">
         <input data-ng-model="ctrl.knownBy[value]" type="checkbox" id="{{value}}" data-ng-change="ctrl.setKnownBy()"/><label for="{{value}}">{{label}}</label>
       </span>
-      <span data-ng-class="ctrl.knownByOther ? 'selected' : ''" class="known-by-other"><input type="text" data-ng-model="ctrl.knownByOther" data-ng-change="ctrl.setKnownBy()"/><label>{{'lbl.other'|i18n}}</label></span>
+      <span data-ng-class="ctrl.knownByOther ? 'selected' : ''" class="known-by-other"><input type="text" data-ng-model="ctrl.knownByOther" data-ng-change="ctrl.setKnownBy()"/><label>{{::'lbl.other'|i18n}}</label></span>
     </div>
   </article>
   <!-- registrations -->

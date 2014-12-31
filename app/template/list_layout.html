@@ -7,7 +7,7 @@
     </div>
     <div data-tags data-src="ctrl.cardList.criteria" data-on-remove="ctrl.cardList.performSearch()"></div>
     <div class="list-length" data-ng-hide="ctrl.cardList.list.length > 0">{{::'msg.emptyDancerList'|i18n}}</div>
-    <div class="list-length" data-ng-show="ctrl.cardList.list.length > 0">{{ctrl.cardList.list.length}}{{'msg.dancerListLength'|i18n}}</div>
+    <div class="list-length" data-ng-show="ctrl.cardList.list.length > 0">{{ctrl.cardList.list.length}}{{::'msg.dancerListLength'|i18n}}</div>
     <div class="print-call-list" data-ng-if="ctrl.canPrintCallList()">
       <a href="" class="btn glyphed" data-ng-click="ctrl.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>
     </div>

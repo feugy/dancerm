@@ -14,7 +14,7 @@ SearchDancerController = require './search_dancer'
 module.exports = class CardController
             
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope', 'cardList', 'dialog', '$state', '$filter', '$stateParams']
+  @$inject: ['$scope', '$rootScope', 'cardList', 'dialog', '$q', '$state', '$filter', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -40,6 +40,9 @@ module.exports = class CardController
   # Link to modal popup service
   dialog: null
 
+  # Angular's promise factory
+  q: null
+  
   # displayed card
   card: null
 
@@ -79,10 +82,11 @@ module.exports = class CardController
   # @param rootscope [Object] Angular global scope for digest triggering
   # @param cardList [CardListService] service responsible for card list
   # @param dialog [Object] Angular dialog service
+  # @param q [Object] Angular's promise factory
   # @param state [Object] Angular state provider
   # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @cardList, @dialog, @state, @filter, stateParams) -> 
+  constructor: (@scope, @rootScope, @cardList, @dialog, @q, @state, @filter, stateParams) -> 
     # initialize global change status
     @hasChanged = false
     @dancers = []
@@ -163,7 +167,6 @@ module.exports = class CardController
         console.error err 
         return done err
       models.push @card
-      console.log "addresses resolved", models
       saved = []
 
       async.each models, (model, next) =>
@@ -261,17 +264,18 @@ module.exports = class CardController
   # Displays the registration dialog
   #
   # @param dancer [Dancer] doncer for whom a registration is added
-  # @param registration [Registration] the edited registration, null to create a new one 
-  addRegistration: (dancer, registration = null) =>
+  addRegistration: (dancer) =>
     # display dialog to choose registration season and dance classes
     @dialog.modal(_.extend {
         size: 'lg'
         keyboard: false
         resolve: 
-          danceClasses: -> new Promise (resolve, reject) -> 
+          danceClasses: => 
+            deffered = @q.defer()
             dancer.getClasses (err, classes) -> 
-              return reject err if err?
-              resolve classes
+              return deffered.reject err if err?
+              deffered.resolve classes
+            deffered.promise
           isEdit: -> dancer.danceClassIds.length > 0
       }, RegisterController.declaration
     ).result.then(({confirmed, season, danceClasses}) =>
@@ -495,6 +499,7 @@ module.exports = class CardController
       (done) -> Dancer.findWhere cardId:cardId, done
       (done) -> Card.find cardId, done
     ], (err, [dancers, card]) =>
+      # TODO no dancer nor card, what do we do ?
       return console.error err if err?
       @card = card
       @_previous = {}
@@ -510,12 +515,20 @@ module.exports = class CardController
       async.map @dancers, (dancer, next) ->
         dancer.getClasses next
       , (err, danceClasses) =>
+        # TODO no dance classes, what do we do ?
         return console.error err if err?
         # get addresses
         async.map @dancers, (dancer, next) ->
           dancer.getAddress next
+          ###(err, address) ->
+            # do not fail on unknown address: instead, put new address
+            if err?
+              address = new Address id: generateId()
+              dancer.setAddress address
+              console.log "failed to get address of dancer #{dancer.id}: #{err}"
+            next null, address###
         , (err, addresses) =>
-          return console.error err if err?
+          console.error err if err?
           unic = {}
           @addresses = []
           for address in addresses
@@ -528,7 +541,6 @@ module.exports = class CardController
             else
               # reuse existing model
               @addresses.push unic[address.id]
-
           # translate the "known by" possibilities into a list of boolean
           @knownBy = {}
           for value of @i18n.knownByMeanings 

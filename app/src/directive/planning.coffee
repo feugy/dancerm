@@ -103,14 +103,12 @@ class PlanningDirective
 
   # **private**
   # Extracts hour span and different dance groups, as well as legend
-  #
-  # @param danceClasses [Array<DanceClass>] list of analyzed dance classes
-  _extractSpans: (danceClasses) =>
+  _extractSpans: =>
     earliest = 24
     latest = 0
     @legend = {}
     @groups = {}
-    for course in danceClasses
+    for course in @scope.danceClasses
       # computes earliest and latest hours
       day = course.start[0..2]
       earliest = Math.min earliest, parseInt course.start.replace day, ''
@@ -129,16 +127,16 @@ class PlanningDirective
   #
   # @param danceClasses [Array<DanceClass>] list of dance class to display
   _displayClasses: (danceClasses, old) =>
-    return unless danceClasses? and not _.isEqual danceClasses, old
+    return unless @scope.danceClasses? and not _.isEqual @scope.danceClasses, old
     # no available classes
-    return @element.empty() unless danceClasses?.length > 0
+    return @element.empty() unless @scope.danceClasses?.length > 0
     # analyses to find hour span and dance groups
-    @_extractSpans danceClasses
+    @_extractSpans()
     # then build empty calendar
     @_buildCalendar()
 
     # positionnate each course in their respective day and group
-    for course in danceClasses
+    for course in @scope.danceClasses
       day = course.start[0..2]
 
       # gets start and end hours

@@ -64,6 +64,7 @@ module.exports = class Registration extends Base
 
   # @return amount to be paid for this registration
   due: =>
+    @updateBalance()
     amount = @charged
     amount *= 3 if @period is 'quarter'
     amount - @balance

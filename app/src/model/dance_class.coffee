@@ -81,6 +81,7 @@ module.exports = class DanceClass extends Persisted
   @getPlanning: (season, done) ->
     @findWhere season: season, (err, classes) =>
       return done err if err?
+      console.log "getPlanning", season, classes.length
       # sort dance classes by day, hour and quarters
       done null, classes.sort (a, b) ->
         return -1 unless a.start?

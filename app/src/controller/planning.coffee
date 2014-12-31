@@ -181,7 +181,7 @@ module.exports = class PlanningController
           console.info "merge report:", byClass, conflicts
           # resolve conflicts one by one
           return displayEnd() if conflicts.length is 0
-          @_resolveConflicts conflicts.then displayEnd
+          @_resolveConflicts(conflicts).then displayEnd
 
     dialog.trigger 'click'
     null

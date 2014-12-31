@@ -24,8 +24,8 @@ class RegistrationDirective
   dancers: []
 
   # Array of arrays of dance classes for this season.
-  # Has the same number of elements as 'dancers'.
-  classesPerDancer: []
+  # Concerned dancers id is used as key
+  classesPerDancer: {}
   
   # Selected period label
   periodLabel: ''
@@ -45,13 +45,13 @@ class RegistrationDirective
     unwatches = []
     unwatches.push @scope.$on 'dance-classes-changed', (event, dancer) =>
       @_updateRendering() if dancer in @dancers
-
-    @scope.$on '$destroy', -> unwatch?() for unwatch in unwatches
-
+    
     # on cancellation, restore previous payments
     unwatches.push rootScope.$on 'cancel-edit', =>
       return unless @registration? and @_previousPayments?
       @registration.payments.splice.apply @registration.payments, [0, @registration.payments.length].concat @_previousPayments
+
+    @scope.$on '$destroy', -> unwatch?() for unwatch in unwatches
   
   # Creates a new payment and adds it to the current registration
   addPayment: =>
@@ -105,7 +105,7 @@ class RegistrationDirective
 
   # **private**
   # Update internal state when displayed registration or card has changed.
-  _updateRendering: (registration, dancers) =>
+  _updateRendering: =>
     # get the friendly labels for period
     @setPeriod @registration?.period
 
@@ -114,15 +114,12 @@ class RegistrationDirective
       dancer.getClasses next
     , (err, danceClasses) =>
       console.error err if err?
-      @classesPerDancer = []
-      dancers = @dancers.concat()
-      @dancers = []
-      # filter dancers that do not have classes for this registration
-      for dancer, i in dancers
-        classes =  (clazz for clazz in danceClasses[i] when clazz.season is @registration?.season)
+      @classesPerDancer = {}
+      # only display dancers that have classes for this registration
+      for dancer, i in @dancers
+        classes = (clazz for clazz in danceClasses[i] when clazz.season is @registration?.season)
         if classes.length > 0
-          @classesPerDancer.push classes
-          @dancers.push dancer
+          @classesPerDancer[dancer.id] = classes
 
       # initialize required payment fields
       @requiredFields = ([] for payment in @registration?.payments)
@@ -135,7 +132,10 @@ class RegistrationDirective
   # Relay change events
   # 
   # @param field [String] modified field
-  _onChange: (field) => @onChange $field: field
+  _onChange: (field) => 
+    # update balance on payment modification
+    @registration?.updateBalance() if 0 is field.indexOf 'payments'
+    @onChange $field: field
 
 # The registration directive displays dancer's registration to dance classes and their payments
 module.exports = (app) ->

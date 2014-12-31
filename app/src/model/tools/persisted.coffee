@@ -48,7 +48,7 @@ module.exports = class Persisted extends Base
       return _.defer => done null, cache[@name][id]
     start = Date.now()
     persistance.findById @name, id, (err, result) =>
-      console.log "#{@name}.find(#{id}) #{Date.now()-start}ms"
+      # TOREMOVE console.log "#{@name}.find(#{id}) #{Date.now()-start}ms"
       return done err if err?
       return done new Error "#{@name} '#{id}' not found" unless result?
       model = new @ result
@@ -91,7 +91,7 @@ module.exports = class Persisted extends Base
         for result, i in results
           model = if cache[@name][result.id]? then cache[@name][result.id] else new @ result 
           results[i] = model
-      console.log "#{@name}.findWhere(#{JSON.stringify conditions}) #{Date.now()-start}ms"
+      # TOREMOVE console.log "#{@name}.findWhere(#{JSON.stringify conditions}) #{Date.now()-start}ms"
       done err, results
 
   # Build a persisted model

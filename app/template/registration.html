@@ -4,12 +4,12 @@
     <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.registration})"><i class="glyphicon glyphicon-trash"/></a>
   </span>
   <h2>{{::ctrl.registration.season}}</h2>
-  <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers">
+  <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers" data-ng-if="ctrl.classesPerDancer[dancer.id].length">
     <div class="dancer-classes">
       <label class="certificate"><input type="checkbox" data-ng-model="ctrl.registration.certificates[dancer.id]"/>{{::'lbl.certifiedLong'|i18n}}</label>
       <h4>{{::'lbl.danceClassesFor'|i18n:{sep:true} }} {{dancer.firstname}} {{dancer.lastname}}</h4>
       <div class="dance-classes">
-        <div class="danceClass" data-ng-repeat="danceClass in ctrl.classesPerDancer[$index]"><span class="kind {{::danceClass.color}}">{{::danceClass.kind}}</span><span class="level">{{::danceClass.level}}</span><span class="hour">{{::danceClass.start|classDate}}</span></div>
+        <div class="danceClass" data-ng-repeat="danceClass in ctrl.classesPerDancer[dancer.id] track by $index"><span class="kind {{::danceClass.color}}">{{::danceClass.kind}}</span><span class="level">{{::danceClass.level}}</span><span class="hour">{{::danceClass.start|classDate}}</span></div>
       </div>
     </div>
   </article>

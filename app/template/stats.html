@@ -3,7 +3,7 @@
     <header>
       <a data-ui-sref="list.planning" class="btn glyphed"><i class="glyphicon glyphicon-arrow-left"/>{{::'btn.backToPlanning'|i18n}}</a>
     </header>
-    <h2><span>{{::'ttl.stats'|i18n:{args:{total:ctrl.cardList.list.length} } }}</span><div data-tags data-src="ctrl.cardList.criteria" 
+    <h2><span>{{'ttl.stats'|i18n:{args:{total:ctrl.cardList.list.length} } }}</span><div data-tags data-src="ctrl.cardList.criteria" 
         data-on-remove="ctrl.cardList.performSearch()"
         data-show-empties="['season', 'teacher']"></div>
       <div class="btn-group" data-dropdown>
