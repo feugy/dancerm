@@ -4,13 +4,10 @@ persistance = require './persistance'
 {generateId} = require '../../util/common'
 
 # instance cache. used to avoid creation.
-# TODO class initialization
-cache =
-  Address: {}
-  Card: {}
-  DanceClass: {}
-  Dancer: {}
-  Tested: {}
+cache = {}
+
+# Invoke to initiate model's specific cache, unless it already exists
+initCache = (name) => cache[name] = {} unless name of cache
 
 # Superclass for models that will be persisted into underlying data store
 # Automatically manage id value (created after save)
@@ -28,6 +25,7 @@ module.exports = class Persisted extends Base
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   @drop: (done) ->
+    initCache @name
     persistance.drop @name, (err) =>
       unless err?
         delete cache[@name]
@@ -44,6 +42,7 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object (for example if model does not exist) or null if no error occured
   # @option done model [Persisted] the corresponding model
   @find: (id, done) ->
+    initCache @name
     if cache[@name][id]?
       return _.defer => done null, cache[@name][id]
     start = Date.now()
@@ -84,6 +83,7 @@ module.exports = class Persisted extends Base
   # @option done err [Error] an error object or null if no error occured
   # @option done models [Array<Persisted>] an array (that may be empty) of matching models
   @findWhere: (conditions, done) ->
+    initCache @name
     start = Date.now()
     persistance.find @name, conditions, (err, results) =>
       # enrich with model if results available
@@ -97,6 +97,7 @@ module.exports = class Persisted extends Base
   # Build a persisted model
   # Initialize version to 0 and id to null
   constructor: (raw) ->
+    initCache @constructor.name
     raw._v = -1 unless raw._v?
     if raw._id?
       raw.id = raw._id

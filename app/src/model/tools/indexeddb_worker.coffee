@@ -26,7 +26,7 @@ checkSingle = (expected, actual) ->
     actual is expected
 
 # Synchronously check if a raw model match given conditions
-# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $or, $in operators 
+# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $in operators 
 # and exact match.
 # Array values are automatically expanded
 # 
@@ -39,6 +39,9 @@ check = (conditions, model) ->
     if attr is '$or'
       # check each possibilities
       return false unless _.any expected, (choice) -> check choice, model
+    else if attr is '$regex'
+      # check $regexp operator
+      return false unless checkSingle new RexExp(expected), model 
     else
       actual = model
       isArray = false

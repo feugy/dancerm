@@ -115,7 +115,7 @@ module.exports = class Import
 
       # Json content
       else if extension is 'application/json'
-        start =  Date.now()
+        start = Date.now()
         readFile filePath, 'utf8', (err, data) =>
           return done err if err?
           report = 

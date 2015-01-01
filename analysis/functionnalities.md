@@ -92,7 +92,9 @@ Paid: 110h 10€/h
 
 ## Bugs or regressions
 
-!!! - model's availability
+!!! - danceclass call list
+!!! - copy emails
+!!! - stamp printing
 - search by city
 - fix v2 import
 

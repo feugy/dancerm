@@ -42,6 +42,15 @@ module.exports =
         appendFileSync logFile, "#{moment().format 'HH:mm:ss'} - #{method} - #{args.join ' '}\n"
         #(originals[method] or originals.debug)?.invoke console, args###
 
+  # Working instanceof operator. No inheritance, no custom types
+  #
+  # @param obj [Object] the tested object
+  # @param type [String] the expected type
+  # @return true if obj is an instance of the expected type
+  isA: (obj, type) ->
+    clazz = Object::toString.call(obj).slice 8, -1
+    obj isnt undefined and obj isnt null and clazz.toLowerCase() is type.toLowerCase()
+
   # Used to dump errors into error file located in app data folder
   #
   # @param err [Error] the error to dump

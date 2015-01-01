@@ -16,6 +16,9 @@
       _.mixin(_str.exports());
 
       process.env.NODE_ENV = 'test';
+      process.on('uncaughtException', function(err){
+        console.error(err);
+      });
 
       // init mocha
       var mocha = new Mocha();
