@@ -4,9 +4,6 @@ class LayoutDirective
   # Controller dependencies
   @$inject: ['$scope', '$element', '$transclude']
 
-  # global version, injected for template
-  version: version
-
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive own scope, used to detect destruction
@@ -29,7 +26,7 @@ class LayoutDirective
 module.exports = (app) ->
   app.directive 'layout', ->
     # directive template
-    templateUrl: 'layout.html'
+    template: '<div class="column-and-main"><div class="anchor"></div></div>'
     # will replace hosting element
     replace: true
     transclude: true

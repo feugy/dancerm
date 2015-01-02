@@ -1,0 +1,8 @@
+<nav class="app-menu">
+  <h1>{{::'ttl.application'|i18n}}<span class="version">{{::ctrl.version}}</span></h1>
+  <div class="app-commands">
+    <a data-ng-click="ctrl.iconize()" class="iconize"></a>
+    <a data-ng-click="ctrl.maximizeOrRestore()" data-ng-class="ctrl.isMaximized ? 'restore' : 'maximize'"></a>
+    <a data-ng-click="ctrl.close()" class="app-close"></a>
+  </div>
+</div>

@@ -1,13 +1,12 @@
-
 /******************************************************************************
  * Inclusions
  */
 
-@import 'css/bootstrap.css'
-@import 'variable'
-@import 'mixins'
-@import 'directive'
-@import 'animation'
+@import '../style/css/bootstrap.css'
+     
+declareFonts()              
+@require 'directive'
+@require 'animation'
 
 /******************************************************************************
  * Main layout and background
@@ -17,7 +16,7 @@ html
   height 100%
   overflow auto
   background mainBackground
-
+  cursor default
 
 .column-and-main
   pageMargin = 15px
@@ -25,7 +24,7 @@ html
   overflow hidden
   // take all page space
   position absolute
-  top 0
+  top 25px
   right 0
   left 0
   bottom 0
@@ -37,26 +36,10 @@ html
     box-sizing border-box
     padding pageMargin
 
-  > header
-    top 15px
-    left 0
-    bottom auto
-    width 28%
-    background primaryBtnBackground
-    padding 1em
-    z-index 1
-    line-height 20px
-    border-radius 0 1em 0 0
-
-    .version
-      padding-left 10px
-      font-size fontSize * 1.2
-
   > .column
     left 0
     width collapsedColumnWidth
     background colBackground
-    padding-top (100px+pageMargin)
 
   > .main
     // main right column
@@ -69,7 +52,6 @@ html
     width expandedColumnWidth
 
   > .main.expanded
-    padding-top (100px+pageMargin)
     width 100%
 
   > .empty

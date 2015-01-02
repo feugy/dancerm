@@ -24,6 +24,9 @@ win = gui.Window.get()
 win.resizeTo 790, 400
 
 $(win.window).on 'load', ->
+  
+  # adds dynamic styles
+  $('head').append "<style>#{styles['print']}</style>"
 
   # Angular controller for print preview
   class Print

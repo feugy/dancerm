@@ -1,6 +1,52 @@
-@import 'variable'
-
 /******************************************************************************
+ * Application menu
+ */
+ 
+.app-menu
+  width = 20px
+  // make it draggable  
+  -webkit-app-region drag
+  position absolute
+  top 0
+  left 0
+  right 0
+  z-index 10000
+  background primaryBtnBackground
+  text-align center
+  
+  > h1
+    display inline
+    font-size 16px
+    border none
+    color btnColor
+    line-height 1.5em
+    
+  .version
+    display inline-block
+    margin 0 -50px 0 10px
+    
+    
+  .app-commands
+    position absolute
+    top 2px
+    right 2px
+    font-size 0
+    -webkit-app-region no-drag
+    
+    > a
+      cursor pointer
+      display inline-block
+      width width
+      height 16px
+      margin-left 2px
+      background-image url(../style/img/topbar.png)
+      background-color headerBackground
+      
+      for selector, i in iconize maximize app-close 'iconize:hover' 'maximize:hover' 'app-close:hover' restore 'restore:hover'
+        &.{selector}
+          background-position width*-1*i 0
+
+ /******************************************************************************
  * Tags
  */
   

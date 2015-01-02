@@ -1,30 +1,26 @@
-
 /******************************************************************************
- * Font declaration: always first
+ * Font declaration: wrapped into a function to be overriden and invoked after 
+ * importations
  */
 
-@font-face
-  font-family Quicksand
-  src url(fonts/Quicksand-Regular.ttf) format('opentype')
+declareFonts()
+  @font-face
+    font-family Quicksand
+    src url(../style/fonts/Quicksand-Regular.ttf) format('opentype')
 
-@font-face
-  font-family Montserrat
-  src url(fonts/Montserrat-Regular.ttf) format('truetype')
+  @font-face
+    font-family Montserrat
+    src url(../style/fonts/Montserrat-Regular.ttf) format('truetype')
 
-@font-face
-  font-family Montserrat
-  font-weight bold
-  src url(fonts/Montserrat-Bold.ttf) format('truetype')
-
-@font-face
-  font-family JF Shadow
-  font-weight bold
-  src url(fonts/JacquesFrancoisShadow-Regular.ttf) format('truetype')
-
-@font-face
-  font-family Alfa Slab One
-  font-weight bold
-  src url(fonts/alfa-slab-one.ttf) format('truetype')
+  @font-face
+    font-family Montserrat
+    font-weight bold
+    src url(../style/fonts/Montserrat-Bold.ttf) format('truetype')
+    
+  @font-face
+    font-family Alfa Slab One
+    font-weight bold
+    src url(../style/fonts/alfa-slab-one.ttf) format('truetype')
 
 /******************************************************************************
  * Texts

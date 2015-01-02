@@ -53,4 +53,5 @@ module.exports = class DialogProvider
       templateUrl: 'dialog_message.html'
       controllerAs: 'ctrl'
       controller: MessageBox
+      backdrop: 'static'
       resolve: model: -> {title: title, message: message, buttons: buttons}

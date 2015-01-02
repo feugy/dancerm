@@ -1,6 +1,8 @@
 moment = require 'moment'
 {join, resolve} = require 'path'
-{appendFileSync} = require 'fs-extra'
+{appendFileSync, readFile, existsSync} = require 'fs-extra'
+{map} = require 'async'
+{render} = require 'stylus'
 _ = require 'lodash'
 _str = require 'underscore.string'
 _.mixin _str.exports()
@@ -59,6 +61,7 @@ module.exports =
     appendFileSync join(gui.App.dataPath, 'errors.txt'), """
 ------------
 Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
+#{err.message}
 #{err.stack}\n\n"""
     process.exit 0
 
@@ -120,3 +123,30 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
       module.exports.setAttr obj[prop], path[1..].join('.'), value
     else
       obj[prop] = value
+
+  # Dynamically builds stylus style sheets, using a given theme
+  #
+  # @param files [Array<String> files names (without extentions), relative to src/style folder, to compile
+  # @param theme [String] optionnal name of the theme file (in src/style/themes/ folder) used for compilation
+  # @param done [Function] completion callback, invoked with parameters:
+  # @option done err [Error] an error object, or null if no compilation error occured
+  # @option done results [Object] an associative array containing for each file (as key) the corresponding css
+  buildStyles: (files, theme, done) ->
+    map files, (sheet, next) ->
+      folder = join '.', 'app', 'src', 'style'
+      readFile join(folder, "#{sheet}.styl"), 'utf8', (err, content) ->
+        return next err if err?
+        # adds themes variable if it exists
+        content = "@require 'themes/#{theme}_variable'\n#{content}" if existsSync join folder, 'themes', "#{theme}_variable.styl"
+        # adds theme override if it exists 
+        content += "\n@require 'themes/#{theme}'" if existsSync join folder, 'themes', "#{theme}.styl"
+        # now add variables and compiles
+        render "@require 'variable'\n#{content}", 
+          filename: "#{sheet}.css"
+          paths: ['./app/src/style']
+        , next
+    , (err, sheets) ->
+      return done err if err?
+      result = {}
+      result[name] = sheets[i] for name, i in files
+      done null, result

@@ -16,6 +16,7 @@
     "node-zip": "1.1.0",
     "lodash": "2.4.1",
     "underscore.string": "2.3.3",
+    "stylus": "0.49.3",
     "xlsx.js": "2.3.1"
   },
   "devDependencies": {
@@ -26,7 +27,6 @@
     "gulp-download": "0.0.1",
     "gulp-plumber": "0.6.6",
     "gulp-sourcemaps": "1.2.4",
-    "gulp-stylus": "1.3.3",
     "gulp-util": "2.2.20",
     "mocha": "2.0.1",
     "rimraf": "2.2.8"
@@ -58,7 +58,7 @@
   "window": {
     "icon": "app/style/img/dancerm.png",
     "toolbar": false,
-    "frame": true,
+    "frame": false,
     "show": false,
     "min_width": 1000,
     "min_height": 700

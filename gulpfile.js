@@ -14,7 +14,6 @@ var async = require('async');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var rimraf = require('rimraf');
-var stylus = require('gulp-stylus');
 var coffee = require('gulp-coffee');
 var sourcemaps = require('gulp-sourcemaps');
 var download = require('gulp-download');
@@ -27,8 +26,6 @@ var paths = {
   mapsDest: '.',
   scriptsSrc: 'app/src/**/*.coffee',
   scriptsDest: 'app/script',
-  stylesSrc: ['app/src/style/dancerm.styl', 'app/src/style/print.styl', 'app/src/style/splash.styl'],
-  stylesDest: 'app/style',
   testsSrc: 'test/src/**/*.coffee',
   testsDest: 'test/script'
 };
@@ -37,7 +34,7 @@ gulp.task('default', ['watch']);
 
 // remove compiled folder
 gulp.task('clean', function(done){
-  async.each([paths.stylesDest, paths.scriptsDest, paths.testsDest], rimraf, done);
+  async.each([paths.scriptsDest, paths.testsDest], rimraf, done);
 });
 
 // download vendor libraries from the net
@@ -74,24 +71,8 @@ function buildScripts() {
 }
 gulp.task('build-scripts', ['clean'], buildScripts);
 
-// Build Stylus scripts
-function buildStyles() {
-  return gulp.src(paths.stylesSrc)
-    .pipe(sourcemaps.init())
-    .pipe(stylus().on('error', function(err) {
-      gutil.log(err);
-      gutil.beep();
-    }))
-    .pipe(sourcemaps.write({}))
-    .pipe(gulp.dest(paths.stylesDest))
-    .on('end', function() {
-      console.log('styles rebuilt')
-    });
-}
-gulp.task('build-styles', ['copy-assets'], buildStyles);
-
 // Build all once
-gulp.task('build', ['build-styles', 'build-scripts']);
+gulp.task('build', ['copy-assets', 'build-scripts']);
 
 // Build tests scripts
 function buildTests() {
@@ -111,7 +92,6 @@ gulp.task('build-tests', ['build'], buildTests);
 
 // Clean, build, and then watch for files changes
 gulp.task('watch', ['build-tests'], function(){
-  gulp.watch('app/src/style/**/*.styl', buildStyles);
   gulp.watch(paths.scriptsSrc, buildScripts);
   return gulp.watch(paths.testsSrc, buildTests);
 });

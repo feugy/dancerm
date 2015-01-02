@@ -2,9 +2,10 @@
 
 _ = require 'lodash'
 gui = require 'nw.gui'
+{parallel} = require 'async'
 {join} = require 'path'
 {version} = require '../../package.json'
-{dumpError} = require '../script/util/common'
+{dumpError, buildStyles} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
 
 process.on 'uncaughtException', dumpError
@@ -24,7 +25,7 @@ try
   # 'win' is Node-Webkit's window
   # 'window' is DOM's window
   win = gui.Window.get()
-  isMaximized = false
+  win.isMaximized = false
   hasDump = false
   app = null
   # stores in local storage application state
@@ -43,12 +44,12 @@ try
     for attr in ['x', 'y', 'width', 'height']
       localStorage?.setItem attr, win[attr]
 
-    localStorage?.setItem 'maximized', isMaximized
+    localStorage?.setItem 'maximized', win.isMaximized
     false
 
-  win.on 'maximize', -> isMaximized = true
-  win.on 'unmaximize', -> isMaximized = false
-  win.on 'minimize', -> isMaximized = false
+  win.on 'maximize', -> win.isMaximized = true
+  win.on 'unmaximize', -> win.isMaximized = false
+  win.on 'minimize', -> win.isMaximized = false
 
   win.showDevTools()
   $(win.window).on 'keydown', (event) ->
@@ -66,8 +67,18 @@ try
       win.removeAllListeners()
       win.reloadIgnoringCache() 
 
-  # DOM is ready
-  $(win.window).on 'load', ->
+  parallel [
+    (next) -> buildStyles ['dancerm', 'print'], 'dark', next
+    (next) -> $(win.window).on 'load', -> next()
+  ], (err, results) ->
+    # DOM is ready
+    throw err if err?
+    [styles] = results
+    $('head > style').remove()
+    $('head').append "<style>#{styles['dancerm']}</style>"
+    # make sheets global for other su windows
+    global.styles = styles
+
     # set application title
     window.document?.title = i18n.ttl.application
 
@@ -88,6 +99,7 @@ try
     # require directives and filters immediately to allow circular dependencies
     require('../script/util/filters')(app)
     require('../script/directive/address')(app)
+    require('../script/directive/app_menu')(app)
     require('../script/directive/dancer')(app)
     require('../script/directive/layout')(app)
     require('../script/directive/list')(app)
