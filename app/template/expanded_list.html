@@ -1,11 +1,5 @@
-<div data-layout>
+<div data-layout data-actions="ctrl.actions">
   <div class="column expanded">
-    <h2><span>{{::'ttl.dancerList'|i18n}}</span>
-      <a href="" class="btn glyphed" data-ng-click="ctrl.export()" data-ng-class="{disabled: ctrl.cardList.list.length == 0}"><i class="glyphicon glyphicon-export"/>{{::'btn.export'|i18n}}</a>
-      <a href="" class="btn glyphed" data-ng-click="ctrl.printAddresses()" data-ng-class="{disabled: ctrl.cardList.list.length == 0}"><i class="glyphicon glyphicon glyphicon-envelope"/>{{::'btn.printAddresses'|i18n}}</a>
-      <a href="" class="btn glyphed" data-ng-click="ctrl.exportEmails()" data-ng-class="{disabled: ctrl.cardList.list.length == 0}"><i class="glyphicon glyphicon-tags"/>{{::'btn.exportEmails'|i18n}}</a>
-      <a data-ui-sref="list.planning" class="btn glyphed"><i class="glyphicon glyphicon-arrow-left"/>{{::'btn.backToPlanning'|i18n}}</a>
-    </h2>
     <div class="input-row">
       <div class="input-group">
         <input class="form-control" type="text" data-ng-model="ctrl.cardList.criteria.string" data-ng-keyup="ctrl.cardList.performSearch()" placeholder="{{::'placeholder.search'|i18n}}"/>
@@ -15,11 +9,9 @@
     </div>
     <div class="list-length" data-ng-hide="ctrl.cardList.list.length > 0">{{::'msg.emptyDancerList'|i18n}}</div>
     <div class="list-length" data-ng-show="ctrl.cardList.list.length > 0">{{ctrl.cardList.list.length}}{{::'msg.dancerListLength'|i18n}}</div>
-    <div data-list 
-      data-src="ctrl.cardList.list"
+    <list data-src="ctrl.cardList.list"
       data-columns="ctrl.columns"
       data-on-click="ctrl.displayDancer(model)"
-      data-ng-show="ctrl.cardList.list.length > 0">
-    </div>
+      data-ng-show="ctrl.cardList.list.length > 0"/>
   </div>
 </div>

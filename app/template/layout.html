@@ -1,0 +1,13 @@
+<div class="layout">
+  <nav class="actions">
+    <ul>
+      <li data-ng-repeat="item in layout.links" class="{{item.active ? 'active' : ''}}" data-ng-click="item.action()"><i data-ng-if="::item.icon" class="glyphicon glyphicon-{{::item.icon}}"/>{{::item.label|i18n}}</li>
+    </ul>
+    <ul>
+      <li data-ng-repeat="item in layout.actions" data-ng-click="item.action()"><i data-ng-if="::item.icon" class="glyphicon glyphicon-{{::item.icon}}"/>{{::item.label|i18n}}</li>
+    </ul>
+  </nav>
+  <div class="column-and-main">
+    <div class="anchor"></div>
+  </div>
+</div>

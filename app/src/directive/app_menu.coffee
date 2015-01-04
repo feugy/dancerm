@@ -54,5 +54,3 @@ module.exports = (app) ->
     controller: AppMenuDirective
     controllerAs: 'ctrl'
     bindToController: true
-    # parent scope binding
-    scope: {}

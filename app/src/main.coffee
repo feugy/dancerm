@@ -51,7 +51,6 @@ try
   win.on 'unmaximize', -> win.isMaximized = false
   win.on 'minimize', -> win.isMaximized = false
 
-  win.showDevTools()
   $(win.window).on 'keydown', (event) ->
     # disable backspace support
     if event.which is 8
@@ -68,14 +67,13 @@ try
       win.reloadIgnoringCache() 
 
   parallel [
-    (next) -> buildStyles ['dancerm', 'print'], 'dark', next
+    (next) -> buildStyles ['dancerm', 'print'], localStorage.theme or 'none', next
     (next) -> $(win.window).on 'load', -> next()
   ], (err, results) ->
     # DOM is ready
     throw err if err?
     [styles] = results
-    $('head > style').remove()
-    $('head').append "<style>#{styles['dancerm']}</style>"
+    $('head').append "<style type='text/css' data-theme>#{styles['dancerm']}</style>"
     # make sheets global for other su windows
     global.styles = styles
 

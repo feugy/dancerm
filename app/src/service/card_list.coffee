@@ -81,7 +81,6 @@ module.exports = class CardList extends EventEmitter
     return @_displayResults [] if _.isEmpty(conditions) and not @allowEmpty
     @_searchPending = true
 
-    console.log conditions
     # now search for dancers
     Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false

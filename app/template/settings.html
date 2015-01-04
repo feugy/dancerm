@@ -1,0 +1,50 @@
+<div data-layout data-actions="ctrl.actions">
+  <div class="main settings expanded">
+    <section>
+      <aside><h2>{{::'ttl.database'|i18n}}</h2></aside>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{::'lbl.dumpPath'|i18n:{sep:true} }}</label>
+          <div class="col-sm-8">
+            <div class="input-group" data-ng-click="ctrl.chooseDumpLocation()">
+              <input type="text" class="form-control" data-ng-model="ctrl.localStorage.dumpPath"/>
+              <span class="input-group-addon"><i class="glyphicon glyphicon-folder-open"/></span>
+            </div>
+            <blockquote data-ng-if="ctrl.askDumpLocation" class="help-block">
+              <p>{{::'msg.dumpData'|i18n}}</p>
+            </blockquote>
+          </div>
+        </div>
+        <div class="form-group">
+          <a href="" class="btn btn-primary glyphed col-sm-offset-4" data-ng-click="ctrl.importDancers()"><i glass="glyphicon glyphicon-import"/>{{::'btn.import'|i18n}}</a>
+        </div>
+      </form>
+    </section>
+    <section>
+      <aside><h2>{{::'ttl.interface'|i18n}}</h2></aside>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{::'lbl.theme'|i18n:{sep:true} }}</label>
+          <div class="col-sm-8">
+            <div class="btn-group" data-dropdown>
+              <a href="" class="btn dropdown-toggle" dropdown-toggle>{{'themes.' + (ctrl.localStorage.theme || 'none') | i18n}}<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li data-ng-repeat="theme in ::ctrl.themes"><a href="" data-ng-click="ctrl.applyTheme(theme)">{{::theme.label}}</a></li>
+            </div>
+          </div>
+        </div
+      </form>
+    </section>
+    <section>
+      <aside><h2>{{::'ttl.about'|i18n}}</h2></aside>
+      <div class="about">
+        <p>{{::'msg.about'|i18n}}</p>
+        <article data-ng-repeat="item in ::ctrl.about">
+          <img data-ng-if="item.image" data-ng-src="{{::'../style/img/'+item.image}}"/>
+          <h2>{{::item.title}}</h2>
+          <h3 data-ng-repeat="spec in ::item.specs">{{::spec}}</h3>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>

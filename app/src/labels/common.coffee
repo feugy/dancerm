@@ -7,29 +7,30 @@ module.exports =
     addNewDancer: 'Nouveau'
     addExistingDancer: 'Existant'
     addPayment: 'Nouveau paiement'
-    backToList: 'Retour à la liste'
-    backToPlanning: 'Retour au planning'
+    callList: "Liste d'appel"
     cancel: 'Annuler'
     close: 'Fermer'
+    detailed: 'Liste détaillée'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
     ignore: 'Ignorer'
     import: 'Importer des données'
-    newDancer: 'Inscrire un danseur'
+    newDancer: 'Inscription'
     no: 'Non'
     ok: 'Ok'
+    planning: 'Planning'
     printAddresses: 'Publipostage'
     printWithoutVat: 'Sans TVA, sans cours'
     printWithVat: 'Avec TVA, sans cours'
     printWithoutVatWithClasses: 'Sans TVA'
     printWithVatWithClasses: 'Avec TVA'
     print: 'Imprimer'
-    callList: "Liste d'appel"
     register: 'Inscription'
     remove: 'Supprimer'
     removeAddress: 'Supprimer'
     save: 'Enregistrer'
     stats: 'Statistiques'
+    settings: 'Paramètres'
     yes: 'Oui'
 
   # civility mapping
@@ -69,6 +70,7 @@ module.exports =
     allDanceClasses: 'tous les cours'
     allSeasons: 'toutes les saisons'
     allTeachers: 'tous les professeurs'
+    author: 'by {{author}}'
     bank: 'Banque'
     birth: 'Né(e) le'
     card: 'Fiche danseurs'
@@ -86,6 +88,7 @@ module.exports =
     day: 'Jour'
     details: 'Détails'
     due: 'Rgt.'
+    dumpPath: 'Fichier de sauvegarde'
     email: 'E-mail'
     existingValue: 'Valeur actuelle'
     fieldSeparator: ' :'
@@ -113,6 +116,7 @@ module.exports =
     street: 'Voie'
     Sun: 'Dimanche'
     sum: 'Total'
+    theme: 'Thème'
     Thu: 'Jeudi'
     title: 'Titre'
     Tue: 'Mardi'
@@ -120,6 +124,7 @@ module.exports =
     stampWidth: 'Largeur (mm)'
     stampHeight: 'Hauteur (mm)'
     unknown: 'Inconnu'
+    version: 'v{{version}}'
     value: 'Valeur'
     vat: 'dont T.V.A.'
     verticalMargin: 'Marge verticale (mm)'
@@ -128,6 +133,7 @@ module.exports =
     
   # long messages with html
   msg:
+    about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
     cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
@@ -227,8 +233,14 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     searchEngine: 'moteur de recherche'
     website: 'site web'
 
+  # Theme's list
+  themes:
+    dark: 'Dark'
+    none: "'The' original"
+
   # titles  
   ttl:
+    about: 'A propos'
     address: 'Adresse'
     application: 'DanceRM'
     card: 'Fiche danseurs'
@@ -237,12 +249,14 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     danceClassesDistribution: 'Distibution des cours'
     dancerList: 'Liste des danseurs'
     dancer: 'Danseur'
+    database: 'Base de données'
     duePayment: 'Impayés'
-    dump: 'Sauvegarde externe'
+    dumping: 'Sauvegarde des données'
     editRegistration: 'Modification de l\'inscription'
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
+    interface: 'Interface'
     knownBy: 'Connu par'
     knownByRepartition: 'Ils ont connus par...'
     missingCertificates: 'Certificats manquants'
@@ -252,7 +266,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
-    stats: 'Statistiques (sur {{total}} danseurs)'
+    stats: '{{total}} danseurs'
 
   # VAT rate
   vat: 0.196

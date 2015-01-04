@@ -92,11 +92,7 @@ Paid: 110h 10€/h
 
 ## Bugs or regressions
 
-!!! - dancer cancellation
-!!! - empty dropdown menu on new dancer
-!!! - danceclass call list
-!!! - copy emails
-!!! - stamp printing
+!! - animations
 - search by city
 - fix v2 import
 

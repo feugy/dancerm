@@ -56,14 +56,14 @@ gulp.task('copy-assets', ['clean'], function() {
 // Build Coffee scripts
 function buildScripts() {
   return gulp.src(paths.scriptsSrc)
-    .pipe(sourcemaps.init())
+    //.pipe(sourcemaps.init())
     .pipe(coffee({
       bare: true
     }).on('error', function(err) {
       gutil.log(err.stack);
       gutil.beep();
     }))
-    .pipe(sourcemaps.write({sourceRoot: paths.mapsRoot}))
+    //.pipe(sourcemaps.write({sourceRoot: paths.mapsRoot}))
     .pipe(gulp.dest(paths.scriptsDest))
     .on('end', function() {
       console.log('scripts rebuilt')

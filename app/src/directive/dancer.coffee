@@ -105,7 +105,7 @@ class DancerDirective
 module.exports = (app) ->
   app.directive 'dancer', ->
     # directive template
-    templateUrl: "dancer.html"
+    templateUrl: 'dancer.html'
     # will replace hosting element
     replace: true
     # transclusion is needed to be properly used within ngRepeat

@@ -17,18 +17,20 @@ html
   overflow auto
   background mainBackground
   cursor default
+  
+body
+  display flex
+  flex-direction column
+  height 100%
+  background transparent
+  
+  > .main-view
+    flex 1
+    position relative
 
 .column-and-main
   pageMargin = 15px
-  // for animations
-  overflow hidden
-  // take all page space
-  position absolute
-  top 25px
-  right 0
-  left 0
-  bottom 0
-
+  
   > *
     position absolute
     top 0
@@ -79,12 +81,6 @@ html
 body
   color textColor
   font-family textFont
-
-  .column-and-main > header
-    color headerColor
-    font-family headingFont
-    font-size (fontSize*2.5)
-    text-align center
 
   * 
     font-family textFont
@@ -141,11 +137,8 @@ body
     text-align center
     margin-bottom 10px
 
-  .input-group
-    margin 20px 0 0
-
-    input::-webkit-input-placeholder
-      font-style italic
+  .input-group input::-webkit-input-placeholder
+    font-style italic
 
   .list-length
     color headingColor
@@ -249,16 +242,9 @@ body
  */
 
 .column-and-main > .main
-  padding-top 80px
-
-  header
-    position absolute
-    top 15px
-    right 0
-    background colBackground
-    padding 1em
-    z-index 1
-    border-radius 0 0 0 1em
+  
+  > *
+    padding-top 5px
 
   .commands
     text-align center
@@ -277,7 +263,6 @@ body
   height 100%
   box-sizing border-box
   padding-right 10px
-  padding-top 25px
   
   .nav-tabs
     border-bottom 2px solid headingColor
@@ -513,13 +498,14 @@ body
  */
 
 .stats
+  display flex
+  flex-direction column
   
   .dashboard
     display flex
     flex-wrap wrap
     flex-direction column
-    height 100%
-    overflow hidden
+    flex 1
     
     > article
       border-radius inputRadius
@@ -538,17 +524,90 @@ body
     .currency
       font-family impactFont
       font-size 60px
-
-  .tags
-    flex 1
-    margin-right 6px
-    text-align right
+      
+  .criteria
+    padding-top 0
+    display flex
+    justify-content space-between
+    align-items center
+    
+    .tag
+      margin-top 0
+      
+    > span
+      padding-left 25px
+      font-size 200%
+      color headingColor
+      font-family headingFont
+      flex 1
 
   .loader
     display block
     width 100%
     text-align center
     margin 5px 0
+
+/******************************************************************************
+ * Settings
+ */
+
+.settings.main
+  
+  > section
+    display flex
+    padding 0
+    
+    > :not(aside)
+      display inline-block
+      flex 1
+      margin .5em
+      padding 1em
+      
+  > section:not(:first-child) > :not(aside)
+    border-top 1px solid headingColor
+    
+  .form-group:last-child
+    margin-bottom 0
+    
+  aside
+    width 200px
+    padding 1em
+    margin 0
+    border-right 1px solid headingColor
+    background colBackground
+    
+    > h2
+      margin 0
+      border none
+      line-height normal
+      font-size fontSize*1.2
+  
+  .about  
+    display flex
+    flex-wrap wrap
+    
+    > article
+      margin 10px
+      background colBackground
+      text-align center
+      padding 1em
+
+      > img
+        height 100px
+      
+      > h2
+      > h3
+        margin 0
+        border none
+        line-height normal
+      
+      > h2
+        margin-top 1em
+        font-size fontSize*1.2
+        
+      > h3
+        font-size fontSize
+        
 
 /******************************************************************************
  * Popups
@@ -629,6 +688,9 @@ body
   .caret
     top 2px
     cursor pointer
+    
+  .modal-dialog
+    margin-top 10%
 
   .modal-content
     background mainBackground
@@ -691,6 +753,10 @@ body
   input:not([type="radio"]):hover
     border-color tableBorderColor
 
+  blockquote
+    background-color headerBackground
+    > p 
+      color focusColor
 
   select:focus
   textarea:focus

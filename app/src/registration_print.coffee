@@ -1,32 +1,20 @@
 'use strict'
-
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
-{dumpError} = require '../script/util/common'
-moment = require 'moment'
 # merge lodash and lodash string functions
 _ = require 'lodash'
-_str = require 'underscore.string'
-_.mixin _str.exports()
 async = require 'async'
 
-process.on 'uncaughtException', dumpError
-
-# make some variable globals for other scripts
-global.gui = gui
-global.$ = $
 
 # on DOM loaded
 win = gui.Window.get()
 
-# size to A4 format, 3/4 height
-win.resizeTo 790, 400
-
-$(win.window).on 'load', ->
+angular.element(win.window).on 'load', ->
   
+  doc = angular.element(document)
   # adds dynamic styles
-  $('head').append "<style>#{styles['print']}</style>"
+  doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
 
   # Angular controller for print preview
   class Print
@@ -61,13 +49,13 @@ $(win.window).on 'load', ->
     danceClasses: []
 
     constructor: (filter, rootScope) ->
-      @withClasses = window.withClasses
-      @withVat = window.withVat
-      @withCharged = window.withCharged
+      @withClasses = win.withClasses
+      @withVat = win.withVat
+      @withCharged = win.withCharged
       # get data from mother window
-      @registration = _.findWhere window.card.registrations, season: window.season 
+      @registration = _.findWhere win.card.registrations, season: win.season 
       # get card dancers
-      Dancer.findWhere {cardId: window.card.id}, (dancers, err) =>
+      Dancer.findWhere {cardId: win.card.id}, (dancers, err) =>
         return console.error err if err?
         @dancers = dancers
         async.map @dancers, (dancer, next) -> 
@@ -143,7 +131,7 @@ $(win.window).on 'load', ->
     # Compute charged by taking period into account
     #
     # @return the VAT amount
-    getCharged: => @registration.charged / (if @registration.period is 'quarter' then 3 else 1)
+    getCharged: => Math.floor(@registration.charged / (if @registration.period is 'quarter' then 3 else 1)*100)/100
 
     # Compute VAT on registration
     #
@@ -160,7 +148,7 @@ $(win.window).on 'load', ->
 
     # Print button, that close the print window
     print: =>
-      $('.print').remove()
+      doc.find('body').addClass 'printing'
       window.print()
       win.close()
 
@@ -174,9 +162,9 @@ $(win.window).on 'load', ->
     restrict: 'EA'
     # replace element with specified HTML
     link: (scope, elm, attrs) ->
-      $(elm).replaceWith attrs.placeholder
+      angular.element(elm).replaceWith attrs.placeholder
   
   # get filters
   require('../script/util/filters')(app)
 
-  angular.bootstrap $('body'), ['registrationPrint', 'ngSanitize']
+  angular.bootstrap doc.find('body'), ['registrationPrint', 'ngSanitize']

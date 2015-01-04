@@ -1,27 +1,16 @@
 'use strict'
-
 gui = require 'nw.gui'
-i18n = require '../script/labels/common'
-{dumpError} = require '../script/util/common'
 moment = require 'moment'
 _ = require 'lodash'
-
-process.on 'uncaughtException', dumpError
-
-# make some variable globals for other scripts
-global.gui = gui
-global.$ = $
 
 # on DOM loaded
 win = gui.Window.get()
 
-# size to A4 format, landscape
-win.resizeTo 1000, 400
-
-$(win.window).on 'load', ->
+angular.element(win.window).on 'load', ->
   
+  doc = angular.element(document)
   # adds dynamic styles
-  $('head').append "<style>#{styles['print']}</style>"
+  doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
 
   # Angular controller for print preview
   class Print
@@ -45,13 +34,15 @@ $(win.window).on 'load', ->
     # @param filter [Function] angular's filter factory
     constructor: (@filter) ->
       # get data from mother window
-      @danceClass = window.danceClass
+      @danceClass = win.danceClass
 
       # group by card and then order by firstname
-      groups = _.groupBy window.list.concat(), 'cardId'
-      _.each groups, (group, key, list) ->
-        list[key] = _.sortBy group, 'firstname'
-      @list = _.flatten groups
+      @list = _.chain(win.list)
+        .groupBy('cardId')
+        .each((group, key, list) -> list[key] = _.sortBy group, 'firstname')
+        .values()
+        .flatten()
+        .value()
 
       # Compute next 11 dates
       order = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -59,7 +50,7 @@ $(win.window).on 'load', ->
       # get the next class's day, and remove a week for loop init
       start = moment().day(order.indexOf @danceClass.start[0..2]).subtract 7, 'day'
       # then add a week and print for next 12 occurences
-      @dates = (start.add(7, 'day').format i18n.formats.callList for i in [0..11])
+      @dates = (start.add(7, 'day').format @filter('i18n')('formats.callList') for i in [0..11])
 
     # Display dance class title
     #
@@ -71,7 +62,7 @@ $(win.window).on 'load', ->
 
     # Print button, that close the print window
     print: =>
-      $('.print').remove()
+      doc.find('body').addClass 'printing'
       window.print()
       win.close()
 
@@ -80,4 +71,4 @@ $(win.window).on 'load', ->
   # get filters
   require('../script/util/filters')(app)
 
-  angular.bootstrap $('body'), ['callListPrint']
+  angular.bootstrap doc.find('body'), ['callListPrint']

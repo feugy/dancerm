@@ -9,9 +9,8 @@ ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
 CardListService = require '../script/service/card_list'
 
-###LayoutCtrl = require '../script/controller/layout'
-ListCtrl = require '../script/controller/list'###
 StatsCtrl = require '../script/controller/stats'
+SettingsCtrl = require '../script/controller/settings'
 ListLayoutCtrl = require '../script/controller/list_layout'
 CardCtrl = require '../script/controller/card'
 PlanningCtrl = require '../script/controller/planning'
@@ -30,6 +29,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
 
   states.state 'list', _.extend {url: '/list', abstract:true}, ListLayoutCtrl.declaration
   states.state 'stats', _.extend {url: '/stats'}, StatsCtrl.declaration
+  states.state 'settings', _.extend {url: '/settings'}, SettingsCtrl.declaration
   states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
 
   states.state 'list.card', 
@@ -50,25 +50,8 @@ app.service 'dialog', DialogService
 app.service 'cardList', CardListService
 
 # at startup, check that dump path is defined 
-app.run ['dialog', (dialog) ->
-  chooseDumpLocation = ->
-    dumpDialog = $('<input style="display:none;" type="file" nwsaveas value="dump_dancerm.json" accept="application/json"/>')
-    dumpDialog.change (evt) =>
-      dumpPath = dumpDialog.val()
-      dumpDialog.remove()
-      # dialog cancellation
-      return askDumpLocation() unless dumpPath
-      # retain entry for next loading
-      localStorage.setItem 'dumpPath', dumpPath
-    dumpDialog.trigger 'click'
-
-  askDumpLocation = ->
-    # first, explain what we're asking, then display file selection, wether the user accepted or not
-    dialog.messageBox(i18n.ttl.dump, i18n.msg.dumpData, [label: i18n.btn.ok]).result.then(chooseDumpLocation).catch chooseDumpLocation
-
-  # nothing in localStorage
-  dumpPath = localStorage.getItem 'dumpPath'
-  askDumpLocation() unless dumpPath
+app.run ['$location', (location) -> 
+  location.url('/settings?firstRun').replace() unless localStorage.dumpPath?
 ]
 
 # on close, dump data, with a waiting dialog message
@@ -77,8 +60,8 @@ app.close = (done) ->
   injector = angular.element('body.app').injector()
   # display waigin message
   injector.get('$rootScope').$apply =>
-    injector.get('dialog').messageBox i18n.ttl.dump, i18n.msg.dumping
+    injector.get('dialog').messageBox i18n.ttl.dumping, i18n.msg.dumping
   # export data
-  injector.get('export').dump localStorage.getItem('dumpPath'), done
+  injector.get('export').dump localStorage.dumpPath, done
 
 module.exports = app

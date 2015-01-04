@@ -1,27 +1,16 @@
 'use strict'
-
 gui = require 'nw.gui'
-i18n = require '../script/labels/common'
-{dumpError} = require '../script/util/common'
 _ = require 'lodash'
 async = require 'async'
 
-process.on 'uncaughtException', dumpError
-
-# make some variable globals for other scripts
-global.gui = gui
-global.$ = $
-
-# on DOM loaded
 win = gui.Window.get()
 
-# size to A4 format, 3/4 height
-win.resizeTo 790, 400
+# on DOM loaded
+angular.element(win.window).on 'load', ->
 
-$(win.window).on 'load', ->
-  
+  doc = angular.element(document)
   # adds dynamic styles
-  $('head').append "<style>#{styles['print']}</style>"
+  doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
 
   # Angular controller for print preview
   class Print
@@ -47,7 +36,7 @@ $(win.window).on 'load', ->
     # @param scope [Object] controller's own scope
     constructor: (scope) ->
       # get data from mother window
-      dancers = window.list
+      dancers = win.list
 
       # regroup by addresses and get details
       groupByAddress = {}
@@ -82,7 +71,7 @@ $(win.window).on 'load', ->
     # Print button, that close the print window
     print: =>
       # remove configuration and unselected stamps
-      $('body').addClass 'printing'
+      doc.find('body').addClass 'printing'
       window.print()
       win.close()
 
@@ -91,4 +80,4 @@ $(win.window).on 'load', ->
   # get filters
   require('../script/util/filters')(app)
 
-  angular.bootstrap $('body'), ['addressesPrint']
+  angular.bootstrap doc.find('body'), ['addressesPrint']

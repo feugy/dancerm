@@ -1,5 +1,6 @@
 _ = require 'lodash'
 async = require 'async'
+{join} = require 'path'
 i18n = require '../labels/common'
 {generateId} = require '../util/common'
 Dancer = require '../model/dancer'
@@ -76,6 +77,10 @@ module.exports = class CardController
   # Models that must be removed on save
   _removable: []
 
+  # **private**
+  # Registration print preview window
+  _preview: null
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Controller's own scope, for change detection
@@ -88,13 +93,16 @@ module.exports = class CardController
   # @param stateParams [Object] invokation route parameters
   constructor: (@scope, @rootScope, @cardList, @dialog, @q, @state, @filter, stateParams) -> 
     # initialize global change status
-    @hasChanged = false
     @dancers = []
     @addresses = []
     @required = {}
     @_modalOpened = false
     @_previous = {}
     @_removable = []
+    @_preview = null
+    # set context actions for planning
+    @scope.listCtrl.actions = []
+    @_setChanged false
 
     if stateParams.id
       # load edited dancer
@@ -114,7 +122,7 @@ module.exports = class CardController
       ).result.then (confirmed) =>
         return unless confirmed
         # if confirmed, effectively go on desired state
-        @hasChanged = false
+        @_setChanged false
         @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
@@ -223,7 +231,7 @@ module.exports = class CardController
   # @param cardId [String] loaded card id.
   loadCard: (cardId) =>
     # to avoid displaying confirmation
-    @hasChanged = false
+    @_setChanged false
     @state.go 'list.card', {id: cardId}, reload: true
 
   # Add a new dancer to this card.
@@ -354,22 +362,33 @@ module.exports = class CardController
   # @param withVat [Boolean] true to include VAT
   # @param withClasses [Boolean] true to include dance classes details
   printRegistration: (registration, auto= false, withVat= true, withClasses= true) =>
+    return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
-      # node-webkit bug https://github.com/rogerwang/node-webkit/issues/2318
-      open = => setTimeout =>
+      open = =>
+        _console = global.console 
         try
-          preview = window.open 'registration_print.html'
-          preview.card = @card
-          preview.withVat = withVat
-          preview.withClasses = withClasses
-          preview.season = registration.season
-          preview.withCharged = auto
+          @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
+            frame: true
+            toolbar: false
+            icon: require('../../../package.json')?.window?.icon
+            focus: true
+            # size to A4 format, 3/4 height
+            width: 790
+            height: 400
+
+          # obviously, a bug !
+          global.console = _console
+            
+          # set parameters and wait for closure
+          @_preview.card = @card
+          @_preview.withVat = withVat
+          @_preview.withClasses = withClasses
+          @_preview.season = registration.season
+          @_preview.withCharged = auto
+          @_preview.on 'closed', => @_preview = null
         catch err
           console.error err
-        # TODO obviously, a bug !
-        global.console = window.console
-      , 1
 
       # auto VAT/classe details computation:
       return open() unless auto
@@ -417,12 +436,12 @@ module.exports = class CardController
         ], (err) => 
           return console.error err if err?
           @scope.$apply =>
-            @state.go 'list.planning'
             @cardList.performSearch()
+            @back()
 
       # mark for a change
       @_previous[dancer.id] = {}
-      @hasChanged = true
+      @_setChanged true
 
       idx = @dancers.indexOf dancer
       # mark dancer to be removed, and its address if necessary
@@ -465,6 +484,21 @@ module.exports = class CardController
       @_onChange 'addresses'
 
   # **private**
+  # Update hasChanged flag and contextual actions
+  #
+  # @param changed [Boolean] new has changed flag value
+  _setChanged: (changed) =>
+    if changed
+      if @card._v > 0
+        # cand cancel only if already saved once
+        @scope.listCtrl.actions.splice 0, 0, {label: 'btn.cancel', icon: 'ban-circle', action: @cancel}
+      @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
+    else if @hasChanged
+      # remove save and cancel
+      @scope.listCtrl.actions.splice 0, 2 
+    @hasChanged = changed
+
+  # **private**
   # Reset displayed card and its relative models
   _reset: =>
     @knownBy = {}
@@ -484,9 +518,9 @@ module.exports = class CardController
     @addresses = [address]
     @_previous = {}
     # store previous values
-    @_previous[@card.id] = @card.toJSON()
-    @_previous[dancer.id] = dancer.toJSON()
-    @_previous[address.id] = address.toJSON()
+    @_previous[@card.id] = {}
+    @_previous[dancer.id] = {}
+    @_previous[address.id] = {}
     @_onChange()
 
   # **private**
@@ -548,7 +582,7 @@ module.exports = class CardController
           @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
           
           # reset changes and displays everything
-          @hasChanged = false
+          @_setChanged false
           @scope.$apply()
 
   # **private**
@@ -557,11 +591,11 @@ module.exports = class CardController
   # @param field [String] modified field
   _onChange: (field) =>
     # performs comparison between current and old values
-    @hasChanged = false
+    @_setChanged false
     for model in [@card].concat @dancers, @addresses when not _.isEqual @_previous[model.id], model.toJSON()
       console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
       # quit at first modification
-      return @hasChanged = true
+      return @_setChanged true
 
   # **private**
   # Check required fields when saving models

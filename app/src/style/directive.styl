@@ -6,10 +6,8 @@
   width = 20px
   // make it draggable  
   -webkit-app-region drag
-  position absolute
-  top 0
-  left 0
-  right 0
+  position relative
+  display block
   z-index 10000
   background primaryBtnBackground
   text-align center
@@ -46,6 +44,56 @@
         &.{selector}
           background-position width*-1*i 0
 
+/******************************************************************************
+ * Main layout
+ */
+ 
+.layout
+  position absolute
+  top 0
+  left 0
+  right 0
+  bottom 0
+  overflow hidden
+  display flex
+  flex-direction column
+    
+  .actions 
+    display flex
+    justify-content space-between
+    background headerBackground
+    
+    ul
+      margin 0
+      padding 0
+      
+    li
+      display inline-block
+      padding 1em .5em
+      border-bottom 3px solid transparent
+      color textColor
+      cursor pointer
+      
+      .glyphicon
+        color rgba(textColor, 0.3)
+        padding-right .5em
+        
+      &:hover
+      &:hover .glyphicon
+        color focusColor
+        
+      &.active
+        border-bottom-color headerColor
+        color headerColor
+        
+        .glyphicon
+          color headerColor
+      
+  .column-and-main
+    display block
+    flex 1
+    position relative
+  
  /******************************************************************************
  * Tags
  */

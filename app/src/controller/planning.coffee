@@ -1,19 +1,15 @@
 _ = require 'lodash'
 DanceClass = require '../model/dance_class'
-ConflictsController = require './conflicts'
 
 module.exports = class PlanningController
               
   # Controller dependencies
-  @$inject: ['$rootScope', 'cardList', 'dialog', 'import', '$location', '$state', '$filter']
+  @$inject: ['$scope', '$rootScope', 'cardList']
 
   @declaration:
     controller: PlanningController
     controllerAs: 'ctrl'
     templateUrl: 'planning.html'
-  
-  # Global scope, for digest triggering
-  rootScope: null
 
   # Link to Angular location provider
   location: null
@@ -21,18 +17,6 @@ module.exports = class PlanningController
   # Link to card list service
   cardList: null
 
-  # Link to Angular state provider
-  state: null
-
-  # Link to Angular dialog service
-  dialog: null
-
-  # Link to dancer import service
-  import: null
-
-  # Angular filters factory
-  filter: null
-  
   # List of known teachers
   teachers: []
 
@@ -47,16 +31,14 @@ module.exports = class PlanningController
 
   # Controller constructor: bind methods and attributes to current scope
   #
+  # @param scope [Object] Angular scope for this controller
   # @param rootScope [Object] Angular global scope, for digest triggering
   # @param cardList [CardListService] service responsible for card list
-  # @param dialog [Object] Angular dialog service
-  # @param import [import] Import service
-  # @param location [Object] Angular location service
-  # @param state [Object] Angular state provider
-  # @param filter [Function] Angular's filter factory
-  constructor: (@rootScope, @cardList, @dialog, @import, @location, @state, @filter) -> 
+  constructor: (scope, @rootScope, @cardList) -> 
     @seasons = []
     @teachers = []
+
+    scope.listCtrl.actions = []
 
     currentSeason = null
     @planning = []
@@ -128,11 +110,6 @@ module.exports = class PlanningController
     @cardList.criteria.danceClasses = []
     @cardList.performSearch()
 
-  # Invoked to display an empty dancer's screen
-  createCard: =>
-    console.log "ask to display new dancer"
-    @state.go 'list.card'
-
   # When a season is selected, shows its planning and updates the teacher list
   #
   # @param season [String] selected season
@@ -145,57 +122,3 @@ module.exports = class PlanningController
         return console.error err if err?
         @teachers = teachers
         @rootScope.$apply()
-
-  # Read a given xlsx file to import dancers.
-  # Existing dancers (same firstname/lastname) are not modified
-  importDancers: =>
-    dialog = $('<input style="display:none;" type="file" accept=".dump,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
-    dialog.change (evt) =>
-      filePath = dialog.val()
-      dialog.remove()
-      # dialog cancellation
-      return unless filePath
-      dialog = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
-    
-      msg = null
-      displayEnd = (err) =>
-        if err?
-          console.error "got error", err
-          msg = @filter('i18n') 'err.importFailed', args: err
-        _.delay => 
-          @rootScope.$apply =>
-            dialog.close()
-            @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
-              # refresh all
-              @rootScope.$broadcast 'model-imported'
-        , 100
-
-      @import.fromFile filePath, (err, models, report) =>
-        return displayEnd err if err?
-        console.info "importation report:", report
-        msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
-
-        # get all existing dancers
-        @import.merge models, (err, byClass, conflicts) =>
-          return displayEnd err if err
-          console.info "merge report:", byClass, conflicts
-          # resolve conflicts one by one
-          return displayEnd() if conflicts.length is 0
-          @_resolveConflicts(conflicts).then displayEnd
-
-    dialog.trigger 'click'
-    null
-
-  # **private**
-  # Resolve one conflict
-  #
-  # @param conflicts [Object] list of conflicts, with `existing` and `imported` properties
-  # @return a promise with no resolve arguments
-  _resolveConflicts: (conflicts) =>
-    @dialog.modal(_.extend {
-        size: 'lg'
-        backdrop: 'static'
-        keyboard: false
-        resolve: conflicts: => conflicts
-      }, ConflictsController.declaration
-    ).result

@@ -1,4 +1,5 @@
 _ = require 'lodash'
+{join} = require 'path'
 moment = require 'moment'
 i18n = require '../labels/common'
 
@@ -30,6 +31,13 @@ module.exports = class ExpandedListController
   # Sort order: ascending if true
   sortAsc: true
 
+  # contextual actions, an array of objects containing properties:
+  # - label [String] displayed label with i18n filter
+  # - icon [String] optionnal icon name (prepended with 'glyphicon-')
+  # - action [Function] function invoked (without argument) when clicked
+  # modified by main view's controller
+  actions: []
+
   # Displayed columns
   columns: [
     {name: 'title', title: 'lbl.title'}
@@ -55,6 +63,10 @@ module.exports = class ExpandedListController
       dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
     }]
 
+  # **private**
+  # single print preview insance
+  _preview: null
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] controller's own scope, for event listening
@@ -65,7 +77,13 @@ module.exports = class ExpandedListController
     # keeps current sort for inversion
     @sort = null
     @sortAsc = true
-   
+    @_preview = null
+
+    # update actions on search end
+    @cardList.on 'search-end', @_updateActions
+    @scope.$on '$destroy', => @cardList.removeListener 'search-end', @_updateActions
+    @_updateActions()
+
   # Sort list by given attribute and order
   #
   # @param attr [String] sort attribute
@@ -114,14 +132,28 @@ module.exports = class ExpandedListController
 
   # Displays addresses printing window
   printAddresses: =>
+    return @_preview.focus() if @_preview?
     return unless @cardList.list?.length > 0
+    _console = global.console 
     try
-      preview = window.open 'addresses_print.html'
-      preview.list = @cardList.list
+      @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'addresses_print.html').replace(/\\/g, '/')}",
+        frame: true
+        toolbar: false
+        title: window.document.title
+        icon: require('../../../package.json')?.window?.icon
+        focus: true
+        # size to A4 format, 3/4 height
+        width: 790
+        height: 400
+
+      # obviously, a bug !
+      global.console = _console
+        
+      # set displayed list and wait for closure
+      @_preview.list = @cardList.list
+      @_preview.on 'closed', => @_preview = null
     catch err
       console.error err
-    # obviously, a bug !
-    global.console = window.console
     # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
     null
 
@@ -135,3 +167,15 @@ module.exports = class ExpandedListController
     clipboard.set emails, 'text'
     # display a popup with string to copy
     @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.msg.exportEmails, emails), [label: i18n.btn.ok]
+
+  # **private**
+  # When search is finished, update actions regarding the number of results
+  _updateActions: =>
+    if @cardList.list.length > 0
+      @actions = [
+        {label: 'btn.export', icon: 'export', action: @export},
+        {label: 'btn.printAddresses', icon: 'envelope', action: @printAddresses}
+        {label: 'btn.exportEmails', icon: 'tags', action: @exportEmails}
+      ]
+    else
+      @actions = []

@@ -9,7 +9,7 @@ tinycolor = window.tinycolor
 module.exports = class StatsController
   
   # Controller dependencies
-  @$inject: ['$scope', 'cardList']
+  @$inject: ['$scope', 'cardList', '$state']
 
   # Route declaration
   @declaration:
@@ -50,6 +50,12 @@ module.exports = class StatsController
   # available teachers for this season
   teachers: []
 
+  # contextual actions, an array of objects containing properties:
+  # - label [String] displayed label with i18n filter
+  # - action [Function] function invoked (without argument) when clicked
+  # modified by main view's controller
+  contextActions: []
+
   # search and computation in progress
   workInProgress: false
 
@@ -57,7 +63,8 @@ module.exports = class StatsController
   #
   # @param scope [Object] controller's own scope, for event listening
   # @param cardList [Object] card list service
-  constructor: (@scope, @cardList) ->
+  # @param state [Object] Angular state provider
+  constructor: (@scope, @cardList, state) ->
     @seasons = ("#{year}/#{year+1}" for year in [currentSeasonYear()..2006])
     @selectSeason null, @seasons[0]
     # reset text search and dance classes selection
@@ -70,6 +77,10 @@ module.exports = class StatsController
     @scope.$on 'destroy', => 
       @cardList.removeListener 'search-start', @_onSearch
       @cardList.removeListener 'search-end', @_onSearchResults
+
+    @contextActions = [
+      {label: 'btn.backToPlanning', icon: 'arrow-left', action: -> state.go 'list.planning'}
+    ]
 
   # On season selection, updates teacher list (with all possible teachers of selected seasons)
   # and trigger search.
