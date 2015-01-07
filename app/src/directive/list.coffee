@@ -64,7 +64,7 @@ class ListDirective
     return unless @columns? and @list? and not @_inProgress
     @_inProgress = true
     @$el.empty().append @_renderHeader()
-    body = $('<tbody>').appendTo @$el
+    body = $('<tbody class="hideable">').appendTo @$el
     @_waiting = 0
     @_displayedValues = {}
     body.append (@_renderRow dancer, i for dancer, i in @list).join '' 

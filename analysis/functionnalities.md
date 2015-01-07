@@ -92,7 +92,6 @@ Paid: 110h 10€/h
 
 ## Bugs or regressions
 
-!! - animations
 - search by city
 - fix v2 import
 

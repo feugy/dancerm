@@ -1,43 +1,41 @@
-.column-and-main 
-
-  > .main
-    transition all animationDuration
-
-    &.ng-enter
-      right (- visibleMainWidth)
-
-    &.ng-enter-active
-      right 0
-
-    &.ng-leave-active
-      opacity 0
-      right (- visibleMainWidth)
-          
-    &.expanded.ng-enter
-      left 100%
-
-    &.expanded.ng-enter-active
-      transition left animationDuration
-      position absolute
-      left 0
+.main-view
+  transition all animationDuration
   
-.main-view 
-  
-  .expanded
+  .main
+  .column.expanded
     transition all animationDuration
-
+  
   &.ng-enter 
     .column.expanded
       width collapsedColumnWidth
-
-  &.ng-enter-active,  &.ng-leave-active
+      
+      .hideable
+        display none
+        
+    .main.expanded
+      position absolute
+      left 100%
+    
+  &.ng-enter-active 
     .column.expanded
       width expandedColumnWidth
+    .main.expanded
+      left 0
+      
+  &.ng-enter .main
+  .main.ng-enter
+    right (- visibleMainWidth)
 
-  &.ng-leave 
-    .column.expanded
-      // hide leaving column when changing main, or when expanding column
-      display none
+  &.ng-enter-active .main
+  .main.ng-enter-active
+    right 0
+
+  &.ng-leave-active .main
+  .main.ng-leave-active
+    right (- visibleMainWidth)
+
+  &.ng-leave
+    display none
 
 .loader
   

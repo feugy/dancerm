@@ -518,9 +518,9 @@ module.exports = class CardController
     @addresses = [address]
     @_previous = {}
     # store previous values
-    @_previous[@card.id] = {}
-    @_previous[dancer.id] = {}
-    @_previous[address.id] = {}
+    @_previous[@card.id] = @card.toJSON()
+    @_previous[dancer.id] = dancer.toJSON()
+    @_previous[address.id] = address.toJSON()
     @_onChange()
 
   # **private**
@@ -553,14 +553,14 @@ module.exports = class CardController
         return console.error err if err?
         # get addresses
         async.map @dancers, (dancer, next) ->
-          dancer.getAddress next
-          ###(err, address) ->
+          dancer.getAddress (err, address) ->
             # do not fail on unknown address: instead, put new address
             if err?
+              # TODO display error message
               address = new Address id: generateId()
               dancer.setAddress address
               console.log "failed to get address of dancer #{dancer.id}: #{err}"
-            next null, address###
+            next null, address
         , (err, addresses) =>
           console.error err if err?
           unic = {}

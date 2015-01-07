@@ -73,16 +73,22 @@ module.exports = class ExpandedListController
   # @param cardList [Object] Card list service
   # @param export [Object] Export service
   # @param dialog [Object] Angular's dialog service
-  constructor: (@scope, @cardList, @exporter, @dialog) -> 
+  constructor: (@scope, cardList, @exporter, @dialog) -> 
     # keeps current sort for inversion
     @sort = null
     @sortAsc = true
     @_preview = null
 
     # update actions on search end
-    @cardList.on 'search-end', @_updateActions
     @scope.$on '$destroy', => @cardList.removeListener 'search-end', @_updateActions
-    @_updateActions()
+
+    _.delay =>
+      # defer affectation to avoid building list while animating view transition
+      @cardList = cardList
+      @cardList.on 'search-end', @_updateActions
+      @_updateActions()
+      @scope.$apply()
+    , 500
 
   # Sort list by given attribute and order
   #
