@@ -36,17 +36,8 @@ module.exports =
   # civility mapping
   civilityTitles: ['M.', 'Mme', 'Mlle']
 
-  # charts colors
-  # http://paletton.com/#uid=71T0X0k7vs+1qO542-+bBoBg3kB
-  # http://paletton.com/#uid=72h0X0knUtBemH2j-xjsGq7uKk-
-  colors: [
-    'E7E7B1', '8EB98E', '8E789A', 'E7B1B1',
-    'B1DF38', '269582', 'B42E88', 'EC833C',
-    'A4A452', '418341', '5B3A6E', 'A45252',
-    '729B06', '046857', '7D0556', 'A44606',
-    'FFFFDF', 'B9D4B9', 'B0A2B7', 'FFDFDF',
-    'C8F15E', 'C8F15E', 'C54D9E', 'FFA263'
-  ]
+  # charts colors, retrieved from theme
+  colors: []
 
   # errors
   err:

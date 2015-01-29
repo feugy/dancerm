@@ -5,7 +5,7 @@ gui = require 'nw.gui'
 {parallel} = require 'async'
 {join} = require 'path'
 {version} = require '../../package.json'
-{dumpError, buildStyles} = require '../script/util/common'
+{dumpError, buildStyles, getColorsFromTheme} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
 
 process.on 'uncaughtException', dumpError
@@ -74,7 +74,7 @@ try
     throw err if err?
     [styles] = results
     $('head').append "<style type='text/css' data-theme>#{styles['dancerm']}</style>"
-    # make sheets global for other su windows
+    # make sheets global for others windows
     global.styles = styles
 
     # set application title
@@ -93,36 +93,41 @@ try
       infos = require '../../package.json'
       win.resizeTo infos.window.min_width, infos.window.min_height,
 
-    app = require '../script/app'
-    # require directives and filters immediately to allow circular dependencies
-    require('../script/util/filters')(app)
-    require('../script/directive/address')(app)
-    require('../script/directive/app_menu')(app)
-    require('../script/directive/dancer')(app)
-    require('../script/directive/layout')(app)
-    require('../script/directive/list')(app)
-    require('../script/directive/planning')(app)
-    require('../script/directive/payment')(app)
-    require('../script/directive/tags')(app)
-    require('../script/directive/registration')(app)
+    _.delay ->
+      # now that body is ready and stylesheet included, get colors
+      getColorsFromTheme()
 
-    anchor = $('body.app')
+      app = require '../script/app'
+      # require directives and filters immediately to allow circular dependencies
+      require('../script/util/filters')(app)
+      require('../script/directive/address')(app)
+      require('../script/directive/app_menu')(app)
+      require('../script/directive/dancer')(app)
+      require('../script/directive/layout')(app)
+      require('../script/directive/list')(app)
+      require('../script/directive/planning')(app)
+      require('../script/directive/payment')(app)
+      require('../script/directive/tags')(app)
+      require('../script/directive/registration')(app)
 
-    console.log 'init database...'
-    init (err) -> 
-      if err?
-        dumpError err
-        console.error err
-        # close all windows without dumping data
-        hasDump = true
-        return win?.close true
-      console.log 'database initialized !'
-      # we are ready: shows it !
-      win.show()
-      # local storage stores strings !
-      win.maximize() if 'true' is localStorage.getItem 'maximized'
-      # starts the application from a separate file to allow circular dependencies to application
-      angular.bootstrap anchor, ['app']
+      anchor = $('body.app')
+
+      console.log 'init database...'
+      init (err) -> 
+        if err?
+          dumpError err
+          console.error err
+          # close all windows without dumping data
+          hasDump = true
+          return win?.close true
+        console.log 'database initialized !'
+        # we are ready: shows it !
+        win.show()
+        # local storage stores strings !
+        win.maximize() if 'true' is localStorage.getItem 'maximized'
+        # starts the application from a separate file to allow circular dependencies to application
+        angular.bootstrap anchor, ['app']
+    , 200 # needed for colors to be retrieved
 
 catch err
   dumpError err

@@ -1,7 +1,7 @@
 _ = require 'lodash'
 i18n = require '../labels/common'
 ConflictsController = require './conflicts'
-{buildStyles} = require '../util/common'
+{buildStyles, getColorsFromTheme} = require '../util/common'
 
 # Edit application settings
 module.exports = class SettingsController
@@ -90,6 +90,8 @@ module.exports = class SettingsController
       global.styles = styles
       $('style[data-theme]').remove()
       $('head').append "<style type='text/css' data-theme>#{styles['dancerm']}</style>"
+      # now that stylesheet isincluded, get colors
+      _.delay getColorsFromTheme, 200
 
   # Opens a file dialog to select a file used for dumps.
   # File may not exists yet.

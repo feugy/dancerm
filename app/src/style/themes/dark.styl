@@ -1,3 +1,345 @@
 /******************************************************************************
  * Overriden rules 
  */
+ 
+.app-menu
+  background headerBackground
+  
+  h1
+    color headerColor
+    
+.layout .actions li.active
+  border-bottom-color emphasisColor
+  color emphasisColor
+  
+  .glyphicon
+    color emphasisColor
+    
+.planning
+  .time
+  .title
+  .groups
+    color textColor
+    
+  .danceClass 
+  .legend > span
+    color headingColor
+    padding .2em .5em
+    border-radius 4px
+    
+  .danceClass 
+    padding 0
+    border 2px solid transparent
+    background-clip content-box
+    
+  .quarter.q0
+  .quarter.q2
+  .day:not(:nth-child(6))
+  .groups > *:not(:last-child)
+    border-color darken(textColor, 75%)
+    
+for color, i in colors
+  .tags .color{i+1}
+  .color{i+1}
+    color headerColor
+    
+    .close
+      color headerColor
+      text-shadow none
+    
+.settings.main
+  
+  h2
+    color emphasisColor
+    
+  aside
+  > section:not(:first-child) > :not(aside)
+    border-color darken(textColor, 50%)
+    
+.layout .actions ul li 
+  &:hover
+  &:hover .glyphicon
+    color headingColor
+    
+.column-and-main 
+  
+  > .column .table 
+      
+    tr:nth-child(even)
+      background rgba(white, 5%)
+      
+    td:nth-child(2)
+      font-weight normal
+      color emphasisColor
+  
+  > .column.expanded
+    td:nth-child(2)
+      color textColor
+    td:nth-child(3)
+      font-weight normal
+      color emphasisColor
+      
+.dashboard
+  
+  for color, i in colors
+    article:nth-child({i})
+      border 2px solid  color
+      padding 0
+      box-sizing border-box
+      
+      > *
+        padding 10px
+        background rgba(white, 10%)
+      
+      h3
+        line-height 1.1em
+        font-size 150%
+        border none
+        background color
+        
+      .big-value
+        font-weight bolder
+        color color
+        
+.card
+  padding-top 0
+  
+  > article:first-child
+    margin-top 0
+    border-top none
+    display flex
+    flex-direction column
+    align-items flex-end
+    padding 0
+    
+    > .btn-group
+      order 50
+      position relative
+      right auto
+      top auto
+      margin-bottom 10px
+      
+    > h2
+      display none
+      
+  > article .card-dancer
+    width 100%
+    margin 0 0 15px
+      
+  .card-dancer
+  > article:nth-child(2)
+    box-sizing border-box
+    
+    .dancer > h4
+    .address > h4
+    > h2
+      display block
+      position static
+      padding 8px 1em
+      line-height 1.1em
+      font-size 150%
+      border none
+      color headingColor
+      
+    > h2
+      margin 0 -14px 10px
+      
+    .dancer > h4
+    .address > h4
+      margin -12px -6px 10px
+    
+    .dancer
+    .address
+      margin-top 4px
+      
+      > .btn-group
+      > .btn
+        top -9px
+        
+    .dancer
+      margin-bottom 10px
+      
+  > article:nth-child(2)
+    margin -5px 0 15px
+    
+  > article .known-by label
+    color textColor
+    
+  > article .dancer
+  > article .address
+  .registration
+      
+    &:not(:hover) > .btn-group .btn
+    &:not(:hover) > .btn
+    &:hover > .btn-group .btn
+    &:hover > .btn
+      box-shadow none
+      background primaryBtnBackground
+      color btnColor
+      
+      &:hover
+        background primaryBtnBackgroundHover
+    
+  .card-dancer
+    border 2px solid headerBackground // colors[6]
+    
+    .dancer > h4
+    .address > h4
+      background headerBackground // colors[6]
+      
+  > article:nth-child(2)
+    border 2px solid headerBackground // colors[4]
+    
+    > h2
+      background headerBackground // colors[4]
+      
+  > div
+    border 2px solid headerBackground // colors[7]
+    
+    .nav-tabs
+      background headerBackground // colors[7]
+      
+  .nav-tabs 
+    border none
+    padding 5px 10px
+    
+    > li > a
+      position static
+      line-height inherit
+      border-radius 0
+      border-color transparent
+      background headerBackground // colors[7]
+      color darken(headingColor, 70%)
+      padding 5px 1em
+      margin-left 0
+    
+    > li.active > a
+      color headingColor
+      margin-left 0
+      
+  .tab-pane 
+    > article.registration > .btn-group
+      top -46px
+    
+    > article .card-dancer-classes
+      margin 0
+      
+    > article .dancer-classes
+      border none
+      border-bottom 2px solid headerBackground
+      margin 0
+      padding 5px 0
+      
+      > h4
+      > label
+        position static
+        background transparent
+        margin-top 3px
+        color textColor
+        
+      > label
+        float right
+        
+      > .dance-classes
+        clear both
+        
+        .danceClass 
+          color textColor
+          
+          .kind
+            color headingColor
+            border-radius 4px
+      
+scrollRadius = 12px
+
+::-webkit-scrollbar
+  height scrollRadius
+  width scrollRadius
+  background transparent
+  border-radius scrollRadius
+
+::-webkit-scrollbar-track-piece 
+  border solid 8px transparent
+  box-shadow inset 0 0 0 1px headerBackground
+  
+::-webkit-scrollbar-thumb
+  background textColor
+  border 3px solid transparent
+  background-clip content-box
+  border-radius scrollRadius
+  
+  &:hover
+    background-color emphasisColor
+        
+body    
+    
+  .tag 
+    border-radius 1em
+    color headingColor
+    &.season
+      background seasonColor
+    &.teacher
+      background teacherColor
+    .close
+      text-shadow none
+    
+  .btn
+  .btn-primary
+    border-radius 0
+    border none
+    padding 6px 15px
+    color btnColor
+    
+  .dropdown-menu
+    border-radius 0
+    
+    li > a
+      color textColor
+      
+      &:hover
+        background focusBackground
+        color focusColor
+        
+  .input-group
+    input:not(:hover):not(:focus):not(.invalid)
+    input:not(:hover):not(:focus):not(.ng-invalid)
+      border 1px solid btnBackground
+        
+    .input-group-addon:last-child
+      border-radius 0
+      border-color btnBackground
+      background-color btnBackground
+      
+  .focusable:not(:hover) .input-group
+    input:not(:hover):not(:focus):not(.invalid)
+    input:not(:hover):not(:focus):not(.ng-invalid)
+      border-color transparent
+      
+  .tooltip
+    border-radius 4px
+    
+    .tooltip-inner
+      background linkColor
+    &.top
+    &.bottom
+      .tooltip-arrow
+        border-top-color linkColor
+        
+  .modal-backdrop
+    background-color headingColor
+        
+  .modal-content
+    border-radius 0
+    background headerBackground
+    border 0
+    box-shadow none
+    
+    .modal-header
+      border-radius 0
+      background emphasisColor
+      h3
+        color headingColor
+        line-height 1em
+        
+    .modal-footer
+      background headerBackground

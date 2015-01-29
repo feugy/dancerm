@@ -4,7 +4,12 @@
 
 @import '../style/css/bootstrap.css'
      
-declareFonts()              
+declareFonts()  
+
+// defined to remove pipette that are not defined in a given theme
+.pipette 
+  background rgba(255, 0, 255, 0)
+              
 @require 'directive'
 @require 'animation'
 
@@ -14,9 +19,9 @@ declareFonts()
 
 html
   height 100%
-  overflow auto
   background mainBackground
   cursor default
+  overflow hidden
   
 body
   display flex
@@ -182,6 +187,9 @@ body
       flex 1
       overflow auto
 
+      > tr:first-child > td
+        border-top none
+        
       tr:hover
         background linkColor
         *
@@ -210,6 +218,9 @@ body
   > .tags
   > .list-length
     display inline-block
+      
+  table tbody tr:hover *
+    cursor default
 
   td:nth-child(2)
     font-weight normal
@@ -519,7 +530,7 @@ body
     .big-value
       font-size 100px
       font-family impactFont
-      color planningColors[0]
+      color colors[0]
 
     .currency
       font-family impactFont
@@ -540,6 +551,9 @@ body
       color headingColor
       font-family headingFont
       flex 1
+      
+    .btn-group
+      margin-right 5px
 
   .loader
     display block
@@ -585,6 +599,10 @@ body
   .about  
     display flex
     flex-wrap wrap
+    justify-content center
+    
+    > p
+      width 100%
     
     > article
       margin 10px
@@ -711,13 +729,20 @@ body
       border-radius 0 0 0 2em
       border none
       box-shadow none
-
-  .tooltip.top
+      
+  .tooltip
     z-index 1100
     .tooltip-inner
-      background infoBtnBackground
-    .tooltip-arrow
-      border-top-color infoColor
+      padding .5em 1em
+      background infoColor
+    
+    &.top
+    &.bottom
+      .tooltip-arrow
+        border-top-color infoColor
+      
+    &.fade.in
+      opacity 1
 
   .dropdown-menu
     text-align left
@@ -726,6 +751,7 @@ body
     li > a:hover
       background mainBackground
       color textColor
+      cursor pointer
 
   .dropdown-menu.right
     left auto
@@ -767,10 +793,11 @@ body
   input[type="search"]:focus
   input[type="tel"]:focus
   .uneditable-input:focus
+    background-color focusBackground
     border-color focusColor
     box-shadow 0 0 8px focusColor
     outline focusColor auto 5px
-    color infoColor
+    color focusTextColor
 
   a:focus
   button:focus
@@ -792,7 +819,7 @@ body
     color focusTextColor
 
   .text-error
-    color lighten(errorColor, 30%)
+    color lighten(errorColor, 10%)
 
   .input-group 
     input:first-child
@@ -826,7 +853,7 @@ body
     color btnColor
     font-size fontSize
     border-color rgba(0, 0, 0, 0.25)
-    background-color btnBackgroundHover
+    background-color btnBackground
     background-image btnBackground
 
   .btn:hover, .btn:focus, .btn:active, .btn.active, .btn.disabled, .btn[disabled] 
@@ -835,36 +862,44 @@ body
 
   .btn-primary 
     color emphasisColor
-    background-color primaryBtnBackgroundHover
+    background-color primaryBtnBackground
     background-image primaryBtnBackground
 
   .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] 
     background-color primaryBtnBackgroundHover
+    background-image primaryBtnBackgroundHover
 
   .btn-warning 
     color btnColor
+    background-color warningBtnBackground
     background-image warningBtnBackground
 
   .btn-warning:hover, .btn-warning:focus, .btn-warning:active, .btn-warning.active, .btn-warning.disabled, .btn-warning[disabled] 
     background-color warningBtnBackgroundHover
+    background-image warningBtnBackgroundHover
 
   .btn-danger 
     color errorTextColor
+    background-color dangerBtnBackground
     background-image dangerBtnBackground
 
   .btn-danger:hover, .btn-danger:focus, .btn-danger:active, .btn-danger.active, .btn-danger.disabled, .btn-danger[disabled] 
     background-color dangerBtnBackgroundHover
+    background-image dangerBtnBackgroundHover
 
   .btn-success 
     color btnColor
+    background-color successBtnBackground
     background-image successBtnBackground
 
   .btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .btn-success.disabled, .btn-success[disabled] 
     background-color successBtnBackgroundHover
+    background-image successBtnBackgroundHover
 
   .btn-info 
     color btnColor
-    background-image infoBtnBackground
+    background-color primaryBtnBackground
+    background-image primaryBtnBackground
 
   .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled] 
     background-color infoBtnBackgroundHover

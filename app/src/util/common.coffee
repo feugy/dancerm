@@ -3,6 +3,7 @@ moment = require 'moment'
 {appendFileSync, readFile, existsSync} = require 'fs-extra'
 {map} = require 'async'
 {render} = require 'stylus'
+i18n = require '../labels/common'
 _ = require 'lodash'
 _str = require 'underscore.string'
 _.mixin _str.exports()
@@ -150,3 +151,15 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
       result = {}
       result[name] = sheets[i] for name, i in files
       done null, result
+
+  # Get 50 colors from css classes color1, color2... defined by theme.
+  # Css must be fully loaded
+  # Directly updates the i18n.colors array.
+  getColorsFromTheme: ->
+    # get also theme colors for JS usage in directives
+    container = angular.element('<div style="display:none;"/>').appendTo 'body'
+    i18n.colors = _.filter (for i in [1..50]
+      pipette = angular.element("<div class='pipette color#{i}'/>").appendTo container
+      pipette.css('backgroundColor')
+    ), (color) => color isnt 'rgba(255, 0, 255, 0)'
+    container.remove()

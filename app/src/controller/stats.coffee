@@ -34,9 +34,10 @@ module.exports = class StatsController
 
   # options for known by statistics
   knownByOpt: 
-    percentageInnerCutout : 25
+    percentageInnerCutout : 50
     animateScale: true
     animateRotate: true
+    segmentShowStroke: false
 
   # classes distributions
   danceClasses: []
@@ -81,6 +82,28 @@ module.exports = class StatsController
     @contextActions = [
       {label: 'btn.backToPlanning', icon: 'arrow-left', action: -> state.go 'list.planning'}
     ]
+
+    # get tooltip values from css
+    model = $('<div class="tooltip"><div class="tooltip-inner"></div></div>').appendTo 'body'
+    inner = model.find '.tooltip-inner'
+    @_tooltip =
+      tooltipCornerRadius: parseInt model.css 'borderRadius'
+      tooltipXPadding: parseInt inner.css 'paddingTop'
+      tooltipYPadding: parseInt inner.css 'paddingLeft'
+      tooltipFillColor: inner.css 'backgroundColor'
+      tooltipFontColor: inner.css 'color'
+      tooltipFontStyle: inner.css 'fontWeight'
+      tooltipFontSize: parseInt inner.css 'fontSize'
+      tooltipFontFamily: inner.css 'fontFamily'
+      tooltipTitleFontColor: inner.css 'color'
+      tooltipTitleFontStyle: inner.css 'fontWeight'
+      tooltipTitleFontSize: parseInt inner.css 'fontSize'
+      tooltipTitleFontFamily: inner.css 'fontFamily'
+
+    _.extend @knownByOpt, @_tooltip
+    _.extend @danceClassesOpt, @_tooltip
+    # removes model
+    model.remove()
 
   # On season selection, updates teacher list (with all possible teachers of selected seasons)
   # and trigger search.
@@ -211,8 +234,7 @@ module.exports = class StatsController
               {
                 label: level
                 data: previous.concat [count], next
-                fillColor: "#{color}"
-                highlightFill: tinycolor(color).darken(25).toString()
+                fillColor: tinycolor(color).toHex()
               }
             ) 
           )
@@ -225,8 +247,8 @@ module.exports = class StatsController
 
         # add colors
         @knownBy = (for knownBy, i in @knownBy
-          knownBy.color = i18n.colors[i%i18n.colors.length]
-          knownBy.highlight = tinycolor(knownBy.color).darken(25).toString()
+          knownBy.color = tinycolor(i18n.colors[i%i18n.colors.length]).toHex()
+          knownBy.highlight = tinycolor(knownBy.color).darken(10).toString()
           knownBy
         )
         
