@@ -44,11 +44,13 @@ section
   setOutPath $INSTDIR\node_modules
   file /r ..\node_modules\async
   file /r ..\node_modules\fs-extra
+  file /r ..\node_modules\lodash
   file /r ..\node_modules\mime
   file /r ..\node_modules\moment
   file /r ..\node_modules\nedb
   file /r ..\node_modules\node-zip
-  file /r ..\node_modules\underscore
+  file /r ..\node_modules\rimraf
+  file /r ..\node_modules\stylus
   file /r ..\node_modules\underscore.string
   file /r ..\node_modules\xlsx.js
 

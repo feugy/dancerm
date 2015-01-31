@@ -554,10 +554,9 @@ module.exports = class CardController
         # get addresses
         async.map @dancers, (dancer, next) ->
           dancer.getAddress (err, address) ->
-            # do not fail on unknown address: instead, put new address
             if err?
-              # TODO display error message
-              address = new Address id: generateId()
+              # do not fail on unknown address: instead, put new address with error message
+              address = new Address id: generateId(), zipcode: 0, street: i18n.err.missingAddress
               dancer.setAddress address
               console.log "failed to get address of dancer #{dancer.id}: #{err}"
             next null, address

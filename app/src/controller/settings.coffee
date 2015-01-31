@@ -53,7 +53,6 @@ module.exports = class SettingsController
   # @param stateParams [Object] invokation route parameters
   constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
     @localStorage = localStorage
-    console.log @localStorage
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false
@@ -75,6 +74,12 @@ module.exports = class SettingsController
         @filter('i18n') 'lbl.version', args: version: '3.2.0'
       ]}
     ]
+
+    # cancel navigation if asking for location
+    if @askDumpLocation
+      @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
+        # stop state change until user choose what to do with pending changes
+        event.preventDefault() if @askDumpLocation
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into local storage, and button is temporary disabled while compiling
@@ -103,9 +108,10 @@ module.exports = class SettingsController
       dumpPath = dumpDialog.val()
       dumpDialog.remove()
       # dialog cancellation
-      return askDumpLocation() unless dumpPath
+      return chooseDumpLocation() unless dumpPath
       # retain entry for next loading, and refresh UI
       localStorage.dumpPath = dumpPath
+      @askDumpLocation = false
       @scope.$apply()
     dumpDialog.trigger 'click'
     # to avoid issecdom error when directly bound with ngClick

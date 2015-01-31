@@ -77,8 +77,9 @@ module.exports = class ConflictsController
           break
         unless found
           resolved.push imported
-          return Dancer.findWhere {cardId: imported.id}, (err, dancer) =>
-            extraDancers.push dancer unless err?
+          return Dancer.findWhere {cardId: imported.id}, (err, dancers) =>
+            # dancers may be empty or contain multiple dancers: we'll use the first
+            extraDancers.push dancers unless err?
             next err
       else if imported instanceof Address  
         # search for imported dancers with this address
@@ -88,8 +89,9 @@ module.exports = class ConflictsController
           break
         unless found
           resolved.push imported
-          return Dancer.findWhere {addressId: imported.id}, (err, dancer) =>
-            extraDancers.push dancer unless err?
+          return Dancer.findWhere {addressId: imported.id}, (err, dancers) =>
+            # dancers may be empty or contain multiple dancers: we'll use the first
+            extraDancers.push dancers unless err?
             next err  
       next()
     , (err) =>

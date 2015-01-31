@@ -2,6 +2,7 @@
 gui = require 'nw.gui'
 _ = require 'lodash'
 async = require 'async'
+i18n = require '../script/labels/common'
 
 win = gui.Window.get()
 
@@ -44,7 +45,13 @@ angular.element(win.window).on 'load', ->
         # first time we got this address
         groupByAddress[dancer.addressId] = [] unless dancer.addressId of groupByAddress
         groupByAddress[dancer.addressId].push dancer
-        dancer.getAddress next
+        dancer.getAddress (err, address) ->
+          if err?
+            # do not fail on unknown address: instead, put new address with error message
+            address = new Address id: generateId(), zipcode: 0, street: i18n.err.missingAddress
+            dancer.setAddress address
+            console.log "failed to get address of dancer #{dancer.id}: #{err}"
+          next null, address
       , (err, addresses) =>
         return console.error err if err?
         # then make stamps

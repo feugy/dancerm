@@ -45,6 +45,7 @@ module.exports =
     exportFailed: "L'export de la liste de danseurs à échoué: %s"
     importFailed: "L'imporation du fichier de danseurs à échouée: {{message}}"
     search: 'La recherche à échouée: %s'
+    missingAddress: 'ADRESSE MANQUANTE'
 
   # date/time formats
   formats:

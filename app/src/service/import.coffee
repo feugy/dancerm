@@ -102,6 +102,7 @@ module.exports = class Import
               modifiedBy: content.lastModifiedBy 
               modifiedOn: moment content.modified
               worksheets: []
+              errors: []
             start = Date.now()
             # read all worksheets
             for worksheet in content.worksheets
@@ -109,7 +110,10 @@ module.exports = class Import
 
             # and returns results
             report.extractTime = Date.now()-start-report.readTime
-            done null, models.Address.concat(models.Card).concat(models.Dancer), report
+            @_checkRelationnalConstraints models.Address.concat(models.Card).concat(models.Dancer), report, (err, models) =>
+              return done err if err?
+              report.checkTime = Date.now()-start-report.extractTime
+              done null, models, report
           catch exc
             return done exc
 
@@ -119,13 +123,17 @@ module.exports = class Import
         readFile filePath, 'utf8', (err, data) =>
           return done err if err?
           report = 
-              readTime: Date.now()-start
+            readTime: Date.now()-start
+            errors: []
           unless -1 is data.indexOf Export.separator
             console.log "try to extract from a v3 dump..."
             @_dumpV3 data, report, (err, models) =>
               return done err if err?
               report.extractTime = Date.now()-start-report.readTime
-              done null, models, report
+              @_checkRelationnalConstraints models, report, (err, models) =>
+                return done err if err?
+                report.checkTime = Date.now()-start-report.extractTime
+                done null, models, report
           else
             console.log "try to extract from a v2 dump..."
             try 
@@ -135,7 +143,10 @@ module.exports = class Import
               dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
               # and returns results
               report.extractTime = Date.now()-start-report.readTime
-              done null, dancers, report
+              @_checkRelationnalConstraints dancers, report, (err, models) =>
+                return done err if err?
+                report.checkTime = Date.now()-start-report.extractTime
+                done null, models, report
             catch exc
               return done exc
       else
@@ -172,8 +183,48 @@ module.exports = class Import
           report.byClass[className]++
         catch err
           report.errors.push "line #{i}: failed to parse model #{className}: #{err}"
-    # TODO check relationnal constraints
     done null, models
+
+  # **private**
+  # Check that imported data does not contain relationnal errors
+  # - a dancer must have an address
+  # - a dancer must have a card
+  #
+  # @param imported [Array<Persisted>] imported models, cards, dance-classes, addresses and dancers
+  # @param report [Object] extraction report, that will be filled with encountered errors
+  # @param done [Function] completion callback, invoked with parameters
+  # @option done err [Error] an error object or null if no error occured
+  # @option done models [Array<Persisted>] models to import, with relation check completed
+  _checkRelationnalConstraints: (imported, report, done) =>
+    # check relationnal constraints: add unexisting addresses and card
+    addressIds = []
+    cardIds = []
+    # first get imported addresses and cards
+    for model in imported
+      addressIds.push model.id if model.constructor.name is Address.name
+      cardIds.push model.id if model.constructor.name is Card.name
+    # then merge with existing addresses and cards
+    Address.findAllRaw (err, addresses) =>
+      return done err if err
+      addressIds.push address.id for address in addresses when not(address.id in addressIds)
+      Card.findAllRaw (err, cards) =>
+        return done err if err
+        cardIds.push card.id for card in cards when not(card.id in cardIds)
+
+        added = []
+        # at last, creates address and card model for dancer that does not match existing on
+        for model in imported when model.constructor.name is Dancer.name
+          unless model.cardId in cardIds
+            card = new Card id: model.cardId or generateId()
+            model.setCard card
+            added.push card
+            report.errors.push "created unexisting card id (#{model.cardId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
+          unless model.addressId in addressIds
+            addr = new Address id: model.cardId or generateId()
+            model.setAddress addr
+            added.push addr
+            report.errors.push "created unexisting address id (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
+        done null, imported.concat added
     
   # **private**
   # Extract dancers from a given worksheet data matrix

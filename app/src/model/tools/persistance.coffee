@@ -65,7 +65,42 @@ class Persistance
     delete @_queue[id]
 
 # Add persistance operations
-# TODOC
+# 
+# > drop
+# remove all models for this class
+#
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
+# 
+# > findById
+# Get a single model from its id
+#
+# @param id [String] searched id
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
+# @option done model [Persisted] the corresponding model, or null if no model found for this id
+# 
+# > find
+# Get a list of model matching given criteria
+#
+# @param criteria [Object] search criteria, like a mongo's query
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
+# @option done models [Array<Persisted>] the matching models (may be an empty array)
+# 
+# > save
+# Add a new model (if id is not set or does not match existing) or erase existing model
+#
+# @param model [Persisted] saved model new values
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
+# 
+# > remove
+# removed an existing model
+#
+# @param id [String] deleted id
+# @param done [Function] completion callback, invoked with arguments:
+# @option done err [Error] an error object or null if no error occured
 ['drop', 'findById', 'find', 'save', 'remove'].forEach (action) ->
   Persistance::[action] = (args..., done) ->
     id = reqId++
