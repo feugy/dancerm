@@ -2,15 +2,15 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 
 days = i18n.planning.days
-    
+
 class PlanningDirective
-                
+
   # Controller dependencies
   @$inject: ['$scope', '$element', '$attrs', '$compile']
-  
+
   # Controller scope, injected within constructor
   scope: null
-  
+
   # JQuery enriched element for directive root
   element: null
 
@@ -28,7 +28,7 @@ class PlanningDirective
 
   # link to Angular directive compiler
   compile: null
-  
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -68,10 +68,10 @@ class PlanningDirective
       @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
 
     # free listeners
-    @scope.$on '$destroy', => 
+    @scope.$on '$destroy', =>
       unwatch?()
       @element.off()
-    
+
   # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
   _buildCalendar: =>
@@ -86,7 +86,8 @@ class PlanningDirective
     # creates days are parametrized
     for day in days
       html.push "<div class='day' data-day='#{day}'><div class='title'>#{i18n.lbl[day]}</div><div class='groups'>"
-      html.push "<span>#{group}</span>" for group in @groups[day]
+      if @groups[day]?
+        html.push "<span>#{group}</span>" for group in @groups[day]
       html.push "</div>"
       # add quarter from the earliest to the latest hours
       for hour in @hours
@@ -97,7 +98,7 @@ class PlanningDirective
     html.push "<div class='legend'>#{i18n.planning.legend}"
     html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
     html.push '</div>'
-    
+
     @element.empty().append html.join ''
     @element.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
 
@@ -144,30 +145,30 @@ class PlanningDirective
       sQuarter = parseInt(course.start[course.start.indexOf(':')+1..])/15
       eHour = parseInt course.end.replace day, ''
       eQuarter = parseInt(course.end[course.end.indexOf(':')+1..])/15
-      
+
       # gets horizontal positionning
       column = days.indexOf(day)+2
       start = @element.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
       end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
-            
+
       # gets vertical positionning
       width = 100/@groups[day].length
       groupCol = @groups[day].indexOf course[@groupBy]
 
       # and eventually positionates the rendering inside the right day
-      tooltip = _.sprintf i18n.lbl.classTooltip, course.kind, course.level, course.start.replace(day, ''), 
+      tooltip = _.sprintf i18n.lbl.classTooltip, course.kind, course.level, course.start.replace(day, ''),
         course.end.replace(day, '')
       render = @compile("""<div class="danceClass #{course.color}" data-id="#{course.id}"
           data-tooltip="#{tooltip}" data-tooltip-popup-delay="200"
           data-tooltip-animation="true"
           data-tooltip-append-to-body="true">#{course.level}</div>""") @scope
-      render.css 
+      render.css
         height: height = (end.position()?.top or start.parent().height()) - start.position().top
         top: start.position().top
         left: "#{groupCol*width}%"
         width: "#{width}%"
         'line-height': "#{height}px"
-      $(@element.children()[column-1]).append render 
+      $(@element.children()[column-1]).append render
 
     if @scope.selected?
       for {id} in @scope.selected
@@ -185,11 +186,11 @@ module.exports = (app) ->
     # controller
     controller: PlanningDirective
     # parent scope binding.
-    scope: 
+    scope:
       # displayed dance classes (array)
       danceClasses: '=src'
       # array of selected dance classes
-      # if not provided, dance class cannot be selected 
+      # if not provided, dance class cannot be selected
       selected: '='
       # event handler for dance class click. Clicked model as 'danceClass' parameter.
       onClick: '&'

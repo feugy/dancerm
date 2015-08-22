@@ -22,14 +22,14 @@ checkSingle = (expected, actual) ->
     expected.test actual
   else if isA(expected, 'Object') and expected.$in
     actual in expected.$in
-  else 
+  else
     actual is expected
 
 # Synchronously check if a raw model match given conditions
-# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $in operators 
+# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $in operators
 # and exact match.
 # Array values are automatically expanded
-# 
+#
 # @param conditions [Object] condition to match
 # @param model [Object] tested raw model
 # @return true if all condition are matched, false otherwise
@@ -41,7 +41,7 @@ check = (conditions, model) ->
       return false unless _.any expected, (choice) -> check choice, model
     else if attr is '$regex'
       # check $regexp operator
-      return false unless checkSingle new RexExp(expected), model 
+      return false unless checkSingle new RexExp(expected), model
     else
       actual = model
       isArray = false
@@ -91,7 +91,7 @@ getStore = (name, write, done) ->
 
   request.onupgradeneeded = ({target}) ->
     for name in ['Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
-      target.result.createObjectStore name, keyPath: 'id' 
+      target.result.createObjectStore name, keyPath: 'id'
 
 # Worker message receiver
 #
@@ -108,14 +108,14 @@ onmessage = ({data}) ->
         when 'drop'
           store.clear().onsuccess = -> postMessage id: id
 
-        when 'findById' 
+        when 'findById'
           req = store.get(arg)
           req.onsuccess = -> postMessage id:id, result: req.result
 
         when 'find'
           results = []
           req = store.openCursor()
-          req.onsuccess = ({target}) -> 
+          req.onsuccess = ({target}) ->
             cursor = target.result
             return postMessage id:id, result: results unless cursor?
             results.push cursor.value if check arg, cursor.value
@@ -123,7 +123,7 @@ onmessage = ({data}) ->
 
         when 'save'
           store.put(arg).transaction.oncomplete = -> postMessage id:id
-        
+
         when 'remove'
           store.delete(arg).transaction.oncomplete = -> postMessage id:id
   )(data)

@@ -75,7 +75,7 @@ module.exports = class Persisted extends Base
   # Condition is an object, whose fields are path within the dancer, with their expected values.
   # (interpreted in the same order)
   # In path, dots are supported, and allow diving in sub object or sub array.
-  # An expected value may be a function, that will take as arguments the given value and it's model, 
+  # An expected value may be a function, that will take as arguments the given value and it's model,
   # and must returns a boolean.
   #
   # @param conditions [Object] keys define path, values are expected values
@@ -89,7 +89,7 @@ module.exports = class Persisted extends Base
       # enrich with model if results available
       if results?
         for result, i in results
-          model = if cache[@name][result.id]? then cache[@name][result.id] else new @ result 
+          model = if cache[@name][result.id]? then cache[@name][result.id] else new @ result
           results[i] = model
       # TOREMOVE console.log "#{@name}.findWhere(#{JSON.stringify conditions}) #{Date.now()-start}ms"
       done err, results
