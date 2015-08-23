@@ -48,7 +48,6 @@ section
   file /r ..\node_modules\mime
   file /r ..\node_modules\moment
   file /r ..\node_modules\nedb
-  file /r ..\node_modules\node-zip
   file /r ..\node_modules\rimraf
   file /r ..\node_modules\stylus
   file /r ..\node_modules\underscore.string
@@ -71,7 +70,7 @@ sectionEnd
 
 ; Uninstall section
 section "Uninstall"
- 
+
   ; Always delete uninstaller first
   delete $INSTDIR\uninstall.exe
   delete $INSTDIR\package.json
@@ -81,7 +80,7 @@ section "Uninstall"
   rmdir /r $INSTDIR\node_modules
   delete $INSTDIR\DanceRM.lnk
   delete $DESKTOP\DanceRM.lnk
- 
+
 sectionEnd
 
 ; language labels

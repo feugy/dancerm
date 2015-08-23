@@ -2,7 +2,7 @@
   <div class="main stats expanded">
     <div class="criteria">
       <tags data-src="ctrl.cardList.criteria"
-        data-on-remove="ctrl.cardList.performSearch()"
+        data-on-remove="ctrl.cardList.performSearch(true)"
         data-show-empties="['season', 'teacher']"/>
       <span>{{'ttl.stats'|i18n:{args:{total:ctrl.cardList.list.length} } }}</span>
       <div class="btn-group" data-dropdown>
@@ -21,7 +21,7 @@
       </div>
     </div>
     <span class="loader" data-ng-if="ctrl.workInProgress"><i/><i/><i/><i/><i/></span>
-    <div class="dashboard">
+    <div class="dashboard"><span class="column">
       <article>
         <h3>{{::'ttl.missingCertificates'|i18n}}</h3>
         <div class="content">
@@ -34,6 +34,7 @@
           <nvd3 options="ctrl.knownByOpt" data="ctrl.knownBy"></nvd3>
         </div>
       </article>
+    </span><span class="column">
       <article>
         <h3>{{::'ttl.danceClassesDistribution'|i18n}}</h3>
         <div class="content charted">
@@ -46,6 +47,6 @@
           <span class="big-value">{{ctrl.due}}</span><span class="currency">{{::'lbl.currency'|i18n}}</span>
         </div>
       </article>
-    </div>
+    </span></div>
   </div>
 </div>

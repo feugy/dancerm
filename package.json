@@ -38,7 +38,7 @@
     "vendor/angular-ui-router.js": "https://raw.githubusercontent.com/angular-ui/ui-router/0.2.15/release/angular-ui-router.min.js",
     "vendor/d3.js": "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js",
     "vendor/nv.d3.js": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.js",
-    "vendor/angular-nvd3.js": "https://raw.githubusercontent.com/krispo/angular-nvd3/master/dist/angular-nvd3.min.js",
+    "vendor/angular-nvd3.js": "https://raw.githubusercontent.com/feugy/angular-nvd3/master/dist/angular-nvd3.min.js",
     "vendor/ui-bootstrap-tpls.js": "http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.3.min.js",
     "src/style/css/bootstrap.css": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css",
     "src/style/css/nv.d3.css": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.css",

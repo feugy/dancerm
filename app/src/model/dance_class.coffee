@@ -3,19 +3,19 @@ Persisted = require './tools/persisted'
 persistance = require './tools/persistance'
 
 # ordered week days
-days = 
+days =
   mon: 0
   tue: 1
-  wed: 2 
-  thu: 3 
-  fri: 4 
-  sat: 5 
+  wed: 2
+  thu: 3
+  fri: 4
+  sat: 5
   sun: 6
 
 module.exports = class DanceClass extends Persisted
 
   # corresponding season
-  season: '' 
+  season: ''
 
   # Dance kind: ballroom, rock, west coast...
   kind: ''
@@ -39,7 +39,7 @@ module.exports = class DanceClass extends Persisted
   # @param raw [Object] raw attributes of this dance class
   constructor: (raw = {}) ->
     # set default values
-    _.defaults raw, 
+    _.defaults raw,
       season: ''
       kind: ''
       color: 'color1'
@@ -57,7 +57,7 @@ module.exports = class DanceClass extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done danceClasses [Array<DanceClass>] ordered list (that may be empty) of dance classes for this season
   @listSeasons: (done) ->
-    persistance.find @name, {}, (err, classes) -> 
+    persistance.find @name, {}, (err, classes) ->
       return done err if err?
       done null, _.chain(season for {season} in classes).uniq().value().sort().reverse()
 
@@ -73,7 +73,7 @@ module.exports = class DanceClass extends Persisted
       done null, _.chain(planning).pluck('teacher').uniq().compact().value().sort()
 
   # Get the list of classes of a given season, named planning
-  # 
+  #
   # @param season [String] the searched season
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
@@ -81,7 +81,6 @@ module.exports = class DanceClass extends Persisted
   @getPlanning: (season, done) ->
     @findWhere season: season, (err, classes) =>
       return done err if err?
-      console.log "getPlanning", season, classes.length
       # sort dance classes by day, hour and quarters
       done null, classes.sort (a, b) ->
         return -1 unless a.start?

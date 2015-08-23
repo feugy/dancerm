@@ -43,7 +43,6 @@ module.exports = class Dancer extends Persisted
           subCondition = {}
           subPath = path[idx+search.length..]
           subCondition[subPath] = expected
-          console.log JSON.stringify subCondition, null, 2
           return Model.findWhere subCondition, (err, models) ->
             return next err if err?
             # only kept dancers with relevant linked model ids

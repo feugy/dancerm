@@ -56,7 +56,9 @@ module.exports = class CardList extends EventEmitter
 
   # Trigger the search based on search global descriptor.
   # Global list will be updated at the search end.
-  performSearch: =>
+  #
+  # @param allowEmpty [Boolean] true to search for all if no condition given.
+  performSearch: (allowEmpty = false) =>
     return if @_searchPending
     console.log "search for", @criteria
     @emit 'search-start'
@@ -83,11 +85,10 @@ module.exports = class CardList extends EventEmitter
       conditions['danceClasses.teacher'] = $in: @criteria.teachers
 
     # clear list content, without reaffecting it
-    return @_displayResults [] if _.isEmpty(conditions) and not @allowEmpty
+    return @_displayResults [] if _.isEmpty(conditions) and not allowEmpty
     @_searchPending = true
 
     # now search for dancers
-    console.log 'coucou', JSON.stringify conditions, null, 2
     Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
       if err?

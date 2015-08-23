@@ -126,12 +126,10 @@ module.exports = class StatsController
 
     # trigger search, now if not already pending
     if @cardList.isSearching()
-      @cardList.once 'search-end', => @cardList.performSearch()
+      @cardList.once 'search-end', => @cardList.performSearch true
     else
-      @cardList.performSearch()
+      @cardList.performSearch true
 
-    # on first search end, trigger re-search
-    @allowEmpty = true
     @scope.$on 'destroy', =>
       @cardList.removeListener 'search-start', @_onSearch
       @cardList.removeListener 'search-end', @_onSearchResults
@@ -171,7 +169,7 @@ module.exports = class StatsController
       @cardList.criteria.teachers = []
       @teachers = _.chain(teachersBySeason).flatten().uniq().value().sort()
       # and at least trigger search
-      @cardList.performSearch()
+      @cardList.performSearch true
 
   # On teacher selection, triggers search.
   # Use ctrl key to toggle teacher in the current searched list
@@ -195,7 +193,7 @@ module.exports = class StatsController
         @cardList.criteria.teachers = [teacher]
 
     # and at least trigger search
-    @cardList.performSearch()
+    @cardList.performSearch true
 
   # **private**
   # Extends to init the work in progress flag
@@ -284,4 +282,6 @@ module.exports = class StatsController
 
         console.log "statistics computed in #{Date.now()-start} ms"
         @workInProgress = false
-        @scope.$apply()
+        setTimeout () =>
+          @scope.$apply()
+        , 0

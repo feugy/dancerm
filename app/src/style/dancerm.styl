@@ -514,23 +514,24 @@ body
   flex-direction column
 
   .dashboard
-    display flex
-    flex-wrap wrap
-    flex-direction column
     flex 1
+    width 100%
 
-    .chart-container
-      width 100%
-      max-height 250px
+    .column
+      display inline-flex
+      flex-direction column
+      width 50%
+      height 100%
 
-    > article
-      border-radius inputRadius
-      background colBackground
-      padding 10px
-      margin 6px
+      > article
+        border-radius inputRadius
+        background colBackground
+        padding 10px
+        margin 6px
+        max-width 100%
 
-      .content
-        text-align center
+        .content
+          text-align center
 
     .nv-noData
       fill textColor
