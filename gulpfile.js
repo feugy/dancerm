@@ -1,9 +1,9 @@
 /**
  * Equivalent to makefile, with gulp.
- * The only requirement is to have gulp globally installed `npm install -g gulp`, 
+ * The only requirement is to have gulp globally installed `npm install -g gulp`,
  * and to have retrieved the npm dependencies with `npm install`
  *
- * Available tasks: 
+ * Available tasks:
  *   clean - removed compiled folders
  *   build - compiles coffee-script, stylus, copy assets
  *   vendor - get vendor libraries from the net

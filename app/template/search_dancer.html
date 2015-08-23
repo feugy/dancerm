@@ -4,11 +4,11 @@
 <div class="modal-body search-dancer">
   <div>{{::'msg.searchDancer'|i18n:{args:ctrl.existing} }}</div>
   <div>
-    <label>{{::'lbl.lastname'|i18n:{sep:true} }}</label><input 
-      type="text" 
+    <label>{{::'lbl.lastname'|i18n:{sep:true} }}</label><input
+      type="text"
       data-ng-model="ctrl.dancer"
-      data-typeahead="choice.firstname+' '+choice.lastname for choice in ctrl.search($viewValue) | filter:$viewValue | limitTo:20" 
-      data-typeahead-min-length="3" 
+      data-typeahead="choice.firstname+' '+choice.lastname for choice in ctrl.search($viewValue) | limitTo:20"
+      data-typeahead-min-length="3"
       data-typeahead-input-formatter="ctrl.formatDancer()"
       data-typeahead-on-select="ctrl.dancer = $item"/>
   </div>

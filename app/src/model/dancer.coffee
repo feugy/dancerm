@@ -17,10 +17,10 @@ module.exports = class Dancer extends Persisted
   # Condition is an object, whose fields are path within the dancer, with their expected values.
   # (interpreted in the same order)
   # In path, dots are supported, and allow diving in sub object or sub array.
-  # An expected value may be a function, that will take as arguments the given value and it's model, 
+  # An expected value may be a function, that will take as arguments the given value and it's model,
   # and must returns a boolean
-  # 
-  # If 'registrations', 'address' or 'danceClasses' are found within path, the corresponding models 
+  #
+  # If 'registrations', 'address' or 'danceClasses' are found within path, the corresponding models
   # are automatically resolved and use for traversal
   #
   # @param conditions [Object] keys define path, values are expected values
@@ -43,6 +43,7 @@ module.exports = class Dancer extends Persisted
           subCondition = {}
           subPath = path[idx+search.length..]
           subCondition[subPath] = expected
+          console.log JSON.stringify subCondition, null, 2
           return Model.findWhere subCondition, (err, models) ->
             return next err if err?
             # only kept dancers with relevant linked model ids
@@ -50,7 +51,7 @@ module.exports = class Dancer extends Persisted
             path = path[0...idx] + select
             current = _.pluck models, 'id'
             if conditions[path]?.$in?
-              # Logical and between existing conditions 
+              # Logical and between existing conditions
               current = _.intersection conditions[path].$in, current
             conditions[path] = $in: current
             next()
@@ -90,7 +91,7 @@ module.exports = class Dancer extends Persisted
   # @param raw [Object] raw attributes of this dancer
   constructor: (raw = {}) ->
     # set default values
-    _.defaults raw, 
+    _.defaults raw,
       created: moment()
       title: null
       firstname: null
@@ -118,7 +119,7 @@ module.exports = class Dancer extends Persisted
   getAddress: (done) =>
     return _.defer(=> done null, @_address) if @_address?
     return done null, null unless @addressId?
-    Address.find @addressId, (err, address) => 
+    Address.find @addressId, (err, address) =>
       return done err if err?
       @_address = address
       done null, @_address
@@ -126,7 +127,7 @@ module.exports = class Dancer extends Persisted
   # Set dancer's address
   #
   # @param address [Address] dancer's new address
-  setAddress: (address) => 
+  setAddress: (address) =>
     @addressId = address?.id or null
     @_address = address
 
@@ -135,9 +136,9 @@ module.exports = class Dancer extends Persisted
   # @param done [Function] completion callback, invoked with arguments
   # @option done err [Error] an error object or null if no error occured
   # @option done card [Card] dancer's registration card
-  getCard: (done) => 
+  getCard: (done) =>
     return _.defer(=> done null, @_card) if @_card?
-    Card.find @cardId, (err, card) => 
+    Card.find @cardId, (err, card) =>
       return done err if err?
       @_card = card
       done null, @_card
@@ -148,13 +149,13 @@ module.exports = class Dancer extends Persisted
   setCard: (card) =>
     @cardId = card?.id or null
     @_card = card
-  
+
   # Consult dancer's classes
   #
   # @param done [Function] completion callback, invoked with arguments
   # @option done err [Error] an error object or null if no error occured
   # @option done danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
-  getClasses: (done) => 
+  getClasses: (done) =>
     return _.defer(=> done null, @_danceClasses) if @_danceClasses?
     # avoid possible duplicates
     @danceClassIds = _.uniq @danceClassIds
@@ -171,7 +172,7 @@ module.exports = class Dancer extends Persisted
   # Set dancer's classes
   #
   # @param danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
-  setClasses: (danceClasses) => 
+  setClasses: (danceClasses) =>
     @danceClassIds = unless danceClasses? then [] else _.pluck danceClasses, 'id'
     @_danceClasses = danceClasses
 

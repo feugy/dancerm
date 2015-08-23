@@ -5,9 +5,11 @@ i18n = require '../labels/common'
 DanceClass = require '../model/dance_class'
 tinycolor = window.tinycolor
 
+animDuration = 500
+
 # Displays statistics on a given list
 module.exports = class StatsController
-  
+
   # Controller dependencies
   @$inject: ['$scope', 'cardList', '$state']
 
@@ -33,17 +35,64 @@ module.exports = class StatsController
   knownBy: []
 
   # options for known by statistics
-  knownByOpt: 
-    percentageInnerCutout : 50
-    animateScale: true
-    animateRotate: true
-    segmentShowStroke: false
+  knownByOpt:
+    chart:
+      type: 'pieChart'
+      donut: true
+      x: (d) -> d.label
+      y: (d) -> d.count
+      color: (d) -> "##{d.color}"
+      showLabels: false
+      showLegend: false
+      tooltip:
+        enabled: true
+        contentGenerator: (d) ->
+          return unless d?
+          """<div class='tooltip-inner'>
+            <span class='highlight' style='background-color: #{d.color}'></span>
+            #{d.data.label}: <strong>#{d.data.count}</strong>
+          </div>"""
+      pie:
+        startAngle: (d) -> d.startAngle/2 -Math.PI/2
+        endAngle: (d) -> d.endAngle/2 -Math.PI/2
+      transitionDuration: animDuration
+      height: 250
+      noData: i18n.lbl.noResults
+      margin:
+        top: 0
+        bottom: -225
+        left: 0
+        right: 0
 
   # classes distributions
   danceClasses: []
 
   # options for dance classes distribution
-  danceClassesOpt: {}
+  danceClassesOpt:
+    chart:
+      type: 'multiBarHorizontalChart'
+      stacked: true
+      x: (d) -> d.label
+      y: (d) -> d.count
+      showControls: false
+      showLegend: false
+      showYAxis: false
+      tooltip:
+        enabled: true
+        contentGenerator: (d) ->
+          return unless d?
+          """<div class='tooltip-inner'>
+            <span class='highlight' style='background-color: #{d.color}'></span>
+            #{d.data.label}<br/>#{d.series[0].key}: <strong>#{d.data.count}</strong>
+          </div>"""
+      transitionDuration: animDuration
+      height: 300
+      noData: i18n.lbl.noResults
+      margin:
+        top: 0
+        bottom: 0
+        left: 100
+        right: 0
 
   # available seasons
   seasons: []
@@ -60,50 +109,36 @@ module.exports = class StatsController
   # search and computation in progress
   workInProgress: false
 
-  # On loading, search for current season 
+  # On loading, search for current season
   #
   # @param scope [Object] controller's own scope, for event listening
   # @param cardList [Object] card list service
   # @param state [Object] Angular state provider
   constructor: (@scope, @cardList, state) ->
     @seasons = ("#{year}/#{year+1}" for year in [currentSeasonYear()..2006])
-    @selectSeason null, @seasons[0]
     # reset text search and dance classes selection
+    @cardList.criteria.seasons = [@seasons[0]]
     @cardList.criteria.string = null
     @cardList.criteria.danceClasses = []
-    @allowEmpty = true
     # bind listeners on search events
     @cardList.on 'search-start', @_onSearch
     @cardList.on 'search-end', @_onSearchResults
-    @scope.$on 'destroy', => 
+
+    # trigger search, now if not already pending
+    if @cardList.isSearching()
+      @cardList.once 'search-end', => @cardList.performSearch()
+    else
+      @cardList.performSearch()
+
+    # on first search end, trigger re-search
+    @allowEmpty = true
+    @scope.$on 'destroy', =>
       @cardList.removeListener 'search-start', @_onSearch
       @cardList.removeListener 'search-end', @_onSearchResults
 
     @contextActions = [
       {label: 'btn.backToPlanning', icon: 'arrow-left', action: -> state.go 'list.planning'}
     ]
-
-    # get tooltip values from css
-    model = $('<div class="tooltip"><div class="tooltip-inner"></div></div>').appendTo 'body'
-    inner = model.find '.tooltip-inner'
-    @_tooltip =
-      tooltipCornerRadius: parseInt model.css 'borderRadius'
-      tooltipXPadding: parseInt inner.css 'paddingTop'
-      tooltipYPadding: parseInt inner.css 'paddingLeft'
-      tooltipFillColor: inner.css 'backgroundColor'
-      tooltipFontColor: inner.css 'color'
-      tooltipFontStyle: inner.css 'fontWeight'
-      tooltipFontSize: parseInt inner.css 'fontSize'
-      tooltipFontFamily: inner.css 'fontFamily'
-      tooltipTitleFontColor: inner.css 'color'
-      tooltipTitleFontStyle: inner.css 'fontWeight'
-      tooltipTitleFontSize: parseInt inner.css 'fontSize'
-      tooltipTitleFontFamily: inner.css 'fontFamily'
-
-    _.extend @knownByOpt, @_tooltip
-    _.extend @danceClassesOpt, @_tooltip
-    # removes model
-    model.remove()
 
   # On season selection, updates teacher list (with all possible teachers of selected seasons)
   # and trigger search.
@@ -166,6 +201,8 @@ module.exports = class StatsController
   # Extends to init the work in progress flag
   _onSearch: =>
     @workInProgress = true
+    # because sometime tooltip remains...
+    $('.nvtooltip').remove()
 
   # **private**
   # Computes known by stats right after displaying the new list
@@ -175,6 +212,7 @@ module.exports = class StatsController
       values: {}
       total: 0
     classes = {}
+    kinds = []
     @missingCertificates = 0
     @due = 0
 
@@ -213,37 +251,29 @@ module.exports = class StatsController
             # add due if card was not already processed
             unless card.id in dueCards
               @due += reg.due()
-              dueCards.push card.id 
+              dueCards.push card.id
 
           # cast down dance classes
           for {kind, level, season} in danceClasses[i] when @cardList.criteria.seasons.length is 0 or season in @cardList.criteria.seasons
-            classes[kind] = {} unless kind of classes
-            classes[kind][level] = 0 unless level of classes[kind]
-            classes[kind][level]++
+            classes[level] = {} unless level of classes
+            kinds.push kind unless kind in kinds
+            classes[level][kind] = 0 unless kind of classes[level]
+            classes[level][kind]++
 
-        kinds = _.keys classes 
         num = 0
-        @danceClasses = 
-          labels: kinds
-          datasets: _.flatten (for kind, details of classes
-            idx = kinds.indexOf kind
-            (for level, count of details
-              previous = (0 for i in [0...idx])
-              next = (0 for i in [idx+1...kinds.length])
-              color = i18n.colors[(num++)%i18n.colors.length]
-              {
-                label: level
-                data: previous.concat [count], next
-                fillColor: tinycolor(color).toHex()
-              }
-            ) 
-          )
+        @danceClasses = (for level, details of classes
+          {
+            key: level
+            color: i18n.colors[(num++)%i18n.colors.length]
+            values: (label: kind, count: details[kind] or 0 for kind in kinds)
+          }
+        )
 
         @knownBy = _.sortBy((for name, count of knownBy.values
           if name of i18n.knownByMeanings
             name = i18n.knownByMeanings[name]
-          label: name, value: count
-        ), 'value').reverse()
+          label: name, count: count
+        ), 'count').reverse()
 
         # add colors
         @knownBy = (for knownBy, i in @knownBy
@@ -251,7 +281,7 @@ module.exports = class StatsController
           knownBy.highlight = tinycolor(knownBy.color).darken(10).toString()
           knownBy
         )
-        
+
         console.log "statistics computed in #{Date.now()-start} ms"
         @workInProgress = false
         @scope.$apply()

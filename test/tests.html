@@ -12,8 +12,7 @@
       var join = require('path').join;
       // merge underscore and underscore string functions
       var _ = require('lodash');
-      var _str = require('underscore.string');
-      _.mixin(_str.exports());
+      _.mixin(require('underscore.string').exports());
 
       process.env.NODE_ENV = 'test';
       process.on('uncaughtException', function(err){

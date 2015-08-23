@@ -1,5 +1,5 @@
 Dancer = require '../model/dancer'
-  
+
 # Allow to choose a given dancer with autocompletion field
 # Intended to be used inside a popup: will returned the selected dancer, or null in case of cancellation
 # You must give an existing dancer to this controller for labels
@@ -22,7 +22,7 @@ module.exports = class SearchController
 
   # Angular's promise factory
   q: null
-  
+
   # avoid tirggering multiple search simultaneously
   _reqInProgress: false
 
@@ -54,7 +54,7 @@ module.exports = class SearchController
     # prepare search conditions
     typed = typed.toLowerCase()
     # find matching dancers
-    Dancer.findWhere {lastname: new RegExp "^#{typed}", 'i'}, (err, models) => 
+    Dancer.findWhere {lastname: new RegExp "^#{typed}", 'i'}, (err, models) =>
       @_reqInProgress = false
       if err?
         console.error err

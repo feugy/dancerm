@@ -1,7 +1,6 @@
 # merge lodash and lodash string functions
 _ = require 'lodash'
-_str = require 'underscore.string'
-_.mixin _str.exports()
+_.mixin require('underscore.string').exports()
 
 i18n = require '../script/labels/common'
 ExportService = require '../script/service/export'
@@ -19,11 +18,11 @@ ExpandedListCtrl = require '../script/controller/expanded_list'
 console.log "running with angular v#{angular.version.full}"
 
 # declare main module that configures routing
-app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'tc.chartjs']
+app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'nvd3']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
   # html5 mode raise problems when loading templates
-  location.html5Mode false 
+  location.html5Mode false
   # configure routing
   router.otherwise '/list/planning'
 
@@ -32,14 +31,14 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
   states.state 'settings', _.extend {url: '/settings'}, SettingsCtrl.declaration
   states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
 
-  states.state 'list.card', 
+  states.state 'list.card',
     url: '/card/:id'
-    views: 
+    views:
       main: CardCtrl.declaration
 
-  states.state 'list.planning', 
+  states.state 'list.planning',
     url: '/planning'
-    views: 
+    views:
       main: PlanningCtrl.declaration
 ]
 
@@ -49,8 +48,8 @@ app.service 'import', ImportService
 app.service 'dialog', DialogService
 app.service 'cardList', CardListService
 
-# at startup, check that dump path is defined 
-app.run ['$location', (location) -> 
+# at startup, check that dump path is defined
+app.run ['$location', (location) ->
   location.url('/settings?firstRun').replace() unless localStorage.dumpPath?
 ]
 

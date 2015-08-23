@@ -11,12 +11,12 @@ module.exports = class CardList extends EventEmitter
   # Service's dependencies
   @$inject: ['$rootScope', 'dialog']
 
-  # Current list of cards. 
+  # Current list of cards.
   # Change search and invoke performSearch to change
   list: []
 
   # Search criteria
-  criteria: 
+  criteria:
     string: null
     teachers: []
     seasons: []
@@ -33,7 +33,7 @@ module.exports = class CardList extends EventEmitter
     super()
     @setMaxListeners 100
     @list = []
-    @criteria = 
+    @criteria =
       string: null
       teachers: []
       seasons: []
@@ -41,13 +41,18 @@ module.exports = class CardList extends EventEmitter
 
     # reload from locale storage previous execution's search.
     if localStorage?
-      try 
+      try
         @criteria = JSON.parse localStorage.search if localStorage.search?
       catch err
         # silent error
 
     # initialize list
     @performSearch()
+
+  # Getter to check if service is currently searching
+  #
+  # @return [Boolean] true is searching, false otherwiser
+  isSearching: => @_searchPending
 
   # Trigger the search based on search global descriptor.
   # Global list will be updated at the search end.
@@ -59,29 +64,30 @@ module.exports = class CardList extends EventEmitter
     localStorage.search = JSON.stringify @criteria if localStorage?
     conditions = {}
     # depending on criterias
-    if @criteria.string?.length >= 3 
+    if @criteria.string?.length >= 3
       # find all dancers by first name/last name
       conditions.$or = [
         {firstname: new RegExp "^#{@criteria.string}", 'i'},
         {lastname: new RegExp "^#{@criteria.string}", 'i'}
       ]
-      
+
     # find all dancers by season and optionnaly by teacher for this season
     if @criteria.seasons?.length > 0
       conditions['danceClasses.season'] = $in: @criteria.seasons
-    
+
     if @criteria.danceClasses?.length > 0
       # select class students: can be combined with season and name
       conditions['danceClassIds'] = $in: _.pluck @criteria.danceClasses, 'id'
     else if @criteria.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
       conditions['danceClasses.teacher'] = $in: @criteria.teachers
-    
+
     # clear list content, without reaffecting it
     return @_displayResults [] if _.isEmpty(conditions) and not @allowEmpty
     @_searchPending = true
 
     # now search for dancers
+    console.log 'coucou', JSON.stringify conditions, null, 2
     Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
       if err?

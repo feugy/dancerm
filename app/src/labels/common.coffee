@@ -1,7 +1,7 @@
-module.exports = 
+module.exports =
 
   # buttons
-  btn: 
+  btn:
     addAddress: 'Editer'
     addDancer: 'Ajouter un danseur'
     addNewDancer: 'Nouveau'
@@ -94,6 +94,7 @@ module.exports =
     lastname: 'Nom'
     Mon: 'Lundi'
     noValue: 'pas de valeur'
+    noResults: 'Aucun résultat'
     other: '(autre)'
     payment: 'Réglement'
     paymentKind: 'Mode de réglement'
@@ -122,7 +123,7 @@ module.exports =
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
     zipcode: 'Code postal'
-    
+
   # long messages with html
   msg:
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
@@ -156,7 +157,7 @@ module.exports =
   # print texts
   print:
     # to detect dancers on multiple teachers groups
-    teacherGroups: 
+    teacherGroups:
       anthony: 1
       diana: 2
       delphine: 2
@@ -169,7 +170,7 @@ module.exports =
     settlement: """
 <h2>Accès aux activités</h2>
 <p>L'accès aux activités est strictement réservé aux membres de l'école à jour de leurs cotisations.</p>
-<p>La direction se réserve le droit de refuser l'entrée ou le renvoi de toute personne dont le comportement ou la mauvaise tenue pourraient être contraire à la sécurité, à la réputation et aux intérêts de l'école, et ceci sans dédommagement concernant son abonnement. 
+<p>La direction se réserve le droit de refuser l'entrée ou le renvoi de toute personne dont le comportement ou la mauvaise tenue pourraient être contraire à la sécurité, à la réputation et aux intérêts de l'école, et ceci sans dédommagement concernant son abonnement.
 Les abonnements sont strictement personnels.</p>
 <p>Les tarifs prennent en compte la fermeture pour congés et jours fériés.
 Les cours collectifs sont interrompus pendant les vancances scolaires.</p>
@@ -196,7 +197,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     when: "le"
 
   # payment types
-  paymentTypes: 
+  paymentTypes:
     cash: 'Espèces'
     check: 'Chèque'
     traveler: 'ANCV'
@@ -230,7 +231,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     dark: 'Dark'
     none: "'The' original"
 
-  # titles  
+  # titles
   ttl:
     about: 'A propos'
     address: 'Adresse'

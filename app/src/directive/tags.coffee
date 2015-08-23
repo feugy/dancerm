@@ -2,16 +2,16 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 
 class TagsDirective
-                
+
   # Controller dependencies
   @$inject: ['$scope', '$element']
-  
+
   # Controller scope, injected within constructor
   scope: null
-  
+
   # JQuery enriched element for directive root
   element: null
-  
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -20,7 +20,7 @@ class TagsDirective
     @element.on 'click', '.close', @_onRemoveTag
     unwatch = @scope.$watch 'ctrl.src', @_onUpdateTags, true
     # free listeners
-    scope.$on '$destroy', => 
+    @scope.$on '$destroy', =>
       unwatch?()
       @element.off()
 
@@ -66,7 +66,7 @@ class TagsDirective
         @element.append "<div class='tag #{danceClass.color}' data-id='#{danceClass.id}'>#{i18n.lbl[day]} #{danceClass.start.replace(day, '')}~#{danceClass.end.replace(day, '')}<b class='close'>&times;</b></div>"
       if @src.danceClasses.length is 0 and 'danceClass' in empties
         @element.append "<div class='tag dance-class'>#{i18n.lbl.allDanceClasses}</div>"
-    
+
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->
   app.directive 'tags', ->
@@ -81,7 +81,7 @@ module.exports = (app) ->
     controllerAs: 'ctrl'
     bindToController: true
     # parent scope binding.
-    scope: 
+    scope:
       # displayed search
       src: '='
       # arrays indicating which empty criteria should be represented by unclosable tag

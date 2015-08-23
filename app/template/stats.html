@@ -1,7 +1,7 @@
 <div data-layout data-actions="ctrl.actions">
   <div class="main stats expanded">
     <div class="criteria">
-      <tags data-src="ctrl.cardList.criteria" 
+      <tags data-src="ctrl.cardList.criteria"
         data-on-remove="ctrl.cardList.performSearch()"
         data-show-empties="['season', 'teacher']"/>
       <span>{{'ttl.stats'|i18n:{args:{total:ctrl.cardList.list.length} } }}</span>
@@ -29,19 +29,15 @@
         </div>
       </article>
       <article>
-        <h3>{{::'ttl.knownByRepartition'|i18n}}</h3>
+        <h3>{{::'ttl.knownByRepartition'|i18n}}{{ctrl.chartHeight}}</h3>
         <div class="content charted">
-          <canvas tc-chartjs-doughnut height="250px"
-            data-chart-data="ctrl.knownBy" 
-            data-chart-options="ctrl.knownByOpt"></canvas>
+          <nvd3 options="ctrl.knownByOpt" data="ctrl.knownBy"></nvd3>
         </div>
       </article>
       <article>
         <h3>{{::'ttl.danceClassesDistribution'|i18n}}</h3>
         <div class="content charted">
-          <canvas tc-chartjs-stacked-bar height="250px"
-            data-chart-data="ctrl.danceClasses" 
-            data-chart-options="ctrl.danceClassesOpt"></canvas>
+          <nvd3 options="ctrl.danceClassesOpt" data="ctrl.danceClasses"></nvd3>
         </div>
       </article>
       <article>

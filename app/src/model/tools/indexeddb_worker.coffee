@@ -1,5 +1,5 @@
 # lodash must be loaded
-importScripts '../../../../node_modules/lodash/lodash.js'
+importScripts '../../../../node_modules/lodash/index.js'
 
 # get database path from url
 path = decodeURIComponent location.search.replace '?path=', ''

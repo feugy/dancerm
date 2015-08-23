@@ -5,7 +5,7 @@ ConflictsController = require './conflicts'
 
 # Edit application settings
 module.exports = class SettingsController
-  
+
   # Controller dependencies
   @$inject: ['$scope', '$rootScope', 'dialog', 'import', '$filter', '$location']
 
@@ -43,7 +43,7 @@ module.exports = class SettingsController
   # flag to temporary disable button while theme are building
   _building: false
 
-  # On loading, search for current season 
+  # On loading, search for current season
   #
   # @param scope [Object] controller's own scope, for event listening
   # @param rootScope [Object] Angular global scope, for digest triggering
@@ -61,7 +61,7 @@ module.exports = class SettingsController
         @filter('i18n') 'lbl.author', args: author: 'Feugy'
         @filter('i18n') 'lbl.version', args: version: require('../../../package.json').version
       ]}
-      {title: 'Node webkit', image: 'node-webkit.png', specs: [
+      {title: 'NW.js', image: 'nwjs.png', specs: [
         @filter('i18n') 'lbl.author', args: author: 'Roger Wang'
         @filter('i18n') 'lbl.version', args: version: process.versions['node-webkit']
       ]}
@@ -69,9 +69,9 @@ module.exports = class SettingsController
         @filter('i18n') 'lbl.author', args: author: 'Google'
         @filter('i18n') 'lbl.version', args: version: angular.version.full
       ]}
-      {title: 'Bootstrap', image: 'bootstrap.png', specs: [ 
+      {title: 'Bootstrap', image: 'bootstrap.png', specs: [
         @filter('i18n') 'lbl.author', args: author: 'Twitter'
-        @filter('i18n') 'lbl.version', args: version: '3.2.0'
+        @filter('i18n') 'lbl.version', args: version: '3.3.5'
       ]}
     ]
 
@@ -83,7 +83,7 @@ module.exports = class SettingsController
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into local storage, and button is temporary disabled while compiling
-  # 
+  #
   # @param theme [Object] theme object, containing 'value' and 'label' attribues
   applyTheme: (theme) =>
     return if @_building
@@ -127,13 +127,13 @@ module.exports = class SettingsController
       # dialog cancellation
       return unless filePath
       dialog = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
-    
+
       msg = null
       displayEnd = (err) =>
         if err?
           console.error "got error", err
           msg = @filter('i18n') 'err.importFailed', args: err
-        _.delay => 
+        _.delay =>
           @rootScope.$apply =>
             dialog.close()
             @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
