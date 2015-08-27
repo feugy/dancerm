@@ -17,7 +17,9 @@ var rimraf = require('rimraf');
 var coffee = require('gulp-coffee');
 var sourcemaps = require('gulp-sourcemaps');
 var download = require('gulp-download');
-var deps = require('./package.json').frontDependencies;
+var NwBuilder = require('nw-builder');
+var runSequence = require('run-sequence');
+var manifest = require('./package.json');
 
 
 var paths = {
@@ -27,8 +29,12 @@ var paths = {
   scriptsSrc: 'app/src/**/*.coffee',
   scriptsDest: 'app/script',
   testsSrc: 'test/src/**/*.coffee',
-  testsDest: 'test/script'
+  testsDest: 'test/script',
+  templateDest: 'app/template',
+  vendor: 'app/vendor'
 };
+
+var platforms = ['osx64'];
 
 gulp.task('default', ['watch']);
 
@@ -39,6 +45,7 @@ gulp.task('clean', function(done){
 
 // download vendor libraries from the net
 gulp.task('vendor', function(){
+  var deps = manifest.frontDependencies;
   var conf = [];
   for (var file in deps) {
     conf.push({file: file, url: deps[file]});
@@ -89,6 +96,39 @@ function buildTests() {
     });
 }
 gulp.task('build-tests', ['build'], buildTests);
+
+// Make distribution packages
+gulp.task('dist', function() {
+  runSequence('clean', 'vendor', 'build', function(done) {
+    var options = {
+      files: ['./package.json',
+        './app/src/**/*.styl',
+        './' + paths.scriptsDest + '/**',
+        './' + paths.assetsDest + '/**',
+        './' + paths.templateDest + '/**',
+        './' + paths.vendor + '/**',
+        './node_modules/**'],
+      version: '0.12.3',
+      platforms: platforms,
+      macIcns: 'app/src/style/img/dancerm.icns',
+      winIco: 'app/src/style/img/dancerm.ico',
+      platformOverrides: {
+        osx: {
+          toolbar: true
+        }
+      }
+    };
+    for (var package in manifest.devDependencies) {
+      if (package !== 'rimraf') {
+        // rimraf is needed by fs-extra: don't remove it
+        options.files.push('!./node_modules/' + package + '/**');
+      }
+    }
+
+    var nw = new NwBuilder(options);
+    nw.on('log', gutil.log.bind(gutil)).build(done);
+  });
+});
 
 // Clean, build, and then watch for files changes
 gulp.task('watch', ['build-tests'], function(){

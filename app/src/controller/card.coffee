@@ -13,7 +13,7 @@ SearchDancerController = require './search_dancer'
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
 module.exports = class CardController
-            
+
   # Controller dependencies
   @$inject: ['$scope', '$rootScope', 'cardList', 'dialog', '$q', '$state', '$filter', '$stateParams']
 
@@ -28,7 +28,7 @@ module.exports = class CardController
 
   # Controller's own scope, for change detection
   scope: null
-  
+
   # Angular's global scope, for digest triggering
   rootScope: null
 
@@ -43,7 +43,7 @@ module.exports = class CardController
 
   # Angular's promise factory
   q: null
-  
+
   # displayed card
   card: null
 
@@ -91,7 +91,7 @@ module.exports = class CardController
   # @param state [Object] Angular state provider
   # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @cardList, @dialog, @q, @state, @filter, stateParams) -> 
+  constructor: (@scope, @rootScope, @cardList, @dialog, @q, @state, @filter, stateParams) ->
     # initialize global change status
     @dancers = []
     @addresses = []
@@ -133,7 +133,7 @@ module.exports = class CardController
     return unless @hasChanged and not @_modalOpened
     names = ("#{dancer.firstname or ''} #{dancer.lastname or ''}" for dancer in @dancers when dancer.firstname or dancer.lastname)
     @_modalOpened = true
-    @dialog.messageBox(@i18n.ttl.confirm, 
+    @dialog.messageBox(@i18n.ttl.confirm,
       @filter('i18n')('msg.cancelEdition', args: names: names.join ', '), [
         {label: @i18n.btn.no, cssClass: 'btn-warning'}
         {label: @i18n.btn.yes, result: true}
@@ -145,13 +145,13 @@ module.exports = class CardController
         # cancel payment
         @rootScope.$broadcast 'cancel-edit'
         # restore values by reloading first dancer from storage
-        @loadCard @dancers[0].cardId 
+        @loadCard @dancers[0].cardId
       else
         # or recreate a brand new dancer if it was an empty card
         @_reset()
 
   # Save the current values inside storage
-  # 
+  #
   # @param force [Boolean] true to ignore required fields. Default to false.
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no problem occured
@@ -172,7 +172,7 @@ module.exports = class CardController
       dancer.getAddress next
     , (err, models) =>
       if err?
-        console.error err 
+        console.error err
         return done err
       models.push @card
       saved = []
@@ -190,7 +190,7 @@ module.exports = class CardController
           next err
       , (err) =>
         if err?
-          console.error err 
+          console.error err
           return done err
         console.log "addresses and card saved"
         # affect to dancers (for those which address was new) and save dancers
@@ -206,7 +206,7 @@ module.exports = class CardController
             next err
         , (err) =>
           if err?
-            console.error err 
+            console.error err
             return done err
           console.log "dancers saved"
 
@@ -215,7 +215,7 @@ module.exports = class CardController
             model.remove next
           , (err) =>
             if err?
-              console.error err 
+              console.error err
               return done err
             # reset change state and refresh search
             @_onChange()
@@ -251,10 +251,10 @@ module.exports = class CardController
     @_previous[address.id] = address.toJSON()
     @_onChange 'dancers'
     # scroll to last
-    _.defer => 
+    _.defer =>
       $('.card-dancer > .dropup > a').focus()
 
-  # When a dancer that share an address with another one want to separate, 
+  # When a dancer that share an address with another one want to separate,
   # we affect him a brand new address
   # Only for dancers that share address with another one
   #
@@ -277,10 +277,10 @@ module.exports = class CardController
     @dialog.modal(_.extend {
         size: 'lg'
         keyboard: false
-        resolve: 
-          danceClasses: => 
+        resolve:
+          danceClasses: =>
             deffered = @q.defer()
-            dancer.getClasses (err, classes) -> 
+            dancer.getClasses (err, classes) ->
               return deffered.reject err if err?
               deffered.resolve classes
             deffered.promise
@@ -328,7 +328,7 @@ module.exports = class CardController
     for candidate in @dancers
       return used.length > 0 and not(dancer.addressId in used) if candidate is dancer
       used.push candidate.addressId unless candidate.addressId in used
-    false        
+    false
 
   # Invoked when the list of known-by meanings has changed.
   # Updates the model corresponding array.
@@ -341,7 +341,7 @@ module.exports = class CardController
   searchCard: =>
     # display dialog to choose registration season and dance classes
     @dialog.modal(_.extend {
-        resolve: 
+        resolve:
           existing: => @dancers[0]
       }, SearchDancerController.declaration
     ).result.then (dancer) =>
@@ -349,9 +349,9 @@ module.exports = class CardController
       # merge both card and save
       dancer.getCard (err, card) =>
         return console.error err if err?
-        @card.merge card, (err) => 
+        @card.merge card, (err) =>
           return console.error err if err?
-          @save true, (err) => 
+          @save true, (err) =>
             return console.error err if err?
             @loadCard @card.id
 
@@ -366,7 +366,7 @@ module.exports = class CardController
     @save true, (err) =>
       return console.error err if err?
       open = =>
-        _console = global.console 
+        _console = global.console
         try
           @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
             frame: true
@@ -379,7 +379,7 @@ module.exports = class CardController
 
           # obviously, a bug !
           global.console = _console
-            
+
           # set parameters and wait for closure
           @_preview.card = @card
           @_preview.withVat = withVat
@@ -392,7 +392,7 @@ module.exports = class CardController
 
       # auto VAT/classe details computation:
       return open() unless auto
-      # Dance class details 
+      # Dance class details
       async.map @dancers, (dancer, next) ->
         dancer.getClasses next
       , (err, danceClasses) =>
@@ -402,7 +402,7 @@ module.exports = class CardController
         group = null
 
         for danceClass in _.flatten danceClasses when danceClass.season is registration.season
-          teacher = danceClass.teacher?.toLowerCase() 
+          teacher = danceClass.teacher?.toLowerCase()
           if teacher in i18n.print.vatTeachers
             # VAT included only if teacher is specific
             withVat = true
@@ -433,7 +433,7 @@ module.exports = class CardController
           (done) => @addresses[0].remove done
           (done) => @dancers[0].remove done
           (done) => @card.remove done
-        ], (err) => 
+        ], (err) =>
           return console.error err if err?
           @scope.$apply =>
             @cardList.performSearch()
@@ -456,7 +456,7 @@ module.exports = class CardController
   # Invoked when registration needs to be removed.
   # First display a confirmation dialog, and then removes it
   #
-  # @param registration [Registration] the removed registration 
+  # @param registration [Registration] the removed registration
   removeRegistration: (registration) =>
     @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')('msg.removeRegistration', args: registration), [
       {result: false, label: @i18n.btn.no}
@@ -495,7 +495,7 @@ module.exports = class CardController
       @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
     else if @hasChanged
       # remove save and cancel
-      @scope.listCtrl.actions.splice 0, 2 
+      @scope.listCtrl.actions.splice 0, 2
     @hasChanged = changed
 
   # **private**
@@ -542,7 +542,7 @@ module.exports = class CardController
       @required = {}
       @dancers = _.sortBy dancers, "firstname"
       for dancer in @dancers
-        @required[dancer.id] = [] 
+        @required[dancer.id] = []
         @_previous[dancer.id] = dancer.toJSON()
       @required.regs = ([] for registration in @card.registrations)
       # get dance classes
@@ -576,10 +576,10 @@ module.exports = class CardController
               @addresses.push unic[address.id]
           # translate the "known by" possibilities into a list of boolean
           @knownBy = {}
-          for value of @i18n.knownByMeanings 
+          for value of @i18n.knownByMeanings
             @knownBy[value] = _.contains @card.knownBy, value
           @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
-          
+
           # reset changes and displays everything
           @_setChanged false
           @scope.$apply()
@@ -598,7 +598,7 @@ module.exports = class CardController
 
   # **private**
   # Check required fields when saving models
-  # 
+  #
   # @return true if a required field is missing
   _checkRequired: =>
     missing = false
@@ -612,7 +612,7 @@ module.exports = class CardController
       @required[address.id] = (
         for field in ['street', 'zipcode', 'city'] when not(address[field]?) or _.trim(address[field]).length is 0
           missing = true
-          field 
+          field
       )
     for registration, i in @card.registrations
       @required.regs[i] = (
@@ -622,7 +622,7 @@ module.exports = class CardController
           tmp = (
             for field in requiredFields when not(payment[field]?) or _.trim(payment[field]).length is 0
               missing = true
-              field 
+              field
           )
           tmp
       )

@@ -1,6 +1,6 @@
 {
   "name": "dancerm",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "author": "Feugy <damien.feugas@gmail.com>",
   "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
   "repository": {
@@ -23,12 +23,14 @@
     "chai-as-promised": "5.1.0",
     "gulp": "3.9.0",
     "gulp-coffee": "2.3.1",
-    "gulp-download": "git://github.com/Metrime/gulp-download.git#master",
+    "gulp-download": "https://github.com/Metrime/gulp-download/archive/master.tar.gz",
     "gulp-plumber": "1.0.1",
     "gulp-sourcemaps": "1.5.2",
     "gulp-util": "3.0.6",
     "mocha": "2.2.5",
-    "rimraf": "2.4.2"
+    "nw-builder": "^2.0.2",
+    "rimraf": "2.4.2",
+    "run-sequence": "^1.1.2"
   },
   "frontDependencies": {
     "vendor/jquery.js": "http://code.jquery.com/jquery-2.1.4.min.js",

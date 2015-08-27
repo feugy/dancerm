@@ -33,7 +33,7 @@ getFirstStep = (obj, path) ->
     # get with object notation
     obj: obj, prop: path[0], path: path
 
-module.exports = 
+module.exports =
 
   ###fixConsole: ->
     # Log file
@@ -139,10 +139,10 @@ Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getH
         return next err if err?
         # adds themes variable if it exists
         content = "@require 'themes/#{theme}_variable'\n#{content}" if existsSync join folder, 'themes', "#{theme}_variable.styl"
-        # adds theme override if it exists 
+        # adds theme override if it exists
         content += "\n@require 'themes/#{theme}'" if existsSync join folder, 'themes', "#{theme}.styl"
         # now add variables and compiles
-        render "@require 'variable'\n#{content}", 
+        render "@require 'variable'\n#{content}",
           filename: "#{sheet}.css"
           paths: ['./app/src/style']
         , next

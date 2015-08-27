@@ -6,6 +6,7 @@ DanceClass = require '../model/dance_class'
 tinycolor = window.tinycolor
 
 animDuration = 500
+graphHeight = 275
 
 # Displays statistics on a given list
 module.exports = class StatsController
@@ -56,11 +57,11 @@ module.exports = class StatsController
         startAngle: (d) -> d.startAngle/2 -Math.PI/2
         endAngle: (d) -> d.endAngle/2 -Math.PI/2
       transitionDuration: animDuration
-      height: 250
+      height: graphHeight
       noData: i18n.lbl.noResults
       margin:
         top: 0
-        bottom: -225
+        bottom: -graphHeight * 0.9
         left: 0
         right: 0
 
@@ -86,7 +87,7 @@ module.exports = class StatsController
             #{d.data.label}<br/>#{d.series[0].key}: <strong>#{d.data.count}</strong>
           </div>"""
       transitionDuration: animDuration
-      height: 300
+      height: graphHeight
       noData: i18n.lbl.noResults
       margin:
         top: 0

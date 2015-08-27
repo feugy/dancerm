@@ -1,12 +1,12 @@
 secondaryColor = #888
 fontSize = 16px
 
-box() 
+box()
   border 1px solid secondaryColor
   margin 0 15px
   padding 5px
 
-html 
+html
   background transparent
 
 body
@@ -17,11 +17,11 @@ body
     font-family Verdana
     font-size fontSize
 
-  p 
+  p
     margin 0 0 0.5em 0
   p:last-child
     margin-bottom 0
-  
+
   header
     display flex
     margin 0
@@ -38,7 +38,7 @@ body
       width 30%
 
     .school
-      > p 
+      > p
         margin 0
 
       > p:first-child
@@ -59,7 +59,7 @@ body
       border 1px solid secondaryColor
       display flex
       padding (articlePad - rowPad) (articlePad - rowPad)
-    
+
       > aside
         width 50%
         padding 0 rowPad
@@ -117,7 +117,7 @@ body
     min-width 60px
     margin 0 0.5em 0
     border-bottom 1px dashed #888
-    
+
   .stamp
     margin-top 10px
 
@@ -159,7 +159,7 @@ body
     box-shadow 0 0 0 1px black
 
 body.call-list
-    
+
   h1, h2
     text-align center
     font-size 120%
@@ -170,16 +170,16 @@ body.call-list
 
   .table
     border-collapse collapse
-    
+
     td, th
       padding 0.3em
-    
+
     thead > tr
       color white
       background-color secondaryColor
       text-align center
-    
-    tr:not(:first-child) td 
+
+    tr:not(:first-child) td
       border-top 1px solid secondaryColor
 
     tr > td:not(:first-child)
@@ -213,7 +213,7 @@ body.addresses-list
     .btn
       position static
       vertical-align baseline
-  
+
   .stamps-container
     display flex
     flex-wrap wrap
@@ -253,8 +253,8 @@ body.addresses-list
     .configure
     input[type=checkbox]
       display none
-      
-body.printing 
-  
+
+body.printing
+
   .btn.print
     display none !important

@@ -1,36 +1,36 @@
 /******************************************************************************
  * Application menu
  */
- 
+
 .app-menu
   width = 20px
-  // make it draggable  
+  // make it draggable
   -webkit-app-region drag
   position relative
   display block
   z-index 10000
   background primaryBtnBackground
   text-align center
-  
+
   > h1
     display inline
     font-size 16px
     border none
     color btnColor
     line-height 1.5em
-    
+
   .version
     display inline-block
     margin 0 -50px 0 10px
-    
-    
+
+
   .app-commands
     position absolute
     top 2px
     right 2px
     font-size 0
     -webkit-app-region no-drag
-    
+
     > a
       cursor pointer
       display inline-block
@@ -39,7 +39,7 @@
       margin-left 2px
       background-image url(../style/img/topbar.png)
       background-color headerBackground
-      
+
       for selector, i in iconize maximize app-close 'iconize:hover' 'maximize:hover' 'app-close:hover' restore 'restore:hover'
         &.{selector}
           background-position width*-1*i 0
@@ -47,7 +47,7 @@
 /******************************************************************************
  * Main layout
  */
- 
+
 .layout
   position absolute
   top 0
@@ -57,49 +57,49 @@
   overflow hidden
   display flex
   flex-direction column
-    
-  .actions 
+
+  .actions
     display flex
     justify-content space-between
     background headerBackground
-    
+
     ul
       margin 0
       padding 0
-      
+
     li
       display inline-block
       padding 1em .5em
       border-bottom 3px solid transparent
       color textColor
       cursor pointer
-      
+
       .glyphicon
         color rgba(textColor, 0.3)
         padding-right .5em
-        
+
       &:hover
       &:hover .glyphicon
         color focusColor
-        
+
       &.active
         border-bottom-color headerColor
         color headerColor
-        
+
         .glyphicon
           color headerColor
-      
+
   .column-and-main
     display block
     flex 1
     position relative
-  
+
  /******************************************************************************
  * Tags
  */
-  
+
 .tag
-  cursor default 
+  cursor default
   color headingColor
   display inline-block
   padding .2em
@@ -170,7 +170,7 @@ for color, i in colors
     .groups
       color transparent
 
-  .day 
+  .day
   .time
     box-sizing border-box
     display inline-block
@@ -237,7 +237,7 @@ for color, i in colors
     overflow hidden
     text-align center
     cursor pointer
-    text-overflow ellipsis 
+    text-overflow ellipsis
 
   .danceClass.selected
     background-color linkColor
@@ -266,17 +266,17 @@ for i in 2..7
     width unit((100 - 6.5) / i, '%')
 
 for i in 6..20
-  .planning.hours{i} 
+  .planning.hours{i}
     .quarter
-      height unit(100 / (i * 4), '%')  
+      height unit(100 / (i * 4), '%')
 
 /******************************************************************************
  * Registration
  */
 
-.registration 
+.registration
   position relative
-  
+
   .certificate
     position absolute
     right 10px
@@ -334,20 +334,20 @@ for i in 6..20
       border-right 1px solid emphasisColor
 
   // payement balance highlight
-  .balance-low 
+  .balance-low
     color lowColor = lighten(errorColor, 30%)
 
     .input-group-addon
       background-color lowColor
 
-  .balance-right 
+  .balance-right
     color successColor
-    
+
     .input-group-addon
       background-color successColor
 
   // payement displayal
-  .payments 
+  .payments
 
     > *
       display flex
@@ -390,7 +390,7 @@ for i in 6..20
       .input-group span:not(.input-group-addon)
         display table-cell
         padding 4px 6px
-      
+
     .type
       flex none
       height 30px

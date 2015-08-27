@@ -9,7 +9,10 @@ test/fixture/out.*
 test/script
 test/vendor
 installer/*.exe
+build/
+cache/
 *.json
 errors.txt
 .sublime-*
 *.dump
+*.log

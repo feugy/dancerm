@@ -1,27 +1,27 @@
 .main-view
   transition all animationDuration
-  
+
   .main
   .column.expanded
     transition all animationDuration
-  
-  &.ng-enter 
+
+  &.ng-enter
     .column.expanded
       width collapsedColumnWidth
-      
+
       .hideable
         display none
-        
+
     .main.expanded
       position absolute
       left 100%
-    
-  &.ng-enter-active 
+
+  &.ng-enter-active
     .column.expanded
       width expandedColumnWidth
     .main.expanded
       left 0
-      
+
   &.ng-enter .main
   .main.ng-enter
     right (- visibleMainWidth)
@@ -36,12 +36,12 @@
 
   &.ng-leave
     display none
-    
+
 .fade
   transition opacity animationDuration
 
 .loader
-  
+
   > *
     display inline-block
     size = 10px
@@ -55,7 +55,7 @@
       -webkit-animation-duration 2000ms
       -webkit-animation-delay (100*i)ms
       -webkit-animation-iteration-count infinite
-      
+
     @keyframes zoom{i}
       0%
         -webkit-transform scale(1) rotate(0deg)
@@ -63,4 +63,4 @@
         -webkit-transform scale(1.5) rotate(45deg)
         background-color colors[i]
       50%
-        -webkit-transform scale(1) rotate(0deg)  
+        -webkit-transform scale(1) rotate(0deg)

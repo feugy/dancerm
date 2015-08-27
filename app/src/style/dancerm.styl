@@ -237,11 +237,18 @@ body
     .tags
       margin-left 1em
 
+  tr
+    display flex
+
   // we MUST have fixed width columns
   // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
-  for width, i in 4 7 10 3 3 3 8 9 9 9 15 20
+  cols = 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
+  for col, i in cols
     td:nth-child({i+1}), th:nth-child({i+1})
-      width unit(width, '%')
+      width col
+
+  td:nth-child(12), th:nth-child(12)
+    flex 1
 
   h2 > *:not(:last-child)
     margin-right 7px
@@ -385,8 +392,6 @@ body
 
       .city label
         width 45px
-      .phone label
-        width 75px
 
     .address .read-only
       .zipcode, .city, .street

@@ -64,7 +64,7 @@ try
       delete global.require.cache[attr] for attr of global.require.cache
       global.reload = true
       win.removeAllListeners()
-      win.reloadIgnoringCache() 
+      win.reloadIgnoringCache()
 
   parallel [
     (next) -> buildStyles ['dancerm', 'print'], localStorage.theme or 'none', next
@@ -113,7 +113,7 @@ try
       anchor = $('body.app')
 
       console.log 'init database...'
-      init (err) -> 
+      init (err) ->
         if err?
           dumpError err
           console.error err
