@@ -56,10 +56,15 @@ for color, i in colors
   > section:not(:first-child) > :not(aside)
     border-color darken(textColor, 50%)
 
-.layout .actions ul li
-  &:hover
-  &:hover .glyphicon
-    color headingColor
+.layout .actions
+
+  .context li
+    border-bottom-color successColor
+
+  ul li
+    &:hover
+    &:hover .glyphicon
+      color headingColor
 
 .column-and-main
 

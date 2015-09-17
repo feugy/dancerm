@@ -6,10 +6,10 @@
       <li data-ng-repeat="(type, label) in ::ctrl.i18n.paymentTypes"><a data-ng-click="ctrl.setType(type)">{{::label}}</a></li>
     </ul>
   </span>
-  <span class="receipt input-group">
+  <span class="receipt input-group dropup ng-class:ctrl.receiptOpts.open?'open':'';">
     <input type="text"
       data-set-null
-      data-datepicker-popup="{{::'formats.receiptSelection'|i18n}}" 
+      data-datepicker-popup="{{::'formats.receiptSelection'|i18n}}"
       data-is-open="ctrl.receiptOpts.open"
       data-ng-model="ctrl.receiptOpts.value"
       data-show-button-bar="false"

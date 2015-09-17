@@ -64,3 +64,29 @@
         background-color colors[i]
       50%
         -webkit-transform scale(1) rotate(0deg)
+
+
+.open > .dropdown-menu
+  -webkit-animation-name dropdown-open
+  -webkit-animation-duration animationDuration
+
+.dropup.open > .dropdown-menu
+  -webkit-animation-name dropup-open
+
+@keyframes dropdown-open
+  0%
+    opacity 0
+    margin-top -1em
+  75%
+    opacity 1
+  100%
+    margin-top 0px
+
+@keyframes dropup-open
+  0%
+    opacity 0
+    margin-bottom -1em
+  75%
+    opacity 1
+  100%
+    margin-bottom 0px

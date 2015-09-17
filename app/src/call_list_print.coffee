@@ -7,7 +7,7 @@ _ = require 'lodash'
 win = gui.Window.get()
 
 angular.element(win.window).on 'load', ->
-  
+
   doc = angular.element(document)
   # adds dynamic styles
   doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
@@ -64,10 +64,10 @@ angular.element(win.window).on 'load', ->
     print: =>
       doc.find('body').addClass 'printing'
       window.print()
-      win.close()
+      window.onfocus = -> win.close()
 
   app = angular.module('callListPrint', []).controller 'Print', Print
-  
+
   # get filters
   require('../script/util/filters')(app)
 

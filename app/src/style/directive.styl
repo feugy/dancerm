@@ -65,9 +65,13 @@
 
     ul
       margin 0
-      padding 0
+      padding 0 0
+
+    .context li
+      border-bottom-color headerColor
 
     li
+      transition all animationDuration
       display inline-block
       padding 1em .5em
       border-bottom 3px solid transparent
@@ -75,18 +79,22 @@
       cursor pointer
 
       .glyphicon
-        color rgba(textColor, 0.3)
+        transition all animationDuration
+        color rgba(textColor, .4)
         padding-right .5em
 
       &:hover
       &:hover .glyphicon
+        transition all focusDuration
         color focusColor
 
       &.active
+        transition all focusDuration
         border-bottom-color headerColor
         color headerColor
 
         .glyphicon
+          transition all focusDuration
           color headerColor
 
   .column-and-main
@@ -111,6 +119,7 @@
   line-height 20px
 
   .close
+    transition all animationDuration
     padding 0 0.2em
     color headingColor
     opacity 0.5
@@ -134,10 +143,10 @@
  * Planning
  */
 
-for color, i in colors
+for c, i in colors
   .tags .color{i+1}
   .color{i+1}
-    background-color color
+    background-color c
     color emphasisColor
 
     .close
@@ -239,8 +248,8 @@ for color, i in colors
     cursor pointer
     text-overflow ellipsis
 
-  .danceClass.selected
-    background-color linkColor
+    &.selected
+      background-color linkColor
 
   .legend
     margin-top 10px
@@ -259,6 +268,9 @@ for color, i in colors
       padding 0 .8em
       margin 0 0 0 8px
       display inline-block
+
+  .darken
+    opacity .5
 
 for i in 2..7
   .planning.days{i} .day

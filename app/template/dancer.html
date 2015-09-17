@@ -41,7 +41,7 @@
     <span class="col-md-6 email"><label>{{::'lbl.email'|i18n:{sep:true} }}</label><input type="email" name="email" data-ng-model="ctrl.src.email" data-ng-change="ctrl.onChange({$field:'cellphone'})" data-set-null/></span>
   </div>
   <div class="row">
-    <span class="col-md-6 birth"><label>{{::'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group">
+    <span class="col-md-6 birth"><label>{{::'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group ng-class:ctrl.birthOpts.open?'open':'';">
         <input type="text"
           data-set-null
           data-datepicker-popup="{{::'formats.birthSelection'|i18n}}"

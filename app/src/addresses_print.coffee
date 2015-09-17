@@ -19,7 +19,7 @@ angular.element(win.window).on 'load', ->
     @$inject: ['$scope']
 
     # stamp initial dimensions, in mm
-    stampDim: 
+    stampDim:
       w: 63.5
       h: 38.1
       # vertical and horizontal pagging
@@ -68,7 +68,7 @@ angular.element(win.window).on 'load', ->
             }
         )
         scope.$apply()
-        
+
     # Stop click propagation on checkboxes to avoid double toggleing a stamp.
     #
     # @param event [Event] the event to be stopped
@@ -80,10 +80,10 @@ angular.element(win.window).on 'load', ->
       # remove configuration and unselected stamps
       doc.find('body').addClass 'printing'
       window.print()
-      win.close()
+      window.onfocus = -> win.close()
 
   app = angular.module('addressesPrint', []).controller 'Print', Print
-  
+
   # get filters
   require('../script/util/filters')(app)
 

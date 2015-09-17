@@ -29,6 +29,9 @@ class PlanningDirective
   # link to Angular directive compiler
   compile: null
 
+  # When highlighting a given kind, store it to allow toggling
+  kind: null
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -62,10 +65,17 @@ class PlanningDirective
         # adds id
         @scope.selected.push model
 
-    @element.on 'clock', '.legend > *', (event) =>
-      color = $(event.target).attr 'class'
-      # invoke click handler
-      @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
+    @element.on 'click', '.legend > *', (event) =>
+      color = $(event.target).attr('class').replace('darken', '').trim()
+      @element.find('.darken').removeClass 'darken'
+      if @kind is color
+        @kind = null
+        @scope.onClick $event: event, danceClasses: []
+      else
+        @kind = color
+        @element.find(".danceClass:not(.#{color}), .legend *:not(.#{color})").addClass 'darken'
+        # invoke click handler
+        @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
 
     # free listeners
     @scope.$on '$destroy', =>

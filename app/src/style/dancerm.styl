@@ -192,6 +192,7 @@ body
         border-top none
 
       tr:hover
+        transition background focusDuration
         background linkColor
         *
           cursor pointer
@@ -325,6 +326,7 @@ body
     for selector in "&" ".address" ".dancer"
       {selector} > .btn
       {selector} > .btn-group
+        transition background focusDuration
         position absolute
         right 15px
         top -18px
@@ -681,11 +683,8 @@ body
 body
 
   .focusable
-    input
-    textarea
-      transition background focusDuration, border focusDuration
-    .input-group-addon
-      transition background focusDuration, border focusDuration
+    input, textarea, .input-group-addon, .btn
+      transition background focusDuration, border focusDuration, color focusDuration
 
   .focusable:not(:hover)
 
@@ -785,6 +784,7 @@ body
     background btnBackground
 
     li > a:hover
+      transition background focusDuration, color focusDuration
       background mainBackground
       color textColor
       cursor pointer
@@ -804,7 +804,6 @@ body
   input:not([type="checkbox"])
   input:not([type="radio"])
     padding 4px 6px
-
 
   input[type="checkbox"]
   input[type="radio"]
@@ -849,6 +848,7 @@ body
   input[type="search"]
   input[type="tel"]
   .uneditable-input
+    transition all focusDuration
     background-color inputColor
     border-width 1px
     border-radius inputRadius
@@ -885,6 +885,7 @@ body
     margin-left 5px
 
   .btn
+    transition background focusDuration, color focusDuration
     padding 4px 12px
     color btnColor
     font-size fontSize

@@ -11,7 +11,7 @@ async = require 'async'
 win = gui.Window.get()
 
 angular.element(win.window).on 'load', ->
-  
+
   doc = angular.element(document)
   # adds dynamic styles
   doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
@@ -53,16 +53,16 @@ angular.element(win.window).on 'load', ->
       @withVat = win.withVat
       @withCharged = win.withCharged
       # get data from mother window
-      @registration = _.findWhere win.card.registrations, season: win.season 
+      @registration = _.findWhere win.card.registrations, season: win.season
       # get card dancers
       Dancer.findWhere {cardId: win.card.id}, (dancers, err) =>
         return console.error err if err?
         @dancers = dancers
-        async.map @dancers, (dancer, next) -> 
+        async.map @dancers, (dancer, next) ->
           dancer.getAddress next
         , (err, addresses) =>
           return console.error err if err?
-          async.map @dancers, (dancer, next) -> 
+          async.map @dancers, (dancer, next) ->
             dancer.getClasses next
           , (err, danceClasses) =>
             return console.error err if err?
@@ -150,7 +150,7 @@ angular.element(win.window).on 'load', ->
     print: =>
       doc.find('body').addClass 'printing'
       window.print()
-      win.close()
+      window.onfocus = -> win.close()
 
   app = angular.module('registrationPrint', []).controller 'Print', Print
 
@@ -163,7 +163,7 @@ angular.element(win.window).on 'load', ->
     # replace element with specified HTML
     link: (scope, elm, attrs) ->
       angular.element(elm).replaceWith attrs.placeholder
-  
+
   # get filters
   require('../script/util/filters')(app)
 

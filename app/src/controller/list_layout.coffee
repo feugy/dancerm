@@ -1,7 +1,7 @@
 {join} = require 'path'
 
 module.exports = class ListLayoutController
-              
+
   # Controller dependencies
   @$inject: ['cardList', '$state']
 
@@ -20,10 +20,10 @@ module.exports = class ListLayoutController
   columns: [
     {name: 'firstname', title: 'lbl.firstname'}
     {name: 'lastname', title: 'lbl.lastname'}
-    {name: 'certified', title: 'lbl.certified', attr: (dancer, done) -> 
+    {name: 'certified', title: 'lbl.certified', attr: (dancer, done) ->
       dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
     }
-    {name: 'due', title: 'lbl.due', attr: (dancer, done) -> 
+    {name: 'due', title: 'lbl.due', attr: (dancer, done) ->
       dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
     }
   ]
@@ -43,7 +43,7 @@ module.exports = class ListLayoutController
   #
   # @param cardList [CardListService] service responsible for card list
   # @param state [Object] Angular's state provider
-  constructor: (@cardList, @state) -> 
+  constructor: (@cardList, @state) ->
     @_preview = null
 
   # Displays a given dancer on the main part
@@ -55,14 +55,14 @@ module.exports = class ListLayoutController
 
   # @return true if the current list concerned a dance class
   canPrintCallList: =>
-    @cardList.criteria.string is null and @cardList.criteria.danceClasses.length is 1
+    not @cardList.criteria.string and @cardList.criteria.danceClasses.length is 1
 
   # Print call list from the current day
-  # 
+  #
   # @param danceClass [DanceClass] danceClass concerned
   printCallList: =>
     return @_preview.focus() if @_preview?
-    _console = global.console 
+    _console = global.console
     try
       @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'call_list_print.html').replace(/\\/g, '/')}",
         frame: true
@@ -76,7 +76,7 @@ module.exports = class ListLayoutController
 
       # obviously, a bug !
       global.console = _console
-        
+
       # set displayed list and wait for closure
       @_preview.list = @cardList.list
       @_preview.danceClass = @cardList.criteria.danceClasses[0]

@@ -2,7 +2,7 @@ _ = require 'lodash'
 DanceClass = require '../model/dance_class'
 
 module.exports = class PlanningController
-              
+
   # Controller dependencies
   @$inject: ['$scope', '$rootScope', 'cardList']
 
@@ -34,7 +34,7 @@ module.exports = class PlanningController
   # @param scope [Object] Angular scope for this controller
   # @param rootScope [Object] Angular global scope, for digest triggering
   # @param cardList [CardListService] service responsible for card list
-  constructor: (scope, @rootScope, @cardList) -> 
+  constructor: (scope, @rootScope, @cardList) ->
     @seasons = []
     @teachers = []
 
@@ -92,7 +92,7 @@ module.exports = class PlanningController
           @cardList.criteria.teachers.splice i, 1
         else
           @cardList.criteria.teachers.push chosen
-      else 
+      else
         # add or remove season
         i = _.indexOf @cardList.criteria.seasons, @currentSeason
         if i isnt -1

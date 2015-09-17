@@ -42,9 +42,9 @@
   </article>
   <!-- registrations -->
   <tabset>
-    <tab data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'" 
+    <tab data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'"
          data-heading="{{::registration.season}}">
-      <registration 
+      <registration
         data-src="registration"
         data-dancers="ctrl.dancers"
         data-on-remove="ctrl.removeRegistration(model)"
@@ -53,12 +53,4 @@
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
     </tab>
   </tabset>
-  <!--registration 
-      data-ng-repeat="registration in ctrl.card.registrations | orderBy:'-season'" 
-      data-src="registration"
-      data-dancers="ctrl.dancers"
-      data-on-remove="ctrl.removeRegistration(model)"
-      data-on-print="ctrl.printRegistration(registration, auto, withVat, withClasses)"
-      data-required-fields="ctrl.required.regs[$index]"
-      data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/-->
 </div>
