@@ -141,7 +141,7 @@ module.exports =
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
-    removeLastDancer: "Vous allez supprimer définitivement la fiche de {{firstname}} {{lastname}}. Voulez vous vraiment continuer ?"
+    removeLastDancer: "Vous allez supprimer définitivement la fiche de {{dancer.firstname}} {{dancer.lastname}}. Voulez vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}}€ du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"

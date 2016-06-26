@@ -5,12 +5,14 @@ gui = require 'nw.gui'
 {parallel} = require 'async'
 {join} = require 'path'
 {version} = require '../../package.json'
-{dumpError, buildStyles, getColorsFromTheme} = require '../script/util/common'
+{dumpError, buildStyles, getColorsFromTheme, fixConsole} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
 
 process.on 'uncaughtException', dumpError
 
 try
+  fixConsole()
+
   console.log "running DanceRM #{version} on node-webkit v#{process.versions['node-webkit']}"
 
   # make some variable globals for other scripts

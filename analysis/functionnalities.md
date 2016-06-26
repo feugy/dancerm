@@ -169,3 +169,36 @@ Paid: 108h 10€/h
 - 27/08/15 - 2
 
 Paid: 55 10€/h
+
+# Version 3
+
+## Description
+
+Anthony n'a pas de TVA
+Diana gère Nassim
+Faut-il prévoir de merger les 2 fichiers clientèles sur le même ordi ?
+Ou utiliser le même ordi avec un critère pour affecter aux professeur ?
+
+Reglement intérieur:
+  ne garder que: nom/adresse/cours de l'élève, reglement intérieur, signature/cachet
+
+N°Facture: une numérotation différente pour les collectif/particuliers
+
+Facture:
+  payable au trimeste: une facture par trimestre
+  payable à l'année (une ou plusieurs fois): une facture par an
+
+Cours particulier:
+  saisie: un seul paiement pour le couple, avec un seul nom d'élève, 2 tarifs (43/45) date/heure
+  facturation: un bouton qui, etablir la liste des cours non facturés, les regrouper par nom et imprime les factures (sans TVA)
+
+Questions pour Michelle:
+- facture electronique seulement, ou papier aussi ?
+- numéro de facture avec des lettre pour différentier cours collectifs et particuliers
+- regroupement, sur quelle période
+
+Question générale: transformer en site web ?
+
+## Features
+
+- invoice printing

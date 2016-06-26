@@ -110,6 +110,11 @@ module.exports = class CardController
     else
       @_reset()
 
+    # focus to first field
+    _.delay =>
+      $('.dancer.focusable .btn.dropdown-toggle').focus()
+    , 200
+
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
       return unless @hasChanged
       # stop state change until user choose what to do with pending changes
@@ -178,7 +183,7 @@ module.exports = class CardController
       saved = []
 
       async.each models, (model, next) =>
-        return next() if (model.id in saved) or _.isEqual model.toJSON(), @_previous[model.id]
+        return next() if model.id? and ((model.id in saved) or _.isEqual model.toJSON(), @_previous[model.id])
         if model.constructor.name is 'Address'
           console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
         else
@@ -490,7 +495,7 @@ module.exports = class CardController
   _setChanged: (changed) =>
     if changed
       if @card._v > 0
-        # cand cancel only if already saved once
+        # can cancel only if already saved once
         @scope.listCtrl.actions.splice 0, 0, {label: 'btn.cancel', icon: 'ban-circle', action: @cancel}
       @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
     else if @hasChanged
@@ -592,7 +597,7 @@ module.exports = class CardController
     # performs comparison between current and old values
     @_setChanged false
     for model in [@card].concat @dancers, @addresses when not _.isEqual @_previous[model.id], model.toJSON()
-      console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
+      # console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
       # quit at first modification
       return @_setChanged true
 

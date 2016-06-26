@@ -1,6 +1,6 @@
 moment = require 'moment'
 {join, resolve} = require 'path'
-{appendFileSync, readFile, existsSync} = require 'fs-extra'
+{appendFile, appendFileSync, readFile, existsSync} = require 'fs-extra'
 {map} = require 'async'
 {render} = require 'stylus'
 i18n = require '../labels/common'
@@ -8,6 +8,15 @@ _ = require 'lodash'
 _str = require 'underscore.string'
 _.mixin _str.exports()
 _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
+
+# Format a given value as a string.
+# @param value [Any] - the value formated
+# @returns [String] the formated equivalent
+format = (value) ->
+  if _.isArray value then value.map(format).join ', '
+  else if _.isError value then value.stack
+  else if _.isObject value then JSON.stringify value, null, 2
+  else value
 
 # used to declare getter/setter within classes
 # @see https://gist.github.com/reversepanda/5814547
@@ -35,14 +44,14 @@ getFirstStep = (obj, path) ->
 
 module.exports =
 
-  ###fixConsole: ->
+  fixConsole: ->
     # Log file
     originals = {}
-    logFile = join gui.App.dataPath, 'log.txt'
+    logFile = resolve 'log.txt'
     ['info', 'debug', 'error', 'log'].forEach (method) ->
       originals[method] = global.console[method]
       global.console[method] = (args...) ->
-        appendFileSync logFile, "#{moment().format 'HH:mm:ss'} - #{method} - #{args.join ' '}\n"
+        appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
         #(originals[method] or originals.debug)?.invoke console, args###
 
   # Working instanceof operator. No inheritance, no custom types
@@ -59,9 +68,9 @@ module.exports =
   # @param err [Error] the error to dump
   dumpError: (err) ->
     now = new Date()
-    appendFileSync join(gui.App.dataPath, 'errors.txt'), """
+    appendFileSync resolve('log.txt'), """
 ------------
-Received at #{now.getFullYear()}-#{now.getMonth()+1}-#{now.getDate()} #{now.getHours()}:#{now.getMinutes()}:#{now.getSeconds()}
+Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
 #{err.message}
 #{err.stack}\n\n"""
     process.exit 0

@@ -6,10 +6,10 @@
   <h4>{{::'ttl.dancer'|i18n}}</h4>
   <div class="row">
     <span class="col-md-1 title">
-      <div class="btn-group" data-dropdown>
-        <a href="" class="btn dropdown-toggle" dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></a>
+      <div class="btn-group" data-dropdown keyboard-nav>
+        <button class="btn dropdown-toggle" dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
         <ul class="dropdown-menu">
-          <li data-ng-repeat="choice in ::ctrl.i18n.civilityTitles"><a data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
+          <li data-ng-repeat="choice in ::ctrl.i18n.civilityTitles"><a href="" data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
         </ul>
       </div>
     </span>

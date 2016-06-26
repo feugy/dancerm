@@ -17,10 +17,10 @@
       <input type="text" data-number-only class="input-small scrollable" data-ng-model="ctrl.registration.charged" data-ng-change="ctrl._onChange('charged')"/>
       <span class="input-group-addon">{{::'lbl.currency'|i18n}}</span>
     </span>
-    <span class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></a>
+    <span class="btn-group" data-dropdown keyboard-nav>
+      <button class="btn dropdown-toggle" dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></button>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="(period, label) in ::ctrl.i18n.periods"><a data-ng-click="ctrl.setPeriod(period)">{{::label}}</a></li>
+        <li data-ng-repeat="(period, label) in ::ctrl.i18n.periods"><a href="" data-ng-click="ctrl.setPeriod(period)">{{::label}}</a></li>
       </ul>
     </span>
     <a href="" class="btn pull-right add-payment glyphed" data-ng-click="ctrl.addPayment()"><i class="glyphicon glyphicon-plus"/>{{::'btn.addPayment'|i18n}}</a>

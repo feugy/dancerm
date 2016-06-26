@@ -20,13 +20,13 @@ module.exports = class Card extends Persisted
   # @param raw [Object] raw attributes of this card
   constructor: (raw = {}) ->
     # set default values
-    _.defaults raw, 
+    _.defaults raw,
       knownBy: []
       registrations: []
     # enrich registrations with models
-    raw.registrations = (for rawRegistration in raw.registrations 
+    raw.registrations = (for rawRegistration in raw.registrations
       if rawRegistration?.constructor?.name isnt 'Registration'
-        new Registration rawRegistration 
+        new Registration rawRegistration
       else
         rawRegistration
     )

@@ -149,6 +149,50 @@ plannings = [{
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs latine', start:'Tue 20:30', end:'Tue 22:00', teacher:'Anthony', hall:'Croix-Luizet',  _id:'04e0c49e2ced'}
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs standard', start:'Thu 20:30', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 1',  _id:'839c42db17dd'}
   ]
+}, {
+  season: '2016/2017'
+  classes: [
+    {kind:'Toutes danses', color:'color1', level:'1', start:'Tue 20:45', end:'Tue 21:45', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '55a8e67c7751'}
+    {kind:'Toutes danses', color:'color1', level:'2', start:'Mon 20:30', end:'Mon 21:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '3058a8de0a5c'}
+    {kind:'Toutes danses', color:'color1', level:'3', start:'Thu 20:00', end:'Thu 21:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '1aa239417f3c'}
+
+    {kind:'Rock/Salsa', color:'color2', level:'1', start:'Wed 20:00', end:'Wed 21:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'eac2d4176b15'}
+    {kind:'Rock/Salsa', color:'color2', level:'2', start:'Mon 19:30', end:'Mon 20:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'b9e1cec58fb3'}
+    {kind:'Rock/Salsa', color:'color2', level:'3', start:'Wed 21:00', end:'Wed 22:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '5d65d00cfc00'}
+    {kind:'Salsa/Bachata', color:'color2', level:'1/2', start:'Thu 21:00', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'e5aadab58e19'}
+
+    {kind:'Zumba', color:'color5', level:'adultes', start:'Tue 19:30', end:'Tue 20:30', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '889103691899'}
+    {kind:'Zumba', color:'color5', level:'ados/adultes', start:'Wed 18:30', end:'Wed 19:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '774cfb309031'}
+    {kind:'Zumba', color:'color5', level:'4/7 ans', start:'Tue 17:00', end:'Tue 17:45', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '4cb830950507'}
+    {kind:'Zumba', color:'color5', level:'8/12 ans', start:'Mon 17:45', end:'Mon 18:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '7a80444ea38b'}
+
+    {kind:"Modern'Jazz", color:'color4', level:'débutant/moyen', start:'Mon 19:30', end:'Mon 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'a1b1531b9094'}
+    {kind:"Modern'Jazz", color:'color4', level:'inter/avancé', start:'Wed 20:30', end:'Wed 21:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e18e1f215081'}
+    {kind:"Modern'Jazz", color:'color4', level:'avancé', start:'Mon 20:30', end:'Mon 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e737857c743e'}
+    {kind:"Modern'Jazz", color:'color4', level:'atelier choré.', start:'Wed 19:30', end:'Wed 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e04e3b6adc83'}
+    {kind:"Modern'Jazz", color:'color4', level:'initiation 8/9 ans', start:'Wed 13:30', end:'Wed 14:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '7e81429fdfc5'}
+    {kind:"Modern'Jazz", color:'color4', level:'élémentaire 10/12 ans', start:'Wed 14:30', end:'Wed 15:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '12653337d46e'}
+    {kind:"Modern'Jazz", color:'color4', level:'pré-ados moyen', start:'Wed 15:30', end:'Wed 16:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '1f4efaa63093'}
+    {kind:"Modern'Jazz", color:'color4', level:'ados intermédiaire', start:'Wed 16:30', end:'Wed 18:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '1347a06427d3'}
+    {kind:"Modern'Jazz", color:'color4', level:'ados avancé', start:'Wed 18:00', end:'Wed 19:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e348363e76d8'}
+    {kind:"Modern'Jazz", color:'color4', level:'barre à terre', start:'Wed 19:30', end:'Wed 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'ee2ec4dfb03d'}
+    {kind:"Modern'Jazz", color:'color4', level:'technique enfant', start:'Mon 17:30', end:'Mon 18:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '1faaab50dcf3'}
+    {kind:"Modern'Jazz", color:'color4', level:'technique ado', start:'Mon 18:30', end:'Mon 19:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'f31addebb435'}
+
+    {kind:'Hip Hop', color:'color6', level:'1 8/12 ans', start:'Tue 17:45', end:'Tue 18:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id: '1d2e1074650a'}
+    {kind:'Hip Hop', color:'color6', level:'1 ados', start:'Tue 18:30', end:'Tue 19:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id: '6f3502f241d0'}
+    {kind:'Hip Hop', color:'color6', level:'2 ados/adultes', start:'Tue 19:30', end:'Tue 20:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id: 'f1ec2dd5ae5d'}
+
+    {kind:'Initiation', color:'color1', level:'4/5 ans', start:'Wed 13:30', end:'Wed 14:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'b5098cbc27eb'}
+    {kind:'Initiation', color:'color1', level:'5/7 ans', start:'Mon 17:00', end:'Mon 17:45', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '7484782b231f'}
+    {kind:'Initiation', color:'color1', level:'6/7 ans', start:'Wed 14:30', end:'Wed 15:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'ccc817d8ef54'}
+
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'1 8/12 ans', start:'Wed 15:30', end:'Wed 16:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'aa1239f3c417'}
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'2', start:'Wed 16:30', end:'Wed 17:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '3aeac4e34ad8'}
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'formation compétition filles', start:'Thu 18:00', end:'Thu 19:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '14e627933bdf'}
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs latine', start:'Tue 20:00', end:'Tue 22:00', teacher:'Anthony', hall:'Croix-Luizet', _id: '6901b184f50f'}
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs standard', start:'Thu 20:30', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '1ca4038625aa'}
+  ]
 }]
 
 # Merge existing and expected dance classes of a given planning
@@ -160,7 +204,6 @@ mergePlanning = (planning, done) ->
   console.log "check planning #{planning.season}"
   # lazy request to avoid circular dependencies between persisted and initializer
   DanceClass = require('../dance_class')
-  window.DanceClass = DanceClass # TOREMOVE
 
   DanceClass.getPlanning planning.season, (err, danceClasses) ->
     return done err if err?

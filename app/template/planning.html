@@ -1,16 +1,16 @@
 <div>
   <div class="commands">
-    <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.currentSeason}}<span class="caret"></span></a>
+    <div class="btn-group" data-dropdown keyboard-nav>
+      <button class="btn dropdown-toggle" dropdown-toggle>{{ctrl.currentSeason}}<span class="caret"></span></button>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="season in ctrl.seasons"><a data-ng-click="ctrl.loadPlanning(season)">{{::season}}</a></li>
+        <li data-ng-repeat="season in ctrl.seasons"><a href="" data-ng-click="ctrl.loadPlanning(season)">{{::season}}</a></li>
       </ul>
     </div>
-    <div class="btn-group" data-dropdown>
-      <a href="" class="btn dropdown-toggle" dropdown-toggle>{{ctrl.cardList.criteria.teachers[0]}}<span data-ng-if="!ctrl.cardList.criteria.teachers[0]">{{::'lbl.allTeachers'|i18n}}</span><span class="caret"></span></a>
+    <div class="btn-group" data-dropdown keyboard-nav>
+      <button class="btn dropdown-toggle" dropdown-toggle>{{ctrl.cardList.criteria.teachers[0]}}<span data-ng-if="!ctrl.cardList.criteria.teachers[0]">{{::'lbl.allTeachers'|i18n}}</span><span class="caret"></span></button>
       <ul class="dropdown-menu">
-        <li><a data-ng-click="ctrl.searchByTeacher($event)">{{::'lbl.allTeachers'|i18n}}</a></li>
-        <li data-ng-repeat="teacher in ctrl.teachers"><a data-ng-click="ctrl.searchByTeacher($event, teacher)">{{::teacher}}</a></li>
+        <li><a href="" data-ng-click="ctrl.searchByTeacher($event)">{{::'lbl.allTeachers'|i18n}}</a></li>
+        <li data-ng-repeat="teacher in ctrl.teachers"><a href="" data-ng-click="ctrl.searchByTeacher($event, teacher)">{{::teacher}}</a></li>
       </ul>
     </div>
   </div>
