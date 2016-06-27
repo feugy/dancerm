@@ -6,16 +6,16 @@ ConflictsController = require './conflicts'
 # Edit application settings
 module.exports = class SettingsController
 
-  # Controller dependencies
+  # controller dependencies
   @$inject: ['$scope', '$rootScope', 'dialog', 'import', '$filter', '$location']
 
-  # Route declaration
+  # route declaration
   @declaration:
     controller: SettingsController
     controllerAs: 'ctrl'
     templateUrl: 'settings.html'
 
-  # Controller's own scope, for event listening
+  # controller's own scope, for event listening
   scope: null
 
   # Angular's root scope for event broadcast
@@ -24,7 +24,7 @@ module.exports = class SettingsController
   # Link to Angular dialog service
   dialog: null
 
-  # Link to dancer import service
+  # link to dancer import service
   import: null
 
   # Angular filters factory
@@ -33,8 +33,14 @@ module.exports = class SettingsController
   # link to edited properties stored inside localStorage
   localStorage: null
 
-  # True to display message regarding dump location
+  # true to display message regarding dump location
   askDumpLocation: false
+
+  # edited VAT configuration
+  vat:
+    value: null
+    teachers: []
+    added: null
 
   # list of available theme
   themes: []
@@ -53,6 +59,11 @@ module.exports = class SettingsController
   # @param stateParams [Object] invokation route parameters
   constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
     @localStorage = localStorage
+    @vat.value = 100 * if localStorage.vat? then +localStorage.vat else i18n.vat
+    # in localStorage, empty array will be serialized as an empty string
+    @vat.teachers = if localStorage.vatTeachers? then localStorage.vatTeachers or [] else i18n.print.vatTeachers
+    # in localStorage, array will be serialized as string
+    @vat.teachers = @vat.teachers.split ',' unless Array.isArray @vat.teachers
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false
@@ -80,6 +91,28 @@ module.exports = class SettingsController
       @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
         # stop state change until user choose what to do with pending changes
         event.preventDefault() if @askDumpLocation
+
+  # Check that VAT rate is a valid number, and save it if it's the case
+  onChangeVat: () =>
+    return if isNaN +@vat.value
+    @localStorage.vat = +@vat.value / 100
+
+  # Adds the currently edited teacher to the list of VAT affected teachers.
+  # Also updates local storage
+  addVatTeacher: () =>
+    return unless @vat.added?.trim()?.length > 0
+    @vat.teachers.push @vat.added.trim().toLowerCase()
+    @vat.added = null
+    @localStorage.vatTeachers = @vat.teachers.concat()
+
+  # Removes a given teachers from those affected by VAT. Also updates local storage
+  #
+  # @param idx [Number] - index of the removed teacher
+  removeVatTeacher: (idx, teacher) =>
+    console.log idx, teacher
+    return unless @vat.teachers[idx]?
+    @vat.teachers.splice idx, 1
+    @localStorage.vatTeachers = @vat.teachers.concat()
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into local storage, and button is temporary disabled while compiling

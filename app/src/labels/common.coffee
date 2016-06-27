@@ -120,6 +120,8 @@ module.exports =
     version: 'v{{version}}'
     value: 'Valeur'
     vat: 'dont T.V.A.'
+    vatTeachers: 'Enseignants soumis à la TVA'
+    vatValue: 'TVA'
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
     zipcode: 'Code postal'
@@ -260,6 +262,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
     stats: '{{total}} danseurs'
+    vatSettings: 'Paramètres de TVA'
 
   # VAT rate
   vat: 0.196

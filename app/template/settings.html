@@ -16,7 +16,27 @@
           </div>
         </div>
         <div class="form-group">
-          <a href="" class="btn btn-primary glyphed col-sm-offset-4" data-ng-click="ctrl.importDancers()"><i glass="glyphicon glyphicon-import"/>{{::'btn.import'|i18n}}</a>
+          <a href="" class="btn btn-primary glyphed col-sm-offset-4" data-ng-click="ctrl.importDancers()"><i class="glyphicon glyphicon-import"/>{{::'btn.import'|i18n}}</a>
+        </div>
+      </form>
+    </section>
+    <section>
+      <aside><h2>{{::'ttl.vatSettings'|i18n}}</h2></aside>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{::'lbl.vatTeachers'|i18n:{sep:true} }}</label>
+          <div class="col-sm-8">
+            <ul class="vat-teachers">
+              <li data-ng-repeat="teacher in ctrl.vat.teachers track by $index"><i class="glyphicon glyphicon-trash" data-ng-click="ctrl.removeVatTeacher($index, teacher)"/>{{teacher|capitalize}}</li>
+            </ul>
+            <input type="text" name="vatTeacher" data-ng-model="ctrl.vat.added"/><a href="" class="btn add-vat-teacher" data-ng-click="ctrl.addVatTeacher()"><i class="glyphicon glyphicon-plus"/></a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">{{::'lbl.vatValue'|i18n:{sep:true} }}</label>
+          <div class="col-sm-8">
+            <input type="number" name="vat" data-ng-model="ctrl.vat.value" data-ng-change="ctrl.onChangeVat()"/>
+          </div>
         </div>
       </form>
     </section>
@@ -32,7 +52,7 @@
                 <li data-ng-repeat="theme in ::ctrl.themes"><a href="" data-ng-click="ctrl.applyTheme(theme)">{{::theme.label}}</a></li>
             </div>
           </div>
-        </div
+        </div>
       </form>
     </section>
     <section>

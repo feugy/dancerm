@@ -30,6 +30,9 @@ module.exports = (app) =>
     "#{day} #{input[4..8]}"
   ]
 
+  # capitalize filter displays capitalized strings
+  app.filter 'capitalize', [ -> (input) -> _.capitalize input ]
+
   # The setNull directive set model value to null if value is empty
   app.directive 'setNull', ->
     # no replacement
