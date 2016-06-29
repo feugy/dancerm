@@ -50,7 +50,7 @@ class PlanningDirective
     # bind clicks
     @element.on 'click', '.danceClass', (event) =>
       danceClass = $(event.target).closest '.danceClass'
-      model = _.findWhere @scope.danceClasses, id:danceClass.data 'id'
+      model = _.findWhere @scope.danceClasses, id:danceClass.data('id').toString()
       # invoke click handler
       @scope.onClick $event: event, danceClasses: [model]
 

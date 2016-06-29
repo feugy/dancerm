@@ -2,12 +2,12 @@
 gui = require 'nw.gui'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
-# merge lodash and lodash string functions
 _ = require 'lodash'
 async = require 'async'
-
+{fixConsole} = require '../script/util/common'
 
 # on DOM loaded
+fixConsole()
 win = gui.Window.get()
 
 angular.element(win.window).on 'load', ->
@@ -52,10 +52,11 @@ angular.element(win.window).on 'load', ->
       @withClasses = win.withClasses
       @withVat = win.withVat
       @withCharged = win.withCharged
+      @vat = +localStorage.vat
       # get data from mother window
       @registration = _.findWhere win.card.registrations, season: win.season
       # get card dancers
-      Dancer.findWhere {cardId: win.card.id}, (dancers, err) =>
+      Dancer.findWhere {cardId: win.card.id}, (err, dancers) =>
         return console.error err if err?
         @dancers = dancers
         async.map @dancers, (dancer, next) ->
@@ -136,7 +137,7 @@ angular.element(win.window).on 'load', ->
     # Compute VAT on registration
     #
     # @return the VAT amount
-    getVat: => Math.floor(@getCharged()/(1+i18n.vat)*i18n.vat*100)/100
+    getVat: => Math.floor(@getCharged()/(1+@vat)*@vat*100)/100
 
     # Check if this registration contains a given payment type
     #

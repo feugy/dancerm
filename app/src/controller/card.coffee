@@ -81,6 +81,10 @@ module.exports = class CardController
   # Registration print preview window
   _preview: null
 
+  # **private**
+  # List of lower-cased names of teachers affected by VAT
+  _vatTeachers: []
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Controller's own scope, for change detection
@@ -103,6 +107,9 @@ module.exports = class CardController
     # set context actions for planning
     @scope.listCtrl.actions = []
     @_setChanged false
+    @_vatTeachers = localStorage.vatTeachers or []
+    # in localStorage, array will be serialized as string
+    @_vatTeachers = @_vatTeachers.split ',' unless Array.isArray @_vatTeachers
 
     if stateParams.id
       # load edited dancer
@@ -371,7 +378,6 @@ module.exports = class CardController
     @save true, (err) =>
       return console.error err if err?
       open = =>
-        _console = global.console
         try
           @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
             frame: true
@@ -381,9 +387,6 @@ module.exports = class CardController
             # size to A4 format, 3/4 height
             width: 790
             height: 400
-
-          # obviously, a bug !
-          global.console = _console
 
           # set parameters and wait for closure
           @_preview.card = @card
@@ -408,7 +411,7 @@ module.exports = class CardController
 
         for danceClass in _.flatten danceClasses when danceClass.season is registration.season
           teacher = danceClass.teacher?.toLowerCase()
-          if teacher in i18n.print.vatTeachers
+          if teacher in @_vatTeachers
             # VAT included only if teacher is specific
             withVat = true
           unless group?

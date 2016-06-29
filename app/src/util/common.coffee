@@ -1,6 +1,7 @@
 moment = require 'moment'
 {join, resolve} = require 'path'
 {appendFile, appendFileSync, readFile, existsSync} = require 'fs-extra'
+{inspect} = require 'util'
 {map} = require 'async'
 {render} = require 'stylus'
 i18n = require '../labels/common'
@@ -15,7 +16,7 @@ _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', '
 format = (value) ->
   if _.isArray value then value.map(format).join ', '
   else if _.isError value then value.stack
-  else if _.isObject value then JSON.stringify value, null, 2
+  else if _.isObject value then inspect value
   else value
 
 # used to declare getter/setter within classes
@@ -46,13 +47,10 @@ module.exports =
 
   fixConsole: ->
     # Log file
-    originals = {}
     logFile = resolve 'log.txt'
     ['info', 'debug', 'error', 'log'].forEach (method) ->
-      originals[method] = global.console[method]
       global.console[method] = (args...) ->
         appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
-        #(originals[method] or originals.debug)?.invoke console, args###
 
   # Working instanceof operator. No inheritance, no custom types
   #

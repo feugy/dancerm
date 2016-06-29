@@ -27,11 +27,16 @@ try
   # 'win' is Node-Webkit's window
   # 'window' is DOM's window
   win = gui.Window.get()
-  win.isMaximized = false
+  isMaximized = false
   hasDump = false
   app = null
   # stores in local storage application state
   win.on 'close', ->
+    console.log 'close !'
+    for attr in ['x', 'y', 'width', 'height']
+      localStorage?.setItem attr, win[attr]
+
+    localStorage?.setItem 'maximized', isMaximized
     return @close true if hasDump
 
     console.log 'ask to close...'
@@ -42,16 +47,12 @@ try
       else
         console.log 'close after save'
       @close true
-
-    for attr in ['x', 'y', 'width', 'height']
-      localStorage?.setItem attr, win[attr]
-
-    localStorage?.setItem 'maximized', win.isMaximized
     false
 
-  win.on 'maximize', -> win.isMaximized = true
-  win.on 'unmaximize', -> win.isMaximized = false
-  win.on 'minimize', -> win.isMaximized = false
+  win.on 'maximize', -> isMaximized = true
+  win.on 'unmaximize', -> isMaximized = false
+  win.on 'minimize', -> isMaximized = false
+  win.on 'resize', -> isMaximized = false
 
   $(win.window).on 'keydown', (event) ->
     # disable backspace support
@@ -84,12 +85,12 @@ try
 
     # restore from local storage application state if possible
     if localStorage.getItem 'x'
-      x = Number localStorage.getItem 'x'
-      y = Number localStorage.getItem 'y'
+      x = +localStorage.getItem 'x'
+      y = +localStorage.getItem 'y'
       win.moveTo x, y
     if localStorage.getItem 'width'
-      width = Number localStorage.getItem 'width'
-      height = Number localStorage.getItem 'height'
+      width = +localStorage.getItem 'width'
+      height = +localStorage.getItem 'height'
       win.resizeTo width, height
     else
       infos = require '../../package.json'

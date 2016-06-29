@@ -2,8 +2,10 @@
 gui = require 'nw.gui'
 moment = require 'moment'
 _ = require 'lodash'
+{fixConsole} = require '../script/util/common'
 
 # on DOM loaded
+fixConsole()
 win = gui.Window.get()
 
 angular.element(win.window).on 'load', ->
