@@ -4,10 +4,10 @@ DanceClass = require '../model/dance_class'
 Payment = require '../model/payment'
 
 class RegistrationDirective
-                
+
   # Controller dependencies
   @$inject: ['$scope', '$element', 'dialog', '$filter', '$rootScope']
-  
+
   # i18n labels, for rendering
   i18n: i18n
 
@@ -26,7 +26,7 @@ class RegistrationDirective
   # Array of arrays of dance classes for this season.
   # Concerned dancers id is used as key
   classesPerDancer: {}
-  
+
   # Selected period label
   periodLabel: ''
 
@@ -45,14 +45,14 @@ class RegistrationDirective
     unwatches = []
     unwatches.push @scope.$on 'dance-classes-changed', (event, dancer) =>
       @_updateRendering() if dancer in @dancers
-    
+
     # on cancellation, restore previous payments
     unwatches.push rootScope.$on 'cancel-edit', =>
       return unless @registration? and @_previousPayments?
       @registration.payments.splice.apply @registration.payments, [0, @registration.payments.length].concat @_previousPayments
 
     @scope.$on '$destroy', -> unwatch?() for unwatch in unwatches
-  
+
   # Creates a new payment and adds it to the current registration
   addPayment: =>
     @registration.payments.push new Payment payer: @dancers[0].lastname
@@ -78,21 +78,21 @@ class RegistrationDirective
   getBalanceState: =>
     due = @registration.due()
     if  due > 0
-      'balance-low' 
-    else if due is 0 
+      'balance-low'
+    else if due is 0
       'balance-right'
     else
-      '' 
+      ''
   # Invoked when a payment needs to be removed.
   # Confirm operation with a modal popup and proceed to the removal
   #
   # @param removed [Payment] the removed payment model
   removePayment: (removed) =>
-    @dialog.messageBox(@i18n.ttl.confirm, 
-      @filter('i18n')('msg.removePayment', args: 
+    @dialog.messageBox(@i18n.ttl.confirm,
+      @filter('i18n')('msg.removePayment', args:
         type: @i18n.paymentTypes[removed.type]
         value: removed.value
-        receipt: removed.receipt.format @i18n.formats.receipt), 
+        receipt: removed.receipt.format @i18n.formats.receipt),
       [
         {result: false, label: @i18n.btn.no}
         {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
@@ -130,9 +130,9 @@ class RegistrationDirective
 
   # **private**
   # Relay change events
-  # 
+  #
   # @param field [String] modified field
-  _onChange: (field) => 
+  _onChange: (field) =>
     # update balance on payment modification
     @registration?.updateBalance() if 0 is field.indexOf 'payments'
     @onChange $field: field
@@ -153,15 +153,15 @@ module.exports = (app) ->
     controllerAs: 'ctrl'
     bindToController: true
     # parent scope binding.
-    scope: 
+    scope:
       # card's dancers
       dancers: '='
       # displayed registration
       registration: '=src'
       # array of missing fields
       requiredFields: '='
-      # invoked when printing the registration
-      onPrint: '&?'
+      # invoked when printing settlement for that registration
+      onPrintSettlement: '&?'
       # invoked when registration needs to be removed. Concerned registration is a 'model' parameter
       onRemove: '&?'
       # used to propagate model modifications, invoked with $field as parameter

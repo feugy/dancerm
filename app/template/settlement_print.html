@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body class="settlement-print" data-ng-controller="Print as ctrl">
+    <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
+    <header>
+      <img src="../style/img/ribas.png" class="logo"/>
+      <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
+      <div class="title" data-ng-bind-html="::'ttl.settlementPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
+    </header>
+    <div class="dancers">
+      <article data-ng-repeat="dancer in ctrl.dancers">
+        <aside class="dancer">
+          <div class="row">
+            <span>{{::dancer.firstname}} {{::dancer.lastname}}</span>
+          </div>
+          <div class="row">
+            <span>{{::ctrl.formatAddress(dancer)}}</span>
+          </div>
+        </aside>
+        <aside class="dance-classes">
+          <article data-ng-repeat="danceClass in ctrl.getClasses(dancer)">
+            <div class="row">
+              <span>{{::danceClass.kind}} {{::danceClass.level}}</span>
+            </div>
+            <div class="row">
+              <span>{{::ctrl.formatDay(danceClass)}} {{::ctrl.formatHours(danceClass)}}</span>
+            </div>
+          </article>
+        </aside>
+      </article>
+    </div>
+    <h1 class="settlement">{{::'print.settlementTitle'|i18n}}</h1>
+    <div class="two-columns">
+      <div data-placeholder="{{::'print.settlement' | i18n}}"></div>
+      <div class="pre-filled">
+        <div class="row">
+          <span>{{::'print.where'|i18n}}</span><span class="input"></span><span>{{::'print.when'|i18n}}</span><span class="input"></span>
+        </div>
+        <span data-placeholder="{{::'print.sign' | i18n}}"></span>
+      </div>
+      <div class="pre-filled stamp">{{::'print.stamp'|i18n}}</div>
+    </div>
+    <script type="application/javascript" src="../vendor/angular.js"></script>
+    <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
+    <script type="application/javascript" src="../script/settlement_print.js"></script>
+  </body>
+</html>

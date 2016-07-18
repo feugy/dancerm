@@ -1,7 +1,10 @@
 <article class="registration focusable">
   <span class="btn-group" data-dropdown>
-    <a href="" class="btn glyphed" data-ng-click="ctrl.onPrint({registration: ctrl.registration, auto:true})"><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}</a>
+    <a href="" class="btn glyphed dropdown-toggle" dropdown-toggle><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}<span class="caret"></span></a>
     <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.registration})"><i class="glyphicon glyphicon-trash"/></a>
+    <ul class="dropdown-menu">
+      <li><a href="" data-ng-click="ctrl.onPrintSettlement({registration: ctrl.registration})">{{::'btn.printSettlement'|i18n}}</a></li>
+    </ul>
   </span>
   <article class="card-dancer-classes" data-ng-repeat="dancer in ctrl.dancers" data-ng-if="ctrl.classesPerDancer[dancer.id].length">
     <div class="dancer-classes">

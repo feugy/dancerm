@@ -367,6 +367,30 @@ module.exports = class CardController
             return console.error err if err?
             @loadCard @card.id
 
+  # Print the settlement for a given year
+  #
+  # @param registration [Registration] the concerned registration
+  printSettlement: (registration) =>
+    return @_preview.focus() if @_preview?
+    @save true, (err) =>
+      return console.error err if err?
+      try
+        @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'settlement_print.html').replace(/\\/g, '/')}",
+          frame: true
+          toolbar: true
+          icon: require('../../../package.json')?.window?.icon
+          focus: true
+          # size to A4 format, 3/4 height
+          width: 790
+          height: 400
+
+        # set parameters and wait for closure
+        @_preview.card = @card
+        @_preview.season = registration.season
+        @_preview.on 'closed', => @_preview = null
+      catch err
+        console.error err
+
   # Print the registration confirmation form
   #
   # @param registration [Registration] the concerned registration

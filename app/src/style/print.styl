@@ -81,10 +81,10 @@ body
       label
         margin-right articlePad
         display inline-block
+        color lighten(black, 20%)
+        font-size .8em
       label:not(:first-child)
         margin-left articlePad * 2
-      span
-        font-weight bold
 
   .two-columns
     height 800px
@@ -99,7 +99,7 @@ body
       font-size 90%
       text-align justify
 
-  .settlement
+  &.settlement-print .title
     text-align center
     font-variant small-caps
 
@@ -253,6 +253,17 @@ body.addresses-list
     .configure
     input[type=checkbox]
       display none
+
+
+body.settlement-print
+  .school
+  .title
+    width 50%
+    box()
+    margin 0
+
+  .school
+    margin-right 15px
 
 body.printing
 

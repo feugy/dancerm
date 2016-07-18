@@ -20,6 +20,7 @@ module.exports =
     ok: 'Ok'
     planning: 'Planning'
     printAddresses: 'Publipostage'
+    printSettlement: 'Réglement intérieur'
     printWithoutVat: 'Sans TVA, sans cours'
     printWithVat: 'Avec TVA, sans cours'
     printWithoutVatWithClasses: 'Sans TVA'
@@ -190,7 +191,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
 <p>Vous acceptez de bien vouloir apparaitre sur les photos et les vidéos des différentes manifestations de l'école de dans Ribas.</p>
 <h2>L'inscription et la fréquentation de l'école de danse Ribas entrainent obligatoirement l'acceptation du présent réglement.</h2>
 """
-    settlementTitle: "Reglement intérieur / Conditions générale d'adhesion"
+    settlementTitle: "Reglement intérieur / Conditions générale d'adhésion"
     sign: "<p>Signature de l'élève ou du responsable légal</p><p>Précédé de la mention \"lu et approuvé\"</p>"
     stamp: "Signature et cachet de l'école"
     # lower case name of teacher that need VAT
@@ -257,7 +258,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     missingCertificates: 'Certificats manquants'
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
-    registrationPrint: "<p>Fiche d'inscription</p><p>{{registration.season}}</p>"
+    settlementPrint: "<p>Réglement</p><p>{{registration.season}}</p>"
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
