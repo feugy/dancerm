@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body class="invoice-print" data-ng-controller="Print as ctrl">
+    <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
+    <header>
+      <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
+      <div class="client" data-ng-bind-html="'print.client'|i18n:{args:{address:ctrl.addresses[0], dancer:ctrl.dancers[0], phone: ctrl.getPhone(ctrl.dancers[0])}}"></div>
+    </header>
+    <div class="date">
+      <span data-ng-bind-html="'print.invoiceDate'|i18n:{args:{date: ctrl.getDate()}}"></span>
+    </div>
+    <script type="application/javascript" src="../vendor/angular.js"></script>
+    <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
+    <script type="application/javascript" src="../script/invoice_print.js"></script>
+  </body>
+</html>

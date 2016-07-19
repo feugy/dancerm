@@ -8,6 +8,8 @@ gui = require 'nw.gui'
 {dumpError, buildStyles, getColorsFromTheme, fixConsole} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
 
+require('moment').locale 'fr'
+
 process.on 'uncaughtException', dumpError
 
 try

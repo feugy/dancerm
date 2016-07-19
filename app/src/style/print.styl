@@ -99,10 +99,6 @@ body
       font-size 90%
       text-align justify
 
-  &.settlement-print .title
-    text-align center
-    font-variant small-caps
-
   .pre-filled
     box()
     height 225px
@@ -124,7 +120,7 @@ body
   .btn
     position absolute
     top 0px
-    left 46%
+    left 43.5%
     color emphasisColor
     background-color primaryBtnBackgroundHover
     background-image primaryBtnBackground
@@ -264,6 +260,37 @@ body.settlement-print
 
   .school
     margin-right 15px
+
+  .title
+    text-align center
+    font-variant small-caps
+
+body.invoice-print
+
+  .date
+    display flex
+    justify-content flex-end
+    margin 2em 0 0
+    padding 0
+    width 100%
+
+  header
+    width 100%
+    justify-content space-between
+
+  .school
+  .client
+    box()
+    border 0px solid transparent
+    width 40%
+    margin 0
+
+    > p
+      margin 0
+
+    > p:first-child
+      font-weight bold
+      font-size 110
 
 body.printing
 

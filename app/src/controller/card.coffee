@@ -391,7 +391,34 @@ module.exports = class CardController
       catch err
         console.error err
 
+  # Print invoice for a given year, with ot without VAT
+  #
+  # @param registration [Registration] the concerned registration
+  # @param withVat [Boolean] true to display VAT
+  printInvoice: (registration, withVat= false) =>
+    return @_preview.focus() if @_preview?
+    @save true, (err) =>
+      return console.error err if err?
+      try
+        @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'invoice_print.html').replace(/\\/g, '/')}",
+          frame: true
+          toolbar: true
+          icon: require('../../../package.json')?.window?.icon
+          focus: true
+          # size to A4 format, 3/4 height
+          width: 790
+          height: 400
+
+        # set parameters and wait for closure
+        @_preview.card = @card
+        @_preview.withVat = withVat
+        @_preview.season = registration.season
+        @_preview.on 'closed', => @_preview = null
+      catch err
+        console.error err
+
   # Print the registration confirmation form
+  # TODO unused
   #
   # @param registration [Registration] the concerned registration
   # @param auto [Boolean] true to guess if VAT and dance classes details are needed or not

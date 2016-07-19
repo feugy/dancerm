@@ -162,6 +162,8 @@ module.exports = (app) ->
       requiredFields: '='
       # invoked when printing settlement for that registration
       onPrintSettlement: '&?'
+      # invoked when printing invoice for that registration, with ot without VAT
+      onPrintInvoice: '&?'
       # invoked when registration needs to be removed. Concerned registration is a 'model' parameter
       onRemove: '&?'
       # used to propagate model modifications, invoked with $field as parameter

@@ -21,10 +21,8 @@ module.exports =
     planning: 'Planning'
     printAddresses: 'Publipostage'
     printSettlement: 'Réglement intérieur'
-    printWithoutVat: 'Sans TVA, sans cours'
-    printWithVat: 'Avec TVA, sans cours'
-    printWithoutVatWithClasses: 'Sans TVA'
-    printWithVatWithClasses: 'Avec TVA'
+    printInvoiceWithoutVat: 'Facture sans TVA'
+    printInvoiceWithVat: 'Facture avec TVA'
     print: 'Imprimer'
     register: 'Inscription'
     remove: 'Supprimer'
@@ -53,6 +51,7 @@ module.exports =
     birthSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
     receiptSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
     birth: 'DD/MM/YYYY' # moment format
+    invoice: 'D MMMM YYYY' # moment format
     receipt: 'DD/MM/YYYY' # moment format
     callList: 'DD/MM'
 
@@ -165,10 +164,21 @@ module.exports =
       diana: 2
       delphine: 2
       nassim: 2
+    client: """
+<p>{{dancer.firstname}} {{dancer.lastname}}</p>
+<p>{{address.street}}</p>
+<p>{{address.zipcode}} {{address.city}}</p>
+<p>Tél. {{phone}}</p>
+"""
+    invoiceDate: 'Villeurbanne, le {{date}}'
     school: """
 <p>Ecole de danse Ribas</p>
 <p>34 rue du docteur Rollet</p>
 <p>69100 Villeurbanne</p>
+<p>Tél. 04 78 85 32 23</p>
+<p>Affaire personnelle profession libérale</p>
+<p>SIREN 443 342 431</p>
+<p>N° TVA FR XX 443 342 431</p>
 """
     settlement: """
 <h2>Accès aux activités</h2>

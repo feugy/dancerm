@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
 Payment = require './payment'
@@ -6,14 +7,17 @@ Payment = require './payment'
 # Registration is for one or several classes and a given
 # Multiple payment may be used for the same registration: their sum is stored in `balance`
 module.exports = class Registration extends Base
-  
+
   @_transient = Base._transient.concat ['balance']
+
+  # creation date
+  created: null
 
   # corresponding season
   season: null
 
   # store medical certificates for each involved persons
-  # person id is used as key 
+  # person id is used as key
   certificates: {}
 
   # price awaited and account balance
@@ -25,7 +29,7 @@ module.exports = class Registration extends Base
   # payment free text field
   details: null
 
-  # payment list for this registration and the account balance 
+  # payment list for this registration and the account balance
   payments: []
   balance: 0
 
@@ -33,8 +37,11 @@ module.exports = class Registration extends Base
   #
   # @param raw [Object] raw attributes of this registration
   constructor: (raw = {}) ->
+    now = moment()
+    now.year parseInt currentSeason()
+
     # set default values
-    _.defaults raw, 
+    _.defaults raw,
       season: currentSeason()
       certificates: {}
       charged: 0
@@ -42,17 +49,21 @@ module.exports = class Registration extends Base
       payments: []
       period: 'year'
       details: null
+      created: now.toISOString()
 
     # enrich object attributes
-    raw.payments = (for rawPayment in raw.payments 
+    raw.payments = (for rawPayment in raw.payments
       if rawPayment?.constructor?.name isnt 'Payment'
-        new Payment rawPayment 
+        new Payment rawPayment
       else
         rawPayment
     )
     # fill attributes
+    console.log raw, now.toISOString()
     super(raw)
     @charged = +@charged
+    @created = moment @created
+    @created = now unless @created?.isValid()
 
   # Updates balance by summing payments.
   # Automatically invoked on payment change

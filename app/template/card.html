@@ -49,6 +49,7 @@
         data-dancers="ctrl.dancers"
         data-on-remove="ctrl.removeRegistration(model)"
         data-on-print-settlement="ctrl.printSettlement(registration)"
+        data-on-print-invoice="ctrl.printInvoice(registration, vat)"
         data-required-fields="ctrl.required.regs[$index]"
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
     </tab>

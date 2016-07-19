@@ -15,5 +15,6 @@ cache/
 errors.txt
 log.txt
 .sublime-*
+.vscode
 *.dump
 *.log
