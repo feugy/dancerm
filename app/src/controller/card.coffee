@@ -375,9 +375,8 @@ module.exports = class CardController
     @save true, (err) =>
       return console.error err if err?
       try
-        @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'settlement_print.html').replace(/\\/g, '/')}",
+        @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'settlement_print.html').replace(/\\/g, '/')}",
           frame: true
-          toolbar: true
           icon: require('../../../package.json')?.window?.icon
           focus: true
           # size to A4 format, 3/4 height
@@ -400,9 +399,8 @@ module.exports = class CardController
     @save true, (err) =>
       return console.error err if err?
       try
-        @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'invoice_print.html').replace(/\\/g, '/')}",
+        @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'invoice_print.html').replace(/\\/g, '/')}",
           frame: true
-          toolbar: true
           icon: require('../../../package.json')?.window?.icon
           focus: true
           # size to A4 format, 3/4 height
@@ -430,9 +428,8 @@ module.exports = class CardController
       return console.error err if err?
       open = =>
         try
-          @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
+          @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
             frame: true
-            toolbar: false
             icon: require('../../../package.json')?.window?.icon
             focus: true
             # size to A4 format, 3/4 height

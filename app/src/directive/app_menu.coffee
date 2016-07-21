@@ -3,10 +3,10 @@ moment = require 'moment'
 i18n = require '../labels/common'
 
 class AppMenuDirective
-                
+
   # Controller dependencies
   @$inject: []
-  
+
   # true if application is maximized
   isMaximized: false
 
@@ -16,13 +16,13 @@ class AppMenuDirective
   # **private**
   # application window (nodeWebkit)
   _win: null
-  
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   constructor: () ->
-    @_win = gui.Window.get()
+    @_win = win
     @isMaximized = @_win.isMaximized
 
   # Application closure
@@ -34,10 +34,10 @@ class AppMenuDirective
     @_win.minimize()
 
   # Depending on maximized flag, restore or maximize application
-  maximizeOrRestore: => 
+  maximizeOrRestore: =>
     if @isMaximized
       @_win.unmaximize()
-    else 
+    else
       @_win.maximize()
     @isMaximized = not @isMaximized
 

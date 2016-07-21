@@ -1,5 +1,4 @@
 _ = require 'lodash'
-moment = require 'moment'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
 Payment = require './payment'
@@ -37,9 +36,6 @@ module.exports = class Registration extends Base
   #
   # @param raw [Object] raw attributes of this registration
   constructor: (raw = {}) ->
-    now = moment()
-    now.year parseInt currentSeason()
-
     # set default values
     _.defaults raw,
       season: currentSeason()
@@ -49,7 +45,6 @@ module.exports = class Registration extends Base
       payments: []
       period: 'year'
       details: null
-      created: now.toISOString()
 
     # enrich object attributes
     raw.payments = (for rawPayment in raw.payments
@@ -59,11 +54,8 @@ module.exports = class Registration extends Base
         rawPayment
     )
     # fill attributes
-    console.log raw, now.toISOString()
     super(raw)
     @charged = +@charged
-    @created = moment @created
-    @created = now unless @created?.isValid()
 
   # Updates balance by summing payments.
   # Automatically invoked on payment change

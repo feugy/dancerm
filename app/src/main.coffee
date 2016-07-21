@@ -1,12 +1,10 @@
-'use strict'
-
 _ = require 'lodash'
-gui = require 'nw.gui'
 {parallel} = require 'async'
 {join} = require 'path'
 {version} = require '../../package.json'
 {dumpError, buildStyles, getColorsFromTheme, fixConsole} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
+i18n = require '../script/labels/common'
 
 require('moment').locale 'fr'
 
@@ -17,21 +15,21 @@ try
 
   console.log "running DanceRM #{version} on node-webkit v#{process.versions['node-webkit']}"
 
+  # 'win' is Node-Webkit's window
+  # 'window' is DOM's window
+  win = nw.Window.get()
+
   # make some variable globals for other scripts
-  global.gui = gui
+  global.win = win
   global.$ = $
   global.angular = angular
   global.localStorage = localStorage
   global.version = version
 
-  i18n = require '../script/labels/common'
-
-  # 'win' is Node-Webkit's window
-  # 'window' is DOM's window
-  win = gui.Window.get()
   isMaximized = false
   hasDump = false
   app = null
+
   # stores in local storage application state
   win.on 'close', ->
     console.log 'close !'

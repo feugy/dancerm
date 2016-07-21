@@ -67,20 +67,21 @@ module.exports = class SettingsController
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false
+    imgRoot = '../style/img'
     @about = [
-      {title: 'DanceRM', image: 'dancerm.png', specs: [
+      {title: 'DanceRM', image: "#{imgRoot}/dancerm.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Feugy'
         @filter('i18n') 'lbl.version', args: version: require('../../../package.json').version
       ]}
-      {title: 'NW.js', image: 'nwjs.png', specs: [
+      {title: 'NW.js', image: "#{imgRoot}/nwjs.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Roger Wang'
         @filter('i18n') 'lbl.version', args: version: process.versions['node-webkit']
       ]}
-      {title: 'AngularJS', image: 'angular.png', specs: [
+      {title: 'AngularJS', image: "#{imgRoot}/angular.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Google'
         @filter('i18n') 'lbl.version', args: version: angular.version.full
       ]}
-      {title: 'Bootstrap', image: 'bootstrap.png', specs: [
+      {title: 'Bootstrap', image: "#{imgRoot}/bootstrap.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Twitter'
         @filter('i18n') 'lbl.version', args: version: '3.3.5'
       ]}

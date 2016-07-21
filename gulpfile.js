@@ -104,7 +104,7 @@ gulp.task('dist', () =>
         './' + paths.templateDest + '/**',
         './' + paths.vendor + '/**',
         './node_modules/**'],
-      version: '0.12.3',
+      version: '0.15.4',
       platforms: platforms,
       macIcns: 'app/src/style/img/dancerm.icns',
       winIco: 'app/src/style/img/dancerm.ico',

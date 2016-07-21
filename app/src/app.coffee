@@ -20,7 +20,7 @@ console.log "running with angular v#{angular.version.full}"
 # declare main module that configures routing
 app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'nvd3']
 
-app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (location, router, states) ->
+app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compileProvider', (location, router, states, compile) ->
   # html5 mode raise problems when loading templates
   location.html5Mode false
   # configure routing
@@ -40,6 +40,10 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', (locati
     url: '/planning'
     views:
       main: PlanningCtrl.declaration
+
+  # adds chrome-extension to whitelist to allow loading relative path to images/links
+  compile.imgSrcSanitizationWhitelist /^\s*((https?|ftp|file|blob|chrome-extension):|data:image\/)/
+  compile.aHrefSanitizationWhitelist /^\s*(https?|ftp|mailto|tel|file:chrome-extension):/
 ]
 
 # make export an Angular service

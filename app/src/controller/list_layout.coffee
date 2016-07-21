@@ -64,9 +64,8 @@ module.exports = class ListLayoutController
     return @_preview.focus() if @_preview?
     _console = global.console
     try
-      @_preview = gui.Window.open "file://#{join(__dirname, '..', '..', 'template', 'call_list_print.html').replace(/\\/g, '/')}",
+      @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'call_list_print.html').replace(/\\/g, '/')}",
         frame: true
-        toolbar: false
         title: window.document.title
         icon: require('../../../package.json')?.window?.icon
         focus: true

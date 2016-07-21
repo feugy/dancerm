@@ -1,12 +1,10 @@
-'use strict'
-gui = require 'nw.gui'
 _ = require 'lodash'
 async = require 'async'
 i18n = require '../script/labels/common'
 {fixConsole} = require '../script/util/common'
 
 fixConsole()
-win = gui.Window.get()
+win = nw.Window.get()
 
 # on DOM loaded
 angular.element(win.window).on 'load', ->

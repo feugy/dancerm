@@ -82,7 +82,7 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
   #
   # @return absolute path to store database files
   getDbPath: ->
-    if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test' or not gui?
+    if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test' or not nw?
       'dancerm-test'
     else
       'dancerm'

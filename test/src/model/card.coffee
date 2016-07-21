@@ -17,7 +17,7 @@ describe 'Card model tests', ->
   before init
 
   beforeEach (done) -> Card.drop done
-      
+
   it 'should new card be created with default values', ->
     # when creating a card without values
     tested = new Card()
@@ -49,7 +49,7 @@ describe 'Card model tests', ->
         bank: 'La Poste'
         details: 'something'
         receipt: moment().toJSON()
-      ), new Payment( 
+      ), new Payment(
         type: 'card'
         value: 50
         payer: 'Dujardin'
@@ -57,7 +57,7 @@ describe 'Card model tests', ->
         bank: null
         receipt: moment().toJSON()
      )]
-        
+
     registration12 = new Registration
       season: '2012/2013'
       charged: 100
@@ -73,7 +73,7 @@ describe 'Card model tests', ->
       ]
 
     # given a raw card
-    raw = 
+    raw =
       knownBy: ['something else', 'elders']
       registrations: [registration13, registration12]
 
@@ -91,20 +91,20 @@ describe 'Card model tests', ->
 
     existing = [
       new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [
-        new Registration season: '2013/2014', charged: 300, period: 'year', payments:[ 
+        new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
           new Payment type: 'cash', value: 150, receipt: '2013-08-04', payer: 'Simonin'
           new Payment type: 'check', value: 150, receipt: '2013-08-26', payer: 'Simonin', bank: 'La Poste'
         ]
-        new Registration season: '2014/2015', charged: 150, period: 'year', payments:[ 
+        new Registration season: '2014/2015', charged: 150, period: 'year', payments:[
           new Payment type: 'check', value: 150, receipt: '2014-10-24', payer: 'Simonin', bank: 'Société Générale'
         ]
       ]
       new Card id: '30cb3a48900e', _v: 0, knownBy: ['Groupon', 'website'], registrations: [
-        new Registration season: '2013/2014', charged: 200, period: 'year', payments:[ 
+        new Registration season: '2013/2014', charged: 200, period: 'year', payments:[
           new Payment type: 'cash', value: 100, receipt: '2013-08-10', payer: 'Durand'
           new Payment type: 'cash', value: 100, receipt: '2013-09-10', payer: 'Durand'
         ]
-        new Registration season: '2012/2013', charged: 100, period: 'year', payments:[ 
+        new Registration season: '2012/2013', charged: 100, period: 'year', payments:[
           new Payment type: 'check',  value: 100, receipt: '2012-09-10', payer: 'Durand', bank: 'La Poste'
         ]
       ]
@@ -120,14 +120,14 @@ describe 'Card model tests', ->
 
     beforeEach (done) ->
       @timeout 5000
-      async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+      async.each [Card, Address, Dancer, DanceClass], (clazz, next) ->
         clazz.drop next
       , (err) ->
         return done err if err?
         async.each existing, (model, next) ->
           model.save next
         , done
-    
+
     it 'should merge with another card', (done) ->
       existing[0].merge existing[1], (err) ->
         return done err if err?
@@ -144,19 +144,21 @@ describe 'Card model tests', ->
           # registrations have been merged
           expect(existing[0]).to.have.property('registrations').that.has.lengthOf 3
           for registration, i in [
-              new Registration season: '2013/2014', charged: 500, period: 'year', payments:[ 
+              new Registration season: '2013/2014', charged: 500, period: 'year', payments:[
                 new Payment type: 'cash', value: 150, receipt: '2013-08-04', payer: 'Simonin'
                 new Payment type: 'check', value: 150, receipt: '2013-08-26', payer: 'Simonin', bank: 'La Poste'
                 new Payment type: 'cash', value: 100, receipt: '2013-08-10', payer: 'Durand'
                 new Payment type: 'cash', value: 100, receipt: '2013-09-10', payer: 'Durand'
               ]
-              new Registration season: '2014/2015', charged: 150, period: 'year', payments:[ 
+              new Registration season: '2014/2015', charged: 150, period: 'year', payments:[
                 new Payment type: 'check', value: 150, receipt: '2014-10-24', payer: 'Simonin', bank: 'Société Générale'
               ]
-              new Registration season: '2012/2013', charged: 100, period: 'year', payments:[ 
+              new Registration season: '2012/2013', charged: 100, period: 'year', payments:[
                 new Payment type: 'check',  value: 100, receipt: '2012-09-10', payer: 'Durand', bank: 'La Poste'
               ]
             ]
+            console.log(existing[0].registrations[i].toJSON())
+            console.log(registration.toJSON())
             expect(existing[0].registrations[i].toJSON()).to.deep.equal registration.toJSON()
           # card does not exists any more
           Card.find existing[1].id, (err, card) ->

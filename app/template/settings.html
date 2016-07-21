@@ -60,7 +60,7 @@
       <div class="about">
         <p>{{::'msg.about'|i18n}}</p>
         <article data-ng-repeat="item in ::ctrl.about">
-          <img data-ng-if="item.image" data-ng-src="{{::'../style/img/'+item.image}}"/>
+          <img data-ng-if="item.image" src="{{::item.image}}"/>
           <h2>{{::item.title}}</h2>
           <h3 data-ng-repeat="spec in ::item.specs">{{::spec}}</h3>
         </article>
