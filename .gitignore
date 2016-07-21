@@ -18,3 +18,6 @@ log.txt
 .vscode
 *.dump
 *.log
+bin-dev
+bin-prod
+bin
