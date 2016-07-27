@@ -1,7 +1,7 @@
-i18n = require '../script/labels/common'
-Dancer = require '../script/model/dancer'
 _ = require 'lodash'
 async = require 'async'
+i18n = require '../script/labels/common'
+Dancer = require '../script/model/dancer'
 {fixConsole} = require '../script/util/common'
 
 # on DOM loaded

@@ -374,21 +374,19 @@ module.exports = class CardController
     return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
-      try
-        @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'settlement_print.html').replace(/\\/g, '/')}",
-          frame: true
-          icon: require('../../../package.json')?.window?.icon
-          focus: true
-          # size to A4 format, 3/4 height
-          width: 790
-          height: 400
-
-        # set parameters and wait for closure
-        @_preview.card = @card
-        @_preview.season = registration.season
-        @_preview.on 'closed', => @_preview = null
-      catch err
-        console.error err
+      nw.Window.open 'app/template/settlement_print.html',
+        frame: true
+        icon: require('../../../package.json')?.window?.icon
+        focus: true
+        # size to A4 format, 3/4 height
+        width: 790
+        height: 400
+        , (created) =>
+          @_preview = created
+          # set parameters and wait for closure
+          @_preview.card = @card
+          @_preview.season = registration.season
+          @_preview.on 'closed', => @_preview = null
 
   # Print invoice for a given year, with ot without VAT
   #
@@ -398,22 +396,20 @@ module.exports = class CardController
     return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
-      try
-        @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'invoice_print.html').replace(/\\/g, '/')}",
-          frame: true
-          icon: require('../../../package.json')?.window?.icon
-          focus: true
-          # size to A4 format, 3/4 height
-          width: 790
-          height: 400
-
-        # set parameters and wait for closure
-        @_preview.card = @card
-        @_preview.withVat = withVat
-        @_preview.season = registration.season
-        @_preview.on 'closed', => @_preview = null
-      catch err
-        console.error err
+      nw.Window.open 'app/template/invoice_print.html',
+        frame: true
+        icon: require('../../../package.json')?.window?.icon
+        focus: true
+        # size to A4 format, 3/4 height
+        width: 790
+        height: 400
+        , (created) =>
+          @_preview = created
+          # set parameters and wait for closure
+          @_preview.card = @card
+          @_preview.withVat = withVat
+          @_preview.season = registration.season
+          @_preview.on 'closed', => @_preview = null
 
   # Print the registration confirmation form
   # TODO unused
@@ -427,24 +423,22 @@ module.exports = class CardController
     @save true, (err) =>
       return console.error err if err?
       open = =>
-        try
-          @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'registration_print.html').replace(/\\/g, '/')}",
-            frame: true
-            icon: require('../../../package.json')?.window?.icon
-            focus: true
-            # size to A4 format, 3/4 height
-            width: 790
-            height: 400
-
-          # set parameters and wait for closure
-          @_preview.card = @card
-          @_preview.withVat = withVat
-          @_preview.withClasses = withClasses
-          @_preview.season = registration.season
-          @_preview.withCharged = auto
-          @_preview.on 'closed', => @_preview = null
-        catch err
-          console.error err
+        nw.Window.open 'app/template/registration_print.html',
+          frame: true
+          icon: require('../../../package.json')?.window?.icon
+          focus: true
+          # size to A4 format, 3/4 height
+          width: 790
+          height: 400
+          , (created) =>
+            @_preview = created
+            # set parameters and wait for closure
+            @_preview.card = @card
+            @_preview.withVat = withVat
+            @_preview.withClasses = withClasses
+            @_preview.season = registration.season
+            @_preview.withCharged = auto
+            @_preview.on 'closed', => @_preview = null
 
       # auto VAT/classe details computation:
       return open() unless auto

@@ -63,22 +63,17 @@ module.exports = class ListLayoutController
   printCallList: =>
     return @_preview.focus() if @_preview?
     _console = global.console
-    try
-      @_preview = nw.Window.open "file://#{join(__dirname, '..', '..', 'template', 'call_list_print.html').replace(/\\/g, '/')}",
-        frame: true
-        title: window.document.title
-        icon: require('../../../package.json')?.window?.icon
-        focus: true
-        # size to A4 format, landscape
-        width: 1000
-        height: 400
-
-      # obviously, a bug !
-      global.console = _console
-
-      # set displayed list and wait for closure
-      @_preview.list = @cardList.list
-      @_preview.danceClass = @cardList.criteria.danceClasses[0]
-      @_preview.on 'closed', => @_preview = null
-    catch err
-      console.error err
+    nw.Window.open 'app/template/call_list_print.html',
+      frame: true
+      title: window.document.title
+      icon: require('../../../package.json')?.window?.icon
+      focus: true
+      # size to A4 format, landscape
+      width: 1000
+      height: 400
+      , (created) =>
+        @_preview = created
+        # set displayed list and wait for closure
+        @_preview.list = @cardList.list
+        @_preview.danceClass = @cardList.criteria.danceClasses[0]
+        @_preview.on 'closed', => @_preview = null
