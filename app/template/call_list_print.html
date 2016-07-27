@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8"/>
   </head>
-  <body data-ng-controller="Print as ctrl" class="call-list">
-    <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
+  <body data-ng-controller="Print as ctrl" class="call-list printing">
     <h1>{{ctrl.danceClass.kind}} {{ctrl.danceClass.level}}</h1>
     <h2>{{ctrl.danceClassHour()}}</h2>
     <table class="table">
@@ -20,6 +19,8 @@
       </tbody>
     </table>
     <script type="application/javascript" src="../vendor/angular.js"></script>
-    <script type="application/javascript" src="../script/call_list_print.js"></script>
+    <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
+    <script type="application/javascript" src="../script/print/call_list.js"></script>
+    <script type="application/javascript" src="../script/print.js"></script>
   </body>
 </html>

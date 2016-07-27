@@ -70,7 +70,7 @@ module.exports = class ListLayoutController
       focus: true
       # size to A4 format, landscape
       width: 1000
-      height: 400
+      height: 800
       , (created) =>
         @_preview = created
         # set displayed list and wait for closure

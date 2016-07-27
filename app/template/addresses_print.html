@@ -28,8 +28,8 @@
       <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
     </form>
     <div class="stamps-container">
-      <article class="stamp {{stamp.selected ? '' : 'unselected'}}" 
-        data-ng-repeat="stamp in ctrl.stamps" 
+      <article class="stamp {{stamp.selected ? '' : 'unselected'}}"
+        data-ng-repeat="stamp in ctrl.stamps"
         data-ng-click="stamp.selected = !stamp.selected"
         style="
           width:{{ctrl.stampDim.w-ctrl.stampDim.hp*2}}mm;
@@ -44,6 +44,8 @@
       </article>
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
-    <script type="application/javascript" src="../script/addresses_print.js"></script>
+    <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
+    <script type="application/javascript" src="../script/print/addresses.js"></script>
+    <script type="application/javascript" src="../script/print.js"></script>
   </body>
 </html>

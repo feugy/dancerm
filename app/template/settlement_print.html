@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8"/>
   </head>
-  <body class="settlement-print" data-ng-controller="Print as ctrl">
-    <a class="btn print" data-ng-click="ctrl.print()">{{::'btn.print'|i18n}}</a>
+  <body class="settlement-print printing" data-ng-controller="Print as ctrl">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
@@ -45,6 +44,7 @@
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
-    <script type="application/javascript" src="../script/settlement_print.js"></script>
+    <script type="application/javascript" src="../script/print/settlement.js"></script>
+    <script type="application/javascript" src="../script/print.js"></script>
   </body>
 </html>

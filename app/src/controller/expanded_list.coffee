@@ -147,8 +147,8 @@ module.exports = class ExpandedListController
       icon: require('../../../package.json')?.window?.icon
       focus: true
       # size to A4 format, 3/4 height
-      width: 790
-      height: 400
+      width: 1000
+      height: 800
       , (created) =>
         @_preview = created
         # set displayed list and wait for closure

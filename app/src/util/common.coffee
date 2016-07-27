@@ -48,6 +48,7 @@ module.exports =
   fixConsole: ->
     # Log file
     logFile = resolve 'log.txt'
+    console.log "log to file #{logFile}"
     ['info', 'debug', 'error', 'log'].forEach (method) ->
       global.console[method] = (args...) ->
         appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
