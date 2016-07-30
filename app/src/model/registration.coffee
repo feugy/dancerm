@@ -1,13 +1,15 @@
 _ = require 'lodash'
+async = require 'async'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
 Payment = require './payment'
+Invoice = require './invoice'
 
 # Registration is for one or several classes and a given
 # Multiple payment may be used for the same registration: their sum is stored in `balance`
 module.exports = class Registration extends Base
 
-  @_transient = Base._transient.concat ['balance']
+  @_transient = Base._transient.concat ['balance', '_invoices']
 
   # creation date
   created: null
@@ -32,6 +34,9 @@ module.exports = class Registration extends Base
   payments: []
   balance: 0
 
+  # ids of related invoices
+  invoiceIds: []
+
   # Creates a registration from a set of raw JSON arguments
   #
   # @param raw [Object] raw attributes of this registration
@@ -45,6 +50,7 @@ module.exports = class Registration extends Base
       payments: []
       period: 'year'
       details: null
+      invoiceIds: []
 
     # enrich object attributes
     raw.payments = (for rawPayment in raw.payments
@@ -75,3 +81,19 @@ module.exports = class Registration extends Base
   # @return if a dancer was certified for this registration
   certified: (dancer) =>
     @certificates[dancer?.id] is true
+
+  # Consult registration's invoices
+  #
+  # @param done [Function] completion callback, invoked with arguments
+  # @option done err [Error] an error object or null if no error occured
+  # @option done invoices [Array<Invoice>] list (that may be empty) of registration's invoices
+  getInvoices: (done) =>
+    return _.defer(=> done null, @_invoices) if @_invoices?
+    # resolve models
+    async.map @invoiceIds, (id, next) =>
+      Invoice.find id, (err, result) =>
+        console.log "failed to get invoice #{id} of registration #{@id}: #{err}" if err?
+        next null, result
+    , (err, results) =>
+      @_invoices = results
+      done null, @_invoices

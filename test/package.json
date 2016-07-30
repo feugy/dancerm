@@ -4,7 +4,8 @@
   "main": "tests.html",
   "window": {
     "frame": true,
-    "fullscreen": true
+    "min_width": 600,
+    "min_height": 800
   },
   "chromium-args" : "--mixed-context"
 }

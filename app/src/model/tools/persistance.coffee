@@ -6,7 +6,7 @@ reqId = 1
 workerImpl = 'indexeddb'
 
 # Recursively walk down an object, replacing its regexp values per an array
-# containing the regexp pattern and flags. 
+# containing the regexp pattern and flags.
 # That array has a custom '__regexp' property
 # Returns a clone to avoid side effects
 #
@@ -30,27 +30,29 @@ class Persistance
   _queue: {}
 
   # **private**
-  # Worker spawned to handle persistance 
+  # Worker spawned to handle persistance
   _worker: null
 
   constructor: ->
     @_queue = {}
     switch workerImpl
-      when 'indexeddb' 
+      when 'indexeddb'
         @_worker = new window.Worker "#{__dirname}/indexeddb_worker.js?path=#{encodeURIComponent getDbPath()}"
         @_worker.onmessage = ({data}) => @_onResult data
-        @_worker.onerror = (err) => 
+        @_worker.onerror = (err) =>
           err?.preventDefault()
-          console.log "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
+          console.error "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
+          # TODO invoke onResult with error
 
       when 'nedb'
         @_worker = fork "#{__dirname}/nedb_worker.js"
         @_worker.on 'message', (data) =>
           return @_onResult data if data?.id
           if isA data, 'error'
-            console.log "persistance worker #{data.message} #{data.stack}"
+            console.error "persistance worker #{data.message} #{data.stack}"
           else
             console.log "persistance worker #{JSON.stringify data}"
+          # TODO invoke onResult with error
 
   # **private**
   # Used when the worker answered a result
@@ -65,13 +67,13 @@ class Persistance
     delete @_queue[id]
 
 # Add persistance operations
-# 
+#
 # > drop
 # remove all models for this class
 #
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
-# 
+#
 # > findById
 # Get a single model from its id
 #
@@ -79,7 +81,7 @@ class Persistance
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
 # @option done model [Persisted] the corresponding model, or null if no model found for this id
-# 
+#
 # > find
 # Get a list of model matching given criteria
 #
@@ -87,14 +89,14 @@ class Persistance
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
 # @option done models [Array<Persisted>] the matching models (may be an empty array)
-# 
+#
 # > save
 # Add a new model (if id is not set or does not match existing) or erase existing model
 #
 # @param model [Persisted] saved model new values
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
-# 
+#
 # > remove
 # removed an existing model
 #
@@ -106,7 +108,7 @@ class Persistance
     id = reqId++
     @_queue[id] = done
     op = 'postMessage'
-    if workerImpl is 'nedb' 
+    if workerImpl is 'nedb'
       op = 'send'
       # escape query regexpes
       args[1] = encodeRegExp args[1] if action is 'find'

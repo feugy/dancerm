@@ -3,7 +3,7 @@ _ = require 'lodash'
 
 # Abstract base functionnalities of models
 module.exports = class Base
-  
+
   # transient fields are not serialized into JSON
   @_transient = ['$$hashKey']
 
@@ -11,7 +11,7 @@ module.exports = class Base
   # Default values will be applied, and only declared arguments are used
   # If an id attribute is not specified, it will be created
   #
-  # @param raw [Object] raw attributes of this dancer
+  # @param raw [Object] raw attributes of this model
   constructor: (raw = {}) ->
     # only allow awaited attributes
     allowed = (attr for attr, value of @ when not _.isFunction value)
@@ -26,7 +26,7 @@ module.exports = class Base
   # @return raw attribute of the current model
   toJSON: =>
     raw = {}
-    for attr, value of @ when value isnt undefined and not(_.isFunction value) and not (attr in @constructor._transient) 
+    for attr, value of @ when value isnt undefined and not(_.isFunction value) and not (attr in @constructor._transient)
       if _.isArray value
         raw[attr] = []
         for val, i in value

@@ -115,6 +115,7 @@ module.exports = class Persisted extends Base
     raw._v += 1
     # increment version
     raw.id = raw.id or generateId()
+    console.log "save model #{@constructor.name} ##{raw.id}"
     persistance.save @constructor.name, raw, (err) =>
       return done err if err?
       @id = raw.id

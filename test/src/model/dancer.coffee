@@ -13,12 +13,12 @@ Card = require '../../../app/script/model/card'
 describe 'Dancer model tests', ->
 
   before init
-  
+
   beforeEach (done) ->
-    async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+    async.each [Card, Address, Dancer, DanceClass], (clazz, next) ->
       clazz.drop next
     , done
-  
+
   it 'should new dancer be created with default values', (done) ->
     # when creating a dancer without values
     tested = new Dancer()
@@ -64,7 +64,7 @@ describe 'Dancer model tests', ->
     , (err, [address, card, salsa, ballroom]) ->
       return done err if err?
       # given a raw dancer
-      raw = 
+      raw =
         created: moment().toJSON()
         title: 'M.'
         firstname: 'Jean'
@@ -116,7 +116,7 @@ describe 'Dancer model tests', ->
       title: 'Mlle.'
       firstname: 'Lucy'
       lastname: 'Grandjean'
-     
+
     beforeEach (done) -> dancer.save done
 
     it 'should dancer empty address be resolved at construction', (done) ->
@@ -126,7 +126,7 @@ describe 'Dancer model tests', ->
         expect(addr).to.be.null
         done()
 
-    it 'should dancer addres be modified', (done) ->
+    it 'should dancer address be modified', (done) ->
       # given an address
       new Address(
         street: '15 place de la bourse'
@@ -236,7 +236,7 @@ describe 'Dancer model tests', ->
     ballroom14 = new DanceClass season: '2014/2015', kind: 'ballroom', teacher: 'Diana'
     ballroom13 = new DanceClass season: '2013/2014', kind: 'ballroom', teacher: 'Diana'
     cardBobJack = new Card registrations: [
-      new Registration season: '2014/2015', charged: 600 
+      new Registration season: '2014/2015', charged: 600
       new Registration season: '2013/2014', charged: 200, period: 'quarter'
     ]
     cardLucy = new Card registrations: [
@@ -247,7 +247,7 @@ describe 'Dancer model tests', ->
     addressLucy = new Address city: 'Villeurbanne', street: 'cours Emile Zola', zipcode: '69100'
 
     beforeEach (done) ->
-      async.each [salsa14 ,salsa13, batchata14, ballroom14, ballroom13, 
+      async.each [salsa14 ,salsa13, batchata14, ballroom14, ballroom13,
         cardBobJack, cardLucy, addressBobJack, addressLucy
       ], (model, next) ->
         model.save next
@@ -341,7 +341,7 @@ describe 'Dancer model tests', ->
     it 'should findWhere() resolve address, registrations and dance classes', (done) ->
       Dancer.findWhere {
         'danceClasses.teacher': 'Anthony'
-        'card.registrations.season': '2013/2014' 
+        'card.registrations.season': '2013/2014'
         'address.city': 'Villeurbanne'
       }, (err, dancers) ->
         return done err if err?

@@ -90,7 +90,7 @@ getStore = (name, write, done) ->
     done request.error
 
   request.onupgradeneeded = ({target}) ->
-    for name in ['Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
+    for name in ['Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
       target.result.createObjectStore name, keyPath: 'id'
 
 # Worker message receiver
