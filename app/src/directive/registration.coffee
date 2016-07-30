@@ -168,3 +168,5 @@ module.exports = (app) ->
       onRemove: '&?'
       # used to propagate model modifications, invoked with $field as parameter
       onChange: '&?'
+      # invoked when editing invoice for that registration
+      onEditInvoice: '&?'

@@ -1,3 +1,4 @@
+_ = require 'lodash'
 moment = require 'moment'
 Persisted = require './tools/persisted'
 InvoiceItem = require './invoice_item'
@@ -29,8 +30,9 @@ module.exports = class Invoice extends Persisted
   # when valuated, invoice is readonly
   sent: null
 
-  # link to card, if applicable
+  # link to card and season, if applicable
   cardId: null
+  season: null
 
   # Creates an invoice from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
@@ -48,6 +50,7 @@ module.exports = class Invoice extends Persisted
       delayFee: 0
       sent: null
       cardId: null
+      season: null
     # enrich object attributes
     raw.items = (for rawItem in raw.items
       if rawItem?.constructor?.name isnt 'InvoiceItem'

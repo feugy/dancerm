@@ -47,8 +47,7 @@ check = (conditions, model) ->
       isArray = false
       path = attr.split '.'
       for step, i in path
-        actual = actual[step]
-        return false unless actual?
+        actual = actual?[step]
         if isA actual, 'Array'
           isArray = true
           if i is path.length-1
@@ -79,7 +78,9 @@ getStore = (name, write, done) ->
   return proceed() if db?
 
   # initialize database
-  request = indexedDB.open path
+  # v1 includes stores 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'
+  # v2 adds store 'Invoice''
+  request = indexedDB.open path, 2
 
   request.onsuccess = ->
     db = request.result
@@ -90,7 +91,7 @@ getStore = (name, write, done) ->
     done request.error
 
   request.onupgradeneeded = ({target}) ->
-    for name in ['Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested']
+    for name in ['Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'] when !target.result.objectStoreNames.contains name
       target.result.createObjectStore name, keyPath: 'id'
 
 # Worker message receiver

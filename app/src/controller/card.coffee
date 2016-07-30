@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 async = require 'async'
 {join} = require 'path'
 i18n = require '../labels/common'
@@ -7,6 +8,7 @@ Dancer = require '../model/dancer'
 Card = require '../model/card'
 Address = require '../model/address'
 Registration = require '../model/registration'
+Invoice = require '../model/invoice'
 RegisterController = require './register'
 SearchDancerController = require './search_dancer'
 
@@ -532,6 +534,31 @@ module.exports = class CardController
       dancer.setAddress @addresses[0]
       @addresses[@dancers.indexOf dancer] = @addresses[0]
       @_onChange 'addresses'
+
+  # Creates a new invoice for that registration, or updates the last one which is not sent
+  #
+  # @param registration [Registration] for which invoice is edited
+  editInvoice: (registration) =>
+    # search for unsent invoices related to that card
+    Invoice.findWhere {cardId: @card.id, season: registration.season, sent: null}, (err, existing) =>
+      console.log err, existing
+      return console.error "failed to search for invoices", err if err?
+      # display the first one found (should be only one at a time)
+      return @state.go 'list.invoice', id: existing[0].id if existing.length
+      # or create a new one with the first dancer as customer
+      firstYear = parseInt registration.season
+      invoice = new Invoice
+        cardId: @card.id,
+        season: registration.season
+      # only use current date if inside registration season. Otherwise, default September, 15th
+      invoice.changeDate if moment().isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then moment() else moment "#{firstYear}-09-15"
+      # TODO generate reference
+      invoice.ref = "#{invoice.date.format('YYYY-MM')}-001"
+      # TODO add dance classes
+      invoice.setCustomer @dancers[0], =>
+        invoice.save (err) =>
+          return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
+          @state.go 'list.invoice', id: invoice.id
 
   # **private**
   # Update hasChanged flag and contextual actions

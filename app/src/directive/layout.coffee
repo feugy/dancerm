@@ -1,8 +1,8 @@
 class LayoutDirective
-                
+
   # Controller dependencies
   @$inject: ['$scope', '$element', '$transclude', '$rootScope', '$state']
-  
+
   # Angular's state provider
   state: null
 
@@ -33,6 +33,7 @@ class LayoutDirective
       {label: 'btn.newDancer', icon: 'user', action: => @state.go 'list.card', {id:null}, reload: true}
       {label: 'btn.planning', icon: 'calendar', action: => @state.go 'list.planning'}
       {label: 'btn.detailed', icon: 'th-list', action: => @state.go 'detailed'}
+      {label: 'btn.invoice', icon: 'euro', action: => @state.go 'invoices'}
       {label: 'btn.stats', icon: 'dashboard', action: => @state.go 'stats'}
       {label: 'btn.settings', icon: 'wrench', action: => @state.go 'settings'}
     ]
@@ -61,8 +62,10 @@ class LayoutDirective
       when 'list.card' then @links[0].active = true
       when 'list.planning' then @links[1].active = true
       when 'detailed' then @links[2].active = true
-      when 'stats' then @links[3].active = true
-      when 'settings' then @links[4].active = true
+      when 'invoices' then @links[3].active = true
+      when 'list.invoice' then @links[3].active = true
+      when 'stats' then @links[4].active = true
+      when 'settings' then @links[5].active = true
 
 # The layout directive add general footer, menu and header to all views
 module.exports = (app) ->
