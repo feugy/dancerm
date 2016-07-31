@@ -25,7 +25,6 @@ const manifest = require('./package.json')
 const paths = {
   assetsSrc: ['app/src/style/{css,img,fonts}/**/*'],
   assetsDest: 'app/style',
-  mapsDest: '.',
   scriptsSrc: 'app/src/**/*.coffee',
   scriptsDest: 'app/script',
   testsSrc: 'test/src/**/*.coffee',
@@ -63,14 +62,14 @@ gulp.task('copy-assets', ['clean'], () =>
 // Build Coffee scripts
 const buildScripts = () =>
   gulp.src(paths.scriptsSrc)
-    //.pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe(coffee({
       bare: true
     }).on('error', function(err) {
       gutil.log(err.stack)
       gutil.beep()
     }))
-    //.pipe(sourcemaps.write({sourceRoot: paths.mapsRoot}))
+    .pipe(sourcemaps.write({sourceRoot: paths.scriptsSrc.replace('/**/*.coffee', '')}))
     .pipe(gulp.dest(paths.scriptsDest))
     .on('end', () => gutil.log('scripts rebuilt'))
 
@@ -82,12 +81,14 @@ gulp.task('build', ['copy-assets', 'build-scripts'])
 // Build tests scripts
 const buildTests = () =>
   gulp.src(paths.testsSrc)
+    .pipe(sourcemaps.init())
     .pipe(coffee({
       bare: true
     }).on('error', function(err) {
       gutil.log(err.stack)
       gutil.beep()
     }))
+    .pipe(sourcemaps.write({sourceRoot: paths.testsSrc.replace('/**/*.coffee', '')}))
     .pipe(gulp.dest(paths.testsDest))
     .on('end', () => gutil.log('test rebuilt'))
 

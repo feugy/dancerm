@@ -2,48 +2,56 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" href="./mocha.css" />
   </head>
   <body>
     <div id="mocha"></div>
     <script type="application/javascript">
-      var Mocha = require('mocha');
-      var fs = require('fs');
-      var join = require('path').join;
-      // merge underscore and underscore string functions
-      var _ = require('lodash');
-      _.mixin(require('underscore.string').exports());
+      require('source-map-support').install({environment: 'node'})
+      const fs = require('fs')
+      const Mocha = require('mocha')
+      const join = require('path').join
 
-      process.env.NODE_ENV = 'test';
-      process.on('uncaughtException', function(err){
-        console.error(err);
-      });
+      // manually add styles cause we can't refer to node_modules directly in html
+      const style = document.createElement('style')
+      style.type = 'text/css';
+      style.innerHTML = fs.readFileSync('../node_modules/mocha/mocha.css', 'utf8')
+      document.getElementsByTagName('head')[0].appendChild(style)
+
+      // merge underscore and underscore string functions
+      const _ = require('lodash')
+      _.mixin(require('underscore.string').exports())
+
+      process.env.NODE_ENV = 'test'
+      // process.on('uncaughtException', err => console.error(err))
 
       // init mocha
-      var mocha = new Mocha();
+      const mocha = new Mocha()
 
       // search for test files to include
-      function lookupFiles(path) {
-        var stat = fs.statSync(path);
+      const lookupFiles = path => {
+        const stat = fs.statSync(path)
         if (stat.isFile()) {
-          if (path.substr(-3) === '.js') mocha.addFile(path)
-          return;
-        }
-        fs.readdirSync(path).forEach(function(file){
-          file = join(path, file);
-          var stat = fs.statSync(file);
-          if (stat.isDirectory()) {
-            lookupFiles(file);
+          if (path.endsWith('.js')) {
+            mocha.addFile(path)
           }
-          if (!stat.isFile() || file.substr(-3) !== '.js') return;
+          return
+        }
+        fs.readdirSync(path).forEach(file => {
+          file = join(path, file)
+          const stat = fs.statSync(file)
+          if (stat.isDirectory()) {
+            lookupFiles(file)
+          }
+          if (!stat.isFile() || !file.endsWith('.js')) return
           mocha.addFile(file)
-        });
+        })
       }
-      lookupFiles('script');
+
+      lookupFiles('script')
 
       // Run test and display results in the page
-      global.document = window.document;
-      mocha.ui('bdd').reporter('html').run();
+      global.document = window.document
+      mocha.ui('bdd').reporter('html').run()
     </script>
   </body>
 </html>
