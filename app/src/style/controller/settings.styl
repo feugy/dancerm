@@ -1,0 +1,80 @@
+/******************************************************************************
+ * Settings
+ */
+
+.settings.main
+
+  > section
+    display flex
+    padding 0
+
+    > :not(aside)
+      display inline-block
+      flex 1
+      margin .5em
+      padding 1em
+
+    input
+      height 30px
+
+    .add-vat-teacher
+      margin-left .5em
+      vertical-align top
+
+    .vat-teachers
+      padding 0
+
+      > li
+        list-style none
+
+        > .glyphicon
+          margin-right 1em
+
+  > section:not(:first-child) > :not(aside)
+    border-top 1px solid headingColor
+
+  .form-group:last-child
+    margin-bottom 0
+
+  aside
+    width 200px
+    padding 1em
+    margin 0
+    border-right 1px solid headingColor
+    background colBackground
+
+    > h2
+      margin 0
+      border none
+      line-height normal
+      font-size fontSize*1.2
+
+  .about
+    display flex
+    flex-wrap wrap
+    justify-content center
+
+    > p
+      width 100%
+
+    > article
+      margin 10px
+      background colBackground
+      text-align center
+      padding 1em
+
+      > img
+        height 100px
+
+      > h2
+      > h3
+        margin 0
+        border none
+        line-height normal
+
+      > h2
+        margin-top 1em
+        font-size fontSize*1.2
+
+      > h3
+        font-size fontSize

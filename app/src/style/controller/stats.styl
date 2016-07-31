@@ -1,0 +1,72 @@
+/******************************************************************************
+ * Statistics
+ */
+
+.stats
+  display flex
+  flex-direction column
+
+  .dashboard
+    flex 1
+    width 100%
+
+    .column
+      display inline-flex
+      flex-direction column
+      width 50%
+      height 100%
+
+      > article
+        border-radius inputRadius
+        background colBackground
+        padding 10px
+        margin 6px
+        max-width 100%
+
+        .content
+          text-align center
+
+    .nv-noData
+      fill textColor
+      font-family textFont
+
+    .nv-multiBarHorizontalChart .tick
+      text
+        fill textColor
+        font-family textFont
+      line
+        display none
+
+    .big-value
+      font-size 100px
+      font-family impactFont
+      color colors[0]
+
+    .currency
+      font-family impactFont
+      font-size 60px
+
+  .criteria
+    padding-top 0
+    display flex
+    justify-content space-between
+    align-items center
+
+    .tag
+      margin-top 0
+
+    > span
+      padding-left 25px
+      font-size 200%
+      color headingColor
+      font-family headingFont
+      flex 1
+
+    .btn-group
+      margin-right 5px
+
+  .loader
+    display block
+    width 100%
+    text-align center
+    margin 5px 0

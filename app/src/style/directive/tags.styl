@@ -1,0 +1,36 @@
+/******************************************************************************
+ * Tags
+ */
+
+.tag
+  cursor default
+  color headingColor
+  display inline-block
+  padding .2em
+  padding-left .5em
+  font-size fontSize*0.9
+  border-radius 0 1em
+  background-color rgba(emphasisColor, 0.5)
+  margin-top 6px
+  line-height 20px
+
+  .close
+    transition all animationDuration
+    padding 0 0.2em
+    color headingColor
+    opacity 0.5
+    text-shadow 0 1px 0 emphasisColor
+
+  .close:hover
+    opacity 1
+
+.tag:not(:last-child)
+  margin-right 6px
+
+.tag.season
+  background errorColor
+  color errorTextColor
+
+.tag.teacher
+  background linkColor
+  color errorTextColor

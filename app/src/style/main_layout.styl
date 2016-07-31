@@ -1,0 +1,210 @@
+/******************************************************************************
+ * Main layout and background
+ */
+
+html
+  height 100%
+  background mainBackground
+  cursor default
+  overflow hidden
+
+body
+  display flex
+  flex-direction column
+  height 100%
+  background transparent
+
+  > .main-view
+    flex 1
+    position relative
+
+.column-and-main
+  pageMargin = 15px
+
+  > *
+    position absolute
+    top 0
+    bottom 0
+    box-sizing border-box
+    padding pageMargin
+
+  > .column
+    left 0
+    width collapsedColumnWidth
+    background colBackground
+
+  > .main
+    // main right column
+    right 0
+    width visibleMainWidth
+
+  // no main layout
+
+  > .column.expanded
+    width expandedColumnWidth
+
+  > .main.expanded
+    width 100%
+
+  > .empty
+    width 0
+    padding 0
+
+  .column > h2
+  .main > h2
+    // header text will take all available horizontal space
+    display flex
+    align-items center
+
+    > span
+      font-size (fontSize*1.6)
+      font-family headingFont
+      flex 1
+
+    .btn:not(.glyphed) > .glyphicon
+      margin 0
+
+/******************************************************************************
+ * Left Column
+ */
+
+.column-and-main > .column
+  transition width animationDuration
+  // list will take all available vertical space
+  display flex
+  flex-flow column
+
+  .print-call-list
+    text-align center
+    margin-bottom 10px
+
+  .input-group input::-webkit-input-placeholder
+    font-style italic
+
+  .list-length
+    color headingColor
+    text-align center
+    display block
+    margin 1em 0
+
+  .table
+    flex 1
+    margin 0
+    // tbody text will take all available vertical space
+    display flex
+    flex-flow column
+
+    // make raw as block, and cell as inline element with fixed width
+    tr
+      display block
+      font-size 0
+    th, td
+      display inline-block
+      box-sizing border-box
+      font-weight normal
+    th
+      font-family headingFont
+      cursor pointer
+
+      .glyphicon
+        margin-left 0.5em
+    td
+      word-break break-word
+
+    // we MUST have fixed width columns
+    for width, i in 30 35 15 20
+      td:nth-child({i+1})
+        width unit(width, '%')
+      th:nth-child({i+1})
+        width unit((width - 2), '%')
+
+    tbody
+      // take all vertical space
+      flex 1
+      overflow auto
+
+      > tr:first-child > td
+        border-top none
+
+      tr:hover
+        transition background focusDuration
+        background linkColor
+        *
+          cursor pointer
+
+    thead tr
+      background headerBackground
+      color headerColor
+      font-weight normal
+
+    // use white icons, make lastname bold and add stripes
+    td
+      .glyphicon-ok
+        color successColor
+      .glyphicon-exclamation-sign
+        color errorColor
+    td:nth-child(2)
+      font-weight bold
+    tr:nth-child(even)
+      background mainBackground
+
+.column-and-main > .column.expanded
+
+  .input-group
+    width 300px
+  > .tags
+  > .list-length
+    display inline-block
+
+  table tbody tr:hover *
+    cursor default
+
+  td:nth-child(2)
+    font-weight normal
+  td:nth-child(3)
+    font-weight bold
+
+  .input-row
+    display flex
+
+    .input-group
+      margin 0
+
+    .tags
+      margin-left 1em
+
+  tr
+    display flex
+
+  // we MUST have fixed width columns
+  // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
+  cols = 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
+  for col, i in cols
+    td:nth-child({i+1}), th:nth-child({i+1})
+      width col
+
+  td:nth-child(12), th:nth-child(12)
+    flex 1
+
+  h2 > *:not(:last-child)
+    margin-right 7px
+
+  .known-by
+    margin-right 5px
+
+/******************************************************************************
+ * Main Part
+ */
+
+.column-and-main > .main
+
+  > *
+    padding-top 5px
+
+  .commands
+    text-align center
+
+  .planning
+    height 500px
+    margin 10px 0
+

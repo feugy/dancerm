@@ -1,0 +1,57 @@
+/******************************************************************************
+ * Main layout
+ */
+
+.layout
+  position absolute
+  top 0
+  left 0
+  right 0
+  bottom 0
+  overflow hidden
+  display flex
+  flex-direction column
+
+  .actions
+    display flex
+    justify-content space-between
+    background headerBackground
+
+    ul
+      margin 0
+      padding 0 0
+
+    .context li
+      border-bottom-color headerColor
+
+    li
+      transition all animationDuration
+      display inline-block
+      padding 1em .5em
+      border-bottom 3px solid transparent
+      color textColor
+      cursor pointer
+
+      .glyphicon
+        transition all animationDuration
+        color rgba(textColor, .4)
+        padding-right .5em
+
+      &:hover
+      &:hover .glyphicon
+        transition all focusDuration
+        color focusColor
+
+      &.active
+        transition all focusDuration
+        border-bottom-color headerColor
+        color headerColor
+
+        .glyphicon
+          transition all focusDuration
+          color headerColor
+
+  .column-and-main
+    display block
+    flex 1
+    position relative

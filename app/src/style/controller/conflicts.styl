@@ -1,0 +1,32 @@
+/******************************************************************************
+ * Conflicts resolution
+ */
+
+.conflict
+
+  h4
+    color headingColor
+    font-size (fontSize*1.6)
+    font-family headingFont
+
+  .conflict-table
+
+    thead tr
+      background headerBackground
+      color headerColor
+      font-weight normal
+
+    td
+      width 40%
+
+      > input
+        -webkit-appearance checkbox
+        margin-right 5px
+        vertical-align top
+
+    td:first-child
+      width 20%
+      text-align right
+
+      .tag
+        margin-top 0

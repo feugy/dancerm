@@ -1,0 +1,174 @@
+/******************************************************************************
+ * Registration
+ */
+
+.registration
+  position relative
+
+  .certificate
+    position absolute
+    right 10px
+    top: -14px
+    background colBackground
+    padding 0 6px
+    line-height 21px
+    vertical-align top
+    cursor pointer
+
+    input
+      margin-right 6px
+
+  h3
+    border none
+    font-size fontSize*1.4
+
+    // payment input
+    .input-group
+      display inline-flex
+      line-height 1.2em
+
+      input
+        text-align right
+        width 75px
+      .input-group-addon
+        padding 6px 18px 6px 10px
+
+    .add-payment
+      margin-top 6px
+
+  // dance classes, displayed in a row
+  .dance-classes
+    position relative
+    display flex
+    flex-flow row wrap
+
+    .danceClass
+      display block
+      padding 5px 10px
+      color labelColor
+
+      .kind
+        padding .2em 1em
+        border-radius 0 1em
+        display block
+
+      .hour
+      .level
+        font-size fontSize*0.9
+      .level
+        padding-right 1em
+
+    .danceClass:not(:last-child)
+      border-right 1px solid emphasisColor
+
+  // payement balance highlight
+  .balance-low
+    color lowColor = lighten(errorColor, 30%)
+
+    .input-group-addon
+      background-color lowColor
+
+  .balance-right
+    color successColor
+
+    .input-group-addon
+      background-color successColor
+
+  // payement displayal
+  .payments
+
+    > *
+      display flex
+      flex-flow row
+
+      > *
+        flex 1
+
+    h3
+      text-align center
+      background headerBackground
+      color headerColor
+      border none
+      line-height 30px
+      margin 5px 0
+
+      > *
+        font-family headingFont
+
+      .remove
+        width 26px
+        flex none
+
+      .receipt
+        margin-left 4px
+        padding 0 7px
+
+    input
+      margin 0 4px
+      height 28px
+
+    .input-group input:first-child
+      margin-right 0
+
+    .total
+      display block
+      text-align right
+      font-weight bold
+
+      .input-group span:not(.input-group-addon)
+        display table-cell
+        padding 4px 6px
+
+    .type
+      flex none
+      height 30px
+      margin-right 0px
+      width 120px
+
+      .dropup
+        text-align left
+
+    .receipt
+      flex none
+      width 115px
+
+      input
+        width 90px
+
+      .input-group-addon
+        padding 0px 5px
+
+      .dropdown-menu
+        top inherit !important
+        bottom 30px
+
+    .remove.btn
+      flex none
+      height 27px
+      margin-right 5px
+      padding 4px
+
+    .value.input-group
+      margin-right 4px
+
+    .value
+    .total .input-group
+      flex none
+      width 64px
+      margin-bottom 5px
+      display inline-table
+
+      input
+      span:not(.input-group-addon)
+        width 42px
+        text-align right
+
+      span.input-group-addon
+        padding 4px
+
+// hover behaviour
+.payment.focusable:hover .remove.btn
+  background headerBackground
+  color headerColor
+  border-color textColor
+  text-shadow none

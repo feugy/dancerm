@@ -1,0 +1,143 @@
+/******************************************************************************
+ * Planning
+ */
+
+for c, i in colors
+  .tags .color{i+1}
+  .color{i+1}
+    background-color c
+    color emphasisColor
+
+    .close
+      color emphasisColor
+      text-shadow 0 1px 0 inputColor
+
+.planning
+  titleH = 20px
+  titleMrg = 5px
+  groupH = 40px
+  legendH = 30px
+
+  width 100%
+  height 100%
+  box-sizing border-box
+  padding-bottom titleH + titleMrg + groupH + legendH
+
+  .time
+    background-color colBackground
+    color headingColor
+    text-align right
+    width 6.5%
+
+    .q0
+      font-size fontSize*0.8
+      line-height 1em
+      padding 0.2em
+      text-align right
+
+    .groups
+      color transparent
+
+  .day
+  .time
+    box-sizing border-box
+    display inline-block
+    height 100%
+    position relative
+    margin-top titleH + titleMrg + groupH
+
+  // day limit
+  .day:not(:nth-child(6))
+    border-right 1px solid lighten(headerColor, 50%)
+
+  .quarter
+    box-sizing border-box
+
+  // hour limit
+  .quarter.q0
+    border-top 1px solid lighten(headerColor, 25%)
+
+  // half-hour limit
+  .quarter.q2
+    border-top 1px dashed lighten(headerColor, 50%)
+
+  // day column header
+  .title
+    text-align center
+    background-color headerBackground
+    color headerColor
+    font-family headingFont
+    box-sizing border-box
+    height titleH
+    position absolute
+    top -(titleH + groupH + titleMrg)
+    width 100%
+
+  // group sub-column header
+  .groups
+    background-color colBackground
+    color headingColor
+    display flex
+    flex-flow row wrap
+    height groupH
+    position absolute
+    top -(groupH)
+    width 100%
+
+    > *
+      flex 1
+      text-align center
+      overflow hidden
+      line-height 1.5em
+      margin auto 0
+      padding 0.2em
+      box-sizing border-box
+      font-size fontSize*0.8
+
+    > *:not(:last-child)
+      border-right 1px solid headingColor
+
+  .danceClass
+    border-radius 0 1em
+    padding 0.2em
+    box-sizing border-box
+    position absolute
+    overflow hidden
+    text-align center
+    cursor pointer
+    text-overflow ellipsis
+
+    &.selected
+      background-color linkColor
+
+  .legend
+    margin-top 10px
+    text-align right
+    display block
+    height legendH
+    color headingColor
+    font-family headingFont
+
+    > span
+      cursor pointer
+      color emphasisColor
+      border-radius 0 1em
+      font-size fontSize*0.9
+      font-family textFont
+      padding 0 .8em
+      margin 0 0 0 8px
+      display inline-block
+
+  .darken
+    opacity .5
+
+for i in 2..7
+  .planning.days{i} .day
+    // 6.5% for time
+    width unit((100 - 6.5) / i, '%')
+
+for i in 6..20
+  .planning.hours{i}
+    .quarter
+      height unit(100 / (i * 4), '%')
+
