@@ -73,4 +73,4 @@ window.customClass = class Print
     # remove configuration and unselected stamps
     angular.element(document).find('body').addClass 'printing'
     window.print()
-    window.onfocus = -> win.close()
+    _.defer -> win.close()

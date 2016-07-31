@@ -59,7 +59,7 @@ window.customClass = class Print
           rootScope.$apply()
 
           window.print()
-          window.onfocus = -> win.close()
+          _.defer -> win.close()
 
   # Retrieve dance classes of a given dancer
   #

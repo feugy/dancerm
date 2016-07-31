@@ -46,7 +46,7 @@ window.customClass = class CallListPrint
     @dates = (start.add(7, 'day').format @filter('i18n')('formats.callList') for i in [0..11])
 
     window.print()
-    window.onfocus = -> win.close()
+    _.defer -> win.close()
 
   # Display dance class title
   #
