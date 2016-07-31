@@ -1,3 +1,4 @@
+require('source-map-support').install({environment: 'node'})
 _ = require 'lodash'
 {parallel} = require 'async'
 {join} = require 'path'
@@ -61,8 +62,8 @@ try
       event.preventDefault() unless name in ['input', 'textarea']
     # opens dev tools on F12 or Command+Option+J
     win.showDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
-    # reloads full app on Ctrl+F5
-    if event.which is 116 and event.ctrlKey
+    # reloads full app on F5
+    if event.which is 116
       # must clear require cache also
       delete global.require.cache[attr] for attr of global.require.cache
       global.reload = true

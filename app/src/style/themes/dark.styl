@@ -355,3 +355,39 @@ body
     border-color emphasisColor
     > p
       color emphasisColor
+
+.invoice
+  > .preview
+    box-shadow 0 0 0 8px mainBackground, 0 0 0 10px btnBackground
+
+    input[type=text]:focus
+    input[type=number]:focus
+    textarea:focus
+      border-color emphasisColor
+      outline emphasisColor auto 5px
+
+  > .focusable
+    border-top 0
+
+    &:not(:hover) > .btn-group .btn
+    &:not(:hover) > .btn
+    &:hover > .btn-group .btn
+    &:hover > .btn
+    .btn ~ .dropdown-menu
+      box-shadow none
+      background primaryBtnBackground
+      color btnColor
+
+      &:hover
+        background primaryBtnBackgroundHover
+
+    > h2
+      display block
+      position static
+      background headerBackground
+      line-height inherit
+      padding 8px 1em
+
+    > .btn-group
+      top 7px
+      right 40px

@@ -6,7 +6,14 @@
   <body class="settlement-print printing" data-ng-controller="Print as ctrl">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
-      <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
+      <div class="school">
+        <p>{{::'lbl.school.name'|i18n}}</p>
+        <p>{{::'lbl.school.street'|i18n}}</p>
+        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
+        <p>{{::'lbl.school.phone'|i18n}}</p>
+        <p>{{::'lbl.school.siret'|i18n}}</p>
+        <p>{{::'lbl.school.vat'|i18n}}</p>
+      </div>
       <div class="title" data-ng-bind-html="::'ttl.settlementPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
     </header>
     <div class="dancers">

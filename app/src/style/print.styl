@@ -250,7 +250,6 @@ body.addresses-list
     input[type=checkbox]
       display none
 
-
 body.settlement-print
   .school
   .title
@@ -265,32 +264,17 @@ body.settlement-print
     text-align center
     font-variant small-caps
 
-body.invoice-print
+@require 'controller/invoice'
+body.invoice.print
 
-  .date
-    display flex
-    justify-content flex-end
-    margin 2em 0 0
-    padding 0
-    width 100%
-
-  header
-    width 100%
-    justify-content space-between
-
-  .school
-  .client
-    box()
-    border 0px solid transparent
-    width 40%
+  .preview
+    background transparent
+    box-shadow none
     margin 0
+    padding 0
 
-    > p
-      margin 0
-
-    > p:first-child
-      font-weight bold
-      font-size 110
+    .school
+      border none
 
 body.printing
 

@@ -3,17 +3,30 @@
   <head>
     <meta charset="utf-8"/>
   </head>
-  <body class="invoice-print printing" data-ng-controller="Print as ctrl">
-    <header>
-      <div class="school" data-ng-bind-html="'print.school'|i18n"></div>
-      <div class="client" data-ng-bind-html="'print.client'|i18n:{args:{address:ctrl.addresses[0], dancer:ctrl.dancers[0], phone: ctrl.getPhone(ctrl.dancers[0])}}"></div>
-    </header>
-    <div class="date">
-      <span data-ng-bind-html="'print.invoiceDate'|i18n:{args:{date: ctrl.getDate()}}"></span>
+  <body class="invoice print" data-ng-controller="Print as ctrl">
+    <div class="preview">
+      <header>
+        <img src="../style/img/ribas.png" class="logo"/>
+        <div class="school">
+          <p>{{::'lbl.school.name'|i18n}}</p>
+          <p>{{::'lbl.school.street'|i18n}}</p>
+          <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
+          <p>{{::'lbl.school.phone'|i18n}}</p>
+          <p>{{::'lbl.school.siret'|i18n}}</p>
+          <p>{{::'lbl.school.vat'|i18n}}</p>
+        </div>
+        <div class="customer">
+          <p>{{ctrl.invoice.customer.name}}</p>
+          <p>{{ctrl.invoice.customer.street}}</p>
+          <p>{{ctrl.invoice.customer.zipcode}} {{ctrl.invoice.customer.city}}</p>
+      </header>
+      <div class="date">
+        <span>{{'print.invoiceDate'|i18n:{args:{date:ctrl.formatDate(ctrl.invoice.date)} } }}</span>
+      </div>
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
-    <script type="application/javascript" src="../script/print/invoice.js"></script>
+    <script type="application/javascript" src="../script/controller/invoice.js"></script>
     <script type="application/javascript" src="../script/print.js"></script>
   </body>
 </html>

@@ -108,6 +108,14 @@ module.exports =
     registered: 'Intitulé du cours'
     registration: 'Inscription'
     Sat: 'Samedi'
+    school:
+      name: 'École de Danse P.M. Ribas'
+      phone: 'Tél. 04 78 85 32 23'
+      street: '34, rue du Docteur Rollet' # Tony: 10, rue des Bons Amis
+      zipcode: 69100
+      city: 'Villeurbanne'
+      siret: 'Siret 443 342 431 00014' # Tony: 499 909 935 00011
+      vat: 'N° TVA FR XX 443 342 431' # Tony: Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b
     street: 'Voie'
     Sun: 'Dimanche'
     sum: 'Total'
@@ -166,22 +174,7 @@ module.exports =
       diana: 2
       delphine: 2
       nassim: 2
-    client: """
-<p>{{dancer.firstname}} {{dancer.lastname}}</p>
-<p>{{address.street}}</p>
-<p>{{address.zipcode}} {{address.city}}</p>
-<p>Tél. {{phone}}</p>
-"""
     invoiceDate: 'Villeurbanne, le {{date}}'
-    school: """
-<p>Ecole de danse Ribas</p>
-<p>34 rue du docteur Rollet</p>
-<p>69100 Villeurbanne</p>
-<p>Tél. 04 78 85 32 23</p>
-<p>Affaire personnelle profession libérale</p>
-<p>SIREN 443 342 431</p>
-<p>N° TVA FR XX 443 342 431</p>
-"""
     settlement: """
 <h2>Accès aux activités</h2>
 <p>L'accès aux activités est strictement réservé aux membres de l'école à jour de leurs cotisations.</p>
@@ -264,6 +257,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
+    invoice: 'Facture N°{{ref}}'
     interface: 'Interface'
     knownBy: 'Connu par'
     knownByRepartition: 'Ils ont connus par...'

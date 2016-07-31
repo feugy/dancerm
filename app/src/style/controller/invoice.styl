@@ -1,0 +1,104 @@
+/******************************************************************************
+ * Invoice edition
+ */
+
+.invoice
+
+  article
+    border-top 2px solid headingColor
+    margin 10px 0
+    padding 0 1em 1em
+    position relative
+
+    > h2
+      border none
+      background mainBackground
+      display inline
+      font-size fontSize*1.6
+      left 25px
+      line-height 10px
+      padding 0 5px
+      position relative
+      top -10px
+
+    > .btn-group
+      background mainBackground
+      position absolute
+      right 15px
+      top -18px
+      transition background 200ms
+
+  .preview
+    background white
+    box-shadow 0 10px 15px emphasisColor
+    margin 25px
+    padding 25px
+
+    *
+      color black
+      font-family Verdana
+      font-size 16px
+
+    input:not(:hover):not(:focus):not(.ng-invalid)
+    textarea:not(:hover):not(:focus):not(.ng-invalid)
+      color black
+
+    input[type=text]:focus
+    input[type=number]:focus
+    textarea:focus
+      box-shadow none
+
+    input:hover:not(:focus)
+    textarea:hover:not(:focus)
+      border-color transparent
+      background-color rgba(black, 0.07)
+
+    p
+      margin 0 0 0.5em 0
+    p:last-child
+      margin-bottom 0
+
+    .date
+      display flex
+      justify-content flex-end
+      margin 2em 0 0
+      padding 0
+      width 100%
+
+    header
+      display flex
+      margin 0
+      width 100%
+      justify-content space-between
+
+      .logo
+        width 65px
+        height 60px
+
+      .school
+      .customer
+        padding 5px
+        width 40%
+        margin 0
+
+        > p
+          margin 0
+
+        > p:first-child
+          font-weight bold
+          font-size 110
+
+  .customer
+    .zip-and-city
+      display flex
+
+      > input:first-child
+        width 82px
+
+        &::-webkit-outer-spin-button
+        &::-webkit-inner-spin-button
+          -webkit-appearance: none
+          margin: 0
+
+      > input:last-child
+        flex-grow 1

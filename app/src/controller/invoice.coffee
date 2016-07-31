@@ -1,12 +1,15 @@
 _ = require 'lodash'
-i18n = require '../labels/common'
-Invoice = require '../model/invoice'
+isPrintCtx = not module?
+# if used in print context, path to other dependencies are different
+i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
+Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
 
 # Displays and edits a given invoice
-module.exports = class InvoiceController
+# Also usable as print controller
+class InvoiceController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope', '$stateParams']
+  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$filter', '$stateParams'] else []
 
   # Route declaration
   @declaration:
@@ -23,6 +26,12 @@ module.exports = class InvoiceController
   # Angular's global scope, for digest triggering
   rootScope: null
 
+  # Link to modal popup service
+  dialog: null
+
+  # Angular's filters factory
+  filter: null
+
   # displayed invoice
   invoice: null
 
@@ -37,16 +46,30 @@ module.exports = class InvoiceController
   # Stores previous models values (model id used as key) for change detection
   _previous: {}
 
+  # **private**
+  # Registration print preview window
+  _preview: null
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Controller's own scope, for change detection
   # @param rootscope [Object] Angular global scope for digest triggering
+  # @param dialog [Object] Angular dialog service
+  # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, stateParams) ->
+  constructor: (@scope, @rootScope, @dialog, @filter, stateParams) ->
     @invoice = null
     @hasChanged = false
     @_modalOpened = false
     @_previous = {}
+    @_previous = {}
+
+    # if used in the context of printing, skip internal init as we are just displaying preview
+    if isPrintCtx
+      @invoice = win.invoice
+      window.print()
+      _.defer -> win.close()
+      return
 
     # redirect to invoice list if needded
     return @back() unless stateParams.id?
@@ -59,7 +82,7 @@ module.exports = class InvoiceController
       # stop state change until user choose what to do with pending changes
       event.preventDefault()
       # confirm if dancer changed
-      @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.confirmGoBack, [
+      @dialog.messageBox(@i18n.ttl.confirm, @i18n.msg.confirmGoBack, [
           {label: @i18n.btn.no, cssClass: 'btn-warning'}
           {label: @i18n.btn.yes, result: true}
         ]
@@ -89,16 +112,19 @@ module.exports = class InvoiceController
     return unless @hasChanged and not @_modalOpened
     @_modalOpened = true
     @dialog.messageBox(@i18n.ttl.confirm,
-      @filter('i18n')('msg.cancelEdition', args: name: @invoice.ref), [
+      @filter('i18n')('msg.cancelEdition', args: names: @invoice.ref), [
         {label: @i18n.btn.no, cssClass: 'btn-warning'}
         {label: @i18n.btn.yes, result: true}
       ]
     ).result.then (confirmed) =>
       @_modalOpened = false
       return unless confirmed
-      # cancel and restore values by reloadingfrom storage
+      # cancel and restore previous values
       @rootScope.$broadcast 'cancel-edit'
-      @load @invoice.id
+      Object.assign @invoice, @_previous
+      @_previous = @invoice.toJSON()
+      @_setChanged false
+      @scope.$apply()
 
   # Save the current values inside storage
   #
@@ -116,6 +142,28 @@ module.exports = class InvoiceController
       @_onChange()
       @scope.$apply() unless @scope.$$phase
       done()
+
+  # Format a given date
+  formatDate: (date) =>
+    date?.format @i18n.formats.invoice
+
+  # Save current invoice and display print preview
+  print: =>
+    return @_preview.focus() if @_preview?
+    @save (err) =>
+      return console.error err if err?
+      nw.Window.open 'app/template/invoice_print.html',
+        frame: true
+        icon: require('../../../package.json')?.window?.icon
+        focus: true
+        # size to A4 format, 3/4 height
+        width: 1000
+        height: 800
+        , (created) =>
+          @_preview = created
+          # set parameters and wait for closure
+          @_preview.invoice = @invoice
+          @_preview.on 'closed', => @_preview = null
 
   # **private**
   # Update hasChanged flag and contextual actions
@@ -139,7 +187,13 @@ module.exports = class InvoiceController
   _onChange: (field) =>
     # performs comparison between current and old values
     @_setChanged false
-    if not _.isEqual @_previous, @invoice.toJSON()
+    unless _.isEqual @_previous, @invoice.toJSON()
       # console.log "invoice has changed on #{field}"
       # quit at first modification
       return @_setChanged true
+
+# Export as print controller for print preview, or classical node export
+unless isPrintCtx
+  module.exports = InvoiceController
+else
+  window.customClass = InvoiceController

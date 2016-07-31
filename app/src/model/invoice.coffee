@@ -14,9 +14,8 @@ module.exports = class Invoice extends Persisted
   date: null
   dueDate: null
 
-  # customer details
-  name: null
-  address: null
+  # customer details (name, street, city, zipcode)
+  customer: null
 
   # list of items included in that invoice
   items: []
@@ -43,8 +42,11 @@ module.exports = class Invoice extends Persisted
     _.defaults raw,
       ref: null # TODO generate
       date: moment()
-      name: ''
-      address: ''
+      customer:
+        name: ''
+        street: ''
+        zipcode: ''
+        city: ''
       items: []
       discount: 0
       delayFee: 0
@@ -78,10 +80,10 @@ module.exports = class Invoice extends Persisted
   # @option done err [Error] an error object or null if no error occured
   setCustomer: (dancer, done) =>
     return done null unless dancer?
-    @name = "#{dancer.title} #{dancer.firstname} #{dancer.lastname}"
+    @customer.name = "#{dancer.title} #{dancer.firstname} #{dancer.lastname}"
     dancer.getAddress (err, address) =>
       return done err if err?
-      @address = "#{address.street}\n#{address.zipcode} #{address.city}" if address?
+      Object.assign @customer, address.toJSON() if address?
       done null
 
   # Set dance classes by setting registration and dancer

@@ -22,6 +22,11 @@ describe 'Invoice  model tests', ->
     firstname: 'Jean'
     lastname: 'Dupond'
 
+  dancer2 = new Dancer
+    title: 'Mme.'
+    firstname: 'Julie'
+    lastname: 'Durand'
+
   address1 = new Address
     street: '1 cours Emile Zola'
     zipcode: 69100
@@ -41,8 +46,9 @@ describe 'Invoice  model tests', ->
         address1.save (err) ->
           return done err if err?
           dancer1.setAddress address1
-          dancer1.setCard card
-          async.each [dancer1, danceClass1], ((model, next) -> model.save next), done
+          dancer1.setCard card,
+          dancer2.setCard card
+          async.each [dancer1, dancer2, danceClass1], ((model, next) -> model.save next), done
 
   it 'should new invoice be created with default values', (done) ->
     # when creating an invoice without values
@@ -56,8 +62,10 @@ describe 'Invoice  model tests', ->
     expect(tested.dueDate.valueOf()).to.be.closeTo moment().add(60, 'days').valueOf(), 500
     # then default values were set
     expect(tested).to.have.property('ref').that.is.null
-    expect(tested).to.have.property('name').that.is.empty
-    expect(tested).to.have.property('address').that.is.empty
+    expect(tested).to.have.deep.property('customer.name').that.is.empty
+    expect(tested).to.have.deep.property('customer.street').that.is.empty
+    expect(tested).to.have.deep.property('customer.zipcode').that.is.empty
+    expect(tested).to.have.deep.property('customer.city').that.is.empty
     expect(tested).to.have.property('items').that.is.empty
     expect(tested).to.have.property('discount').that.equals 0
     expect(tested).to.have.property('delayFee').that.equals 0
@@ -69,8 +77,11 @@ describe 'Invoice  model tests', ->
     raw =
       ref: '2016-01-001'
       date: '2016-01-01'
-      name: 'Mlle. Jeanne Dou'
-      address: '10 rue du pont, 69001 Lyon'
+      customer:
+        name: 'Mlle. Jeanne Dou'
+        stret: '10 rue du pont',
+        zipcode: 69001
+        city: 'Lyon'
       discount: 10
       delayFee: 5
       items: [
@@ -89,8 +100,7 @@ describe 'Invoice  model tests', ->
     expect(tested).to.have.property 'dueDate'
     expect(tested.dueDate.valueOf()).to.be.closeTo moment(raw.date).add(60, 'days').valueOf(), 500
     expect(tested).to.have.property('ref').that.equals raw.ref
-    expect(tested).to.have.property('name').that.equals raw.name
-    expect(tested).to.have.property('address').that.equals raw.address
+    expect(tested).to.have.property('customer').that.deep.equals raw.customer
     expect(tested).to.have.property('items').that.has.lengthOf 1
     item = tested.items[0]
     expect(item).to.be.an.instanceOf InvoiceItem
@@ -120,4 +130,37 @@ describe 'Invoice  model tests', ->
       expect(item).to.have.property('vat').that.equals 0
       expect(item).to.have.property('dancerIds').that.deep.equals raw.items[0].dancerIds
       expect(item).to.have.property('danceClassId').that.equals raw.items[0].danceClassId
+      done()
+
+  it 'should set customer details from dancer', (done) ->
+    tested = new Invoice
+      customer:
+        name: 'Mlle. Jeanne Dou'
+        street: '10 rue du pont',
+        zipcode: 69001
+        city: 'Lyon'
+
+    tested.setCustomer dancer1, (err) ->
+      return done err if err?
+      expect(tested).to.have.deep.property('customer.name').that.equals 'M. Jean Dupond'
+      expect(tested).to.have.deep.property('customer.street').that.equals address1.street
+      expect(tested).to.have.deep.property('customer.city').that.equals address1.city
+      expect(tested).to.have.deep.property('customer.zipcode').that.equals address1.zipcode
+      done()
+
+  it 'should not erase address if new customer hasn\'t one', (done) ->
+    raw =
+      customer:
+        name: 'Mlle. Jeanne Dou'
+        street: '10 rue du pont',
+        zipcode: 69001
+        city: 'Lyon'
+    tested = new Invoice _.clone raw
+
+    tested.setCustomer dancer2, (err) ->
+      return done err if err?
+      expect(tested).to.have.deep.property('customer.name').that.equals 'Mme. Julie Durand'
+      expect(tested).to.have.deep.property('customer.street').that.equals raw.customer.street
+      expect(tested).to.have.deep.property('customer.city').that.equals raw.customer.city
+      expect(tested).to.have.deep.property('customer.zipcode').that.equals raw.customer.zipcode
       done()

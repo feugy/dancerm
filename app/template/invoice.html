@@ -1,3 +1,36 @@
 <div class="invoice">
-  Work in Progress {{ctrl.invoice.ref}} ({{ctrl.invoice.id}})
+  <article class="focusable">
+    <span class="btn-group" keyboard-nav>
+      <a class="btn glyphed" href="" data-ng-click="ctrl.print()"><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}</a>
+    </span>
+    <h2>{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
+  </article>
+
+  <div class=preview>
+    <header>
+      <img src="../style/img/ribas.png" class="logo"/>
+      <div class="school">
+        <p>{{::'lbl.school.name'|i18n}}</p>
+        <p>{{::'lbl.school.street'|i18n}}</p>
+        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
+        <p>{{::'lbl.school.phone'|i18n}}</p>
+        <p>{{::'lbl.school.siret'|i18n}}</p>
+        <p>{{::'lbl.school.vat'|i18n}}</p>
+      </div>
+      <div class="customer">
+        <p>
+          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-change="ctrl._onChange({$field:'customer.name'})" data-set-null/>
+        </p>
+        <p>
+          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-change="ctrl._onChange({$field:'customer.street'})" data-set-null/>
+        </p>
+        <p class="zip-and-city">
+          <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-change="ctrl._onChange({$field:'customer.zipcode'})" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-change="ctrl._onChange({$field:'customer.city'})" data-set-null/>
+        </p>
+    </header>
+    <div class="date">
+      <span>{{'print.invoiceDate'|i18n:{args:{date:ctrl.formatDate(ctrl.invoice.date)} } }}</span>
+    </div>
+  </div>
 </div>

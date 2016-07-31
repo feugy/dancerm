@@ -390,29 +390,6 @@ module.exports = class CardController
           @_preview.season = registration.season
           @_preview.on 'closed', => @_preview = null
 
-  # Print invoice for a given year, with ot without VAT
-  #
-  # @param registration [Registration] the concerned registration
-  # @param withVat [Boolean] true to display VAT
-  printInvoice: (registration, withVat= false) =>
-    return @_preview.focus() if @_preview?
-    @save true, (err) =>
-      return console.error err if err?
-      nw.Window.open 'app/template/invoice_print.html',
-        frame: true
-        icon: require('../../../package.json')?.window?.icon
-        focus: true
-        # size to A4 format, 3/4 height
-        width: 1000
-        height: 800
-        , (created) =>
-          @_preview = created
-          # set parameters and wait for closure
-          @_preview.card = @card
-          @_preview.withVat = withVat
-          @_preview.season = registration.season
-          @_preview.on 'closed', => @_preview = null
-
   # Print the registration confirmation form
   # TODO unused
   #
@@ -541,7 +518,6 @@ module.exports = class CardController
   editInvoice: (registration) =>
     # search for unsent invoices related to that card
     Invoice.findWhere {cardId: @card.id, season: registration.season, sent: null}, (err, existing) =>
-      console.log err, existing
       return console.error "failed to search for invoices", err if err?
       # display the first one found (should be only one at a time)
       return @state.go 'list.invoice', id: existing[0].id if existing.length
