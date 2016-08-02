@@ -50,11 +50,14 @@ module.exports =
 
   # date/time formats
   formats:
-    birthSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
-    receiptSelection: 'dd/MM/yyyy' # angular format https://docs.angularjs.org/api/ng/filter/date
-    birth: 'DD/MM/YYYY' # moment format
-    invoice: 'D MMMM YYYY' # moment format
-    receipt: 'DD/MM/YYYY' # moment format
+    # angular format https://docs.angularjs.org/api/ng/filter/date
+    birthSelection: 'dd/MM/yyyy'
+    receiptSelection: 'dd/MM/yyyy'
+    invoiceSelection: 'd MMMM yyyy'
+    # moment format
+    birth: 'DD/MM/YYYY'
+    invoice: 'D MMMM YYYY'
+    receipt: 'DD/MM/YYYY'
     callList: 'DD/MM'
 
   # short labels
@@ -174,7 +177,7 @@ module.exports =
       diana: 2
       delphine: 2
       nassim: 2
-    invoiceDate: 'Villeurbanne, le {{date}}'
+    invoiceDate: 'Villeurbanne, le '
     settlement: """
 <h2>Accès aux activités</h2>
 <p>L'accès aux activités est strictement réservé aux membres de l'école à jour de leurs cotisations.</p>

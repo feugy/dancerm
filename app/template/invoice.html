@@ -1,8 +1,5 @@
 <div class="invoice">
   <article class="focusable">
-    <span class="btn-group" keyboard-nav>
-      <a class="btn glyphed" href="" data-ng-click="ctrl.print()"><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}</a>
-    </span>
     <h2>{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
   </article>
 
@@ -30,7 +27,17 @@
         </p>
     </header>
     <div class="date">
-      <span>{{'print.invoiceDate'|i18n:{args:{date:ctrl.formatDate(ctrl.invoice.date)} } }}</span>
+      <span class="input-group ng-class:ctrl.dateOpts.open?'open':'';">{{::'print.invoiceDate'|i18n}}
+        <input type="text"
+          data-set-null
+          data-datepicker-popup="{{::'formats.invoiceSelection'|i18n}}"
+          data-is-open="ctrl.dateOpts.open"
+          data-ng-model="ctrl.dateOpts.value"
+          data-show-button-bar="false"
+          data-datepicker-options="::ctrl.dateOpts"
+          data-popup-placement="right"
+          data-ng-change="ctrl.setDate()"/>
+        <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a></span>
     </div>
   </div>
 </div>

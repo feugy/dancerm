@@ -37,6 +37,7 @@
     "vendor/jquery.js": "http://code.jquery.com/jquery-2.1.4.min.js",
     "vendor/tinycolor.js": "http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/bgrins/TinyColor/master/tinycolor.js",
     "vendor/angular.js": "https://code.angularjs.org/1.4.6/angular.min.js",
+    "vendor/angular-locale.fr.js": "https://raw.githubusercontent.com/angular/angular.js/master/src/ngLocale/angular-locale_fr-fr.js",
     "vendor/angular-animate.js": "https://code.angularjs.org/1.4.6/angular-animate.min.js",
     "vendor/angular-sanitize.js": "https://code.angularjs.org/1.4.6/angular-sanitize.min.js",
     "vendor/angular-ui-router.js": "https://raw.githubusercontent.com/angular-ui/ui-router/0.2.15/release/angular-ui-router.min.js",

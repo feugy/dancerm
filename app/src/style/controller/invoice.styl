@@ -21,27 +21,38 @@
       position relative
       top -10px
 
-    > .btn-group
-      background mainBackground
-      position absolute
-      right 15px
-      top -18px
-      transition background 200ms
-
   .preview
     background white
     box-shadow 0 10px 15px emphasisColor
+    color black
     margin 25px
     padding 25px
 
-    *
-      color black
+    .customer > *
+    .school > *
+    input
+    .date > span
+    .input-group > *
       font-family Verdana
       font-size 16px
 
+    .input-group input:not(:hover):not(:focus):not(.ng-invalid)
     input:not(:hover):not(:focus):not(.ng-invalid)
     textarea:not(:hover):not(:focus):not(.ng-invalid)
       color black
+      border-color transparent
+
+    .input-group .input-group-addon
+      background-color rgba(black, 0.07)
+      border-color transparent
+      color black
+      vertical-align top
+      line-height 1.2em
+
+      > .glyphicon
+        left -5px
+        top 0
+
 
     input[type=text]:focus
     input[type=number]:focus
@@ -64,6 +75,9 @@
       margin 2em 0 0
       padding 0
       width 100%
+
+      .input-group-addon
+        display inline-block
 
     header
       display flex

@@ -21,7 +21,7 @@
           <p>{{ctrl.invoice.customer.zipcode}} {{ctrl.invoice.customer.city}}</p>
       </header>
       <div class="date">
-        <span>{{'print.invoiceDate'|i18n:{args:{date:ctrl.formatDate(ctrl.invoice.date)} } }}</span>
+        <span>{{'print.invoiceDate'|i18n}} {{::ctrl.displayDate()}}</span>
       </div>
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>

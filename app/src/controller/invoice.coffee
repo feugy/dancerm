@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 isPrintCtx = not module?
 # if used in print context, path to other dependencies are different
 i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
@@ -38,6 +39,14 @@ class InvoiceController
   # flag indicating wether the invoice has been changed or not
   hasChanged: false
 
+  # Option used to configure date selection popup
+  dateOpts:
+    value: null
+    open: false
+    showWeeks: false
+    startingDay: 1
+    showButtonBar: false
+
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
@@ -64,15 +73,25 @@ class InvoiceController
     @_previous = {}
     @_previous = {}
 
+    @dateOpts =
+      value: null
+      open: false
+      showWeeks: false
+      startingDay: 1
+      showButtonBar: false
+
     # if used in the context of printing, skip internal init as we are just displaying preview
     if isPrintCtx
       @invoice = win.invoice
+      @dateOpts.value = @invoice?.date.valueOf()
       window.print()
       _.defer -> win.close()
       return
 
     # redirect to invoice list if needded
     return @back() unless stateParams.id?
+
+    @scope.listCtrl.actions = [{label: 'btn.print', icon: 'print', action: @print}]
 
     # load invoice to display values
     @load stateParams.id
@@ -101,6 +120,7 @@ class InvoiceController
     Invoice.find id, (err, invoice) =>
       return console.error err if err?
       @invoice = invoice
+      @dateOpts.value = @invoice?.date.valueOf()
       @_previous = @invoice.toJSON()
       console.log "load invoice #{invoice.ref} (#{invoice.id})"
       # reset changes and displays everything
@@ -143,9 +163,20 @@ class InvoiceController
       @scope.$apply() unless @scope.$$phase
       done()
 
-  # Format a given date
-  formatDate: (date) =>
-    date?.format @i18n.formats.invoice
+  # Invoked when date change in the date picker
+  # Updates the invoice's' date
+  setDate: =>
+    @invoice?.date = moment @dateOpts.value
+    @_onChange 'date'
+
+  # Opens the date selection popup
+  #
+  # @param event [Event] click event, prevented.
+  toggleDate: (event) =>
+    # prevent, or popup won't show
+    event?.preventDefault()
+    event?.stopPropagation()
+    @dateOpts.open = not @dateOpts.open
 
   # Save current invoice and display print preview
   print: =>
@@ -165,6 +196,9 @@ class InvoiceController
           @_preview.invoice = @invoice
           @_preview.on 'closed', => @_preview = null
 
+  # @returns [String] formated date for printing
+  displayDate: => @invoice?.date.format @i18n.formats.invoice
+
   # **private**
   # Update hasChanged flag and contextual actions
   #
@@ -178,6 +212,7 @@ class InvoiceController
     else if @hasChanged
       # remove save and cancel
       @scope.listCtrl.actions.splice 0, 2
+    console.log @scope.listCtrl.actions
     @hasChanged = changed
 
   # **private**
