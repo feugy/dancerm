@@ -17,6 +17,7 @@ module.exports =
     ignore: 'Ignorer'
     invoice: 'Factures'
     import: 'Importer des données'
+    markAsSent: 'Envoyer'
     newDancer: 'Inscription'
     no: 'Non'
     ok: 'Ok'
@@ -143,7 +144,8 @@ module.exports =
   msg:
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
     cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
-    confirmGoBack: "Toutes les modifications non enregistrée vont être perdues. Voulez-vous vraiment continuer ?"
+    confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
+    confirmMarkAsSent: "Une fois envoyée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'

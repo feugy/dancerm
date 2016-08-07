@@ -36,6 +36,9 @@ class InvoiceController
   # displayed invoice
   invoice: null
 
+  # Indicates wether this invoice is read only
+  isReadOnly: false
+
   # flag indicating wether the invoice has been changed or not
   hasChanged: false
 
@@ -71,7 +74,7 @@ class InvoiceController
     @hasChanged = false
     @_modalOpened = false
     @_previous = {}
-    @_previous = {}
+    @isReadOnly = false
 
     @dateOpts =
       value: null
@@ -82,8 +85,7 @@ class InvoiceController
 
     # if used in the context of printing, skip internal init as we are just displaying preview
     if isPrintCtx
-      @invoice = win.invoice
-      @dateOpts.value = @invoice?.date.valueOf()
+      @_onLoad win.invoice
       window.print()
       _.defer -> win.close()
       return
@@ -91,10 +93,15 @@ class InvoiceController
     # redirect to invoice list if needded
     return @back() unless stateParams.id?
 
-    @scope.listCtrl.actions = [{label: 'btn.print', icon: 'print', action: @print}]
+    @scope.listCtrl.actions = [
+      {label: 'btn.markAsSent', icon: 'send', action: @markAsSent}
+      {label: 'btn.print', icon: 'print', action: @print}
+    ]
 
     # load invoice to display values
-    @load stateParams.id
+    Invoice.find stateParams.id, (err, invoice) =>
+      return console.error err if err?
+      @_onLoad invoice
 
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
       return unless @hasChanged
@@ -113,19 +120,6 @@ class InvoiceController
 
   # Goes back to list, after a confirmation if dancer has changed
   back: => @state.go 'invoices'
-
-  # loads a given invoide from its id
-  # @param id [String] Loaded invoice's id
-  load: (id) =>
-    Invoice.find id, (err, invoice) =>
-      return console.error err if err?
-      @invoice = invoice
-      @dateOpts.value = @invoice?.date.valueOf()
-      @_previous = @invoice.toJSON()
-      console.log "load invoice #{invoice.ref} (#{invoice.id})"
-      # reset changes and displays everything
-      @_setChanged false
-      @scope.$apply()
 
   # restore previous values
   cancel: =>
@@ -151,7 +145,7 @@ class InvoiceController
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no problem occured
   save: (done = ->) =>
-    return done null unless @hasChanged
+    return done null unless @hasChanged and not @isReadOnly
     console.log "save invoice #{@invoice.ref} (#{@invoice.id})"
     @invoice.save (err) =>
       if err?
@@ -163,9 +157,27 @@ class InvoiceController
       @scope.$apply() unless @scope.$$phase
       done()
 
+  # After a confirmation, mark the invoice as sent.
+  markAsSent: =>
+    return if @isReadOnly
+    @dialog.messageBox(@i18n.ttl.confirm, @i18n.msg.confirmMarkAsSent, [
+        {label: @i18n.btn.yes, result: true, cssClass: 'btn-warning'}
+        {label: @i18n.btn.no}
+      ]
+    ).result.then (confirmed) =>
+      return unless confirmed
+      # if confirmed, effectively mark as sent
+      @invoice.sent = moment()
+      @hasChanged = true
+      @save (err) =>
+        return if err?
+        # reset everything to reflect read-only state
+        @_onLoad @invoice
+
   # Invoked when date change in the date picker
   # Updates the invoice's' date
   setDate: =>
+    return if @isReadOnly
     @invoice?.date = moment @dateOpts.value
     @_onChange 'date'
 
@@ -181,6 +193,7 @@ class InvoiceController
   # Save current invoice and display print preview
   print: =>
     return @_preview.focus() if @_preview?
+    # save will be effective only it has changed
     @save (err) =>
       return console.error err if err?
       nw.Window.open 'app/template/invoice_print.html',
@@ -200,9 +213,24 @@ class InvoiceController
   displayDate: => @invoice?.date.format @i18n.formats.invoice
 
   # **private**
+  # initialize controller for a given invoice
+  # @param invoice [Invoice] Loaded invoice
+  _onLoad: (invoice) =>
+    @invoice = invoice
+    @isReadOnly = @invoice?.sent?
+    @dateOpts.value = @invoice?.date.valueOf()
+    @_previous = @invoice.toJSON()
+    console.log "load invoice #{@invoice.ref} (#{@invoice.id})"
+    # reset changes and displays everything
+    @_setChanged false
+    # remove all buttons except print if relevant
+    @scope.listCtrl?.actions.splice 0, @scope.listCtrl?.actions.length - 1 if @isReadOnly
+    @scope.$apply() unless @scope.$$phase
+
+  # **private**
   # Update hasChanged flag and contextual actions
   #
-  # @param changed [Boolean] new has changed flag value
+  # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
     if changed
       if @invoice._v > 0
@@ -211,8 +239,7 @@ class InvoiceController
       @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
     else if @hasChanged
       # remove save and cancel
-      @scope.listCtrl.actions.splice 0, 2
-    console.log @scope.listCtrl.actions
+      @scope.listCtrl.actions.splice 0, if @invoice._v > 0 then 2 else 1
     @hasChanged = changed
 
   # **private**

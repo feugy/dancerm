@@ -3,7 +3,7 @@
     <h2>{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
   </article>
 
-  <div class=preview>
+  <div class="preview" data-ng-if="!ctrl.isReadOnly">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
@@ -38,6 +38,26 @@
           data-popup-placement="right"
           data-ng-change="ctrl.setDate()"/>
         <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a></span>
+    </div>
+  </div>
+  <div class="preview" data-ng-if="ctrl.isReadOnly">
+    <header>
+      <img src="../style/img/ribas.png" class="logo"/>
+      <div class="school">
+        <p>{{::'lbl.school.name'|i18n}}</p>
+        <p>{{::'lbl.school.street'|i18n}}</p>
+        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
+        <p>{{::'lbl.school.phone'|i18n}}</p>
+        <p>{{::'lbl.school.siret'|i18n}}</p>
+        <p>{{::'lbl.school.vat'|i18n}}</p>
+      </div>
+      <div class="customer">
+        <p>{{ctrl.invoice.customer.name}}</p>
+        <p>{{ctrl.invoice.customer.street}}</p>
+        <p>{{ctrl.invoice.customer.zipcode}} {{ctrl.invoice.customer.city}}</p>
+    </header>
+    <div class="date">
+      <span>{{'print.invoiceDate'|i18n}} {{::ctrl.displayDate()}}</span>
     </div>
   </div>
 </div>

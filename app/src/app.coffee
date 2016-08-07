@@ -23,7 +23,7 @@ console.log "running with angular v#{angular.version.full}"
 app = angular.module 'app', ['ngAnimate', 'ui.bootstrap', 'ui.router', 'nvd3']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compileProvider', (location, router, states, compile) ->
-  # html5 mode raise problems when loading templates
+  # html5 mode cause problems when loading templates
   location.html5Mode false
   # configure routing
   router.otherwise '/list/planning'
