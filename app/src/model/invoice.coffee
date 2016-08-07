@@ -8,6 +8,46 @@ Dancer = null
 # Invoice for a given registration
 module.exports = class Invoice extends Persisted
 
+  # **static**
+  # Check if a given reference match the expected format, and isn't already used
+  #
+  # @param ref [String] checked refernce
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done valid [Boolean] true if reference can be used
+  @isRefValid: (ref, done) ->
+    return done null, false unless ref? and /^\D*\d{4}\D*\d{2}\D*\d+.*$/.test ref
+    @findWhere {ref: ref}, (err, [exist]) ->
+      done err, not exist?
+
+  # **static**
+  # Get the next free reference relative to a given date.
+  # Find all references of the same month and year, order by rank, and return next rank.
+  # If no references of the same month and year exist, return ref N°1 for that month.
+  # During reference parsing, year on 4 digits is expected to come first, then month on 2 digits,
+  # Then rank. Any non-numerical part will be ignored, as well as numerical part found after.
+  #
+  # Pad reference left with 2 zeros
+  #
+  # @param date [Moment|String|Date] date of the desired month
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done ref [String] reference generated
+  @getNextRef: (date, done) ->
+    date = moment(date)
+    year = date.year()
+    month = date.month() + 1
+    @findAllRaw (err, models) ->
+      return done err if err?
+      # gets all existing references
+      refs = models.map (model) -> model.ref.match(/\D*(\d{4})\D*(\d{2})\D*(\d+)/)?.splice(1, 3) or []
+        .filter ([y, m]) -> +y is year and +m is month
+        .map ([y, m, ref]) -> +ref
+        .sort (a, b) -> a - b
+      last = refs[refs.length-1] or 0
+      console.log year, month, refs
+      done null, "#{year}-#{_.padLeft month, 2, '0'}-#{_.padLeft last + 1, 3, '0'}"
+
   # invoice reference
   ref: null
   # application and due date
@@ -40,7 +80,7 @@ module.exports = class Invoice extends Persisted
   constructor: (raw = {}) ->
     # set default values
     _.defaults raw,
-      ref: null # TODO generate
+      ref: null
       date: moment()
       customer:
         name: ''
@@ -64,6 +104,18 @@ module.exports = class Invoice extends Persisted
     super(raw)
     @changeDate raw.date
     Dancer = require './dancer' unless Dancer?
+
+  # Save the current invoice into the persistance store.
+  # Check reference validity first
+  #
+  # @param done [Function] completion callback, invoked with arguments:
+  # @option done err [Error] an error object or null if no error occured
+  # @option done model [Persisted] currently saved model
+  save: (done) =>
+    Invoice.isRefValid @ref, (err, isValid) =>
+      return done err, null if err?
+      return done new Error "Reference '#{@ref}' is misformated or already used" unless isValid
+      super done
 
   # Set date value, and affect due date automatically
   #

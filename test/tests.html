@@ -52,6 +52,20 @@
       // Run test and display results in the page
       global.document = window.document
       mocha.ui('bdd').reporter('html').run()
+
+      const win = nw.Window.get()
+      window.addEventListener('keydown', ({which}) => {
+        // reloads full app on F5
+        if (which === 116) {
+          // must clear require cache also
+          for (const attr in global.require.cache) {
+            delete global.require.cache[attr]
+          }
+          global.reload = true
+          win.removeAllListeners()
+          win.reloadIgnoringCache()
+        }
+      })
     </script>
   </body>
 </html>
