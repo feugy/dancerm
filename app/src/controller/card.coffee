@@ -527,14 +527,17 @@ module.exports = class CardController
         cardId: @card.id,
         season: registration.season
       # only use current date if inside registration season. Otherwise, default September, 15th
-      invoice.changeDate if moment().isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then moment() else moment "#{firstYear}-09-15"
-      # TODO generate reference
-      invoice.ref = "#{invoice.date.format('YYYY-MM')}-001"
-      # TODO add dance classes
-      invoice.setCustomer @dancers[0], =>
-        invoice.save (err) =>
-          return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
-          @state.go 'list.invoice', id: invoice.id
+      now = moment()
+      invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
+      # generate reference
+      Invoice.getNextRef now.year(), now.month() + 1, (err, ref) =>
+        return console.error "failed to get next ref for new invoice", err if err?
+        invoice.ref = ref
+        # TODO add dance classes
+        invoice.setCustomer @dancers[0], =>
+          invoice.save (err) =>
+            return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
+            @state.go 'list.invoice', id: invoice.id
 
   # **private**
   # Update hasChanged flag and contextual actions

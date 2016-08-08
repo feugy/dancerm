@@ -2,6 +2,7 @@ _ = require 'lodash'
 moment = require 'moment'
 Persisted = require './tools/persisted'
 InvoiceItem = require './invoice_item'
+{invoiceRefFormat} = require '../util/common'
 # because of circular dependency
 Dancer = null
 
@@ -16,7 +17,7 @@ module.exports = class Invoice extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done valid [Boolean] true if reference can be used
   @isRefValid: (ref, done) ->
-    return done null, false unless ref? and /^\D*\d{4}\D*\d{2}\D*\d+.*$/.test ref
+    return done null, false unless ref? and invoiceRefFormat.test ref
     @findWhere {ref: ref}, (err, [exist]) ->
       done err, not exist?
 
@@ -29,18 +30,16 @@ module.exports = class Invoice extends Persisted
   #
   # Pad reference left with 2 zeros
   #
-  # @param date [Moment|String|Date] date of the desired month
+  # @param year [Number] desired year
+  # @param month [Number] desired month (1-based)
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   # @option done ref [String] reference generated
-  @getNextRef: (date, done) ->
-    date = moment(date)
-    year = date.year()
-    month = date.month() + 1
+  @getNextRef: (year, month, done) ->
     @findAllRaw (err, models) ->
       return done err if err?
       # gets all existing references
-      refs = models.map (model) -> model.ref.match(/\D*(\d{4})\D*(\d{2})\D*(\d+)/)?.splice(1, 3) or []
+      refs = models.map (model) -> model.ref.match(invoiceRefFormat)?.splice(1, 3) or []
         .filter ([y, m]) -> +y is year and +m is month
         .map ([y, m, ref]) -> +ref
         .sort (a, b) -> a - b

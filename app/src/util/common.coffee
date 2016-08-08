@@ -45,6 +45,10 @@ getFirstStep = (obj, path) ->
 
 module.exports =
 
+  # Regexp used to validate invoice references
+  invoiceRefFormat: /^\D*(\d{4})\D*(\d{2})\D*(\d+).*$/
+  invoiceRefExtract: /^\D*(\d{4})\D*(\d{2})?\D*(\d+)?$/
+
   fixConsole: ->
     # Log file
     logFile = resolve 'log.txt'

@@ -1,6 +1,10 @@
 <div class="invoice">
-  <article class="focusable">
-    <h2>{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
+  <article class="focusable invoice-title">
+    <h2 data-ng-if="!ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:{ref:''} } }}
+      <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-change="ctrl._onChange('ref')"/>
+      <span class="suggested" data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
+    </h2>
+    <h2 data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
   </article>
 
   <div class="preview" data-ng-if="!ctrl.isReadOnly">
@@ -16,14 +20,14 @@
       </div>
       <div class="customer">
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-change="ctrl._onChange({$field:'customer.name'})" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-change="ctrl._onChange('customer.name')" data-set-null/>
         </p>
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-change="ctrl._onChange({$field:'customer.street'})" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-change="ctrl._onChange('customer.street')" data-set-null/>
         </p>
         <p class="zip-and-city">
-          <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-change="ctrl._onChange({$field:'customer.zipcode'})" data-set-null/>
-          <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-change="ctrl._onChange({$field:'customer.city'})" data-set-null/>
+          <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-change="ctrl._onChange('customer.city')" data-set-null/>
         </p>
     </header>
     <div class="date">

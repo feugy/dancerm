@@ -244,31 +244,31 @@ describe 'Invoice  model tests', ->
         done()
 
     it 'should get reference for an empty month', (done) ->
-      Invoice.getNextRef moment('2016-09-01'), (err, ref) ->
+      Invoice.getNextRef 2016, 9, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-09-001'
         done()
 
     it 'should get next reference for month with existing refs', (done) ->
-      Invoice.getNextRef moment('2016-08-01'), (err, ref) ->
+      Invoice.getNextRef 2016, 8, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-08-003'
         done()
 
     it 'should get next reference for month with more than 999 refs', (done) ->
-      Invoice.getNextRef moment('2016-07-01'), (err, ref) ->
+      Invoice.getNextRef 2016, 7, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-07-1001'
         done()
 
     it 'should ignore extra words when getting next reference', (done) ->
-      Invoice.getNextRef moment('2016-06-01'), (err, ref) ->
+      Invoice.getNextRef 2016, 6, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-06-011'
         done()
 
     it 'should ignore unparseable refs when getting next reference', (done) ->
-      Invoice.getNextRef moment('2016-05-01'), (err, ref) ->
+      Invoice.getNextRef 2016, 5, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-05-090'
         done()

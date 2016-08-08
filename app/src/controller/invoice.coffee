@@ -4,6 +4,7 @@ isPrintCtx = not module?
 # if used in print context, path to other dependencies are different
 i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
 Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
+{invoiceRefExtract} = require "../#{if isPrintCtx then 'script/' else ''}util/common"
 
 # Displays and edits a given invoice
 # Also usable as print controller
@@ -42,6 +43,9 @@ class InvoiceController
   # flag indicating wether the invoice has been changed or not
   hasChanged: false
 
+  # in case of invalid reference, ref suggested
+  suggestedRef: null
+
   # Option used to configure date selection popup
   dateOpts:
     value: null
@@ -75,6 +79,7 @@ class InvoiceController
     @_modalOpened = false
     @_previous = {}
     @isReadOnly = false
+    @suggestedRef = null
 
     @dateOpts =
       value: null
@@ -249,10 +254,19 @@ class InvoiceController
   _onChange: (field) =>
     # performs comparison between current and old values
     @_setChanged false
-    unless _.isEqual @_previous, @invoice.toJSON()
-      # console.log "invoice has changed on #{field}"
-      # quit at first modification
-      return @_setChanged true
+    @_setChanged not _.isEqual @_previous, @invoice.toJSON()
+    # on reference changes (and if values differ), check validity
+    if field is 'ref'
+      @suggestedRef = null
+      newRef = @invoice.ref
+      return if @_previous.ref is newRef
+      Invoice.isRefValid newRef, (err, isValid) =>
+        unless isValid
+          # in cas of invalidity, get the next ref for expected month
+          matched = newRef.match(invoiceRefExtract) or []
+          Invoice.getNextRef +matched[1] or moment().year(), +matched[2] or moment().month() + 1, (err, next) =>
+            @suggestedRef = next unless err?
+            @scope.$apply()
 
 # Export as print controller for print preview, or classical node export
 unless isPrintCtx

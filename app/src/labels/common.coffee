@@ -130,6 +130,7 @@ module.exports =
     type: 'Type'
     stampWidth: 'Largeur (mm)'
     stampHeight: 'Hauteur (mm)'
+    suggestedRef: 'Prochaine référence: {{ref}}'
     unknown: 'Inconnu'
     version: 'v{{version}}'
     value: 'Valeur'
