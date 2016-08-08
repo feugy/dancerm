@@ -279,3 +279,11 @@ describe 'Invoice  model tests', ->
         expect(err).to.exist
         expect(err).to.have.property('message').that.includes 'misformated or already used'
         done()
+
+    it 'should can save the with the same ref', (done) ->
+      saved = new Invoice ref: '2016-08-003'
+      saved.save (err) ->
+        return done err if err?
+        saved.save (err) ->
+          expect(err).not.to.exist
+          done()

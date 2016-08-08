@@ -6,34 +6,44 @@
 
   .invoice-title
     border-top 2px solid headingColor
-    margin 10px 0
-    padding 0 1em 1em
+    margin 10px 0 0
+    padding 0 1em
     position relative
 
     > h2
-      border none
+      align-items center
       background mainBackground
-      display inline
+      border none
+      display inline-flex
       font-size fontSize*1.6
       left 25px
       line-height 10px
       padding 0 5px
       position relative
-      top -10px
-
-      > .suggested
-        color emphasisColor
-        padding-left 4em
+      white-space nowrap
+      top -1em
 
       > input
+        flex-grow 1
         font-size 1em
+        min-width 0
         padding .1em
+
+    label
+      margin 0 0.5em 0 0
+      vertical-align -1px
+
+    .suggested
+      color warningColor
+
+    input[type=checkbox]
+      margin-right .5em
+      vertical-align -3px
 
   .preview
     background white
     box-shadow 0 10px 15px emphasisColor
     color black
-    margin 25px
     padding 25px
 
     .customer > *
@@ -61,7 +71,6 @@
         left -5px
         top 0
 
-
     input[type=text]:focus
     input[type=number]:focus
     textarea:focus
@@ -86,6 +95,10 @@
 
       .input-group-addon
         display inline-block
+
+      .dropdown-menu
+        left auto !important
+        right 14px
 
     header
       display flex

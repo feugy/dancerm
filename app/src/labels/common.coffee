@@ -112,14 +112,26 @@ module.exports =
     registered: 'Intitulé du cours'
     registration: 'Inscription'
     Sat: 'Samedi'
-    school:
+    selectedSchool: 'Ecole de'
+    schools: [
+      owner: 'Diana'
       name: 'École de Danse P.M. Ribas'
       phone: 'Tél. 04 78 85 32 23'
-      street: '34, rue du Docteur Rollet' # Tony: 10, rue des Bons Amis
+      street: '34, rue du Docteur Rollet'
       zipcode: 69100
       city: 'Villeurbanne'
-      siret: 'Siret 443 342 431 00014' # Tony: 499 909 935 00011
-      vat: 'N° TVA FR XX 443 342 431' # Tony: Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b
+      siret: 'Siret 443 342 431 00014'
+      vat: 'N° TVA FR XX 443 342 431'
+    ,
+      owner: 'Anthony'
+      name: 'École de Danse P.M. Ribas'
+      phone: 'Tél. 04 78 85 32 23'
+      street: '10, rue des Bons Amis'
+      zipcode: 69100
+      city: 'Villeurbanne'
+      siret: 'Siret 499 909 935 00011'
+      vat: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
+    ]
     street: 'Voie'
     Sun: 'Dimanche'
     sum: 'Total'
@@ -139,6 +151,7 @@ module.exports =
     vatValue: 'TVA'
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
+    withVat: 'Avec TVA'
     zipcode: 'Code postal'
 
   # long messages with html

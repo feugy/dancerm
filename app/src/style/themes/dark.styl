@@ -366,12 +366,39 @@ body
       border-color emphasisColor
       outline emphasisColor auto 5px
 
-  > .focusable
+  > .invoice-title
+    background headerBackground
     border-top 0
+    display flex
+    margin-bottom 2em
 
     > h2
-      display block
-      position static
+      align-items center
       background headerBackground
+      display flex
+      position static
       line-height inherit
       padding 8px 1em
+
+      > input
+        flex-grow 0
+
+    > .row
+      align-items center
+      display flex
+      flex-grow 1
+
+    .suggested
+      color emphasisColor
+      flex-grow 1
+      order 1
+
+    .selected-school
+      order 2
+      width auto
+      white-space nowrap
+
+    .with-vat
+      order 3
+      width auto
+      white-space nowrap

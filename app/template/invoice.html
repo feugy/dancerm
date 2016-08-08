@@ -1,22 +1,39 @@
 <div class="invoice">
   <article class="focusable invoice-title">
-    <h2 data-ng-if="!ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:{ref:''} } }}
+    <h2 class="title" data-ng-if="!ctrl.isReadOnly">
+      {{'ttl.invoice'|i18n:{args:{ref:''} } }}
       <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-change="ctrl._onChange('ref')"/>
-      <span class="suggested" data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
     </h2>
-    <h2 data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
+    <span class="row" data-ng-if="!ctrl.isReadOnly">
+      <span class="col-md-3 selected-school">
+        <label>{{::'lbl.selectedSchool'|i18n:{sep:true} }}</label>
+        <div class="btn-group" data-dropdown keyboard-nav>
+          <button class="btn dropdown-toggle" dropdown-toggle>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.invoice.selectedSchool = $index; ctrl._onChange('selectedSchool')">{{::school.owner}}</a></li>
+          </ul>
+        </div>
+      </span>
+      <span class="col-md-2 with-vat">
+        <label><input type="checkbox" data-ng-model="ctrl.withVat"/>{{::'lbl.withVat'|i18n}}</label>
+      </span>
+      <span class="col-md-7 suggested">
+        <span data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
+      </span>
+    </span>
+    <h2 class="title" data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
   </article>
 
   <div class="preview" data-ng-if="!ctrl.isReadOnly">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{::'lbl.school.name'|i18n}}</p>
-        <p>{{::'lbl.school.street'|i18n}}</p>
-        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
-        <p>{{::'lbl.school.phone'|i18n}}</p>
-        <p>{{::'lbl.school.siret'|i18n}}</p>
-        <p>{{::'lbl.school.vat'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="customer">
         <p>
@@ -48,12 +65,12 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{::'lbl.school.name'|i18n}}</p>
-        <p>{{::'lbl.school.street'|i18n}}</p>
-        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
-        <p>{{::'lbl.school.phone'|i18n}}</p>
-        <p>{{::'lbl.school.siret'|i18n}}</p>
-        <p>{{::'lbl.school.vat'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="customer">
         <p>{{ctrl.invoice.customer.name}}</p>

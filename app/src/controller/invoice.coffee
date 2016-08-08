@@ -11,7 +11,7 @@ Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
 class InvoiceController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$filter', '$stateParams'] else []
+  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$state', '$filter', '$stateParams'] else []
 
   # Route declaration
   @declaration:
@@ -31,6 +31,9 @@ class InvoiceController
   # Link to modal popup service
   dialog: null
 
+  # Angular's state service
+  state: null
+
   # Angular's filters factory
   filter: null
 
@@ -45,6 +48,9 @@ class InvoiceController
 
   # in case of invalid reference, ref suggested
   suggestedRef: null
+
+  # apply VAT or not
+  withVat: false
 
   # Option used to configure date selection popup
   dateOpts:
@@ -72,14 +78,16 @@ class InvoiceController
   # @param rootscope [Object] Angular global scope for digest triggering
   # @param dialog [Object] Angular dialog service
   # @param filter [Function] Angular's filter factory
+  # @param state [Object] Angular state provider
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @dialog, @filter, stateParams) ->
+  constructor: (@scope, @rootScope, @dialog, @state, @filter, stateParams) ->
     @invoice = null
     @hasChanged = false
     @_modalOpened = false
     @_previous = {}
     @isReadOnly = false
     @suggestedRef = null
+    @withVat = false
 
     @dateOpts =
       value: null
@@ -119,7 +127,8 @@ class InvoiceController
         ]
       ).result.then (confirmed) =>
         return unless confirmed
-        # if confirmed, effectively go on desired state
+        # if confirmed, effectively go on desired state after reseting previous values
+        Object.assign @invoice, @_previous
         @_setChanged false
         @state.go toState.name, toParams
 

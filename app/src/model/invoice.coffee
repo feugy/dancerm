@@ -11,15 +11,20 @@ module.exports = class Invoice extends Persisted
 
   # **static**
   # Check if a given reference match the expected format, and isn't already used
+  # Specify the self parameter to check if an existing Invoice can reuse its ref
   #
   # @param ref [String] checked refernce
+  # @param self [Invoice] invoice which ref isn't considered as exiting
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   # @option done valid [Boolean] true if reference can be used
-  @isRefValid: (ref, done) ->
+  @isRefValid: (ref, self, done) ->
+    unless done?
+      done = self
+      self = null
     return done null, false unless ref? and invoiceRefFormat.test ref
     @findWhere {ref: ref}, (err, [exist]) ->
-      done err, not exist?
+      done err, not exist? or exist.id is self?.id
 
   # **static**
   # Get the next free reference relative to a given date.
@@ -68,6 +73,9 @@ module.exports = class Invoice extends Persisted
   # when valuated, invoice is readonly
   sent: null
 
+  # index of selected school for that invoice
+  selectedSchool: 0
+
   # link to card and season, if applicable
   cardId: null
   season: null
@@ -92,6 +100,7 @@ module.exports = class Invoice extends Persisted
       sent: null
       cardId: null
       season: null
+      selectedSchool: 0
     # enrich object attributes
     raw.items = (for rawItem in raw.items
       if rawItem?.constructor?.name isnt 'InvoiceItem'
@@ -111,7 +120,7 @@ module.exports = class Invoice extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done model [Persisted] currently saved model
   save: (done) =>
-    Invoice.isRefValid @ref, (err, isValid) =>
+    Invoice.isRefValid @ref, @, (err, isValid) =>
       return done err, null if err?
       return done new Error "Reference '#{@ref}' is misformated or already used" unless isValid
       super done
