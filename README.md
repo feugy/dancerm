@@ -1,6 +1,5 @@
 ## TODO
 
-- Display wrong ref warning on save
 - Add, edit and remove invoice items
 - Generate invoice items from registration_print
 - Access previous sent invoices and creates new one

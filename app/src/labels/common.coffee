@@ -277,6 +277,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     generalInfo: 'Information'
     import: 'Importation'
     invoice: 'Facture N°{{ref}}'
+    invoiceError: 'Erreur de sauvegarde'
     interface: 'Interface'
     knownBy: 'Connu par'
     knownByRepartition: 'Ils ont connus par...'
