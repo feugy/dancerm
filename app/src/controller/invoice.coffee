@@ -4,6 +4,7 @@ isPrintCtx = not module?
 # if used in print context, path to other dependencies are different
 i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
 Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
+InvoiceItem = require "../#{if isPrintCtx then 'script/' else ''}model/invoice_item"
 {invoiceRefExtract} = require "../#{if isPrintCtx then 'script/' else ''}util/common"
 
 # Displays and edits a given invoice
@@ -52,6 +53,9 @@ class InvoiceController
   # apply VAT or not
   withVat: false
 
+  # copy of invoice's selected school, to allow default value
+  selectedSchool: 0
+
   # Option used to configure date selection popup
   dateOpts:
     value: null
@@ -88,6 +92,7 @@ class InvoiceController
     @isReadOnly = false
     @suggestedRef = null
     @withVat = false
+    @selectedSchool = 0
 
     @dateOpts =
       value: null
@@ -198,6 +203,14 @@ class InvoiceController
     @invoice?.date = moment @dateOpts.value
     @_onChange 'date'
 
+  # Select a given school
+  #
+  # @param value [Number] new selected school
+  selectSchool: (value) =>
+    @invoice?.selectedSchool = value
+    @selectedSchool = value
+    @_onChange 'selectedSchool'
+
   # Opens the date selection popup
   #
   # @param event [Event] click event, prevented.
@@ -229,6 +242,22 @@ class InvoiceController
   # @returns [String] formated date for printing
   displayDate: => @invoice?.date.format @i18n.formats.invoice
 
+  # Add a new item to the current invoice
+  addItem: =>
+    return if @isReadOnly
+    @invoice.items.push new InvoiceItem(vat: @i18n.vat)
+    @_onChange 'items'
+
+  # Removes an existing item from the current invoice
+  #
+  # @param item [InvoiceItem] removed item
+  removeItem: (item) =>
+    return if @isReadOnly
+    idx = @invoice.items.indexOf item
+    return if idx is -1
+    @invoice.items.splice idx, 1
+    @_onChange 'items'
+
   # **private**
   # initialize controller for a given invoice
   # @param invoice [Invoice] Loaded invoice
@@ -236,6 +265,7 @@ class InvoiceController
     @invoice = invoice
     @isReadOnly = @invoice?.sent?
     @dateOpts.value = @invoice?.date.valueOf()
+    @selectedSchool = @invoice?.selectedSchool or 0
     @_previous = @invoice.toJSON()
     console.log "load invoice #{@invoice.ref} (#{@invoice.id})"
     # reset changes and displays everything

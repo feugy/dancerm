@@ -1,5 +1,4 @@
 secondaryColor = #888
-fontSize = 16px
 
 box()
   border 1px solid secondaryColor
@@ -14,8 +13,8 @@ body
   background transparent
 
   *
-    font-family Verdana
-    font-size fontSize
+    font-family printfontFamily
+    font-size prinFontSize
 
   p
     margin 0 0 0.5em 0
@@ -241,7 +240,7 @@ body.addresses-list
       //font-variant small-caps
 
     *
-      font-size 13px
+      font-size fontSize
 
   &.printing
     // hide unselected card, configuration and checkboxes during printing

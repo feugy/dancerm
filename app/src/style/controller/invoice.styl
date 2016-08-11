@@ -46,13 +46,28 @@
     color black
     padding 25px
 
+    .item-header
+      margin 2em 12px 0
+      font-weight bold
+
+      > *
+        font-family printFontFamily
+        font-size printFontSize
+        padding 0 .5em
+
+        &:not(.name)
+          text-align right
+
+    .add-item
+      margin 1em 0
+
     .customer > *
     .school > *
     input
     .date > span
     .input-group > *
-      font-family Verdana
-      font-size 16px
+      font-family printFontFamily
+      font-size printFontSize
 
     .input-group input:not(:hover):not(:focus):not(.ng-invalid)
     input:not(:hover):not(:focus):not(.ng-invalid)

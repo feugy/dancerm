@@ -71,7 +71,6 @@ describe 'Invoice  model tests', ->
     expect(tested).to.have.property('discount').that.equals 0
     expect(tested).to.have.property('delayFee').that.equals 0
     expect(tested).to.have.property('sent').that.is.null
-    expect(tested).to.have.property('cardId').that.is.null
     done()
 
   it 'should invoice save raw values', (done) ->
@@ -92,7 +91,6 @@ describe 'Invoice  model tests', ->
           dancerIds: [dancer1.id]
           danceClassId: danceClass1.id
       ]
-      cardId: card.id
     tested = new Invoice _.clone raw
 
     expect(tested).to.have.property('id').that.is.null
@@ -108,14 +106,10 @@ describe 'Invoice  model tests', ->
     expect(item).to.have.property('name').that.equals raw.items[0].name
     expect(item).to.have.property('price').that.equals raw.items[0].price
     expect(item).to.have.property('quantity').that.equals 1
-    expect(item).to.have.property('discount').that.equals 0
     expect(item).to.have.property('vat').that.equals 0
-    expect(item).to.have.property('dancerIds').that.deep.equals raw.items[0].dancerIds
-    expect(item).to.have.property('danceClassId').that.equals raw.items[0].danceClassId
     expect(tested).to.have.property('discount').that.equals raw.discount
     expect(tested).to.have.property('delayFee').that.equals raw.delayFee
     expect(tested).to.have.property('sent').that.is.null
-    expect(tested).to.have.property('cardId').that.equals raw.cardId
 
     tested.save (err) ->
       return done err if err?
@@ -127,10 +121,7 @@ describe 'Invoice  model tests', ->
       expect(item).to.have.property('name').that.equals raw.items[0].name
       expect(item).to.have.property('price').that.equals raw.items[0].price
       expect(item).to.have.property('quantity').that.equals 1
-      expect(item).to.have.property('discount').that.equals 0
       expect(item).to.have.property('vat').that.equals 0
-      expect(item).to.have.property('dancerIds').that.deep.equals raw.items[0].dancerIds
-      expect(item).to.have.property('danceClassId').that.equals raw.items[0].danceClassId
       done()
 
   it 'should set customer details from dancer', (done) ->

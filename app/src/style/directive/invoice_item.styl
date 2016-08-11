@@ -1,0 +1,41 @@
+/******************************************************************************
+ * Invoice item
+ */
+
+.invoice-item
+  position relative
+
+  .remove
+    top 2px
+    left 0
+    position absolute
+
+  .row
+    margin 0 12px
+    border-top 1px solid black
+
+    > *
+      font-family printFontFamily
+      font-size printFontSize
+      text-align right
+      padding 0 .5em
+
+      > input
+        display inline-block
+        width 100%
+
+      &:not(.name) > input
+        text-align right
+
+      &.price > input
+        width 80%
+
+      &.vat, &.total
+        padding 4px .5em
+
+      &.name
+        margin-left 18px
+        margin-right -18px
+
+        > input
+          width 98%

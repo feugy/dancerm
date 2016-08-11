@@ -8,9 +8,9 @@
       <span class="col-md-3 selected-school">
         <label>{{::'lbl.selectedSchool'|i18n:{sep:true} }}</label>
         <div class="btn-group" data-dropdown keyboard-nav>
-          <button class="btn dropdown-toggle" dropdown-toggle>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
+          <button class="btn dropdown-toggle" dropdown-toggle>{{'lbl.schools[' + ctrl.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
           <ul class="dropdown-menu">
-            <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.invoice.selectedSchool = $index; ctrl._onChange('selectedSchool')">{{::school.owner}}</a></li>
+            <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.selectSchool($index)">{{::school.owner}}</a></li>
           </ul>
         </div>
       </span>
@@ -28,12 +28,12 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="customer">
         <p>
@@ -60,17 +60,45 @@
           data-ng-change="ctrl.setDate()"/>
         <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a></span>
     </div>
+    <div class="row item-header">
+      <span class="col-md-5 name">{{::'lbl.designation'|i18n}}</span>
+      <span class="col-md-1 quantity">{{::'lbl.quantity'|i18n}}</span>
+      <span class="col-md-2 price">{{::'lbl.unitaryPrice'|i18n}}</span>
+      <span class="col-md-2 vat">{{::'lbl.vatValue'|i18n}}</span>
+      <span class="col-md-2 total">{{::'lbl.totalPrice'|i18n}}</span>
+    </div>
+    <invoice-item
+      data-ng-repeat="item in ctrl.invoice.items"
+      data-src="item"
+      data-on-remove="ctrl.removeItem(item)"
+      data-on-change="ctrl._onChange('items[' + $index + '].' + $field)">
+    </invoice-item>
+    <div class="row add-item">
+      <span class="col-md-8">
+        <button class="btn glyphed" data-ng-click="ctrl.addItem()"><i class="glyphicon glyphicon-plus"/>{{::'btn.addInvoiceItem'|i18n}}</button>
+      </span>
+      <span class="col-md-2">{{::'lbl.dutyFreeTotal'|i18n}}</span>
+      <span class="col-md-2">{{ctrl.invoice.dutyFreeTotal|number|i18n:{currency:true} }}</span>
+    </div>
+    <div class="row add-item">
+      <span class="col-md-2 col-md-offset-8">{{::'lbl.taxTotal'|i18n}}</span>
+      <span class="col-md-2">{{ctrl.invoice.taxTotal|number|i18n:{currency:true} }}</span>
+    </div>
+    <div class="row add-item">
+      <span class="col-md-2 col-md-offset-8">{{::'lbl.invoiceTotal'|i18n}}</span>
+      <span class="col-md-2">{{ctrl.invoice.total|number|i18n:{currency:true} }}</span>
+    </div>
   </div>
   <div class="preview" data-ng-if="ctrl.isReadOnly">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="customer">
         <p>{{ctrl.invoice.customer.name}}</p>

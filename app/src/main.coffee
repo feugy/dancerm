@@ -107,6 +107,8 @@ try
       require('../script/directive/address')(app)
       require('../script/directive/app_menu')(app)
       require('../script/directive/dancer')(app)
+      require('../script/directive/filtered_input')(app)
+      require('../script/directive/invoice_item')(app)
       require('../script/directive/layout')(app)
       require('../script/directive/list')(app)
       require('../script/directive/planning')(app)
