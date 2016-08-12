@@ -71,6 +71,8 @@ describe 'Invoice  model tests', ->
     expect(tested).to.have.property('discount').that.equals 0
     expect(tested).to.have.property('delayFee').that.equals 0
     expect(tested).to.have.property('sent').that.is.null
+    expect(tested).to.have.property('cardId').that.is.null
+    expect(tested).to.have.property('season').that.is.null
     done()
 
   it 'should invoice save raw values', (done) ->
@@ -91,6 +93,7 @@ describe 'Invoice  model tests', ->
           dancerIds: [dancer1.id]
           danceClassId: danceClass1.id
       ]
+      cardId: card.id
     tested = new Invoice _.clone raw
 
     expect(tested).to.have.property('id').that.is.null
@@ -110,6 +113,7 @@ describe 'Invoice  model tests', ->
     expect(tested).to.have.property('discount').that.equals raw.discount
     expect(tested).to.have.property('delayFee').that.equals raw.delayFee
     expect(tested).to.have.property('sent').that.is.null
+    expect(tested).to.have.property('cardId').that.equals raw.cardId
 
     tested.save (err) ->
       return done err if err?

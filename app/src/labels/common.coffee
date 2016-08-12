@@ -87,6 +87,7 @@ module.exports =
     day: 'Jour'
     details: 'Détails'
     designation: 'Désignation'
+    discount: 'Remise'
     due: 'Rgt.'
     dumpPath: 'Fichier de sauvegarde'
     dutyFreeTotal: 'Total HT'

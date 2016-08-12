@@ -25,5 +25,6 @@ angular.element(win.window).on 'load', ->
 
   # get filters
   require('../script/util/filters')(app)
+  require('../script/directive/invoice_item')(app)
 
   angular.bootstrap doc.find('body'), ['printPreview', 'ngSanitize']

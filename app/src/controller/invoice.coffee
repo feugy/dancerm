@@ -103,6 +103,7 @@ class InvoiceController
 
     # if used in the context of printing, skip internal init as we are just displaying preview
     if isPrintCtx
+      console.log win.invoice.toJSON()
       @_onLoad win.invoice
       window.print()
       _.defer -> win.close()
@@ -245,7 +246,7 @@ class InvoiceController
   # Add a new item to the current invoice
   addItem: =>
     return if @isReadOnly
-    @invoice.items.push new InvoiceItem(vat: @i18n.vat)
+    @invoice.items.push new InvoiceItem vat: if @withVat then @i18n.vat else 0
     @_onChange 'items'
 
   # Removes an existing item from the current invoice
@@ -258,6 +259,13 @@ class InvoiceController
     @invoice.items.splice idx, 1
     @_onChange 'items'
 
+  # Change VAT of each existing items
+  changeVat: =>
+    return unless @invoice
+    for item, i in @invoice.items
+      item.vat = if @withVat then @i18n.vat else 0
+    @_onChange 'item[0].vat'
+
   # **private**
   # initialize controller for a given invoice
   # @param invoice [Invoice] Loaded invoice
@@ -267,6 +275,8 @@ class InvoiceController
     @dateOpts.value = @invoice?.date.valueOf()
     @selectedSchool = @invoice?.selectedSchool or 0
     @_previous = @invoice.toJSON()
+    # set vat depending on the first item content
+    @withVat = @invoice.items.some (item) -> item.vat > 0
     console.log "load invoice #{@invoice.ref} (#{@invoice.id})"
     # reset changes and displays everything
     @_setChanged false

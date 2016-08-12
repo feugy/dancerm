@@ -44,6 +44,17 @@ module.exports = (app) =>
       ctrl.$parsers.unshift (viewValue) ->
         return if viewValue is "" then null else viewValue
 
+  # The setZero directive set model value to 0 if value is empty
+  app.directive 'setZero', ->
+    # no replacement
+    replace: false
+    # applicable as attribute only
+    restrict: 'A'
+    require: 'ngModel'
+    link: (scope, elm, attrs, ctrl) ->
+      ctrl.$parsers.unshift (viewValue) ->
+        return if viewValue is "" then 0 else viewValue
+
   # The disableTab directive avoid typeahead catching it as a selection
   app.directive 'disableTab', ->
     # no replacement

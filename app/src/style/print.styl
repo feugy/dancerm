@@ -1,3 +1,6 @@
+@require 'controller/invoice'
+@require 'directive/invoice_item'
+
 secondaryColor = #888
 
 box()
@@ -14,7 +17,7 @@ body
 
   *
     font-family printfontFamily
-    font-size prinFontSize
+    font-size printFontSize
 
   p
     margin 0 0 0.5em 0
@@ -263,7 +266,6 @@ body.settlement-print
     text-align center
     font-variant small-caps
 
-@require 'controller/invoice'
 body.invoice.print
 
   .preview

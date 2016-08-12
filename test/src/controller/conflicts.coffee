@@ -11,13 +11,13 @@ Registration = require '../../../app/script/model/registration'
 ConflictsController = require '../../../app/script/controller/conflicts'
 
 describe 'Conflicts controller tests', ->
-  
+
   # add fixtures
   models = [
     new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
     new Address id: '3900cc712ba3', _v: 0, street: '2 rue clément marrot', city: 'Lyon', zipcode: 69007
     new Address id: '000bcbc38576', _v: 0, street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode: 69009
-    new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[ 
+    new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
       new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
       new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
     ]]
@@ -35,8 +35,8 @@ describe 'Conflicts controller tests', ->
 
   before init
 
-  beforeEach (done) -> 
-    async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+  beforeEach (done) ->
+    async.each [Card, Address, Dancer, DanceClass], (clazz, next) ->
       clazz.drop next
     , (err) ->
       return done err if err?
@@ -106,7 +106,7 @@ describe 'Conflicts controller tests', ->
     newPayment = new Payment type: 'cash', value: 50, receipt: '2014-10-01', payer: 'Simonin'
     newCard = new Card _.extend models[3].toJSON(), knownBy: newKnownBy
     newCard.registrations[0].charged = newCharged
-    newCard.registrations[0].payments.push newPayment 
+    newCard.registrations[0].payments.push newPayment
     ctrl = buildController [
       existing: models[3]
       imported: newCard
@@ -144,7 +144,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[8]
       imported: new Dancer _.extend models[8].toJSON(), firstname: newName
-    }], (=> 
+    }], (=>
       # then model was saved
       Dancer.find models[8].id, (err, saved) =>
         return done err if err?
@@ -163,7 +163,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[6]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Dancer.find models[6].id, (err, saved) =>
         return done err if err?
@@ -188,7 +188,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[7]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
@@ -210,7 +210,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[7]
       imported: new Dancer _.extend models[7].toJSON(), addressId: models[1].id
-    }], (=> 
+    }], (=>
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
@@ -232,7 +232,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[1]
       imported: new Address _.extend models[1].toJSON(), zipcode: newZipcode
-    }], (=> 
+    }], (=>
       # then model was saved
       Address.find models[1].id, (err, saved) =>
         return done err if err?
@@ -257,7 +257,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[3]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
@@ -272,7 +272,7 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.fields[0]).to.have.property('danceClassAdded').that.has.lengthOf 0
       expect(ctrl.fields[0]).to.have.property('imported').that.equal """<div>#{newRegistration.season}</div>
         <div>Cours :&nbsp;#{}</div>
-        <div>Réglement de :&nbsp;#{newRegistration.charged}€ (à l'année)</div>\n"""
+        <div>Réglement de :&nbsp;#{newRegistration.charged} € (à l'année)</div>\n"""
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -288,7 +288,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[3]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
@@ -320,7 +320,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[3]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
@@ -335,9 +335,9 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.fields[0]).to.have.property('spliced').that.equal 0
       expect(ctrl.fields[0]).to.have.property('existing').that.equal """<div>#{removed.season}</div>
         <div>Cours :&nbsp;#{models[11].kind} #{models[11].level}</div>
-        <div>Réglement de :&nbsp;#{removed.charged}€ (à l'année)</div>
-        <div>04/08/2014 - 150€ Espèces (Simonin) </div>
-        <div>26/08/2014 - 150€ Chèque (Simonin) </div>"""
+        <div>Réglement de :&nbsp;#{removed.charged} € (à l'année)</div>
+        <div>04/08/2014 - 150 € Espèces (Simonin) </div>
+        <div>26/08/2014 - 150 € Chèque (Simonin) </div>"""
       expect(ctrl.fields[0]).not.to.have.property 'imported'
       ctrl.fields[0].useImported = true
       # when saving it
@@ -352,7 +352,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[4]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[4].id, (err, saved) =>
         return done err if err?
@@ -364,7 +364,7 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.fields[0]).to.have.property('kind').that.equal 'payment'
       expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
       expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments[0]'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>04/10/2014 - 100€ ANCV (Durand) </div>'
+      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>04/10/2014 - 100 € ANCV (Durand) </div>'
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -372,12 +372,12 @@ describe 'Conflicts controller tests', ->
   it 'should saved modified payment as a whole', (done) ->
     # given a conflicted card
     modified = new Card models[3].toJSON()
-    newType = 'traveler' 
+    newType = 'traveler'
     modified.registrations[0].payments[1].type = newType
     ctrl = buildController [{
       existing: models[3]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
@@ -391,8 +391,8 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.fields[0]).to.have.property('kind').that.equal 'payment'
       expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
       expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments[1]'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150€ Chèque (Simonin) </div>'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>26/08/2014 - 150€ ANCV (Simonin) </div>'
+      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
+      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>26/08/2014 - 150 € ANCV (Simonin) </div>'
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -400,11 +400,11 @@ describe 'Conflicts controller tests', ->
   it 'should save removed payment', (done) ->
     # given a conflicted card
     modified = new Card models[3].toJSON()
-    removed = modified.registrations[0].payments.pop() 
+    removed = modified.registrations[0].payments.pop()
     ctrl = buildController [{
       existing: models[3]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
@@ -419,7 +419,7 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
       expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments'
       expect(ctrl.fields[0]).to.have.property('spliced').that.equal 1
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150€ Chèque (Simonin) </div>'
+      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
       expect(ctrl.fields[0]).not.to.have.property 'imported'
       ctrl.fields[0].useImported = true
       # when saving it
@@ -429,7 +429,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[7]
       imported: new Dancer _.extend models[7].toJSON(), cardId: models[4].id
-    }], (=> 
+    }], (=>
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
@@ -443,14 +443,14 @@ describe 'Conflicts controller tests', ->
         <div>pagesjaunes.fr, site web</div>
         <ul><li><div>2013/2014</div>
         <div>Cours :&nbsp;Rock/Salsa confirmé, Danse sportive/Rock/Salsa 2 8/12 ans</div>
-        <div>Réglement de :&nbsp;300€ (à l'année)</div>
-        <div>04/08/2014 - 150€ Espèces (Simonin) </div>
-        <div>26/08/2014 - 150€ Chèque (Simonin) </div></li></ul>"""
+        <div>Réglement de :&nbsp;300 € (à l'année)</div>
+        <div>04/08/2014 - 150 € Espèces (Simonin) </div>
+        <div>26/08/2014 - 150 € Chèque (Simonin) </div></li></ul>"""
       expect(ctrl.fields[0]).to.have.property('imported').that.equal """
         <div></div>
         <ul><li><div>2014/2015</div>
         <div>Cours :&nbsp;</div>
-        <div>Réglement de :&nbsp;0€ (à l'année)</div>
+        <div>Réglement de :&nbsp;0 € (à l'année)</div>
         </li></ul>"""
       ctrl.fields[0].useImported = true
       # when saving it
@@ -463,7 +463,7 @@ describe 'Conflicts controller tests', ->
     ctrl = buildController [{
       existing: models[5]
       imported: modified
-    }], (=> 
+    }], (=>
       # then model was saved
       Card.find models[5].id, (err, saved) =>
         return done err if err?

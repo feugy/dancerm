@@ -15,7 +15,7 @@
         </div>
       </span>
       <span class="col-md-2 with-vat">
-        <label><input type="checkbox" data-ng-model="ctrl.withVat"/>{{::'lbl.withVat'|i18n}}</label>
+        <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
       </span>
       <span class="col-md-7 suggested">
         <span data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
@@ -23,8 +23,7 @@
     </span>
     <h2 class="title" data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
   </article>
-
-  <div class="preview" data-ng-if="!ctrl.isReadOnly">
+  <div class="preview">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
@@ -35,7 +34,7 @@
         <p>{{'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
         <p>{{'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
       </div>
-      <div class="customer">
+      <div class="customer" data-ng-if="!ctrl.isReadOnly">
         <p>
           <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-change="ctrl._onChange('customer.name')" data-set-null/>
         </p>
@@ -46,8 +45,14 @@
           <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
           <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-change="ctrl._onChange('customer.city')" data-set-null/>
         </p>
+      </div>
+      <div class="customer" data-ng-if="ctrl.isReadOnly">
+        <p>{{::ctrl.invoice.customer.name}}</p>
+        <p>{{::ctrl.invoice.customer.street}}</p>
+        <p>{{::ctrl.invoice.customer.zipcode}} {{::ctrl.invoice.customer.city}}</p>
+      </div>
     </header>
-    <div class="date">
+    <div class="date" data-ng-if="!ctrl.isReadOnly">
       <span class="input-group ng-class:ctrl.dateOpts.open?'open':'';">{{::'print.invoiceDate'|i18n}}
         <input type="text"
           data-set-null
@@ -60,53 +65,49 @@
           data-ng-change="ctrl.setDate()"/>
         <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a></span>
     </div>
-    <div class="row item-header">
-      <span class="col-md-5 name">{{::'lbl.designation'|i18n}}</span>
-      <span class="col-md-1 quantity">{{::'lbl.quantity'|i18n}}</span>
-      <span class="col-md-2 price">{{::'lbl.unitaryPrice'|i18n}}</span>
-      <span class="col-md-2 vat">{{::'lbl.vatValue'|i18n}}</span>
-      <span class="col-md-2 total">{{::'lbl.totalPrice'|i18n}}</span>
+    <div class="date" data-ng-if="ctrl.isReadOnly">
+      <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate()}}</span>
     </div>
-    <invoice-item
-      data-ng-repeat="item in ctrl.invoice.items"
-      data-src="item"
-      data-on-remove="ctrl.removeItem(item)"
-      data-on-change="ctrl._onChange('items[' + $index + '].' + $field)">
-    </invoice-item>
-    <div class="row add-item">
-      <span class="col-md-8">
-        <button class="btn glyphed" data-ng-click="ctrl.addItem()"><i class="glyphicon glyphicon-plus"/>{{::'btn.addInvoiceItem'|i18n}}</button>
-      </span>
-      <span class="col-md-2">{{::'lbl.dutyFreeTotal'|i18n}}</span>
-      <span class="col-md-2">{{ctrl.invoice.dutyFreeTotal|number|i18n:{currency:true} }}</span>
-    </div>
-    <div class="row add-item">
-      <span class="col-md-2 col-md-offset-8">{{::'lbl.taxTotal'|i18n}}</span>
-      <span class="col-md-2">{{ctrl.invoice.taxTotal|number|i18n:{currency:true} }}</span>
-    </div>
-    <div class="row add-item">
-      <span class="col-md-2 col-md-offset-8">{{::'lbl.invoiceTotal'|i18n}}</span>
-      <span class="col-md-2">{{ctrl.invoice.total|number|i18n:{currency:true} }}</span>
-    </div>
-  </div>
-  <div class="preview" data-ng-if="ctrl.isReadOnly">
-    <header>
-      <img src="../style/img/ribas.png" class="logo"/>
-      <div class="school">
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
+    <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
+    <div class="items">
+      <div class="header-line">
+        <span class="name">{{::'lbl.designation'|i18n}}</span>
+        <span class="quantity">{{::'lbl.quantity'|i18n}}</span>
+        <span class="price">{{::'lbl.unitaryPrice'|i18n}}</span>
+        <span class="vat">{{::'lbl.vatValue'|i18n}}</span>
+        <span class="total">{{::'lbl.totalPrice'|i18n}}</span>
       </div>
-      <div class="customer">
-        <p>{{ctrl.invoice.customer.name}}</p>
-        <p>{{ctrl.invoice.customer.street}}</p>
-        <p>{{ctrl.invoice.customer.zipcode}} {{ctrl.invoice.customer.city}}</p>
-    </header>
-    <div class="date">
-      <span>{{'print.invoiceDate'|i18n}} {{::ctrl.displayDate()}}</span>
+      <invoice-item
+        data-ng-repeat="item in ctrl.invoice.items"
+        data-src="item"
+        data-read-only="ctrl.isReadOnly"
+        data-on-remove="ctrl.removeItem(item)"
+        data-on-change="ctrl._onChange('items[' + $index + '].' + $field)">
+      </invoice-item>
+    </div>
+    <div class="total-line">
+      <span class="add-item">
+        <button class="btn glyphed" data-ng-click="ctrl.addItem()" data-ng-if="!ctrl.isReadOnly"><i class="glyphicon glyphicon-plus"/>{{::'btn.addInvoiceItem'|i18n}}</button>
+      </span>
+      <span class="subtotal">
+        <div class="discount">
+          <span>{{::'lbl.discount'|i18n}}</span>
+          <span data-ng-if="!ctrl.isReadOnly"><input type="number" data-ng-model="ctrl.invoice.discount" data-ng-change="ctrl._onChange('discount')" data-set-zero/>%</span>
+          <span data-ng-if="ctrl.isReadOnly">{{::ctrl.invoice.discount}} %</span>
+        </div>
+        <div>
+          <span>{{::'lbl.dutyFreeTotal'|i18n}}</span>
+          <span>{{ctrl.invoice.dutyFreeTotal|number}}{{::'lbl.currency'|i18n}}</span>
+        </div>
+        <div>
+          <span>{{::'lbl.taxTotal'|i18n}}</span>
+          <span>{{ctrl.invoice.taxTotal|number}}{{::'lbl.currency'|i18n}}</span>
+        </div>
+        <div class="total">
+          <span>{{::'lbl.invoiceTotal'|i18n}}</span>
+          <span>{{ctrl.invoice.total|number}}{{::'lbl.currency'|i18n}}</span>
+        </div>
+      </span>
     </div>
   </div>
 </div>

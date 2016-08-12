@@ -3,6 +3,9 @@
  */
 
 .invoice
+  display flex
+  flex-direction column
+  height 100%
 
   .invoice-title
     border-top 2px solid headingColor
@@ -45,21 +48,86 @@
     box-shadow 0 10px 15px emphasisColor
     color black
     padding 25px
+    overflow-y auto
 
-    .item-header
-      margin 2em 12px 0
+    h1
+      color black
+      font-family printFontFamily
+      font-size printFontSize * 1.2
       font-weight bold
+      margin 1.5em
+      text-align center
 
-      > *
-        font-family printFontFamily
-        font-size printFontSize
-        padding 0 .5em
+    .items
+    .subtotal
+      width 100%
 
-        &:not(.name)
+      input
+        flex-grow 1
+        min-width 0
+        text-align right
+
+      > div
+        display flex
+
+        > span
+          font-family printFontFamily
+          font-size printFontSize
+          padding 5px .5em
+          display flex
+          align-items center
+          justify-content flex-end
+
+        .name
+          flex-grow 1
+          justify-content flex-start
+
+          > input
+            text-align left
+
+        .quantity
+        .vat
+        .price
+        .total
+          width 15%
           text-align right
 
-    .add-item
-      margin 1em 0
+        .quantity
+          width 10%
+
+      .header-line
+        border-top none
+        > *
+          font-weight bold
+          padding .5em
+
+    .items
+      margin 2em 0 1em
+
+      > *
+        border-top 1px solid black
+
+    .subtotal
+      width 35%
+
+      > * > *
+        width 40%
+        padding 2px .5em
+
+      > * > :first-child
+        width 60%
+
+      .discount
+      .total
+        font-weight bold
+
+    .total-line
+      width 100%
+      display flex
+
+      .add-item
+        flex-grow 1
+        margin 1em 0
 
     .customer > *
     .school > *
