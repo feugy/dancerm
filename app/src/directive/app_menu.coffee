@@ -45,7 +45,7 @@ class AppMenuDirective
 module.exports = (app) ->
   app.directive 'appMenu', ->
     # directive template
-    templateUrl: "app_menu.html"
+    templateUrl: 'app_menu.html'
     # will replace hosting element
     replace: true
     # applicable as element and attribute

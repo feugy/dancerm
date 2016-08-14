@@ -110,7 +110,6 @@ class InvoiceController
 
     # if used in the context of printing, skip internal init as we are just displaying preview
     if isPrintCtx
-      console.log win.invoice.toJSON()
       @_onLoad win.invoice
       window.print()
       _.defer -> win.close()

@@ -1,8 +1,6 @@
 ## TODO
 
-- Prefill invoice item names and prices
 - Generate invoice items from registration_print
-
 - Required invoice fields
 
 - Individual lessons

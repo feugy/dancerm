@@ -3,24 +3,24 @@ moment = require 'moment'
 i18n = require '../labels/common'
 
 class PaymentDirective
-                
+
   # Controller dependencies
   @$inject: []
-  
+
   # Labels, for rendering
   i18n: i18n
-  
+
   # Type label displayed
   typeLabel: ''
 
   # Option used to configure receipt selection popup
-  receiptOpts: 
+  receiptOpts:
     value: null
     open: false
     showWeeks: false
     startingDay: 1
     showButtonBar: false
-  
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -40,10 +40,10 @@ class PaymentDirective
   #
   # @param field [String] field that is tested
   # @return a css class
-  isRequired: (field) => 
+  isRequired: (field) =>
     return 'invalid' if @requiredFields? and field in @requiredFields
     ''
-    
+
   # Updates the payment type of the source payment object
   #
   # @param type [String] selected type
@@ -57,7 +57,7 @@ class PaymentDirective
   setReceipt: =>
     @src?.receipt = moment @receiptOpts.value
     @onChange $field: 'receipt'
-    
+
   # Opens the birth selection popup
   #
   # @param event [Event] click event, prevented.
@@ -71,7 +71,7 @@ class PaymentDirective
 module.exports = (app) ->
   app.directive 'payment', ->
     # directive template
-    templateUrl: "payment.html"
+    templateUrl: 'payment.html'
     # will replace hosting element
     replace: true
     # transclusion is needed to be properly used within ngRepeat
@@ -83,7 +83,7 @@ module.exports = (app) ->
     controllerAs: 'ctrl'
     bindToController: true
     # parent scope binding.
-    scope: 
+    scope:
       # displayed payment
       src: '='
       # array of missing fields

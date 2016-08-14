@@ -33,16 +33,32 @@ class InvoiceItemDirective
   removeTax: (withTax) =>
     round withTax / (1 + @scope.ctrl?.src?.vat), 2
 
+  # Prefill current edited values with given option
+  #
+  # @param option {Object} option assigned to current edited values
+  prefill: (option) =>
+    Object.assign @scope.ctrl.src, option, label: undefined
+
 # The invoice item directive displays and allows to edit a given invoice item
 module.exports = (app) ->
   app.directive 'invoiceItem', ->
     # directive template
+    # Can't be set as template URL because during printing, the template can't be fetched (without explanation...)
     template: """
 <div class="invoice-item focusable" data-ng-class="ctrl.readOnly ? 'read-only' : ''">
   <button class="btn remove" data-ng-if="!ctrl.readOnly" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/></button>
   <span class="name">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.name}}</span>
-    <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-if="!ctrl.readOnly" data-set-null/>
+    <span data-ng-if="!ctrl.readOnly" class="input-group" data-dropdown keyboard-nav>
+      <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-set-null/>
+      <a href="" class="input-group-addon" dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
+      <ul class="dropdown-menu">
+        <li data-ng-repeat="option in ctrl.options">
+          <a href="" data-ng-if="!option.category" data-ng-click="ctrl.prefill(option)">{{option.label || option.name}}</a>
+          <span data-ng-if="option.category" class="category">{{option.category}}</span>
+        </li>
+      </ul>
+    </span>
   </span>
   <span class="quantity">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.quantity}}</span>
@@ -69,6 +85,8 @@ module.exports = (app) ->
     scope:
       # invoice item displayed
       src: '='
+      # different options to prefill src. The 'label' attribute might be used as option content
+      options: '=?'
       # read-only flag.
       readOnly: '=?'
       # removal handler, used when item needs to be removed

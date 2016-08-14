@@ -81,6 +81,7 @@
         data-ng-repeat="item in ctrl.invoice.items"
         data-src="item"
         data-read-only="ctrl.isReadOnly"
+        data-options="ctrl.i18n.priceList[ctrl.invoice.season]"
         data-on-remove="ctrl.removeItem(item)"
         data-on-change="ctrl._onChange('items[' + $index + '].' + $field)">
       </invoice-item>
