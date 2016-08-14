@@ -70,7 +70,7 @@ module.exports = class DanceClass extends Persisted
   @getTeachers: (season, done) ->
     @getPlanning season, (err, planning) =>
       return done err if err?
-      done null, _.chain(planning).pluck('teacher').uniq().compact().value().sort()
+      done null, _.chain(planning).map('teacher').uniq().compact().value().sort()
 
   # Get the list of classes of a given season, named planning
   #

@@ -1,5 +1,5 @@
 _ = require 'lodash'
-async = require 'async'
+{eachSeries, map} = require 'async'
 moment = require 'moment'
 Persisted = require './tools/persisted'
 Address = require './address'
@@ -29,7 +29,7 @@ module.exports = class Dancer extends Persisted
   # @option done models [Array<Persisted>] an array (that may be empty) of matching models
   @findWhere: (conditions, done) ->
     # check each conditions
-    async.eachSeries _.pairs(conditions), ([path, expected], next) =>
+    eachSeries _.toPairs(conditions), ([path, expected], next) =>
       steps = path.split '.'
       # check if condition include linked values
       for {search, Model, select} in [
@@ -48,7 +48,7 @@ module.exports = class Dancer extends Persisted
             # only kept dancers with relevant linked model ids
             delete conditions[path]
             path = path[0...idx] + select
-            current = _.pluck models, 'id'
+            current = _.map models, 'id'
             if conditions[path]?.$in?
               # Logical and between existing conditions
               current = _.intersection conditions[path].$in, current
@@ -159,7 +159,7 @@ module.exports = class Dancer extends Persisted
     # avoid possible duplicates
     @danceClassIds = _.uniq @danceClassIds
     # resolve models
-    async.map @danceClassIds, (id, next) =>
+    map @danceClassIds, (id, next) =>
       DanceClass.find id, (err, result) =>
         console.log "failed to get dance class #{id} of dancer #{@firstname} #{@lastname} (#{@id}): #{err}" if err?
         next null, result
@@ -172,7 +172,7 @@ module.exports = class Dancer extends Persisted
   #
   # @param danceClasses [Array<DanceClass>] list (that may be empty) of dancer's dance classes, all seasons
   setClasses: (danceClasses) =>
-    @danceClassIds = unless danceClasses? then [] else _.pluck danceClasses, 'id'
+    @danceClassIds = unless danceClasses? then [] else _.map danceClasses, 'id'
     @_danceClasses = danceClasses
 
   # Consult dancer's last registration (ordered in time)

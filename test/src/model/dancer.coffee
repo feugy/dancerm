@@ -206,7 +206,7 @@ describe 'Dancer model tests', ->
         # when affecting this classes to the dancer
         dancer.setClasses classes
         # then the id was updated
-        expect(dancer).to.have.property('danceClassIds').that.deep.equal _.pluck classes, 'id'
+        expect(dancer).to.have.property('danceClassIds').that.deep.equal _.map classes, 'id'
         dancer.getClasses (err, danceClasses) ->
           return done err if err?
           expect(danceClasses).to.deep.equal classes
@@ -216,7 +216,7 @@ describe 'Dancer model tests', ->
             Dancer.find dancer.id, (err, result) ->
               return done err if err?
               expect(result).to.exist
-              expect(result).to.have.property('danceClassIds').that.deep.equal _.pluck classes, 'id'
+              expect(result).to.have.property('danceClassIds').that.deep.equal _.map classes, 'id'
               result.getClasses (err, results) ->
                 return done err if err?
                 i = 0
@@ -270,72 +270,72 @@ describe 'Dancer model tests', ->
       Dancer.findWhere {danceClassIds: $in: [batchata14.id]}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack was found').not.to.exist
         done()
 
     it 'should findWhere() resolve on dance classes teacher', (done) ->
       Dancer.findWhere {'danceClasses.teacher': 'Anthony'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 3
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack not found').to.exist
         done()
 
     it 'should findWhere() resolve multiple criteria on dance classes', (done) ->
       Dancer.findWhere {'danceClasses.teacher': 'Anthony', 'danceClasses.season': '2013/2014'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack not found').not.to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack not found').not.to.exist
         done()
 
     it 'should findWhere() resolve on registrations', (done) ->
       Dancer.findWhere {'card.registrations.charged': 200}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 3
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack not found').to.exist
         done()
 
     it 'should findWhere() resolve multiple criteria on registrations', (done) ->
       Dancer.findWhere {'card.registrations.charged': 200, 'card.registrations.period': 'quarter'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 2
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack not found').to.exist
         done()
 
     it 'should findWhere() resolve registrations and dance classes', (done) ->
       Dancer.findWhere {'card.registrations.charged': 200, 'danceClasses.kind': 'ballroom'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.find(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.find(dancers, id: jack.id), 'jack was found').not.to.exist
         done()
 
     it 'should findWhere() resolve on address', (done) ->
       Dancer.findWhere {'address.city': 'Lyon'}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 2
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy was found').not.to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob not found').to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack not found').to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy was found').not.to.exist
+        expect(_.find(dancers, id: bob.id), 'bob not found').to.exist
+        expect(_.find(dancers, id: jack.id), 'jack not found').to.exist
         done()
 
     it 'should findWhere() resolve multiple criteria on address', (done) ->
       Dancer.findWhere {'address.city': {$in: ['Lyon', 'Villeurbanne']}, 'address.street': /Zola/}, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.find(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.find(dancers, id: jack.id), 'jack was found').not.to.exist
         done()
 
     it 'should findWhere() resolve address, registrations and dance classes', (done) ->
@@ -346,7 +346,7 @@ describe 'Dancer model tests', ->
       }, (err, dancers) ->
         return done err if err?
         expect(dancers).to.have.lengthOf 1
-        expect(_.findWhere(dancers, id: lucy.id), 'lucy not found').to.exist
-        expect(_.findWhere(dancers, id: bob.id), 'bob was found').not.to.exist
-        expect(_.findWhere(dancers, id: jack.id), 'jack was found').not.to.exist
+        expect(_.find(dancers, id: lucy.id), 'lucy not found').to.exist
+        expect(_.find(dancers, id: bob.id), 'bob was found').not.to.exist
+        expect(_.find(dancers, id: jack.id), 'jack was found').not.to.exist
         done()

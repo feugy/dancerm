@@ -9,7 +9,7 @@ Registration = require '../model/registration'
 Payment = require '../model/payment'
 {separator} = require '../service/export'
 
-module.exports = 
+module.exports =
 
   # Make every first letter of the sentence upper case, and everything else lower case
   # Words less than 3 letters are not capitalize
@@ -25,7 +25,7 @@ module.exports =
       else
         word.toLowerCase()
     ).join ''
-  
+
   # Read a v2 dump file and migrate it into a v3 dump file
   #
   # @param input [String] v2 dump input file path
@@ -34,9 +34,9 @@ module.exports =
   # @option done err [Error] an optionnal error object or null if no error occured
   migrate: (input, output, done) ->
     # Read file
-    readFile input, 'utf8', (err, content) -> 
+    readFile input, 'utf8', (err, content) ->
       return done err if err?
-      try 
+      try
         origin = JSON.parse content
         addresses = []
         cards = []
@@ -48,7 +48,7 @@ module.exports =
           for raw in planning.danceClasses
             raw.season = planning.season
             raw._v = 0
-            danceClasses.push JSON.stringify new DanceClass(raw).toJSON() 
+            danceClasses.push JSON.stringify new DanceClass(raw).toJSON()
 
         # second, dancers
         for dancer in origin.dancers
@@ -85,12 +85,12 @@ module.exports =
             for reg in dancer.registrations
               # build a registration for each old planning
               registration = new Registration
-                season: _.findWhere(origin.plannings, id:reg.planningId).season
+                season: _.find(origin.plannings, id:reg.planningId).season
                 charged: reg.charged
                 period: reg.period
-              # move certification from old dancer to new registration 
+              # move certification from old dancer to new registration
               registration.certificates[dancer.id] = dancer.certified
-              # move dance classes from old registration to new dancer 
+              # move dance classes from old registration to new dancer
               dancer.danceClassIds = dancer.danceClassIds.concat reg.danceClassIds
               # move payments and add payer on checks
               registration.payments = (

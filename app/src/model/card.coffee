@@ -1,5 +1,5 @@
 _ = require 'lodash'
-async = require 'async'
+{each} = require 'async'
 Persisted = require './tools/persisted'
 Registration = require './registration'
 # because of circular dependency
@@ -48,7 +48,7 @@ module.exports = class Card extends Persisted
     Dancer.findWhere {cardId: other.id}, (err, dancers) =>
       return done err if err?
       # moves them to this card
-      async.each dancers, (dancer, next) =>
+      each dancers, (dancer, next) =>
         dancer.cardId = @id
         dancer.save next
       , (err) =>
@@ -57,7 +57,7 @@ module.exports = class Card extends Persisted
         @knownBy.push mean for mean in other.knownBy when not(mean in @knownBy)
         # merge registrations
         for imported in other.registrations
-          existing = _.findWhere @registrations, season: imported.season
+          existing = _.find @registrations, season: imported.season
           if existing?
             # merge charge and payments
             existing.charged += imported.charged

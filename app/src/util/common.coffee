@@ -6,8 +6,6 @@ moment = require 'moment'
 {render} = require 'stylus'
 i18n = require '../labels/common'
 _ = require 'lodash'
-_str = require 'underscore.string'
-_.mixin _str.exports()
 _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
 
 # Format a given value as a string.

@@ -1,5 +1,5 @@
 _ = require 'lodash'
-async = require 'async'
+{map} = require 'async'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
 
@@ -28,17 +28,17 @@ window.customClass = class Print
 
   constructor: (filter, rootScope) ->
     # get data from mother window
-    @registration = _.findWhere win.card.registrations, season: win.season
+    @registration = _.find win.card.registrations, season: win.season
     @selectedSchool = +win.selectedSchool
     # get card dancers
     Dancer.findWhere {cardId: win.card.id}, (err, dancers) =>
       return console.error err if err?
       @dancers = dancers
-      async.map @dancers, (dancer, next) ->
+      map @dancers, (dancer, next) ->
         dancer.getAddress next
       , (err, addresses) =>
         return console.error err if err?
-        async.map @dancers, (dancer, next) ->
+        map @dancers, (dancer, next) ->
           dancer.getClasses next
         , (err, danceClasses) =>
           return console.error err if err?

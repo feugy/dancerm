@@ -17,10 +17,6 @@
       style.innerHTML = fs.readFileSync('../node_modules/mocha/mocha.css', 'utf8')
       document.getElementsByTagName('head')[0].appendChild(style)
 
-      // merge underscore and underscore string functions
-      const _ = require('lodash')
-      _.mixin(require('underscore.string').exports())
-
       process.env.NODE_ENV = 'test'
       // process.on('uncaughtException', err => console.error(err))
 

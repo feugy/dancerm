@@ -207,7 +207,7 @@ mergePlanning = (planning, done) ->
 
   DanceClass.getPlanning planning.season, (err, danceClasses) ->
     return done err if err?
-    old = _.invoke danceClasses, 'toJSON'
+    old = _.invokeMap danceClasses, 'toJSON'
 
     # merge with existing classes, and add new ones
     for newClass in planning.classes
@@ -218,14 +218,14 @@ mergePlanning = (planning, done) ->
         conditions.level = newClass.level
       else
         conditions.start = newClass.start
-      existing = _.findWhere danceClasses, conditions
+      existing = _.find danceClasses, conditions
       if existing?
         _.extend existing, newClass
       else
         danceClasses.push new DanceClass _.extend {season: planning.season}, newClass
 
     # removes old ones
-    toRemove = (danceClass for danceClass in danceClasses when not _.findWhere(planning.classes, kind: danceClass.kind, start: danceClass.start)?)
+    toRemove = (danceClass for danceClass in danceClasses when not _.find(planning.classes, kind: danceClass.kind, start: danceClass.start)?)
     danceClasses = _.difference danceClasses, toRemove
 
     return done null if _.isEqual old, _.invoke danceClasses, 'toJSON'

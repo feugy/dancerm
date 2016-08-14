@@ -129,7 +129,7 @@ module.exports = class ExpandedListController
         if err?
           console.error "Export failed: #{err}"
           # displays an error dialog
-          @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.err.exportFailed, err.message), [label: i18n.btn.ok]
+          @dialog.messageBox i18n.ttl.export, _.template(i18n.err.exportFailed)(err), [label: i18n.btn.ok]
         @scope.$apply()
 
     dialog.trigger 'click'
@@ -166,7 +166,7 @@ module.exports = class ExpandedListController
     clipboard = nw.Clipboard.get()
     clipboard.set emails, 'text'
     # display a popup with string to copy
-    @dialog.messageBox i18n.ttl.export, _.sprintf(i18n.msg.exportEmails, emails), [label: i18n.btn.ok]
+    @dialog.messageBox i18n.ttl.export, _.template(i18n.msg.exportEmails)(emails:emails), [label: i18n.btn.ok]
 
   # **private**
   # When search is finished, update actions regarding the number of results

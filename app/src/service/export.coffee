@@ -10,9 +10,9 @@ Card = require '../model/card'
 Address = require '../model/address'
 i18n = require '../labels/common'
 {getAttr, getDbPath} = require '../util/common'
-   
+
 # Export utility class.
-# Allow exportation of dancers and planning into JSON plain files 
+# Allow exportation of dancers and planning into JSON plain files
 module.exports = class Export
 
   # Separator used into dump files
@@ -71,7 +71,7 @@ module.exports = class Export
         name: i18n.ttl.application
       ]
 
-    columns = 
+    columns =
       title: i18n.lbl.title
       firstname: i18n.lbl.firstname
       lastname: i18n.lbl.lastname
@@ -91,7 +91,7 @@ module.exports = class Export
     data.push (
       first = true
       for attr, column of columns
-        cell = 
+        cell =
           value: column
           bold: true
           hAlign: 'center'
@@ -103,7 +103,7 @@ module.exports = class Export
     )
 
     # dancers
-    map dancers, (dancer, next) -> 
+    map dancers, (dancer, next) ->
       dancer.getCard next
     , (err, cards) =>
       return done err if err?
@@ -122,7 +122,7 @@ module.exports = class Export
               else
                 value = dancer[attr]
 
-              cell = 
+              cell =
                 value: value
                 autoWidth: true
                 hAlign: 'left'
@@ -133,7 +133,7 @@ module.exports = class Export
                   # format dates
                   when 'birth' then cell.value = cell.value.format 'DD/MM/YYYY'
                   # format phones
-                  when 'address.phone', 'cellphone' then cell.value = _.chop(cell.value, 2).join ' '
+                  when 'address.phone', 'cellphone' then cell.value = cell.value.match(/.{1,2}/g).join ' '
                   # format known by
                   when 'card.knownBy' then cell.value = (i18n.knownByMeanings[key] or key for key in cell.value).join ','
               if first

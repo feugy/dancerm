@@ -1,5 +1,5 @@
 # lodash must be loaded
-importScripts '../../../../node_modules/lodash/index.js'
+importScripts '../../../../node_modules/lodash/lodash.min.js'
 
 # get database path from url
 path = decodeURIComponent location.search.replace '?path=', ''
@@ -38,7 +38,7 @@ check = (conditions, model) ->
     expected = conditions[attr]
     if attr is '$or'
       # check each possibilities
-      return false unless _.any expected, (choice) -> check choice, model
+      return false unless _.some expected, (choice) -> check choice, model
     else if attr is '$regex'
       # check $regexp operator
       return false unless checkSingle new RexExp(expected), model

@@ -42,10 +42,10 @@ module.exports =
 
   # errors
   err:
-    dumpFailed: "La sauvegarde externe des données à échouée: %s"
-    exportFailed: "L'export de la liste de danseurs à échoué: %s"
+    dumpFailed: "La sauvegarde externe des données à échouée: <%= message %>"
+    exportFailed: "L'export de la liste de danseurs à échoué: <%= message %>"
     importFailed: "L'imporation du fichier de danseurs à échouée: {{message}}"
-    search: 'La recherche à échouée: %s'
+    search: 'La recherche à échouée: <%= message %>'
     missingAddress: 'ADRESSE MANQUANTE'
 
   # date/time formats
@@ -78,7 +78,7 @@ module.exports =
     charged: 'Réglement de'
     choose: '---'
     city: 'Ville'
-    classTooltip: '%s (%s) %s~%s'
+    classTooltip: '<%= kind %> (<%= level %>) <%= start %>~<%= end %>'
     currency: ' €'
     danceClasses: 'Cours'
     danceClassesFor: 'Cours pour'
@@ -172,7 +172,7 @@ module.exports =
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
     editRegistration: "Modifier les cours du danseur pour l'année : "
     emptyDancerList: 'Aucun danseur pour ces critères'
-    exportEmails: "La liste des email suivante à été copiée dans le presse papier : %s"
+    exportEmails: "La liste des email suivante à été copiée dans le presse papier : <%= emails %>"
     exporting: 'Export en cours, veuillez patienter...'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."

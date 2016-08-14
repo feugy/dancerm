@@ -1,11 +1,11 @@
 {expect} = require 'chai'
 _ = require 'lodash'
-{each} = require 'async' 
+{each} = require 'async'
 {init} = require '../../../app/script/model/tools/initializer'
 Persisted = require '../../../app/script/model/tools/persisted'
 
 describe 'Persisted model tests', ->
-  
+
   # given a test model
   class Tested extends Persisted
 
@@ -35,7 +35,7 @@ describe 'Persisted model tests', ->
     done()
 
   it 'should undeclared attribute not be kept and default be used', (done) ->
-    # when creating a model with undeclared 
+    # when creating a model with undeclared
     test = new Tested name: 'sarah', unknown: 'haha !'
     # then all its attributes were set
     expect(test).to.have.property('id').that.is.null
@@ -50,7 +50,7 @@ describe 'Persisted model tests', ->
     test = new Tested name: 'chlotilde', fullname: 'chlotilde', age: 33, payments: [{type: 'money', value: 100}, {type:'money', value: 150}]
     # when dumping it
     dump = test.toJSON()
-    expect(dump).to.have.deep.equal 
+    expect(dump).to.have.deep.equal
       name: 'chlotilde'
       age: 33
       payments: [{type: 'money', value: 100}, {type:'money', value: 150}]
@@ -122,9 +122,9 @@ describe 'Persisted model tests', ->
             expect(retrieved).to.exist
             expect(retrieved).to.have.lengthOf 2
             expect(obj).to.be.an.instanceOf Tested for obj in retrieved
-            expect(_.findWhere(retrieved, name: 'bob'), 'bob should be found').to.exist
-            expect(_.findWhere(retrieved, name: 'peter'), 'peter should be found').to.exist
-            expect(_.findWhere(retrieved, name: 'rob'), 'rob should not be found').not.to.exist
+            expect(_.find(retrieved, name: 'bob'), 'bob should be found').to.exist
+            expect(_.find(retrieved, name: 'peter'), 'peter should be found').to.exist
+            expect(_.find(retrieved, name: 'rob'), 'rob should not be found').not.to.exist
             done()
 
     it 'should findWhere() found with $or condition', (done) ->
@@ -143,11 +143,11 @@ describe 'Persisted model tests', ->
           expect(retrieved).to.exist
           expect(retrieved).to.have.lengthOf 4
           expect(obj).to.be.an.instanceOf Tested for obj in retrieved
-          expect(_.findWhere(retrieved, name: 'luc'), 'luc should be found').to.exist
-          expect(_.findWhere(retrieved, name: 'lucie'), 'lucie should be found').to.exist
-          expect(_.findWhere(retrieved, name: 'babette'), 'babette should be found').to.exist
-          expect(_.findWhere(retrieved, name: 'marie'), 'marie should be found').to.exist
-          expect(_.findWhere(retrieved, name: 'jean'), 'jean should not be found').not.to.exist
+          expect(_.find(retrieved, name: 'luc'), 'luc should be found').to.exist
+          expect(_.find(retrieved, name: 'lucie'), 'lucie should be found').to.exist
+          expect(_.find(retrieved, name: 'babette'), 'babette should be found').to.exist
+          expect(_.find(retrieved, name: 'marie'), 'marie should be found').to.exist
+          expect(_.find(retrieved, name: 'jean'), 'jean should not be found').not.to.exist
           done()
 
     it 'should be updated', (done) ->

@@ -17,18 +17,18 @@ Registration = require '../model/registration'
 mandatory = ['title', 'lastname']
 
 # used to get real constructor from class name
-classes = 
+classes =
   DanceClass: DanceClass
   Address: Address
   Dancer: Dancer
   Card: Card
 
 # Import utility class.
-# Allow importation of dancers from XLSX files 
+# Allow importation of dancers from XLSX files
 module.exports = class Import
 
   # Merges new dancers into existing ones
-  # 
+  #
   # @param added [Array<Base>] array of imported models
   # @param done [Function] completion callback invoked with parameters
   # @option done [Error] an error object or null if no error occured
@@ -53,7 +53,7 @@ module.exports = class Import
           byClass[className] = 0 unless className of byClass
           byClass[className]++
           imported.save next
-        else 
+        else
           if JSON.stringify(existing.toJSON()) isnt JSON.stringify imported.toJSON()
             # existing and imported are not equal: conflict detected
             conflicts.push existing: existing, imported: imported
@@ -84,22 +84,22 @@ module.exports = class Import
         console.log "try to extract from xlsx..."
         readFile filePath, (err, data) =>
           return done err if err?
-          try 
+          try
             # jszip only accept base64 url encoded content
             content = xlsx data.toString 'base64'
 
             # read at least one worksheet
             return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
-            
+
             # extracted models
-            models = 
+            models =
               Address: []
               Card: []
               Dancer: []
             # extractionreport
             report =
               readTime: content.processTime
-              modifiedBy: content.lastModifiedBy 
+              modifiedBy: content.lastModifiedBy
               modifiedOn: moment content.modified
               worksheets: []
               errors: []
@@ -122,7 +122,7 @@ module.exports = class Import
         start = Date.now()
         readFile filePath, 'utf8', (err, data) =>
           return done err if err?
-          report = 
+          report =
             readTime: Date.now()-start
             errors: []
           unless -1 is data.indexOf Export.separator
@@ -136,7 +136,7 @@ module.exports = class Import
                 done null, models, report
           else
             console.log "try to extract from a v2 dump..."
-            try 
+            try
               # parse content
               content = JSON.parse data
               return done new Error "no dancers found in file" unless content?.dancers?.length > 0
@@ -225,7 +225,7 @@ module.exports = class Import
             added.push addr
             report.errors.push "created unexisting address id (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
         done null, imported.concat added
-    
+
   # **private**
   # Extract dancers from a given worksheet data matrix
   # First find column names, then creates dancers
@@ -243,7 +243,7 @@ module.exports = class Import
     # extracted columns
     colInitialized = false
     colRow = 0
-    columns = 
+    columns =
       title: -1
       firstname: -1
       lastname: -1
@@ -260,8 +260,8 @@ module.exports = class Import
 
     # do not handle empty worksheets
     return result.details = 'Empty worksheet' unless worksheet.data?.length > 0
-      
-    
+
+
     # first, search for column names
     for line, row in worksheet.data when line?.length > 0
       colRow = row
@@ -272,12 +272,12 @@ module.exports = class Import
       # check that we have all mandatory columns
       if _.every(mandatory, (col) -> columns[col] isnt -1)
         colInitialized = true
-        break 
+        break
       # stop after 20 tries
       break if row > 20
 
     # do not process if a mandatory column is missing
-    return result.details = "Missing #{_.toSentenceSerial mandatory} column" unless colInitialized
+    return result.details = "Missing #{mandatory.join ', '} column" unless colInitialized
 
     # then extract dancers
     for line, row in worksheet.data when line?.length > 0 and row > colRow
@@ -287,10 +287,10 @@ module.exports = class Import
       titles = [titles] unless _.isArray titles
       # process this lines as many times as titles found.
       for title, index in titles
-        result.extracted += @_processLine title, index, line, columns, models 
-        
+        result.extracted += @_processLine title, index, line, columns, models
+
   # **private**
-  # Convert a given line into a dancer. 
+  # Convert a given line into a dancer.
   # Dancer will be created only if the mandatory fields are found.
   #
   # @param title [String] dancer's title
@@ -357,7 +357,7 @@ module.exports = class Import
       when 'telephone', 'téléphone', 'tel', 'tel.', 'tel domicile', 'téléphone  domicile' then return 'phone'
       when 'portable', 'tel bureau', 'téléphone  bureau' then return 'cellphone'
       when 'adresse', 'addr.', 'rue', 'adresse1' then return 'street'
-      when 'ville' then return 'city' 
+      when 'ville' then return 'city'
       when 'code postal', 'code_postal' then return 'zipcode'
       when 'publicité', 'connu par' then return 'knownBy'
       when 'id', '#' then return 'id'
@@ -378,7 +378,7 @@ module.exports = class Import
   _convertValue: (attr, value, index = 0) =>
     if _.isNumber value
       return undefined if isNaN value
-      value = "#{value}" 
+      value = "#{value}"
     return undefined unless _.isString value
 
     # handles first multiple value fields
@@ -394,10 +394,10 @@ module.exports = class Import
           # multiple dancers on the same raw
           return (@_convertValue 'title', val for val in lValue.split ',')
         else
-          if lValue in ['melle', 'mlle', 'melle.', 'mlle.'] 
-            return 'Mlle' 
-          else if lValue in ['mme', 'madame', 'mme.', 'me'] 
-            return 'Mme' 
+          if lValue in ['melle', 'mlle', 'melle.', 'mlle.']
+            return 'Mlle'
+          else if lValue in ['mme', 'madame', 'mme.', 'me']
+            return 'Mme'
           else
             return 'M.'
       when 'email' then return lValue

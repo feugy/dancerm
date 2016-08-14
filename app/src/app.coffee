@@ -1,6 +1,4 @@
-# merge lodash and lodash string functions
 _ = require 'lodash'
-_.mixin require('underscore.string').exports()
 
 i18n = require '../script/labels/common'
 ExportService = require '../script/service/export'

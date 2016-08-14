@@ -50,7 +50,7 @@ class PlanningDirective
     # bind clicks
     @element.on 'click', '.danceClass', (event) =>
       danceClass = $(event.target).closest '.danceClass'
-      model = _.findWhere @scope.danceClasses, id:danceClass.data('id').toString()
+      model = _.find @scope.danceClasses, id:danceClass.data('id').toString()
       # invoke click handler
       @scope.onClick $event: event, danceClasses: [model]
 
@@ -60,7 +60,7 @@ class PlanningDirective
       danceClass.toggleClass 'selected'
       if selected
         # removes already selected id
-        @scope.selected.splice @scope.selected.indexOf(_.findWhere @scope.selected, id: model.id), 1
+        @scope.selected.splice @scope.selected.indexOf(_.find @scope.selected, id: model.id), 1
       else
         # adds id
         @scope.selected.push model
@@ -75,7 +75,7 @@ class PlanningDirective
         @kind = color
         @element.find(".danceClass:not(.#{color}), .legend *:not(.#{color})").addClass 'darken'
         # invoke click handler
-        @scope.onClick $event: event, danceClasses: _.where @scope.danceClasses, color:color
+        @scope.onClick $event: event, danceClasses: _.filter @scope.danceClasses, color:color
 
     # free listeners
     @scope.$on '$destroy', =>
@@ -166,8 +166,11 @@ class PlanningDirective
       groupCol = @groups[day].indexOf course[@groupBy]
 
       # and eventually positionates the rendering inside the right day
-      tooltip = _.sprintf i18n.lbl.classTooltip, course.kind, course.level, course.start.replace(day, ''),
-        course.end.replace(day, '')
+      tooltip = _.template(i18n.lbl.classTooltip)
+        kind: course.kind
+        level: course.level
+        start: course.start.replace(day, '').trim()
+        end: course.end.replace(day, '').trim()
       render = @compile("""<div class="danceClass #{course.color}" data-id="#{course.id}"
           data-tooltip="#{tooltip}" data-tooltip-popup-delay="200"
           data-tooltip-animation="true"

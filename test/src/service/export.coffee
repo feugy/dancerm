@@ -33,7 +33,7 @@ describe 'Export service tests', ->
 
   dancers = [
     new Dancer title: 'Mlle', firstname:'Emilie', lastname:'Abraham', birth: '1991-05-15', cellphone: '0634144728', email: 'emilieab@live.fr'
-    new Dancer title: 'Mlle', firstname:'Nelly', lastname:'Aguilar', phone: '0662885285', 
+    new Dancer title: 'Mlle', firstname:'Nelly', lastname:'Aguilar', phone: '0662885285',
     new Dancer title: 'Mlle', firstname:'Lila', lastname:'Ainine', birth: '1986-04-18', cellphone: '0640652009', email: 'lila.ainine@yahoo.fr'
     new Dancer title: 'M.', firstname:'Raphaël', lastname:'Azoulay', birth: '1989-01-01', cellphone: '0631063774', email: 'rafystilmot@hotmail.fr'
     new Dancer title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-10-22', cellphone: '0617979688'
@@ -53,11 +53,11 @@ describe 'Export service tests', ->
     @timeout 10000
     init (err) ->
       return done err if err?
-      each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+      each [Card, Address, Dancer, DanceClass], (clazz, next) ->
         clazz.drop next
-      , (err) -> 
+      , (err) ->
         return done err if err?
-        map danceClasses, (danceClass, next) -> 
+        map danceClasses, (danceClass, next) ->
           danceClass.save next
         , (err, _danceClasses) ->
           return done err if err?
@@ -66,7 +66,7 @@ describe 'Export service tests', ->
           , (err, _addresses) ->
             return done err if err?
             map cards, (card, next) ->
-              card.save next, 
+              card.save next,
             , (err, _cards) ->
               return done err if err?
               cards = [_cards[0], _cards[1], _cards[2], _cards[2]]
@@ -114,17 +114,17 @@ describe 'Export service tests', ->
         expect((model for model in models when model instanceof Dancer)).to.have.lengthOf dancers.length
         # then all dancers were properly extracted
         for expectedDancer in dancers
-          dancer = _.findWhere models, firstname: expectedDancer.firstname
+          dancer = _.find models, firstname: expectedDancer.firstname
           expect(dancer, "#{expectedDancer.firstname} not found").to.exist
           expect(JSON.stringify _.omit dancer.toJSON(), 'created', 'id', 'addressId', 'cardId', '_v').to.be.deep.equal JSON.stringify _.omit expectedDancer.toJSON(), 'created', 'id', 'addressId', 'cardId', '_v'
           # then their addresses were exported
-          address = _.findWhere models, id: dancer.addressId
-          expectedAddress = _.findWhere addresses, id: expectedDancer.addressId
+          address = _.find models, id: dancer.addressId
+          expectedAddress = _.find addresses, id: expectedDancer.addressId
           expect(address, "#{expectedAddress.street} not found").to.exist
           expect(JSON.stringify _.omit address.toJSON(), 'id', '_v').to.be.deep.equal JSON.stringify _.omit expectedAddress.toJSON(), 'id', '_v'
           # then their cards were exported
-          card = _.findWhere models, id: dancer.cardId
-          expectedCard = _.findWhere cards, id: expectedDancer.cardId
+          card = _.find models, id: dancer.cardId
+          expectedCard = _.find cards, id: expectedDancer.cardId
           expect(card, "#{expectedCard.street} not found").to.exist
           expect(JSON.stringify _.omit card.toJSON(), 'id', '_v', 'registrations').to.be.deep.equal JSON.stringify _.omit expectedCard.toJSON(), 'id', '_v', 'registrations'
         done()

@@ -8,7 +8,7 @@ InvoiceItem = require "../#{if isPrintCtx then 'script/' else ''}model/invoice_i
 {invoiceRefExtract} = require "../#{if isPrintCtx then 'script/' else ''}util/common"
 
 # Simple validation function that check if a given value is defined and acceptable
-isInvalidString = (value) -> not(value?) or _.trim(value).length is 0
+isInvalidString = (value) -> not(value?) or value.trim?()?.length is 0
 isInvalidDate = (value) -> not(value?) or not value.isValid()
 
 # Displays and edits a given invoice

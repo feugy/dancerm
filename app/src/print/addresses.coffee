@@ -1,5 +1,5 @@
 _ = require 'lodash'
-async = require 'async'
+{map} = require 'async'
 i18n = require '../script/labels/common'
 
 # Angular controller for addresses print preview
@@ -34,7 +34,7 @@ window.customClass = class Print
 
     # regroup by addresses and get details
     groupByAddress = {}
-    async.map dancers, (dancer, next) ->
+    map dancers, (dancer, next) ->
       # first time we got this address
       groupByAddress[dancer.addressId] = [] unless dancer.addressId of groupByAddress
       groupByAddress[dancer.addressId].push dancer
@@ -51,7 +51,7 @@ window.customClass = class Print
       @stamps = (
         for id, dancers of groupByAddress
           # get common address
-          address = _.findWhere addresses, id:id
+          address = _.find addresses, id:id
           {
             selected: true
             dancers: dancers

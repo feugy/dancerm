@@ -79,7 +79,7 @@ module.exports = class CardList extends EventEmitter
 
     if @criteria.danceClasses?.length > 0
       # select class students: can be combined with season and name
-      conditions['danceClassIds'] = $in: _.pluck @criteria.danceClasses, 'id'
+      conditions['danceClassIds'] = $in: _.map @criteria.danceClasses, 'id'
     else if @criteria.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
       conditions['danceClasses.teacher'] = $in: @criteria.teachers
@@ -92,7 +92,7 @@ module.exports = class CardList extends EventEmitter
     Dancer.findWhere conditions, (err, dancers) =>
       @_searchPending = false
       if err?
-        @dialog.messageBox i18n.ttl.search, _.sprintf(i18n.err.search, err.message), [label: i18n.btn.nok]
+        @dialog.messageBox i18n.ttl.search, _.template(i18n.err.search)(err), [label: i18n.btn.nok]
       else
         # sort and update list content, without reaffecting the list
         @_displayResults _.sortBy dancers, 'lastname'

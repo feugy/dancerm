@@ -609,7 +609,7 @@ module.exports = class CardController
           # translate the "known by" possibilities into a list of boolean
           @knownBy = {}
           for value of @i18n.knownByMeanings
-            @knownBy[value] = _.contains @card.knownBy, value
+            @knownBy[value] = @card.knownBy?.includes value
           @knownByOther = _.find @card.knownBy, (value) => not(value of @i18n.knownByMeanings)
 
           # reset changes and displays everything
@@ -636,13 +636,13 @@ module.exports = class CardController
     missing = false
     for dancer in @dancers
       @required[dancer.id] = (
-        for field in ['title', 'firstname', 'lastname'] when not(dancer[field]?) or _.trim(dancer[field]).length is 0
+        for field in ['title', 'firstname', 'lastname'] when not(dancer[field]?) or dancer[field].trim?()?.length is 0
           missing = true
           field
       )
     for address in @addresses
       @required[address.id] = (
-        for field in ['street', 'zipcode', 'city'] when not(address[field]?) or _.trim(address[field]).length is 0
+        for field in ['street', 'zipcode', 'city'] when not(address[field]?) or address[field].trim?()?.length is 0
           missing = true
           field
       )
@@ -652,7 +652,7 @@ module.exports = class CardController
           requiredFields = ['type']
           requiredFields.push 'payer', 'bank' if payment.type is 'check'
           tmp = (
-            for field in requiredFields when not(payment[field]?) or _.trim(payment[field]).length is 0
+            for field in requiredFields when not(payment[field]?) or payment[field].trim?()?.length is 0
               missing = true
               field
           )

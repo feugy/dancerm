@@ -1,4 +1,4 @@
-async = require 'async'
+{map} = require 'async'
 i18n = require '../labels/common'
 DanceClass = require '../model/dance_class'
 Payment = require '../model/payment'
@@ -110,7 +110,7 @@ class RegistrationDirective
     @setPeriod @registration?.period
 
     # early resolve dance class
-    async.map @dancers, (dancer, next) =>
+    map @dancers, (dancer, next) =>
       dancer.getClasses next
     , (err, danceClasses) =>
       console.error err if err?

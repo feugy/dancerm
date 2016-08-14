@@ -1,5 +1,5 @@
 _ = require 'lodash'
-async = require 'async'
+{map} = require 'async'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
 Payment = require './payment'
@@ -90,7 +90,7 @@ module.exports = class Registration extends Base
   getInvoices: (done) =>
     return _.defer(=> done null, @_invoices) if @_invoices?
     # resolve models
-    async.map @invoiceIds, (id, next) =>
+    map @invoiceIds, (id, next) =>
       Invoice.find id, (err, result) =>
         console.log "failed to get invoice #{id} of registration #{@id}: #{err}" if err?
         next null, result

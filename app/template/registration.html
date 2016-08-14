@@ -29,7 +29,7 @@
       <input type="text" data-number-only class="input-small scrollable" data-ng-model="ctrl.registration.charged" data-ng-change="ctrl._onChange('charged')"/>
       <span class="input-group-addon">{{::'lbl.currency'|i18n}}</span>
     </span>
-    <span class="btn-group" data-dropdown keyboard-nav>
+    <span class="btn-group dropup" data-dropdown keyboard-nav>
       <button class="btn dropdown-toggle" dropdown-toggle>{{ctrl.periodLabel}}<span class="caret"></span></button>
       <ul class="dropdown-menu">
         <li data-ng-repeat="(period, label) in ::ctrl.i18n.periods"><a href="" data-ng-click="ctrl.setPeriod(period)">{{::label}}</a></li>

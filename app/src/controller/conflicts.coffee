@@ -81,7 +81,7 @@ module.exports = class ConflictsController
             # dancers may be empty or contain multiple dancers: we'll use the first
             extraDancers.push dancers unless err?
             next err
-      else if imported instanceof Address  
+      else if imported instanceof Address
         # search for imported dancers with this address
         for dancer in dancers when dancer.addressId is imported.id
           found = true
@@ -92,14 +92,14 @@ module.exports = class ConflictsController
           return Dancer.findWhere {addressId: imported.id}, (err, dancers) =>
             # dancers may be empty or contain multiple dancers: we'll use the first
             extraDancers.push dancers unless err?
-            next err  
+            next err
       next()
     , (err) =>
       return _done err if err?
       # add extra dancers to manage addresses and cards
       ids = (id for {id} in dancers)
       for [dancer],i in extraDancers
-        ids.push dancer.id 
+        ids.push dancer.id
         # use a fake dancer to carry the modified address or card
         fake = new Dancer dancer.toJSON()
         if resolved[i] instanceof Address
@@ -112,9 +112,9 @@ module.exports = class ConflictsController
         return _done err if err?
         # at last, push existing and imported dancers aside with each other
         for existing in existings
-          @conflicts.push existing: existing, imported: _.findWhere dancers, id: existing.id
+          @conflicts.push existing: existing, imported: _.find dancers, id: existing.id
         # get all possible dance classes for registrations
-        DanceClass.findAll (err, danceClasses) => 
+        DanceClass.findAll (err, danceClasses) =>
           return _done err if err?
           @danceClasses = {}
           @danceClasses[danceClass.id] = danceClass for danceClass in danceClasses
@@ -195,7 +195,7 @@ module.exports = class ConflictsController
     <div>#{(@_translate knownBy for knownBy in model.knownBy).join ', '}</div>
     <ul>#{registrations.join '\n'}</ul>
     """
-  
+
   # **private**
   # Display certificates for read only usage
   #
@@ -226,7 +226,7 @@ module.exports = class ConflictsController
 
     # check dancer fields
     for field in ['title', 'firstname', 'lastname', 'cellphone', 'email'] when existing[field] isnt imported[field]
-      @fields.push 
+      @fields.push
         label: field
         path: field
         existing: @sce.trustAsHtml existing[field]?.toString() or ""
@@ -238,7 +238,7 @@ module.exports = class ConflictsController
       return done err if err?
       # check if address model has entierly changed
       if existing.addressId isnt imported.addressId
-        @fields.push 
+        @fields.push
           kind: 'address'
           path: 'addressId'
           existing: @sce.trustAsHtml @_formatAddress existingAddress
@@ -247,7 +247,7 @@ module.exports = class ConflictsController
       else
         # otherwise, check individual fields
         for field in ['street', 'zipcode', 'city', 'phone'] when existingAddress[field] isnt importedAddress[field]
-          @fields.push 
+          @fields.push
             label: field
             parentPath: '_address'
             path: field
@@ -260,7 +260,7 @@ module.exports = class ConflictsController
         return done err if err?
         # check if card model has entierly changed
         if existing.cardId isnt imported.cardId
-          @fields.push 
+          @fields.push
             kind: 'card'
             path: 'cardId'
             existing: @sce.trustAsHtml @_formatCard existingCard, existing
@@ -269,7 +269,7 @@ module.exports = class ConflictsController
         else
           # otherwise, check individual fields
           unless _.isEqual existingCard.knownBy, importedCard.knownBy
-            @fields.push 
+            @fields.push
               label: 'knownBy'
               parentPath: '_card'
               path: 'knownBy'
@@ -281,11 +281,11 @@ module.exports = class ConflictsController
           checkedRegistrations = []
           for existingReg, i in existingCard.registrations
             season = existingReg.season
-            importedReg = _.findWhere importedCard.registrations, season: season
+            importedReg = _.find importedCard.registrations, season: season
             if importedReg?
-              checkedRegistrations.push importedReg 
+              checkedRegistrations.push importedReg
               for field in ['details', 'period', 'charged'] when existingReg[field] isnt importedReg[field]
-                @fields.push 
+                @fields.push
                   season: season
                   label: field
                   parentPath: '_card'
@@ -296,7 +296,7 @@ module.exports = class ConflictsController
 
               # certificates
               unless _.isEqual existingReg.certificates, importedReg.certificates
-                @fields.push 
+                @fields.push
                   season: season
                   label: 'certificates'
                   parentPath: '_card'
@@ -309,7 +309,7 @@ module.exports = class ConflictsController
               existingClassIds = @_danceClassesForSeason existing, season
               importedClassIds = @_danceClassesForSeason imported, season
               unless _.isEqual existingClassIds, importedClassIds
-                @fields.push 
+                @fields.push
                   season: season
                   label: 'danceClasses'
                   existing: @sce.trustAsHtml (@_getClass id for id in existingClassIds).join ', '
@@ -323,7 +323,7 @@ module.exports = class ConflictsController
               for existingPayment, j in existingReg.payments when importedReg.payments[j]?
                 unless _.isEqual importedReg.payments[j].toJSON(), existingPayment.toJSON()
                   # found modification
-                  @fields.push 
+                  @fields.push
                     kind: 'payment'
                     season: season
                     parentPath: '_card'
@@ -334,7 +334,7 @@ module.exports = class ConflictsController
 
               # removed payments
               for removed, j in existingReg.payments[importedReg.payments.length..]
-                @fields.push 
+                @fields.push
                   kind: 'payment'
                   season: season
                   parentPath: '_card'
@@ -343,9 +343,9 @@ module.exports = class ConflictsController
                   existing: @sce.trustAsHtml @_formatPayment removed
                   useImported: true
 
-              # added payments    
+              # added payments
               for added, j in importedReg.payments[existingReg.payments.length..]
-                @fields.push 
+                @fields.push
                   kind: 'payment'
                   season: season
                   parentPath: '_card'
@@ -354,7 +354,7 @@ module.exports = class ConflictsController
                   useImported: true
             else
               # removed registrations
-              @fields.push 
+              @fields.push
                 kind: 'registration'
                 season: season
                 parentPath: '_card'
@@ -366,7 +366,7 @@ module.exports = class ConflictsController
 
           # entierly add remaining registrations
           for importedReg in _.difference importedCard.registrations, checkedRegistrations
-            @fields.push 
+            @fields.push
               kind: 'registration'
               season: importedReg.season
               parentPath: '_card'
@@ -405,14 +405,14 @@ module.exports = class ConflictsController
           setAttr modified, field.path, getAttr newValue, field.path
       # update dance classes
       if field.danceClassAdded?
-        existing.danceClassIds = _.unique existing.danceClassIds.concat field.danceClassAdded
+        existing.danceClassIds = _.uniq existing.danceClassIds.concat field.danceClassAdded
       if field.danceClassRemoved?
         existing.danceClassIds = _.difference existing.danceClassIds, field.danceClassRemoved
       # if modified model is nested store it in saveable if necessary
       saveable[modified.id] = modified if modified.id?
 
     # save models
-    async.each (model for id, model of saveable), (model, next) -> 
+    async.each (model for id, model of saveable), (model, next) ->
       model.save next
     , (err) =>
       return console.error err if err?

@@ -178,13 +178,16 @@ for color, i in colors
     &:not(:hover) > .btn
     &:hover > .btn-group .btn
     &:hover > .btn
-    .btn ~ .dropdown-menu
-      box-shadow none
+    // .btn ~ .dropdown-menu
       background primaryBtnBackground
+      box-shadow none
       color btnColor
 
       &:hover
         background primaryBtnBackgroundHover
+
+  .registration > .btn-group .dropdown-menu
+      background primaryBtnBackground
 
   .card-dancer
     border 2px solid headerBackground // colors[6]
