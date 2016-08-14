@@ -7,12 +7,12 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{::'lbl.school.name'|i18n}}</p>
-        <p>{{::'lbl.school.street'|i18n}}</p>
-        <p>{{::'lbl.school.zipcode'|i18n}} {{::'lbl.school.city'|i18n}}</p>
-        <p>{{::'lbl.school.phone'|i18n}}</p>
-        <p>{{::'lbl.school.siret'|i18n}}</p>
-        <p>{{::'lbl.school.vat'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="title" data-ng-bind-html="::'ttl.settlementPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
     </header>

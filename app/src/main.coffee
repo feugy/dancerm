@@ -13,7 +13,6 @@ process.on 'uncaughtException', dumpError
 
 try
   fixConsole()
-
   console.log "running DanceRM #{version} on node-webkit v#{process.versions['node-webkit']}"
 
   # 'win' is Node-Webkit's window

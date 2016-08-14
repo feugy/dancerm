@@ -69,7 +69,7 @@ describe 'Invoice  model tests', ->
     expect(tested).to.have.deep.property('customer.city').that.is.empty
     expect(tested).to.have.property('items').that.is.empty
     expect(tested).to.have.property('discount').that.equals 0
-    expect(tested).to.have.property('delayFee').that.equals 0
+    expect(tested).to.have.property('delayFee').that.equals 5
     expect(tested).to.have.property('sent').that.is.null
     expect(tested).to.have.property('cardId').that.is.null
     expect(tested).to.have.property('season').that.is.null
@@ -85,7 +85,7 @@ describe 'Invoice  model tests', ->
         zipcode: 69001
         city: 'Lyon'
       discount: 10
-      delayFee: 5
+      delayFee: 7
       items: [
         new InvoiceItem
           name: "#{danceClass1.kind} #{danceClass1.level} #{danceClass1.start}"

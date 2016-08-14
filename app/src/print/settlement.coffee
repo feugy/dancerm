@@ -29,6 +29,7 @@ window.customClass = class Print
   constructor: (filter, rootScope) ->
     # get data from mother window
     @registration = _.findWhere win.card.registrations, season: win.season
+    @selectedSchool = +win.selectedSchool
     # get card dancers
     Dancer.findWhere {cardId: win.card.id}, (err, dancers) =>
       return console.error err if err?

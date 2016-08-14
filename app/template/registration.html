@@ -9,9 +9,8 @@
     </span>
     <span class="btn-group" data-dropdown>
       <a href="" class="btn glyphed dropdown-toggle" dropdown-toggle><i class="glyphicon glyphicon-print"/>{{::'btn.print'|i18n}}<span class="caret"></span></a>
-      <ul class="dropdown-menu">
-        <li><a href="" data-ng-click="ctrl.onPrintSettlement({registration: ctrl.registration})">{{::'btn.printSettlement'|i18n}}</a></li>
-        <li><a href="" data-ng-click="ctrl.onPrintInvoice({registration: ctrl.registration, vat:true})">{{::'btn.printInvoiceWithVat'|i18n}}</a></li>
+      <ul class="dropdown-menu right">
+        <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.onPrintSettlement({registration: ctrl.registration, selectedSchool: $index})">{{::'btn.printSettlement'|i18n:{args:school} }}</a></li>
       </ul>
     </span>
     <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.registration})"><i class="glyphicon glyphicon-trash"/></a>

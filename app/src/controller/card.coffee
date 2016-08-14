@@ -381,7 +381,8 @@ module.exports = class CardController
   # Print the settlement for a given year
   #
   # @param registration [Registration] the concerned registration
-  printSettlement: (registration) =>
+  # @param selectedSchool [Number] index of the selected school
+  printSettlement: (registration, selectedSchool) =>
     return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
@@ -396,62 +397,9 @@ module.exports = class CardController
           @_preview = created
           # set parameters and wait for closure
           @_preview.card = @card
+          @_preview.selectedSchool = selectedSchool
           @_preview.season = registration.season
           @_preview.on 'closed', => @_preview = null
-
-  # Print the registration confirmation form
-  # TODO unused
-  #
-  # @param registration [Registration] the concerned registration
-  # @param auto [Boolean] true to guess if VAT and dance classes details are needed or not
-  # @param withVat [Boolean] true to include VAT
-  # @param withClasses [Boolean] true to include dance classes details
-  printRegistration: (registration, auto= false, withVat= true, withClasses= true) =>
-    return @_preview.focus() if @_preview?
-    @save true, (err) =>
-      return console.error err if err?
-      open = =>
-        nw.Window.open 'app/template/registration_print.html',
-          frame: true
-          icon: require('../../../package.json')?.window?.icon
-          focus: true
-          # size to A4 format, 3/4 height
-          width: 790
-          height: 400
-          , (created) =>
-            @_preview = created
-            # set parameters and wait for closure
-            @_preview.card = @card
-            @_preview.withVat = withVat
-            @_preview.withClasses = withClasses
-            @_preview.season = registration.season
-            @_preview.withCharged = auto
-            @_preview.on 'closed', => @_preview = null
-
-      # auto VAT/classe details computation:
-      return open() unless auto
-      # Dance class details
-      async.map @dancers, (dancer, next) ->
-        dancer.getClasses next
-      , (err, danceClasses) =>
-        return console.error err if err?
-        withVat = false
-        withClasses = true
-        group = null
-
-        for danceClass in _.flatten danceClasses when danceClass.season is registration.season
-          teacher = danceClass.teacher?.toLowerCase()
-          if teacher in @_vatTeachers
-            # VAT included only if teacher is specific
-            withVat = true
-          unless group?
-            # get first dance class's group
-            group = i18n.print.teacherGroups[teacher]
-          else if withClasses and group isnt i18n.print.teacherGroups[teacher]
-            # if groups differ, do not pring classes
-            withClasses = false
-
-        open()
 
   # Invoked when dancer needs to be removed.
   # First display a confirmation dialog, and then dissociate the dancer from this card
