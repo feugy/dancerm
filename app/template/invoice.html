@@ -2,7 +2,7 @@
   <article class="focusable invoice-title">
     <h2 class="title" data-ng-if="!ctrl.isReadOnly">
       {{'ttl.invoice'|i18n:{args:{ref:''} } }}
-      <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-change="ctrl._onChange('ref')"/>
+      <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-class="ctrl.isRequired('ref')" data-ng-change="ctrl._onChange('ref')"/>
     </h2>
     <span class="row" data-ng-if="!ctrl.isReadOnly">
       <span class="col-md-3 selected-school">
@@ -36,14 +36,14 @@
       </div>
       <div class="customer" data-ng-if="!ctrl.isReadOnly">
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-change="ctrl._onChange('customer.name')" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-class="ctrl.isRequired('name')" data-ng-change="ctrl._onChange('customer.name')" data-set-null/>
         </p>
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-change="ctrl._onChange('customer.street')" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-class="ctrl.isRequired('street')" data-ng-change="ctrl._onChange('customer.street')" data-set-null/>
         </p>
         <p class="zip-and-city">
-          <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
-          <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-change="ctrl._onChange('customer.city')" data-set-null/>
+          <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
+          <input type="text" data-ng-model="ctrl.invoice.customer.city" data-ng-class="ctrl.isRequired('city')" data-ng-change="ctrl._onChange('customer.city')" data-set-null/>
         </p>
       </div>
       <div class="customer" data-ng-if="ctrl.isReadOnly">
@@ -56,6 +56,7 @@
       <span class="input-group ng-class:ctrl.dateOpts.open?'open':'';">{{::'print.invoiceDate'|i18n}}
         <input type="text"
           data-set-null
+          data-ng-class="ctrl.isRequired('date')"
           data-datepicker-popup="{{::'formats.invoiceSelection'|i18n}}"
           data-is-open="ctrl.dateOpts.open"
           data-ng-model="ctrl.dateOpts.value"
@@ -81,6 +82,7 @@
         data-ng-repeat="item in ctrl.invoice.items"
         data-src="item"
         data-read-only="ctrl.isReadOnly"
+        data-required-fields="ctrl.required.items[$index]"
         data-options="ctrl.i18n.priceList[ctrl.invoice.season]"
         data-on-remove="ctrl.removeItem(item)"
         data-on-change="ctrl._onChange('items[' + $index + '].' + $field)">
@@ -93,7 +95,7 @@
       <span class="subtotal">
         <div class="discount">
           <span>{{::'lbl.discount'|i18n}}</span>
-          <span data-ng-if="!ctrl.isReadOnly"><input type="number" data-ng-model="ctrl.invoice.discount" data-ng-change="ctrl._onChange('discount')" data-set-zero/>%</span>
+          <span data-ng-if="!ctrl.isReadOnly"><input type="number" data-ng-model="ctrl.invoice.discount" data-ng-class="ctrl.isRequired('discount')" data-ng-change="ctrl._onChange('discount')" data-set-zero/>%</span>
           <span data-ng-if="ctrl.isReadOnly">{{::ctrl.invoice.discount}} %</span>
         </div>
         <div>

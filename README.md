@@ -1,7 +1,6 @@
 ## TODO
 
 - Generate invoice items from registration_print
-- Required invoice fields
 
 - Individual lessons
 - Search by check payer

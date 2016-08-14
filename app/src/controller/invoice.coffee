@@ -7,6 +7,10 @@ Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
 InvoiceItem = require "../#{if isPrintCtx then 'script/' else ''}model/invoice_item"
 {invoiceRefExtract} = require "../#{if isPrintCtx then 'script/' else ''}util/common"
 
+# Simple validation function that check if a given value is defined and acceptable
+isInvalidString = (value) -> not(value?) or _.trim(value).length is 0
+isInvalidDate = (value) -> not(value?) or not value.isValid()
+
 # Displays and edits a given invoice
 # Also usable as print controller
 class InvoiceController
@@ -64,6 +68,11 @@ class InvoiceController
     startingDay: 1
     showButtonBar: false
 
+  # contains an array of required fields
+  required:
+    invoice: []
+    items: []
+
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
@@ -93,6 +102,9 @@ class InvoiceController
     @suggestedRef = null
     @withVat = false
     @selectedSchool = 0
+    @required =
+      invoice: []
+      items: []
 
     # list of actions used to listCtrl
     @_actions =
@@ -165,10 +177,23 @@ class InvoiceController
 
   # Save the current values inside storage
   #
+  # @param force [Boolean] true to ignore required fields. Default to false.
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no problem occured
-  save: (done = ->) =>
+  save: (force = false, done = ->) =>
     return done null unless @hasChanged and not @isReadOnly
+    # check required fields
+    if not force and @_checkRequired()
+      return @dialog.messageBox(@i18n.ttl.confirm, i18n.msg.requiredInvoiceFields, [
+          {label: @i18n.btn.no, cssClass: 'btn-warning'}
+          {label: @i18n.btn.yes, result: true}
+        ]
+      ).result.then (confirmed) =>
+        # important ! don't invoke done on cancellation, so the print/markAsSent
+        # process is cancelled
+        return unless confirmed
+        @save true, done
+
     console.log "save invoice #{@invoice.ref} (#{@invoice.id})"
     @invoice.save (err) =>
       if err?
@@ -180,6 +205,9 @@ class InvoiceController
       @_previous = @invoice.toJSON()
       console.log "invoice saved"
       @_onChange()
+      @required =
+        invoice: []
+        items: ([] for item in @invoice.items)
       @scope.$apply() unless @scope.$$phase
       done()
 
@@ -195,8 +223,8 @@ class InvoiceController
       # if confirmed, effectively mark as sent
       @invoice.sent = moment()
       @hasChanged = true
-      @save (err) =>
-        return if err?
+      @save false, (err) =>
+        return console.error err if err?
         # reset everything to reflect read-only state
         @_onLoad @invoice
 
@@ -231,7 +259,7 @@ class InvoiceController
   print: =>
     return @_preview.focus() if @_preview?
     # save will be effective only it has changed
-    @save (err) =>
+    @save false, (err) =>
       return console.error err if err?
       nw.Window.open 'app/template/invoice_print.html',
         frame: true
@@ -269,6 +297,14 @@ class InvoiceController
       item.vat = if @withVat then @i18n.vat else 0
     @_onChange 'item[0].vat'
 
+  # check if field is missing or not
+  #
+  # @param field [String] field that is tested
+  # @return a css class
+  isRequired: (field) =>
+    return 'invalid' if @required.invoice?.includes field
+    ''
+
   # **private**
   # initialize controller for a given invoice
   # @param invoice [Invoice] Loaded invoice
@@ -277,6 +313,9 @@ class InvoiceController
     @isReadOnly = @invoice?.sent?
     @dateOpts.value = @invoice?.date.valueOf()
     @selectedSchool = @invoice?.selectedSchool or 0
+    @required =
+      invoice: []
+      items: ([] for item in @invoice.items)
     @_previous = @invoice.toJSON()
     # set vat depending on the first item content
     @withVat = @invoice.items.some (item) -> item.vat > 0
@@ -321,6 +360,24 @@ class InvoiceController
           Invoice.getNextRef +matched[1] or moment().year(), +matched[2] or moment().month() + 1, (err, next) =>
             @suggestedRef = next unless err?
             @scope.$apply()
+
+  # **private**
+  # Check required fields when saving invoice
+  #
+  # @return true if a required field is missing
+  _checkRequired: =>
+    @required =
+      invoice: []
+      items: ([] for item in @invoice.items)
+    # check the invoice itself
+    @required.invoice.push 'ref' if isInvalidString @invoice?.ref
+    @required.invoice.push 'date' if isInvalidDate @invoice?.date
+    @required.invoice.push (field for field in ['name', 'street', 'city', 'zipcode'] when isInvalidString @invoice?.customer?[field])...
+    # check each items
+    for item, i in @invoice?.items or []
+      @required.items[i].push 'name' if isInvalidString item.name
+    # returns true if invoice or any of its item is missing a field
+    @required.invoice.length isnt 0 or @required.items.some i -> i.length isnt 0
 
 # Export as print controller for print preview, or classical node export
 unless isPrintCtx

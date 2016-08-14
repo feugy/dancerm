@@ -24,20 +24,28 @@ class InvoiceItemDirective
   # @param without {Number} duty-free value
   # @returns {Number} value with tax included
   applyTax: (without) =>
-    round without * (1 + @scope.ctrl?.src?.vat), 2
+    round without * (1 + @src?.vat), 2
 
   # Removes taxes (if defined) to get duty-free value
   #
   # @param withTax {Number} value with tax included
   # @returns {Number} duty-free value
   removeTax: (withTax) =>
-    round withTax / (1 + @scope.ctrl?.src?.vat), 2
+    round withTax / (1 + @src?.vat), 2
 
   # Prefill current edited values with given option
   #
   # @param option {Object} option assigned to current edited values
   prefill: (option) =>
-    Object.assign @scope.ctrl.src, option, label: undefined
+    Object.assign @src, option, label: undefined
+
+  # check if field is missing or not
+  #
+  # @param field [String] field that is tested
+  # @return a css class
+  isRequired: (field) =>
+    return 'invalid' if @requiredFields?.includes field
+    ''
 
 # The invoice item directive displays and allows to edit a given invoice item
 module.exports = (app) ->
@@ -50,7 +58,7 @@ module.exports = (app) ->
   <span class="name">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.name}}</span>
     <span data-ng-if="!ctrl.readOnly" class="input-group" data-dropdown keyboard-nav>
-      <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-set-null/>
+      <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-class="ctrl.isRequired('name')" data-set-null/>
       <a href="" class="input-group-addon" dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="option in ctrl.options">
@@ -62,10 +70,10 @@ module.exports = (app) ->
   </span>
   <span class="quantity">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.quantity}}</span>
-    <input type="number" name="quantity" data-ng-model="ctrl.src.quantity" data-ng-change="ctrl.onChange({$field:'quantity'})" data-ng-if="!ctrl.readOnly" data-set-zero/>
+    <input type="number" name="quantity" data-ng-model="ctrl.src.quantity" data-ng-class="ctrl.isRequired('quantity')" data-ng-change="ctrl.onChange({$field:'quantity'})" data-ng-if="!ctrl.readOnly" data-set-zero/>
   </span>
   <span class="price" data-ng-if="!ctrl.readOnly">
-    <filtered-input class="duty-free-input" type="number" name="price" data-parse="ctrl.applyTax" data-format="ctrl.removeTax" data-ng-model="ctrl.src.price" data-ng-change="ctrl.onChange({$field:'price'})" data-set-zero></filtered-input>{{'lbl.currency'|i18n}}
+    <filtered-input class="duty-free-input" type="number" name="price" data-parse="ctrl.applyTax" data-format="ctrl.removeTax" data-ng-model="ctrl.src.price" data-ng-class="ctrl.isRequired('price')" data-ng-change="ctrl.onChange({$field:'price'})" data-set-zero></filtered-input>{{'lbl.currency'|i18n}}
   </span>
   <span class="price" data-ng-if="ctrl.readOnly">{{::ctrl.removeTax(ctrl.src.price)}}{{'lbl.currency'|i18n}}</span>
   <span class="vat">{{ctrl.vat|number}}%</span>
@@ -85,6 +93,8 @@ module.exports = (app) ->
     scope:
       # invoice item displayed
       src: '='
+      # array of missing fields
+      requiredFields: '='
       # different options to prefill src. The 'label' attribute might be used as option content
       options: '=?'
       # read-only flag.
