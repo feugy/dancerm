@@ -57,9 +57,9 @@ module.exports = (app) ->
   <button class="btn remove" data-ng-if="!ctrl.readOnly" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/></button>
   <span class="name">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.name}}</span>
-    <span data-ng-if="!ctrl.readOnly" class="input-group" data-dropdown keyboard-nav>
+    <span data-ng-if="!ctrl.readOnly" class="input-group" data-uib-dropdown keyboard-nav>
       <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-class="ctrl.isRequired('name')" data-set-null/>
-      <a href="" class="input-group-addon" dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
+      <a href="" class="input-group-addon" uib-dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="option in ctrl.options">
           <a href="" data-ng-if="!option.category" data-ng-click="ctrl.prefill(option)">{{option.label || option.name}}</a>

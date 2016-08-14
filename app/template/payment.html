@@ -1,7 +1,7 @@
 <div class="payment focusable">
   <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model:ctrl.src})"><i class="glyphicon glyphicon-trash"/></a>
-  <span class="btn-group dropup type" data-dropdown keyboard-nav>
-    <button class="btn dropdown-toggle scrollable" dropdown-toggle data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></button>
+  <span class="btn-group dropup type" data-uib-dropdown keyboard-nav>
+    <button class="btn dropdown-toggle scrollable" uib-dropdown-toggle data-ng-class="ctrl.isRequired('type')">{{ctrl.typeLabel}}<span class="caret"></span></button>
     <ul class="dropdown-menu">
       <li data-ng-repeat="(type, label) in ::ctrl.i18n.paymentTypes"><a href="" data-ng-click="ctrl.setType(type)">{{::label}}</a></li>
     </ul>
@@ -9,7 +9,7 @@
   <span class="receipt input-group dropup ng-class:ctrl.receiptOpts.open?'open':'';">
     <input type="text"
       data-set-null
-      data-datepicker-popup="{{::'formats.receiptSelection'|i18n}}"
+      data-uib-datepicker-popup="{{::'formats.receiptSelection'|i18n}}"
       data-is-open="ctrl.receiptOpts.open"
       data-ng-model="ctrl.receiptOpts.value"
       data-show-button-bar="false"

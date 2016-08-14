@@ -6,8 +6,8 @@
   <h4>{{::'ttl.dancer'|i18n}}</h4>
   <div class="row">
     <span class="col-md-1 title">
-      <div class="btn-group" data-dropdown keyboard-nav>
-        <button class="btn dropdown-toggle" dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
+      <div class="btn-group" data-uib-dropdown keyboard-nav>
+        <button class="btn dropdown-toggle" uib-dropdown-toggle data-ng-class="ctrl.isRequired('title')">{{ctrl.src.title||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
         <ul class="dropdown-menu">
           <li data-ng-repeat="choice in ::ctrl.i18n.civilityTitles"><a href="" data-ng-click="ctrl.setTitle(choice)">{{choice}}</a></li>
         </ul>
@@ -44,7 +44,7 @@
     <span class="col-md-6 birth"><label>{{::'lbl.birth'|i18n:{sep:true} }}</label><span class="input-group ng-class:ctrl.birthOpts.open?'open':'';">
         <input type="text"
           data-set-null
-          data-datepicker-popup="{{::'formats.birthSelection'|i18n}}"
+          data-uib-datepicker-popup="{{::'formats.birthSelection'|i18n}}"
           data-is-open="ctrl.birthOpts.open"
           data-ng-model="ctrl.birthOpts.value"
           data-show-button-bar="false"

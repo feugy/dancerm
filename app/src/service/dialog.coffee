@@ -2,7 +2,7 @@
 # Controller class used for message boxes
 class MessageBox
 
-  @$inject: ['model', '$scope', '$modalInstance']
+  @$inject: ['model', '$scope', '$uibModalInstance']
 
   # Dialog instance
   @_modal: null
@@ -20,7 +20,7 @@ module.exports = class DialogProvider
 
   # **static**
   # DialogProvider's dependencies
-  @$inject: ['$modal']
+  @$inject: ['$uibModal']
 
   # **private**
   # Angular UI's modal factory
@@ -31,7 +31,7 @@ module.exports = class DialogProvider
   constructor: (modal) ->
     @_modal = modal
 
-  # opens a dialog fully configurable according to 
+  # opens a dialog fully configurable according to
   # http://angular-ui.github.io/bootstrap/
   #
   # @param args [Object] Angular UI's modal arguments
@@ -49,7 +49,7 @@ module.exports = class DialogProvider
   # @option buttons css [String] optionnal CSS class added to button
   # @return a modal instance with its 'result' promise
   messageBox: (title, message, buttons = []) =>
-    @_modal.open 
+    @_modal.open
       templateUrl: 'dialog_message.html'
       controllerAs: 'ctrl'
       controller: MessageBox

@@ -345,10 +345,16 @@ body
   .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled]
     background-color infoBtnBackgroundHover
 
-  [data-datepicker-popup] ~ .dropdown-menu
-  [datepicker-popup] ~ .dropdown-menu
+  .uib-datepicker-popup.dropdown-menu
     background headerBackground
     padding 5px
+
+    thead > tr > th
+      text-align center
+
+      .uib-title
+        display inline-block
+        width 96%
 
     tbody .btn
       background mainBackground

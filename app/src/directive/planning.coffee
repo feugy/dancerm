@@ -172,9 +172,9 @@ class PlanningDirective
         start: course.start.replace(day, '').trim()
         end: course.end.replace(day, '').trim()
       render = @compile("""<div class="danceClass #{course.color}" data-id="#{course.id}"
-          data-tooltip="#{tooltip}" data-tooltip-popup-delay="200"
-          data-tooltip-animation="true"
-          data-tooltip-append-to-body="true">#{course.level}</div>""") @scope
+          data-uib-tooltip="#{tooltip}" data-uib-tooltip-popup-delay="200"
+          data-uib-tooltip-animation="true"
+          data-uib-tooltip-append-to-body="true">#{course.level}</div>""") @scope
       render.css
         height: height = (end.position()?.top or start.parent().height()) - start.position().top
         top: start.position().top

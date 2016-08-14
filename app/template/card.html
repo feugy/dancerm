@@ -1,8 +1,8 @@
 <div class="card">
   <!-- dancers displayal and their addresses -->
   <article>
-    <span class="btn-group hidable" data-dropdown keyboard-nav>
-      <button class="btn glyphed dropdown-toggle" dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{::'btn.addDancer'|i18n}}<span class="caret"></span></button>
+    <span class="btn-group hidable" data-uib-dropdown keyboard-nav>
+      <button class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-plus"/>{{::'btn.addDancer'|i18n}}<span class="caret"></span></button>
       <ul class="dropdown-menu right">
         <li><a href="" data-ng-click="ctrl.addDancer()">{{::'btn.addNewDancer'|i18n}}</a></li>
         <li><a href="" data-ng-click="ctrl.searchCard()">{{::'btn.addExistingDancer'|i18n}}</a></li>
@@ -41,8 +41,8 @@
     </div>
   </article>
   <!-- registrations -->
-  <tabset>
-    <tab data-ng-repeat="registration in ctrl.card.registrations"
+  <uib-tabset>
+    <uib-tab data-ng-repeat="registration in ctrl.card.registrations"
          data-heading="{{::registration.season}}">
       <registration
         data-src="registration"
@@ -54,6 +54,6 @@
         data-on-display-invoice="ctrl.displayInvoice(invoice)"
         data-required-fields="ctrl.required.regs[$index]"
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
-    </tab>
-  </tabset>
+    </uib-tab>
+  </uib-tabset>
 </div>

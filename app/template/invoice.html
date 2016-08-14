@@ -7,8 +7,8 @@
     <span class="row" data-ng-if="!ctrl.isReadOnly">
       <span class="col-md-3 selected-school">
         <label>{{::'lbl.selectedSchool'|i18n:{sep:true} }}</label>
-        <div class="btn-group" data-dropdown keyboard-nav>
-          <button class="btn dropdown-toggle" dropdown-toggle>{{'lbl.schools[' + ctrl.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
+        <div class="btn-group" data-uib-dropdown keyboard-nav>
+          <button class="btn dropdown-toggle" uib-dropdown-toggle>{{'lbl.schools[' + ctrl.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
           <ul class="dropdown-menu">
             <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.selectSchool($index)">{{::school.owner}}</a></li>
           </ul>
@@ -57,14 +57,15 @@
         <input type="text"
           data-set-null
           data-ng-class="ctrl.isRequired('date')"
-          data-datepicker-popup="{{::'formats.invoiceSelection'|i18n}}"
+          data-uib-datepicker-popup="{{::'formats.invoiceSelection'|i18n}}"
           data-is-open="ctrl.dateOpts.open"
           data-ng-model="ctrl.dateOpts.value"
           data-show-button-bar="false"
           data-datepicker-options="::ctrl.dateOpts"
           data-popup-placement="right"
           data-ng-change="ctrl.setDate()"/>
-        <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a></span>
+        <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a>
+      </span>
     </div>
     <div class="date" data-ng-if="ctrl.isReadOnly">
       <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>

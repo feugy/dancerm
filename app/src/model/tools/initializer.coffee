@@ -169,7 +169,6 @@ plannings = [{
     {kind:"Modern'Jazz", color:'color4', level:'débutant/moyen', start:'Mon 19:30', end:'Mon 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'a1b1531b9094'}
     {kind:"Modern'Jazz", color:'color4', level:'inter/avancé', start:'Wed 20:30', end:'Wed 21:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e18e1f215081'}
     {kind:"Modern'Jazz", color:'color4', level:'avancé', start:'Mon 20:30', end:'Mon 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e737857c743e'}
-    {kind:"Modern'Jazz", color:'color4', level:'atelier choré.', start:'Wed 19:30', end:'Wed 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e04e3b6adc83'}
     {kind:"Modern'Jazz", color:'color4', level:'initiation 8/9 ans', start:'Wed 13:30', end:'Wed 14:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '7e81429fdfc5'}
     {kind:"Modern'Jazz", color:'color4', level:'élémentaire 10/12 ans', start:'Wed 14:30', end:'Wed 15:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '12653337d46e'}
     {kind:"Modern'Jazz", color:'color4', level:'pré-ados moyen', start:'Wed 15:30', end:'Wed 16:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '1f4efaa63093'}
