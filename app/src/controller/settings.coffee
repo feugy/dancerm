@@ -83,7 +83,7 @@ module.exports = class SettingsController
       ]}
       {title: 'Bootstrap', image: "#{imgRoot}/bootstrap.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Twitter'
-        @filter('i18n') 'lbl.version', args: version: '3.3.5'
+        @filter('i18n') 'lbl.version', args: version: '3.3.7'
       ]}
     ]
 

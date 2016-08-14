@@ -11,7 +11,7 @@ i18n = require '../labels/common'
 module.exports = class ConflictsController
 
   # Controller dependencies
-  @$inject: ['$rootScope', 'conflicts', '$modalInstance', '$sce']
+  @$inject: ['$rootScope', 'conflicts', '$uibModalInstance', '$sce']
 
   # Popup declaration
   @declaration:

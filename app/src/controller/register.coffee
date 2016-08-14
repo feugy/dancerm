@@ -2,14 +2,14 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 DanceClass = require '../model/dance_class'
 Registration = require '../model/registration'
-  
+
 # Allow to choose a given dance class (season selection) and creates the corresponding registration.
 # Intended to be used inside a popup: will returned the created Registration object, or null.
 # Must be initianlized with an existing registration
 module.exports = class RegisterController
 
   # Controller dependencies
-  @$inject: ['danceClasses', 'isEdit', '$scope', '$modalInstance']
+  @$inject: ['danceClasses', 'isEdit', '$scope', '$uibModalInstance']
 
   # Popup declaration
   @declaration:
@@ -67,7 +67,7 @@ module.exports = class RegisterController
   # Invoked by view to update the selected season.
   # Refresh the available dance class list
   #
-  # @param season [String] the new selected season 
+  # @param season [String] the new selected season
   chooseSeason: (season) =>
     DanceClass.getPlanning season, (err, planning) =>
       return console.error err if err?
@@ -88,7 +88,7 @@ module.exports = class RegisterController
     uniq.push danceClass for danceClass in @danceClasses when not (danceClass in uniq)
     @danceClasses = uniq
     # closes dialog
-    @_dialog.close 
+    @_dialog.close
       confirmed: confirmed
       season: @currSeason
       danceClasses: @danceClasses

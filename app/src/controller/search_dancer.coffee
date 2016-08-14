@@ -6,7 +6,7 @@ Dancer = require '../model/dancer'
 module.exports = class SearchController
 
   # Controller dependencies
-  @$inject: ['$q', 'existing', '$modalInstance']
+  @$inject: ['$q', 'existing', '$uibModalInstance']
 
   # Popup declaration
   @declaration:

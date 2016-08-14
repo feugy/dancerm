@@ -46,8 +46,8 @@
         <div class="form-group">
           <label class="col-sm-4 control-label">{{::'lbl.theme'|i18n:{sep:true} }}</label>
           <div class="col-sm-8">
-            <div class="btn-group" data-dropdown keyboard-nav>
-              <button class="btn dropdown-toggle" dropdown-toggle>{{'themes.' + (ctrl.localStorage.theme || 'none') | i18n}}<span class="caret"></span></button>
+            <div class="btn-group" data-uib-dropdown keyboard-nav>
+              <button class="btn dropdown-toggle" uib-dropdown-toggle>{{'themes.' + (ctrl.localStorage.theme || 'none') | i18n}}<span class="caret"></span></button>
               <ul class="dropdown-menu">
                 <li data-ng-repeat="theme in ::ctrl.themes"><a href="" data-ng-click="ctrl.applyTheme(theme)">{{::theme.label}}</a></li>
             </div>
