@@ -1,12 +1,18 @@
 ## TODO
 
-- Adds mandatory mentions (due date, delay fee...)
-- Access previous sent invoices and creates new one
+- Prefill invoice item names and prices
 - Generate invoice items from registration_print
+
 - Required invoice fields
-- Remove:
+
+- Individual lessons
+- Search by check payer
+- list all invoice by month/year
+
+## Cleaning
+
+Remove:
+
   - template/registration_print.html
   - src/print/invoice.coffee
   - card's printing facility
-- Individual lessons
-- Search by check payer

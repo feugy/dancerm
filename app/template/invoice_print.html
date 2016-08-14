@@ -60,6 +60,15 @@
           </div>
         </span>
       </div>
+      <div class="due-date">
+        <span>{{::'print.invoiceDueDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.dueDate)}}</span>
+      </div>
+      <div class="delay">
+        <span>{{'print.invoiceDelay'|i18n:{args: ctrl.invoice} }}</span>
+      </div>
+      <div class="various">
+        <span>{{'print.invoiceVarious'|i18n}}</span>
+      </div>
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>

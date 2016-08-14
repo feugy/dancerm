@@ -158,6 +158,8 @@ module.exports = (app) ->
       dancers: '='
       # displayed registration
       registration: '=src'
+      # array of sent invoices for that registration
+      invoices: '='
       # array of missing fields
       requiredFields: '='
       # invoked when printing settlement for that registration
@@ -170,3 +172,5 @@ module.exports = (app) ->
       onChange: '&?'
       # invoked when editing invoice for that registration
       onEditInvoice: '&?'
+      # invoked when displaying a sent invoice for that registration
+      onDisplayInvoice: '&?'

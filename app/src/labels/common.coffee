@@ -12,7 +12,7 @@ module.exports =
     cancel: 'Annuler'
     close: 'Fermer'
     detailed: 'Liste détaillée'
-    editInvoice: 'Facture'
+    editInvoice: 'Editer'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
     ignore: 'Ignorer'
@@ -183,7 +183,7 @@ module.exports =
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
     removeLastDancer: "Vous allez supprimer définitivement la fiche de {{dancer.firstname}} {{dancer.lastname}}. Voulez vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
-    removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}}€ du {{receipt}}. Voulez-vous vraiment continuer ?"
+    removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}} € du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la ficher ?"
     resolveConflict: "Pour résource le conflit, sélectionnez les valeurs à conserver avant d'enregistrer. Vous pouvez aussi ignorer le conflit et passer au suivant, ou annuler pour stopper la résolution."
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
@@ -203,6 +203,11 @@ module.exports =
       delphine: 2
       nassim: 2
     invoiceDate: 'Villeurbanne, le '
+    invoiceDueDate: 'A régler au plus tard le '
+    invoiceDelay: """En cas de retard de paiement, il sera appliqué des pénalités de {{delayFee}} % par mois de retard.
+En outre, une indemnité forfaitaire pour frais de recouvrelent de 40 € sera due.
+Pas de condition d'escompte en cas de règlement anticipé."""
+    invoiceVarious: "Acceptant le réglement des sommes dues par chèques libellés à son nom et en sa qualité de membre d'un centre de gestion agréé."
     settlement: """
 <h2>Accès aux activités</h2>
 <p>L'accès aux activités est strictement réservé aux membres de l'école à jour de leurs cotisations.</p>

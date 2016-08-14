@@ -71,7 +71,7 @@ module.exports = class Invoice extends Persisted
   discount: 0
 
   # fee applied in case of delayed paiement
-  delayFee: 0
+  delayFee: 5
 
   # when valuated, invoice is readonly
   sent: null
@@ -111,7 +111,7 @@ module.exports = class Invoice extends Persisted
         city: ''
       items: []
       discount: 0
-      delayFee: 0
+      delayFee: 5
       sent: null
       cardId: null
       season: null
@@ -125,6 +125,7 @@ module.exports = class Invoice extends Persisted
     )
     # fill attributes
     super(raw)
+    @sent = moment @sent if @sent?
     @changeDate raw.date
     Dancer = require './dancer' unless Dancer?
 

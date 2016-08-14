@@ -67,6 +67,9 @@ module.exports = class CardController
   # flag indicating wether the card has changed or not
   hasChanged: false
 
+  # for each registration, contains a sorted array of invoices
+  invoices: []
+
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
@@ -102,10 +105,16 @@ module.exports = class CardController
     @dancers = []
     @addresses = []
     @required = {}
+    @invoices = []
     @_modalOpened = false
     @_previous = {}
     @_removable = []
     @_preview = null
+
+    @_actions =
+      cancel: label: 'btn.cancel', icon: 'ban-circle', action: @cancel
+      save: label: 'btn.save', icon: 'floppy-disk', action: @save
+
     # set context actions for planning
     @scope.listCtrl.actions = []
     @_setChanged false
@@ -512,47 +521,60 @@ module.exports = class CardController
       @addresses[@dancers.indexOf dancer] = @addresses[0]
       @_onChange 'addresses'
 
+  # Display a sent invoice (and save card before)
+  #
+  # @param invoice [Invoice] invoice to be displayed
+  displayInvoice: (invoice) =>
+    return unless invoice?.id?
+    # save pending modifications
+    @save true, (err) =>
+      return console.error err if err?
+      @state.go 'list.invoice', id: invoice.id
+
   # Creates a new invoice for that registration, or updates the last one which is not sent
+  # Save the card before
   #
   # @param registration [Registration] for which invoice is edited
   editInvoice: (registration) =>
-    # search for unsent invoices related to that card
-    Invoice.findWhere {cardId: @card.id, season: registration.season, sent: null}, (err, existing) =>
-      return console.error "failed to search for invoices", err if err?
-      # display the first one found (should be only one at a time)
-      return @state.go 'list.invoice', id: existing[0].id if existing.length
-      # or create a new one with the first dancer as customer
-      firstYear = parseInt registration.season
-      invoice = new Invoice
-        cardId: @card.id,
-        season: registration.season
-      # only use current date if inside registration season. Otherwise, default September, 15th
-      now = moment()
-      invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
-      # generate reference
-      Invoice.getNextRef now.year(), now.month() + 1, (err, ref) =>
-        return console.error "failed to get next ref for new invoice", err if err?
-        invoice.ref = ref
-        # TODO add dance classes
-        invoice.setCustomer @dancers[0], =>
-          invoice.save (err) =>
-            return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
-            @state.go 'list.invoice', id: invoice.id
+    # save pending modifications
+    @save true, (err) =>
+      return console.error err if err?
+      # search for unsent invoices related to that card
+      Invoice.findWhere {cardId: @card.id, season: registration.season, sent: null}, (err, existing) =>
+        return console.error "failed to search for invoices", err if err?
+        # display the first one found (should be only one at a time)
+        return @state.go 'list.invoice', id: existing[0].id if existing.length
+        # or create a new one with the first dancer as customer
+        firstYear = parseInt registration.season
+        invoice = new Invoice
+          cardId: @card.id,
+          season: registration.season
+        # only use current date if inside registration season. Otherwise, default September, 15th
+        now = moment().year firstYear
+        invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
+        # generate reference
+        Invoice.getNextRef now.year(), now.month() + 1, (err, ref) =>
+          return console.error "failed to get next ref for new invoice", err if err?
+          invoice.ref = ref
+          # TODO add dance classes
+          invoice.setCustomer @dancers[0], =>
+            invoice.save (err) =>
+              return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
+              @state.go 'list.invoice', id: invoice.id
 
   # **private**
   # Update hasChanged flag and contextual actions
   #
   # @param changed [Boolean] new has changed flag value
   _setChanged: (changed) =>
+    next = []
     if changed
-      if @card._v > 0
-        # can cancel only if already saved once
-        @scope.listCtrl.actions.splice 0, 0, {label: 'btn.cancel', icon: 'ban-circle', action: @cancel}
-      @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
-    else if @hasChanged
-      # remove save and cancel
-      @scope.listCtrl.actions.splice 0, 2
+      # can cancel only if already saved once
+      next.unshift @_actions.cancel if @card?._v > 0
+      next.unshift @_actions.save
     @hasChanged = changed
+    # only update actions if they have changed
+    @scope.listCtrl.actions = next unless _.isEqual next, @scope.listCtrl.actions
 
   # **private**
   # Reset displayed card and its relative models
@@ -584,11 +606,12 @@ module.exports = class CardController
   #
   # @param cardId [String] loaded card id.
   _loadCard: (cardId) =>
-    # get other dancers, and load card to display registrations
+    # get other dancers, load card to display registrations, and get invoices
     async.parallel [
-      (done) -> Dancer.findWhere cardId:cardId, done
+      (done) -> Dancer.findWhere cardId: cardId, done
       (done) -> Card.find cardId, done
-    ], (err, [dancers, card]) =>
+      (done) -> Invoice.findWhere cardId: cardId, done
+    ], (err, [dancers, card, invoices]) =>
       # TODO no dancer nor card, what do we do ?
       return console.error err if err?
       @card = card
@@ -600,7 +623,12 @@ module.exports = class CardController
       for dancer in @dancers
         @required[dancer.id] = []
         @_previous[dancer.id] = dancer.toJSON()
+      # updates registrations and their invoices, order registration here rather than in code
+      @card.registrations.sort (a, b) -> a.season < b.season ? -1 : 1
       @required.regs = ([] for registration in @card.registrations)
+      @invoices = (for registration in @card.registrations
+        invoices.filter(({season, sent}) -> season is registration.season and sent?).sort (a, b) -> a.sent.diff b.sent)
+
       # get dance classes
       async.map @dancers, (dancer, next) ->
         dancer.getClasses next

@@ -94,6 +94,13 @@ class InvoiceController
     @withVat = false
     @selectedSchool = 0
 
+    # list of actions used to listCtrl
+    @_actions =
+      print: label: 'btn.print', icon: 'print', action: @print
+      markAsSent: label: 'btn.markAsSent', icon: 'send', action: @markAsSent
+      cancel: label: 'btn.cancel', icon: 'ban-circle', action: @cancel
+      save: label: 'btn.save', icon: 'floppy-disk', action: @save
+
     @dateOpts =
       value: null
       open: false
@@ -112,10 +119,7 @@ class InvoiceController
     # redirect to invoice list if needded
     return @back() unless stateParams.id?
 
-    @scope.listCtrl.actions = [
-      {label: 'btn.markAsSent', icon: 'send', action: @markAsSent}
-      {label: 'btn.print', icon: 'print', action: @print}
-    ]
+    @scope.listCtrl.actions = [@_actions.markAsSent, @_actions.print]
 
     # load invoice to display values
     Invoice.find stateParams.id, (err, invoice) =>
@@ -197,6 +201,9 @@ class InvoiceController
         # reset everything to reflect read-only state
         @_onLoad @invoice
 
+  # @returns [String] formated date for printing
+  displayDate: (date) => date?.format @i18n.formats.invoice
+
   # Invoked when date change in the date picker
   # Updates the invoice's' date
   setDate: =>
@@ -240,9 +247,6 @@ class InvoiceController
           @_preview.invoice = @invoice
           @_preview.on 'closed', => @_preview = null
 
-  # @returns [String] formated date for printing
-  displayDate: => @invoice?.date.format @i18n.formats.invoice
-
   # Add a new item to the current invoice
   addItem: =>
     return if @isReadOnly
@@ -281,7 +285,7 @@ class InvoiceController
     # reset changes and displays everything
     @_setChanged false
     # remove all buttons except print if relevant
-    @scope.listCtrl?.actions.splice 0, @scope.listCtrl?.actions.length - 1 if @isReadOnly
+    @scope.listCtrl?.actions = [@_actions.print] if @isReadOnly
     @scope.$apply() unless @scope.$$phase
 
   # **private**
@@ -289,15 +293,14 @@ class InvoiceController
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
+    next = [@_actions.markAsSent, @_actions.print]
     if changed
-      if @invoice._v > 0
-        # can cancel only if already saved once
-        @scope.listCtrl.actions.splice 0, 0, {label: 'btn.cancel', icon: 'ban-circle', action: @cancel}
-      @scope.listCtrl.actions.splice 0, 0, {label: 'btn.save', icon: 'floppy-disk', action: @save}
-    else if @hasChanged
-      # remove save and cancel
-      @scope.listCtrl.actions.splice 0, if @invoice._v > 0 then 2 else 1
+      # can cancel only if already saved once
+      next.unshift @_actions.cancel if @invoice._v > 0
+      next.unshift @_actions.save
     @hasChanged = changed
+    # only update actions if they have changed
+    @scope.listCtrl?.actions = next unless _.isEqual next, @scope.listCtrl?.actions
 
   # **private**
   # Change handler: check if any displayed model has changed from its previous values
