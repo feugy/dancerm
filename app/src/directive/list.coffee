@@ -1,10 +1,10 @@
 _ = require 'lodash'
 
 class ListDirective
-                
+
   # Controller dependencies
   @$inject: ['$scope', '$element', '$filter']
-  
+
   # JQuery enriched element for directive root
   $el: null
 
@@ -12,15 +12,14 @@ class ListDirective
   filter: null
 
   # list of displayed columns, containing an object with title and attr.
-  # title is an i18n path and attr, either a dancer's attribute or a function (that take rendered dancer as parameter)
+  # title is an i18n path and attr, either a model's attribute or a function (that take rendered model as parameter)
   columns: []
 
   # Displayed list
   list: []
 
-  # **private**
   # Store current sort attribute
-  _currentSort: null
+  currentSort: null
 
   # **private**
   # Store if the current sort is descendant or not
@@ -31,9 +30,9 @@ class ListDirective
   _waiting: 0
 
   # **private**
-  # Displayed values, stored for sorting. Dancer id is used as key
+  # Displayed values, stored for sorting. Model id is used as key
   _displayedValues: {}
-  
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -50,16 +49,14 @@ class ListDirective
       scope.$watch 'ctrl.columns', @_onRedrawList
       scope.$watchCollection 'ctrl.list', @_onRedrawList
     ]
-    # default sort is last name
-    @_currentSort = 'lastname'
-    
+
     # free listeners
-    scope.$on '$destroy', => 
+    scope.$on '$destroy', =>
       unwatch?() for unwatch in unwatchs
       @$el.off()
 
   # **private**
-  # Entierly redraw the dancer's list
+  # Entierly redraw the model's list
   _onRedrawList: (event) =>
     return unless @columns? and @list? and not @_inProgress
     @_inProgress = true
@@ -67,7 +64,7 @@ class ListDirective
     body = $('<tbody class="hideable">').appendTo @$el
     @_waiting = 0
     @_displayedValues = {}
-    body.append (@_renderRow dancer, i for dancer, i in @list).join '' 
+    body.append (@_renderRow model, i for model, i in @list).join ''
     @_callbackEnded()
 
   # **private**
@@ -75,7 +72,7 @@ class ListDirective
   _renderHeader: =>
     html = ['<thead><tr>']
     for {title, name} in @columns
-      if name is @_currentSort
+      if name is @currentSort
         if @_isDesc
           html.push '<th data-desc'
         else
@@ -88,63 +85,66 @@ class ListDirective
     html.join ''
 
   # **private**
-  # Creates line for a single dancer
+  # Creates line for a single model
   #
-  # @param dancer [Dancer] concerned dancer
+  # @param model [Persisted] concerned model
   # @return the rendered string
-  _renderRow: (dancer, idx) =>
+  _renderRow: (model, idx) =>
     html = ['<tr data-row="', idx, '">']
-    @_displayedValues[dancer.id] = {_idx: idx}
+    @_displayedValues[model.id] = {_idx: idx}
     @columns.forEach (column, i) =>
       value = ''
       if _.isFunction column.attr
         if column.attr.length is 2
           # model and callback: put an id to cell, and then change the value when available
-          id = dancer.id + Math.floor Math.random()*100000
+          id = model.id + Math.floor Math.random()*100000
           @_waiting++
-          column.attr dancer, (err, value) =>
+          column.attr model, (err, value) =>
             @_waiting--
             if err?
-              console.error "failed to resolve #{column.name} of dancer #{dancer.id}: ", err
+              console.error "failed to resolve #{column.name} of model #{model.id}: ", err
             else
-              @$el.find("##{id}").replaceWith @_renderCell dancer, column.name, i, value, true
+              @$el.find("##{id}").replaceWith @_renderCell model, column.name, i, value, true
             @_callbackEnded()
           return html.push "<td id='", id, "'></td>"
         else
           # just model
-          value = column.attr dancer
+          value = column.attr model
       else
-        value = dancer[column.attr or column.name]
-      
-      html.push @_renderCell dancer, column.name, i, value, column.attr?
+        value = model[column.attr or column.name]
+
+      html.push @_renderCell model, column.name, i, value, column.attr?
     html.push '</tr>'
     html.join ''
 
   # **private**
   # Render a single cell value
   #
-  # @param dancer [Dancer] concerned dancer
+  # @param model [Persisted] concerned model
   # @param attr [String] attribute for which value is rendered
   # @param col [Number] concerned column index wihin columns array
   # @param value [Any] rendered value
   # @param store [Boolean] store value for sort
   # @return the rendered string
-  _renderCell: (dancer, attr, col, value, store) =>
+  _renderCell: (model, attr, col, value, store) =>
     html = ['<td data-col="', col, '" ']
     if store
       # special case for birth : do not store displayed value
-      stored = if attr is 'birth' then dancer.birth?.unix() or 0 else value 
-      @_displayedValues[dancer.id][attr] = value
+      stored = if attr is 'birth' then model.birth?.unix() or 0 else value
+      @_displayedValues[model.id][attr] = value
+
     switch @columns[col].name
-      when 'due' 
-        if value > 0 
+      when 'due'
+        if value > 0
           html.push 'class="text-error"><span>', value, @filter('i18n')('lbl.currency'), '</span>'
         else
           html.push '><i class="glyphicon glyphicon-ok"/>'
-      when 'certified' 
+      when 'certified'
         html.push '><i class="glyphicon glyphicon-'
         html.push if value then 'ok' else 'exclamation-sign'
         html.push '"/>'
+      when 'sent'
+        if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'
       else
         html.push '>', value
     html.push '</td>'
@@ -161,17 +161,17 @@ class ListDirective
     row = target.closest('tr').data 'row'
     if col? and row?
       @onClick?(model: @list[row], column: @columns[col].name)
-    else 
+    else
       header = target.closest 'th'
       sort = header.data 'attr'
       isDesc = header.data('desc')?
       if sort?
         # just reverse sort order
-        if @_currentSort is sort
+        if @currentSort is sort
           @_isDesc = not isDesc
           @list.reverse()
         else
-          @_currentSort = sort
+          @currentSort = sort
           @_isDesc = true
           @_sortList sort
         @_onRedrawList()
@@ -198,8 +198,8 @@ class ListDirective
   # Enable sort when waiting is finished
   _callbackEnded: =>
     return unless @_waiting is 0
-    @_inProgress = false 
-      
+    @_inProgress = false
+
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->
   app.directive 'list', ->
@@ -214,10 +214,12 @@ module.exports = (app) ->
     controllerAs: 'ctrl'
     bindToController: true
     # parent scope binding.
-    scope: 
-      # displayed dancer list
+    scope:
+      # displayed model list
       list: '=src'
       # displayed columns
       columns: '='
-      # click handler, invoked with concerned dancer as 'model' parameter, and column as 'column' parameter
+      # current sort column name
+      currentSort: '='
+      # click handler, invoked with concerned model as 'model' parameter, and column as 'column' parameter
       onClick: '&?'

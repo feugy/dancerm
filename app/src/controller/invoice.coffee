@@ -9,7 +9,7 @@ InvoiceItem = require "../#{if isPrintCtx then 'script/' else ''}model/invoice_i
 
 # Simple validation function that check if a given value is defined and acceptable
 isInvalidString = (value) -> not(value?) or value.trim?()?.length is 0
-isInvalidDate = (value) -> not(value?) or not value.isValid()
+isInvalidDate = (value) -> not(value?) or not moment(value).isValid()
 
 # Displays and edits a given invoice
 # Also usable as print controller
@@ -109,7 +109,7 @@ class InvoiceController
     # list of actions used to listCtrl
     @_actions =
       print: label: 'btn.print', icon: 'print', action: @print
-      markAsSent: label: 'btn.markAsSent', icon: 'send', action: @markAsSent
+      markAsSent: label: 'btn.markAsSent', icon: 'inbox', action: @markAsSent
       cancel: label: 'btn.cancel', icon: 'ban-circle', action: @cancel
       save: label: 'btn.save', icon: 'floppy-disk', action: @save
 
@@ -130,7 +130,7 @@ class InvoiceController
     # redirect to invoice list if needded
     return @back() unless stateParams.id?
 
-    @scope.listCtrl.actions = [@_actions.markAsSent, @_actions.print]
+    @scope.listCtrl.actions = [@_actions.markAsSent]
 
     # load invoice to display values
     Invoice.find stateParams.id, (err, invoice) =>
@@ -173,7 +173,7 @@ class InvoiceController
       Object.assign @invoice, @_previous
       @_previous = @invoice.toJSON()
       @_setChanged false
-      @scope.$apply()
+      @scope.$apply() unless @scope.$$phase
 
   # Save the current values inside storage
   #
@@ -331,7 +331,7 @@ class InvoiceController
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
-    next = [@_actions.markAsSent, @_actions.print]
+    next = [@_actions.markAsSent]
     if changed
       # can cancel only if already saved once
       next.unshift @_actions.cancel if @invoice._v > 0
@@ -359,7 +359,7 @@ class InvoiceController
           matched = newRef.match(invoiceRefExtract) or []
           Invoice.getNextRef +matched[1] or moment().year(), +matched[2] or moment().month() + 1, (err, next) =>
             @suggestedRef = next unless err?
-            @scope.$apply()
+            @scope.$apply() unless @scope.$$phase
 
   # **private**
   # Check required fields when saving invoice
@@ -377,7 +377,7 @@ class InvoiceController
     for item, i in @invoice?.items or []
       @required.items[i].push 'name' if isInvalidString item.name
     # returns true if invoice or any of its item is missing a field
-    @required.invoice.length isnt 0 or @required.items.some i -> i.length isnt 0
+    @required.invoice.length isnt 0 or @required.items.some (item) -> item.length isnt 0
 
 # Export as print controller for print preview, or classical node export
 unless isPrintCtx

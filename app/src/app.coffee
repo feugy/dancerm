@@ -5,6 +5,7 @@ ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
 CardListService = require '../script/service/card_list'
+InvoiceListService = require '../script/service/invoice_list'
 
 StatsCtrl = require '../script/controller/stats'
 SettingsCtrl = require '../script/controller/settings'
@@ -12,7 +13,6 @@ ListLayoutCtrl = require '../script/controller/list_layout'
 CardCtrl = require '../script/controller/card'
 PlanningCtrl = require '../script/controller/planning'
 ExpandedListCtrl = require '../script/controller/expanded_list'
-InvoiceListCtrl = require '../script/controller/invoice_list'
 InvoiceCtrl = require '../script/controller/invoice'
 
 console.log "running with angular v#{angular.version.full}"
@@ -30,7 +30,6 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compi
   states.state 'stats', _.extend {url: '/stats'}, StatsCtrl.declaration
   states.state 'settings', _.extend {url: '/settings'}, SettingsCtrl.declaration
   states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
-  states.state 'invoices', _.extend {url: '/invoices-list'}, InvoiceListCtrl.declaration
 
   states.state 'list.card',
     url: '/card/:id'
@@ -57,6 +56,7 @@ app.service 'export', ExportService
 app.service 'import', ImportService
 app.service 'dialog', DialogService
 app.service 'cardList', CardListService
+app.service 'invoiceList', InvoiceListService
 
 # at startup, check that dump path is defined
 app.run ['$location', (location) ->

@@ -18,7 +18,7 @@ module.exports =
     ignore: 'Ignorer'
     invoice: 'Factures'
     import: 'Importer des données'
-    markAsSent: 'Envoyer'
+    markAsSent: 'Archiver'
     newDancer: 'Inscription'
     no: 'Non'
     ok: 'Ok'
@@ -80,6 +80,7 @@ module.exports =
     city: 'Ville'
     classTooltip: '<%= kind %> (<%= level %>) <%= start %>~<%= end %>'
     currency: ' €'
+    customer: 'Client'
     danceClasses: 'Cours'
     danceClassesFor: 'Cours pour'
     day: 'Jour'
@@ -113,10 +114,10 @@ module.exports =
     quantity: 'Qté.'
     rate: 'Tarif'
     receipt: 'Encaissement'
+    ref: 'Réf.'
     registered: 'Intitulé du cours'
     registration: 'Inscription'
     Sat: 'Samedi'
-    selectedSchool: 'Ecole de'
     schools: [
       owner: 'Diana'
       name: 'École de Danse P.M. Ribas'
@@ -136,6 +137,8 @@ module.exports =
       siret: 'Siret 499 909 935 00011'
       vat: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
     ]
+    selectedSchool: 'Ecole de'
+    sent: 'Arch.'
     street: 'Voie'
     Sun: 'Dimanche'
     sum: 'Total'
@@ -166,14 +169,16 @@ module.exports =
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
     cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
-    confirmMarkAsSent: "Une fois envoyée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
+    confirmMarkAsSent: "Une fois archivée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
     editRegistration: "Modifier les cours du danseur pour l'année : "
     emptyDancerList: 'Aucun danseur pour ces critères'
+    emptyInvoiceList: 'Aucune facture pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : <%= emails %>"
     exporting: 'Export en cours, veuillez patienter...'
+    invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
     registrationSeason: "Choissiez l'année et le(s) cours : "

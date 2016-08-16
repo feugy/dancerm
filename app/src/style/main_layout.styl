@@ -81,6 +81,14 @@ body
   .input-group input::-webkit-input-placeholder
     font-style italic
 
+  .search-toggle
+    display flex
+    justify-content center
+    margin-top .5em
+
+    .btn:focus
+      box-shadow none
+
   .list-length
     color headingColor
     text-align center
@@ -111,13 +119,6 @@ body
     td
       word-break break-word
 
-    // we MUST have fixed width columns
-    for width, i in 30 35 15 20
-      td:nth-child({i+1})
-        width unit(width, '%')
-      th:nth-child({i+1})
-        width unit((width - 2), '%')
-
     tbody
       // take all vertical space
       flex 1
@@ -147,6 +148,24 @@ body
       font-weight bold
     tr:nth-child(even)
       background mainBackground
+
+  .table.dancers
+
+    // we MUST have fixed width columns
+    for width, i in 30 35 15 20
+      td:nth-child({i+1})
+        width unit(width, '%')
+      th:nth-child({i+1})
+        width unit((width - 2), '%')
+
+  .table.invoices
+
+    // we MUST have fixed width columns
+    for width, i in 30 55 15
+      td:nth-child({i+1})
+        width unit(width, '%')
+      th:nth-child({i+1})
+        width unit((width - 2), '%')
 
 .column-and-main > .column.expanded
 
