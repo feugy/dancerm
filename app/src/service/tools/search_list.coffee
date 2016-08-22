@@ -67,6 +67,7 @@ module.exports = class SearchList extends EventEmitter
     localStorage[@_getStorageKey()] = JSON.stringify @criteria if localStorage?
     # depending on criterias
     conditions = @_parseCriteria()
+    console.log "criteria are", conditions
     # clear list content, without reaffecting it
     return @_displayResults [] if _.isEmpty(conditions) and not allowEmpty
     @_searchPending = true
