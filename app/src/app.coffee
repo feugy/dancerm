@@ -14,6 +14,7 @@ CardCtrl = require '../script/controller/card'
 PlanningCtrl = require '../script/controller/planning'
 ExpandedListCtrl = require '../script/controller/expanded_list'
 InvoiceCtrl = require '../script/controller/invoice'
+LessonsCtrl = require '../script/controller/lessons'
 
 console.log "running with angular v#{angular.version.full}"
 
@@ -30,6 +31,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compi
   states.state 'stats', _.extend {url: '/stats'}, StatsCtrl.declaration
   states.state 'settings', _.extend {url: '/settings'}, SettingsCtrl.declaration
   states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
+  states.state 'lessons', _.extend {url: '/lessons'}, LessonsCtrl.declaration
 
   states.state 'list.card',
     url: '/card/:id'

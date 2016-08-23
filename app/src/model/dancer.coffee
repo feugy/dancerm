@@ -5,6 +5,7 @@ Persisted = require './tools/persisted'
 Address = require './address'
 DanceClass = require './dance_class'
 Card = require './card'
+Lesson = require './lesson'
 
 # Dancers keeps information relative to person attended to dance class, and card
 module.exports = class Dancer extends Persisted
@@ -84,6 +85,9 @@ module.exports = class Dancer extends Persisted
   # array of dance classes this dancer is attended to
   danceClassIds: []
 
+  # array of lesson taken
+  lessons: []
+
   # Creates a dancer from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
   #
@@ -102,6 +106,14 @@ module.exports = class Dancer extends Persisted
       addressId: null
       cardId: null
       danceClassIds: []
+      lessons: []
+    # enrich object attributes
+    raw.lessons = (for rawLesson in raw.lessons
+      if rawLesson?.constructor?.name isnt 'Lesson'
+        new Lesson rawLesson
+      else
+        rawLesson
+    )
     # fill attributes
     super(raw)
     # default card value

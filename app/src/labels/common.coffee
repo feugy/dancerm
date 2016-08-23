@@ -18,6 +18,7 @@ module.exports =
     ignore: 'Ignorer'
     invoice: 'Factures'
     import: 'Importer des données'
+    lessons: 'Cours particuliers'
     markAsSent: 'Archiver'
     newDancer: 'Inscription'
     no: 'Non'

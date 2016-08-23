@@ -79,7 +79,7 @@ getStore = (name, write, done) ->
 
   # initialize database
   # v1 includes stores 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'
-  # v2 adds store 'Invoice''
+  # v2 adds store 'Invoice'
   request = indexedDB.open path, 2
 
   request.onsuccess = ->
