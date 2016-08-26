@@ -190,6 +190,7 @@ module.exports =
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la fiche ?"
     requiredInvoiceFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la facture ?"
     resolveConflict: "Pour résource le conflit, sélectionnez les valeurs à conserver avant d'enregistrer. Vous pouvez aussi ignorer le conflit et passer au suivant, ou annuler pour stopper la résolution."
+    selectInvoice: 'Merci de selectionner une facture depuis la recherche, ou une fiche danseur'
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
@@ -340,8 +341,8 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     generalInfo: 'Information'
     import: 'Importation'
     invoice: 'Facture N°{{ref}}'
-    invoiceDisplay: 'Facture archivée N°{{ref}}'
-    invoiceEdition: 'Edition de la facture N°{{ref}}'
+    invoiceDisplay: '{{owner}} - Facture archivée N°{{ref}}'
+    invoiceEdition: '{{owner}} - Edition de la facture N°{{ref}}'
     invoiceError: 'Erreur de sauvegarde'
     interface: 'Interface'
     knownBy: 'Connu par'

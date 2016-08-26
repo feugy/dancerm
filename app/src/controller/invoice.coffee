@@ -16,7 +16,7 @@ isInvalidDate = (value) -> not(value?) or not moment(value).isValid()
 class InvoiceController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$state', '$filter', '$stateParams'] else []
+  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$state', '$filter', '$stateParams', 'invoiceList'] else []
 
   # Route declaration
   @declaration:
@@ -41,6 +41,9 @@ class InvoiceController
 
   # Angular's filters factory
   filter: null
+
+  # Service that list invoices
+  invoiceList: null
 
   # displayed invoice
   invoice: null
@@ -93,7 +96,7 @@ class InvoiceController
   # @param filter [Function] Angular's filter factory
   # @param state [Object] Angular state provider
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @dialog, @state, @filter, stateParams) ->
+  constructor: (@scope, @rootScope, @dialog, @state, @filter, stateParams, @invoiceList) ->
     @invoice = null
     @hasChanged = false
     @_modalOpened = false
@@ -204,6 +207,7 @@ class InvoiceController
         ).result.then done
       @_previous = @invoice.toJSON()
       console.log "invoice saved"
+      @invoiceList.performSearch()
       @_onChange()
       @required =
         invoice: []
@@ -229,13 +233,15 @@ class InvoiceController
         @_onLoad @invoice
 
   # @returns [String] formated date for printing
-  displayDate: (date) => date?.format @i18n.formats.invoice
+  displayDate: (date) =>  date?.format? @i18n.formats.invoice
 
   # Invoked when date change in the date picker
   # Updates the invoice's' date
   setDate: =>
     return if @isReadOnly
-    @invoice?.changeDate moment @dateOpts.value
+    newDate = moment @dateOpts.value
+    return unless newDate.isValid()
+    @invoice?.changeDate newDate
     @dueDate = @invoice?.dueDate
     @_onChange 'date'
 

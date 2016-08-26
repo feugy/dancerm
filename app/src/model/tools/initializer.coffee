@@ -191,6 +191,9 @@ plannings = [{
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'formation compétition filles', start:'Thu 18:00', end:'Thu 19:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '14e627933bdf'}
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs latine', start:'Tue 20:00', end:'Tue 22:00', teacher:'Anthony', hall:'Croix-Luizet', _id: '6901b184f50f'}
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs standard', start:'Thu 20:30', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '1ca4038625aa'}
+
+    {kind:'Danse sportive', color:'color8', level:'1', start:'Fri 18:00', end:'Fri 19:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: '999e81618dd1'}
+    {kind:'Danse sportive', color:'color8', level:'2', start:'Fri 19:00', end:'Fri 20:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: 'a354b697168d'}
   ]
 }]
 

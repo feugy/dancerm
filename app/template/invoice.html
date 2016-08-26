@@ -1,11 +1,14 @@
 <div class="invoice">
-  <article class="focusable invoice-title">
-    <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:ctrl.invoice} }}</h2>
+  <article class="focusable invoice-title" data-ng-if="!ctrl.invoice">
+    <h2 class="titleé">{{'msg.selectInvoice'|i18n}}</h2>
+  </article>
+  <article class="focusable invoice-title" data-ng-if="ctrl.invoice">
+    <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:{ref: ctrl.invoice.ref, owner: ctrl.i18n.lbl.schools[ctrl.invoice.selectedSchool].owner} } }}</h2>
     <div class="with-vat" data-ng-if="!ctrl.isReadOnly">
       <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
     </div>
   </article>
-  <div class="preview">
+  <div class="preview" data-ng-if="ctrl.invoice">
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
