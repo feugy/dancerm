@@ -9,35 +9,24 @@
 
   .invoice-title
     border-top 2px solid headingColor
-    margin 10px 0 0
     padding 0 1em
     position relative
+    margin 1em 0
 
     > h2
-      align-items center
       background mainBackground
       border none
-      display inline-flex
-      font-size fontSize*1.6
+      display inline
+      font-size 20.8px
       left 25px
       line-height 10px
       padding 0 5px
       position relative
-      white-space nowrap
-      top -1em
-
-      > input
-        flex-grow 1
-        font-size 1em
-        min-width 0
-        padding .1em
+      top -10px
 
     label
       margin 0 0.5em 0 0
       vertical-align -1px
-
-    .suggested
-      color warningColor
 
     input[type=checkbox]
       margin-right .5em
@@ -57,7 +46,18 @@
       font-size printFontSize * 1.2
       font-weight bold
       margin 1.5em
+      position relative
       text-align center
+
+      > input
+        font-size 1em
+        min-width 0
+
+      .suggested
+        color warningColor
+        position absolute
+        top 0.5em
+        margin-left 0.5em
 
     .items
     .subtotal

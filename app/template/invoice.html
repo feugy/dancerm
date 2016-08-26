@@ -1,18 +1,9 @@
 <div class="invoice">
   <article class="focusable invoice-title">
-    <h2 class="title" data-ng-if="!ctrl.isReadOnly">
-      {{'ttl.invoice'|i18n:{args:{ref:''} } }}
-      <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-class="ctrl.isRequired('ref')" data-ng-change="ctrl._onChange('ref')"/>
-    </h2>
-    <span class="row" data-ng-if="!ctrl.isReadOnly">
-      <span class="col-md-2 with-vat">
-        <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
-      </span>
-      <span class="col-md-7 suggested">
-        <span data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
-      </span>
-    </span>
-    <h2 class="title" data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h2>
+    <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:ctrl.invoice} }}</h2>
+    <div class="with-vat" data-ng-if="!ctrl.isReadOnly">
+      <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
+    </div>
   </article>
   <div class="preview">
     <header>
@@ -61,7 +52,12 @@
     <div class="date" data-ng-if="ctrl.isReadOnly">
       <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>
     </div>
-    <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
+    <h1 data-ng-if="!ctrl.isReadOnly">
+      {{'ttl.invoice'|i18n:{args:{ref:''} } }}
+      <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-class="ctrl.isRequired('ref')" data-ng-change="ctrl._onChange('ref')"/>
+      <span class="suggested" data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
+    </h1>
+    <h1 data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h1>
     <div class="items">
       <div class="header-line">
         <span class="name">{{::'lbl.designation'|i18n}}</span>

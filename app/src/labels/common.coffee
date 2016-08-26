@@ -162,7 +162,7 @@ module.exports =
     vatValue: 'TVA'
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
-    withVat: 'Avec TVA'
+    withVat: 'Appliquer la TVA'
     zipcode: 'Code postal'
 
   # long messages with html
@@ -343,6 +343,8 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     generalInfo: 'Information'
     import: 'Importation'
     invoice: 'Facture N°{{ref}}'
+    invoiceDisplay: 'Facture archivée N°{{ref}}'
+    invoiceEdition: 'Edition de la facture N°{{ref}}'
     invoiceError: 'Erreur de sauvegarde'
     interface: 'Interface'
     knownBy: 'Connu par'
