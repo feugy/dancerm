@@ -8,12 +8,12 @@
       <header>
         <img src="../style/img/ribas.png" class="logo"/>
         <div class="school">
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
+          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
         </div>
         <div class="customer">
           <p>{{::ctrl.invoice.customer.name}}</p>

@@ -60,9 +60,6 @@ class InvoiceController
   # apply VAT or not
   withVat: false
 
-  # copy of invoice's selected school, to allow default value
-  selectedSchool: 0
-
   # Option used to configure date selection popup
   dateOpts:
     value: null
@@ -105,7 +102,6 @@ class InvoiceController
     @dueDate = null
     @suggestedRef = null
     @withVat = false
-    @selectedSchool = 0
     @required =
       invoice: []
       items: []
@@ -243,14 +239,6 @@ class InvoiceController
     @dueDate = @invoice?.dueDate
     @_onChange 'date'
 
-  # Select a given school
-  #
-  # @param value [Number] new selected school
-  selectSchool: (value) =>
-    @invoice?.selectedSchool = value
-    @selectedSchool = value
-    @_onChange 'selectedSchool'
-
   # Opens the date selection popup
   #
   # @param event [Event] click event, prevented.
@@ -318,7 +306,6 @@ class InvoiceController
     @dueDate = @invoice?.dueDate
     @isReadOnly = @invoice?.sent?
     @dateOpts.value = @invoice?.date.valueOf()
-    @selectedSchool = @invoice?.selectedSchool or 0
     @required =
       invoice: []
       items: ([] for item in @invoice.items)
@@ -359,7 +346,7 @@ class InvoiceController
       @suggestedRef = null
       newRef = @invoice.ref
       return if @_previous.ref is newRef
-      Invoice.isRefValid newRef, (err, isValid) =>
+      Invoice.isRefValid newRef, @invoice, (err, isValid) =>
         unless isValid
           # in cas of invalidity, get the next ref for expected month
           matched = newRef.match(invoiceRefExtract) or []
@@ -368,7 +355,7 @@ class InvoiceController
           matched = @_previous.ref?.match(invoiceRefExtract) or []
           currYear = +matched[1]
           currMonth = +matched[2]
-          Invoice.getNextRef year, month, (err, next) =>
+          Invoice.getNextRef year, month, @invoice.selectedSchool, (err, next) =>
             unless err?
               # reuse previous ref if keeping same year and month
               @suggestedRef = if year is currYear and month is currMonth then @_previous.ref else next

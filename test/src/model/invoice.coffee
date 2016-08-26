@@ -165,24 +165,27 @@ describe 'Invoice  model tests', ->
 
   describe 'given a set of existing references', () ->
 
+    school1 = 0
+    school2 = 1
     refs = [
-      '2016-08-001'
-      '2016-08-002'
-      '2016-07-001'
-      '2016-07-003'
-      '2016-07-010'
-      '2016-07-1000'
-      'FR-2016-COL-06-JAZZ-10 custom'
-      '2016-05-unparseable'
-      '2016-05-89-90'
-      '2016-unparseable-90'
+      {ref: '2016-08-001', selectedSchool: school1}
+      {ref: '2016-08-001', selectedSchool: school2}
+      {ref: '2016-08-002', selectedSchool: school1}
+      {ref: '2016-07-001', selectedSchool: school1}
+      {ref: '2016-07-003', selectedSchool: school1}
+      {ref: '2016-07-010', selectedSchool: school1}
+      {ref: '2016-07-1000', selectedSchool: school1}
+      {ref: 'FR-2016-COL-06-JAZZ-10 custom', selectedSchool: school1}
+      {ref: '2016-05-unparseable', selectedSchool: school1}
+      {ref: '2016-05-89-90', selectedSchool: school1}
+      {ref: '2016-unparseable-90', selectedSchool: school1}
     ]
 
     before (done) ->
       Invoice.drop (err) ->
         return done err if err?
-        async.each refs, ((ref, next) ->
-          invoice = new Invoice(ref: ref)
+        async.each refs, ((raw, next) ->
+          invoice = new Invoice(raw)
           # disabled ref checks for test invoices
           invoice.save = Persisted::save
           invoice.save next
@@ -191,92 +194,106 @@ describe 'Invoice  model tests', ->
     after (done) -> Invoice.drop done
 
     it 'should check that null refs are invalid', (done) ->
-      Invoice.isRefValid null, (err, isValid) ->
+      Invoice.isRefValid null, {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that undefined refs are invalid', (done) ->
-      Invoice.isRefValid undefined, (err, isValid) ->
+      Invoice.isRefValid undefined, {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that numerical refs are invalid', (done) ->
-      Invoice.isRefValid 18, (err, isValid) ->
+      Invoice.isRefValid 18, {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that refs without 4-digit year are invalid', (done) ->
-      Invoice.isRefValid '16-05-001', (err, isValid) ->
+      Invoice.isRefValid '16-05-001', {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that refs without 2-digit month are invalid', (done) ->
-      Invoice.isRefValid '2016-5-001', (err, isValid) ->
+      Invoice.isRefValid '2016-5-001', {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that refs without rank month are invalid', (done) ->
-      Invoice.isRefValid '2016-01', (err, isValid) ->
+      Invoice.isRefValid '2016-01', {}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should check that existing refs are invalid', (done) ->
-      Invoice.isRefValid '2016-07-001', (err, isValid) ->
+      Invoice.isRefValid '2016-07-001', {ref:'2016-08-001', selectedSchool: school1}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.false
         done()
 
     it 'should accept valid references formats', (done) ->
-      Invoice.isRefValid '2017-07-001', (err, isValid) ->
+      Invoice.isRefValid '2017-07-001', {ref:'2016-08-001', selectedSchool: school1}, (err, isValid) ->
         return done err if err?
         expect(isValid).to.be.true
         done()
 
     it 'should get reference for an empty month', (done) ->
-      Invoice.getNextRef 2016, 9, (err, ref) ->
+      Invoice.getNextRef 2016, 9, school1, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-09-001'
         done()
 
     it 'should get next reference for month with existing refs', (done) ->
-      Invoice.getNextRef 2016, 8, (err, ref) ->
+      Invoice.getNextRef 2016, 8, school1, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-08-003'
         done()
 
+    it 'should get next reference for month with existing refs for a different school', (done) ->
+      Invoice.getNextRef 2016, 8, school2, (err, ref) ->
+        return done err if err?
+        expect(ref).to.equals '2016-08-002'
+        done()
+
     it 'should get next reference for month with more than 999 refs', (done) ->
-      Invoice.getNextRef 2016, 7, (err, ref) ->
+      Invoice.getNextRef 2016, 7, school1, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-07-1001'
         done()
 
     it 'should ignore extra words when getting next reference', (done) ->
-      Invoice.getNextRef 2016, 6, (err, ref) ->
+      Invoice.getNextRef 2016, 6, school1, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-06-011'
         done()
 
     it 'should ignore unparseable refs when getting next reference', (done) ->
-      Invoice.getNextRef 2016, 5, (err, ref) ->
+      Invoice.getNextRef 2016, 5, school1, (err, ref) ->
         return done err if err?
         expect(ref).to.equals '2016-05-090'
         done()
 
     it 'should check ref validity when saving new invoice', (done) ->
-      saved = new Invoice ref: '2016-08-001'
+      saved = new Invoice ref: '2016-08-001', selectedSchool: school1
       saved.save (err) ->
         expect(err).to.exist
         expect(err).to.have.property('message').that.includes 'misformated or already used'
         done()
 
     it 'should can save the with the same ref', (done) ->
-      saved = new Invoice ref: '2016-08-003'
+      saved = new Invoice ref: '2016-08-003', selectedSchool: school1
+      saved.save (err) ->
+        return done err if err?
+        saved.save (err) ->
+          expect(err).not.to.exist
+          done()
+
+    it 'should can reuse same ref if school is different', (done) ->
+      saved = new Invoice ref: '2016-08-002', selectedSchool: school2
       saved.save (err) ->
         return done err if err?
         saved.save (err) ->

@@ -5,15 +5,6 @@
       <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-class="ctrl.isRequired('ref')" data-ng-change="ctrl._onChange('ref')"/>
     </h2>
     <span class="row" data-ng-if="!ctrl.isReadOnly">
-      <span class="col-md-3 selected-school">
-        <label>{{::'lbl.selectedSchool'|i18n:{sep:true} }}</label>
-        <div class="btn-group" data-uib-dropdown keyboard-nav>
-          <button class="btn dropdown-toggle" uib-dropdown-toggle>{{'lbl.schools[' + ctrl.selectedSchool + '].owner'|i18n}}<span class="caret"></span></button>
-          <ul class="dropdown-menu">
-            <li data-ng-repeat="school in ::ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.selectSchool($index)">{{::school.owner}}</a></li>
-          </ul>
-        </div>
-      </span>
       <span class="col-md-2 with-vat">
         <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
       </span>
@@ -27,12 +18,12 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
-        <p>{{'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
+        <p>{{'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
       </div>
       <div class="customer" data-ng-if="!ctrl.isReadOnly">
         <p>

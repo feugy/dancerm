@@ -42,6 +42,7 @@ class RegistrationDirective
   # @param rootScope [Object] Angular root scope
   constructor: (@scope, @element, @dialog, @filter, rootScope) ->
     @_updateRendering()
+    @schools = i18n.lbl.schools
     unwatches = []
     unwatches.push @scope.$on 'dance-classes-changed', (event, dancer) =>
       @_updateRendering() if dancer in @dancers
@@ -168,7 +169,7 @@ module.exports = (app) ->
       onRemove: '&?'
       # used to propagate model modifications, invoked with $field as parameter
       onChange: '&?'
-      # invoked when editing invoice for that registration
+      # invoked when editing invoice for that registration and given a selected school
       onEditInvoice: '&?'
       # invoked when displaying a sent invoice for that registration
       onDisplayInvoice: '&?'

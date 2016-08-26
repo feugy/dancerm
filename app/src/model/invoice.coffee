@@ -13,7 +13,7 @@ module.exports = class Invoice extends Persisted
   @_transient = Persisted._transient.concat ['total', 'dutyFreeTotal', 'taxTotal']
 
   # **static**
-  # Check if a given reference match the expected format, and isn't already used
+  # Check if a given reference match the expected format, and isn't already used (for a given school)
   # Specify the self parameter to check if an existing Invoice can reuse its ref
   #
   # @param ref [String] checked refernce
@@ -22,15 +22,12 @@ module.exports = class Invoice extends Persisted
   # @option done err [Error] an error object or null if no error occured
   # @option done valid [Boolean] true if reference can be used
   @isRefValid: (ref, self, done) ->
-    unless done?
-      done = self
-      self = null
     return done null, false unless ref? and invoiceRefFormat.test ref
-    @findWhere {ref: ref}, (err, [exist]) ->
-      done err, not exist? or exist.id is self?.id
+    @findWhere {ref: ref, selectedSchool: self.selectedSchool}, (err, [exist]) ->
+      done err, not exist? or exist.id is self.id
 
   # **static**
-  # Get the next free reference relative to a given date.
+  # Get the next free reference relative to a given date (for a given school).
   # Find all references of the same month and year, order by rank, and return next rank.
   # If no references of the same month and year exist, return ref N°1 for that month.
   # During reference parsing, year on 4 digits is expected to come first, then month on 2 digits,
@@ -40,11 +37,12 @@ module.exports = class Invoice extends Persisted
   #
   # @param year [Number] desired year
   # @param month [Number] desired month (1-based)
+  # @param school [Number] index of the considered school
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   # @option done ref [String] reference generated
-  @getNextRef: (year, month, done) ->
-    @findAllRaw (err, models) ->
+  @getNextRef: (year, month, school, done) ->
+    @findWhere {selectedSchool: school}, (err, models) ->
       return done err if err?
       # gets all existing references
       refs = models.map (model) -> model.ref.match(invoiceRefFormat)?.splice(1, 3) or []

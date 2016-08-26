@@ -161,11 +161,10 @@ body
   .table.invoices
 
     // we MUST have fixed width columns
-    for width, i in 30 55 15
+    for width, i in 18 26 44 12
       td:nth-child({i+1})
-        width unit(width, '%')
       th:nth-child({i+1})
-        width unit((width - 2), '%')
+        width unit(width, '%')
 
 .column-and-main > .column.expanded
 

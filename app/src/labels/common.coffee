@@ -12,7 +12,7 @@ module.exports =
     cancel: 'Annuler'
     close: 'Fermer'
     detailed: 'Liste détaillée'
-    editInvoice: 'Editer'
+    editInvoice: '{{owner}} - Editer une facture'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
     ignore: 'Ignorer'
@@ -119,6 +119,7 @@ module.exports =
     registered: 'Intitulé du cours'
     registration: 'Inscription'
     Sat: 'Samedi'
+    school: 'Ecole'
     schools: [
       owner: 'Diana'
       name: 'École de Danse P.M. Ribas'
@@ -138,7 +139,6 @@ module.exports =
       siret: 'Siret 499 909 935 00011'
       vat: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
     ]
-    selectedSchool: 'Ecole de'
     sent: 'Arch.'
     street: 'Voie'
     Sun: 'Dimanche'

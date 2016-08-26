@@ -483,12 +483,13 @@ module.exports = class CardController
   # Save the card before
   #
   # @param registration [Registration] for which invoice is edited
-  editInvoice: (registration) =>
+  # @param school [Number] index of the selected school
+  editInvoice: (registration, school) =>
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
       # search for unsent invoices related to that card
-      Invoice.findWhere {cardId: @card.id, season: registration.season, sent: null}, (err, existing) =>
+      Invoice.findWhere {cardId: @card.id, season: registration.season, selectedSchool: school, sent: null}, (err, existing) =>
         return console.error "failed to search for invoices", err if err?
         # display the first one found (should be only one at a time)
         return @state.go 'list.invoice', id: existing[0].id if existing.length
@@ -497,14 +498,14 @@ module.exports = class CardController
         invoice = new Invoice
           cardId: @card.id,
           season: registration.season
+          selectedSchool: school
         # only use current date if inside registration season. Otherwise, default September, 15th
         now = moment().year firstYear
         invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
         # generate reference
-        Invoice.getNextRef now.year(), now.month() + 1, (err, ref) =>
+        Invoice.getNextRef now.year(), now.month() + 1, school, (err, ref) =>
           return console.error "failed to get next ref for new invoice", err if err?
           invoice.ref = ref
-          # TODO add dance classes
           invoice.setCustomer @dancers[0], =>
             invoice.save (err) =>
               return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?

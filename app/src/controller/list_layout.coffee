@@ -78,6 +78,7 @@ module.exports = class ListLayoutController
       @emptyListMessage = 'msg.emptyInvoiceList'
       @listMessage = 'msg.invoiceListLength'
       @columns = [
+        {name: 'school', title: 'lbl.school', attr: (invoice) -> i18n.lbl.schools[invoice.selectedSchool].owner}
         {name: 'ref', title: 'lbl.ref'}
         {name: 'customer.name', title: 'lbl.customer', attr: (invoice) -> invoice.customer.name}
         {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}

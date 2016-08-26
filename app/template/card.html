@@ -50,7 +50,7 @@
         data-invoices="ctrl.invoices[$index]"
         data-on-remove="ctrl.removeRegistration(model)"
         data-on-print-settlement="ctrl.printSettlement(registration, selectedSchool)"
-        data-on-edit-invoice="ctrl.editInvoice(registration)"
+        data-on-edit-invoice="ctrl.editInvoice(registration, school)"
         data-on-display-invoice="ctrl.displayInvoice(invoice)"
         data-required-fields="ctrl.required.regs[$index]"
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
