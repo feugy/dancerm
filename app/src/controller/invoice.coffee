@@ -51,6 +51,9 @@ class InvoiceController
   # flag indicating wether the invoice has been changed or not
   hasChanged: false
 
+  # local copy of due date cause directive can't watch computed field changes
+  dueDate: null
+
   # in case of invalid reference, ref suggested
   suggestedRef: null
 
@@ -99,6 +102,7 @@ class InvoiceController
     @_modalOpened = false
     @_previous = {}
     @isReadOnly = false
+    @dueDate = null
     @suggestedRef = null
     @withVat = false
     @selectedSchool = 0
@@ -235,7 +239,8 @@ class InvoiceController
   # Updates the invoice's' date
   setDate: =>
     return if @isReadOnly
-    @invoice?.date = moment @dateOpts.value
+    @invoice?.changeDate moment @dateOpts.value
+    @dueDate = @invoice?.dueDate
     @_onChange 'date'
 
   # Select a given school
@@ -310,6 +315,7 @@ class InvoiceController
   # @param invoice [Invoice] Loaded invoice
   _onLoad: (invoice) =>
     @invoice = invoice
+    @dueDate = @invoice?.dueDate
     @isReadOnly = @invoice?.sent?
     @dateOpts.value = @invoice?.date.valueOf()
     @selectedSchool = @invoice?.selectedSchool or 0
@@ -357,8 +363,15 @@ class InvoiceController
         unless isValid
           # in cas of invalidity, get the next ref for expected month
           matched = newRef.match(invoiceRefExtract) or []
-          Invoice.getNextRef +matched[1] or moment().year(), +matched[2] or moment().month() + 1, (err, next) =>
-            @suggestedRef = next unless err?
+          year = +matched[1] or moment().year()
+          month = +matched[2] or moment().month() + 1
+          matched = @_previous.ref?.match(invoiceRefExtract) or []
+          currYear = +matched[1]
+          currMonth = +matched[2]
+          Invoice.getNextRef year, month, (err, next) =>
+            unless err?
+              # reuse previous ref if keeping same year and month
+              @suggestedRef = if year is currYear and month is currMonth then @_previous.ref else next
             @scope.$apply() unless @scope.$$phase
 
   # **private**

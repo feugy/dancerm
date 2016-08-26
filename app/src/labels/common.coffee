@@ -152,7 +152,7 @@ module.exports =
     type: 'Type'
     stampWidth: 'Largeur (mm)'
     stampHeight: 'Hauteur (mm)'
-    suggestedRef: 'Prochaine référence: {{ref}}'
+    suggestedRef: 'Prochaine référence valide: {{ref}}'
     unitaryPrice: 'Prix HT'
     unknown: 'Inconnu'
     version: 'v{{version}}'
@@ -210,7 +210,7 @@ module.exports =
     invoiceDate: 'Villeurbanne, le '
     invoiceDueDate: 'A régler au plus tard le '
     invoiceDelay: """En cas de retard de paiement, il sera appliqué des pénalités de {{delayFee}} % par mois de retard.
-En outre, une indemnité forfaitaire pour frais de recouvrelent de 40 € sera due.
+En outre, une indemnité forfaitaire pour frais de recouvrement de 40 € sera due.
 Pas de condition d'escompte en cas de règlement anticipé."""
     invoiceVarious: "Acceptant le réglement des sommes dues par chèques libellés à son nom et en sa qualité de membre d'un centre de gestion agréé."
     settlement: """
@@ -358,4 +358,4 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     vatSettings: 'Paramètres de TVA'
 
   # VAT rate
-  vat: 0.196
+  vat: 0.20

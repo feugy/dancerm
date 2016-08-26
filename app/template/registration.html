@@ -3,8 +3,8 @@
     <span class="btn-group" data-uib-dropdown>
       <a href="" class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-euro"/>{{::'btn.invoice'|i18n}}<span class="caret"></span></a>
       <ul class="dropdown-menu">
-        <li data-ng-repeat="invoice in ctrl.invoices"><a href="" data-ng-click="ctrl.onDisplayInvoice({invoice: invoice})">{{invoice.ref}} - {{invoice.total}}{{'lbl.currency'|i18n}}</a></li>
         <li><a href="" data-ng-click="ctrl.onEditInvoice({registration: ctrl.registration})">{{::'btn.editInvoice'|i18n}}</a></li>
+        <li data-ng-repeat="invoice in ctrl.invoices"><a href="" data-ng-click="ctrl.onDisplayInvoice({invoice: invoice})">{{invoice.ref}} - {{invoice.total}}{{'lbl.currency'|i18n}}</a></li>
       </ul>
     </span>
     <span class="btn-group" data-uib-dropdown>

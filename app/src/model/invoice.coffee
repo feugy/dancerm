@@ -85,15 +85,15 @@ module.exports = class Invoice extends Persisted
 
   # computed and read-only duty-free invoice total
   @property 'dutyFreeTotal',
-    get: -> _.round (1 - @discount/100) * @items.reduce(((total, item) -> total + item.dutyFreeTotal), 0), 2
+    get: -> _.round((1 - @discount/100) * @items.reduce(((total, item) -> total + item.dutyFreeTotal), 0), 2) or 0
 
   # computed and read-only tax total
   @property 'taxTotal',
-    get: -> _.round (1 - @discount/100) * @items.reduce(((total, item) -> total + item.taxTotal), 0), 2
+    get: -> _.round((1 - @discount/100) * @items.reduce(((total, item) -> total + item.taxTotal), 0), 2) or 0
 
   # computed and read-only invoice total
   @property 'total',
-    get: -> _.round (1 - @discount/100) * @items.reduce(((total, item) -> total + item.total), 0), 2
+    get: -> _.round((1 - @discount/100) * @items.reduce(((total, item) -> total + item.total), 0), 2) or 0
 
   # Creates an invoice from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
