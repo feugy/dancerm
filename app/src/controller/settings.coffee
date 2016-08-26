@@ -60,10 +60,6 @@ module.exports = class SettingsController
   constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
     @localStorage = localStorage
     @vat.value = 100 * if localStorage.vat? then +localStorage.vat else i18n.vat
-    # in localStorage, empty array will be serialized as an empty string
-    @vat.teachers = if localStorage.vatTeachers? then localStorage.vatTeachers or [] else i18n.print.vatTeachers
-    # in localStorage, array will be serialized as string
-    @vat.teachers = @vat.teachers.split ',' unless Array.isArray @vat.teachers
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false

@@ -158,7 +158,6 @@ module.exports =
     version: 'v{{version}}'
     value: 'Valeur'
     vat: 'dont T.V.A.'
-    vatTeachers: 'Enseignants soumis à la TVA'
     vatValue: 'TVA'
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
@@ -237,8 +236,6 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     settlementTitle: "Reglement intérieur / Conditions générale d'adhésion"
     sign: "<p>Signature de l'élève ou du responsable légal</p><p>Précédé de la mention \"lu et approuvé\"</p>"
     stamp: "Signature et cachet de l'école"
-    # lower case name of teacher that need VAT
-    vatTeachers: ['delphine', 'nassim']
     where: "Fait à"
     when: "le"
 

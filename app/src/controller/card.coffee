@@ -86,10 +86,6 @@ module.exports = class CardController
   # Registration print preview window
   _preview: null
 
-  # **private**
-  # List of lower-cased names of teachers affected by VAT
-  _vatTeachers: []
-
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] Controller's own scope, for change detection
@@ -118,9 +114,6 @@ module.exports = class CardController
     # set context actions for planning
     @scope.listCtrl.actions = []
     @_setChanged false
-    @_vatTeachers = localStorage.vatTeachers or []
-    # in localStorage, array will be serialized as string
-    @_vatTeachers = @_vatTeachers.split ',' unless Array.isArray @_vatTeachers
 
     if stateParams.id
       # load edited dancer
