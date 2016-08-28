@@ -152,8 +152,7 @@ class InvoiceController
       ).result.then (confirmed) =>
         return unless confirmed
         # if confirmed, effectively go on desired state after reseting previous values
-        Object.assign @invoice, @_previous
-        @_setChanged false
+        @_reset()
         @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
@@ -173,9 +172,7 @@ class InvoiceController
       return unless confirmed
       # cancel and restore previous values
       @rootScope.$broadcast 'cancel-edit'
-      Object.assign @invoice, @_previous
-      @_previous = @invoice.toJSON()
-      @_setChanged false
+      @_reset()
       @scope.$apply() unless @scope.$$phase
 
   # Save the current values inside storage
@@ -240,7 +237,6 @@ class InvoiceController
   setDate: =>
     return if @isReadOnly
     newDate = moment @dateOpts.value
-    return unless newDate.isValid()
     @invoice?.changeDate newDate
     @dueDate = @invoice?.dueDate
     @_onChange 'date'
@@ -303,6 +299,14 @@ class InvoiceController
   isRequired: (field) =>
     return 'invalid' if @required.invoice?.includes field
     ''
+  # **private**
+  # Reset current fields to previous values
+  _reset: =>
+    Object.assign @invoice, @_previous
+    @invoice.changeDate @_previous.date
+    @dateOpts.value = @invoice.date.valueOf()
+    @_previous = @invoice.toJSON()
+    @_setChanged false
 
   # **private**
   # initialize controller for a given invoice

@@ -42,11 +42,11 @@
         <input type="text"
           data-set-null
           data-ng-class="ctrl.isRequired('date')"
-          data-uib-datepicker-popup="{{::'formats.invoiceSelection'|i18n}}"
+          data-uib-datepicker-popup="{{'formats.invoiceSelection'|i18n}}"
           data-is-open="ctrl.dateOpts.open"
           data-ng-model="ctrl.dateOpts.value"
           data-show-button-bar="false"
-          data-datepicker-options="::ctrl.dateOpts"
+          data-datepicker-options="ctrl.dateOpts"
           data-popup-placement="right"
           data-ng-change="ctrl.setDate()"/>
         <a href="" class="input-group-addon" data-ng-click="ctrl.toggleDate($event)"><i class="glyphicon glyphicon-calendar"></i></a>

@@ -144,7 +144,7 @@ module.exports = class Invoice extends Persisted
   # @param date [String|Date|Moment] new date value
   # @param interval [Number] number of days before due date, default to 60
   changeDate: (date, interval = 60) =>
-    @date = moment(date)
+    @date = moment date
     @dueDate = @date.clone().add(interval, 'days')
 
   # Set customer by setting dancer

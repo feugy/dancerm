@@ -42,16 +42,7 @@ section
   file /r ..\app\vendor
 
   setOutPath $INSTDIR\node_modules
-  file /r ..\node_modules\async
-  file /r ..\node_modules\fs-extra
-  file /r ..\node_modules\lodash
-  file /r ..\node_modules\mime
-  file /r ..\node_modules\moment
-  file /r ..\node_modules\nedb
-  file /r ..\node_modules\rimraf
-  file /r ..\node_modules\stylus
-  file /r ..\node_modules\underscore.string
-  file /r ..\node_modules\xlsx.js
+  file /r ..\node_modules
 
   ; creates a shortcut within installation folder and on desktop
   createShortCut "$INSTDIR\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"' "$INSTDIR\app\style\img\dancerm.ico"
@@ -85,5 +76,5 @@ sectionEnd
 
 ; language labels
 !define MUI_TEXT_WELCOME_INFO_TITLE "Bienvenue dans l'installation de l'application $(^NameDA)."
-!define MUI_TEXT_WELCOME_INFO_TEXT "Vous êtes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
+!define MUI_TEXT_WELCOME_INFO_TEXT "Vous ï¿½tes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
 !insertmacro MUI_LANGUAGE ${LANG_FRENCH}

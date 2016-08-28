@@ -69,7 +69,7 @@ app.run ['$location', (location) ->
 # @param done [Function] completion callback invoked with optionnal error argument
 app.close = (done) ->
   injector = angular.element('body.app').injector()
-  # display waigin message
+  # display waiting message
   injector.get('$rootScope').$apply =>
     injector.get('dialog').messageBox i18n.ttl.dumping, i18n.msg.dumping
   # export data

@@ -19,7 +19,7 @@
       data-set-null
       data-ng-class="ctrl.isRequired('firstname')"
       data-ng-model="ctrl.src.firstname"
-      data-typeahead="choice.firstname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('firstname', $viewValue) | limitTo:20"
+      data-uib-typeahead="choice.firstname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('firstname', $viewValue) | limitTo:20"
       data-typeahead-min-length="3"
       data-typeahead-on-select="ctrl.onLoad({evt:$event, model:$item})"
       data-ng-change="ctrl.onChange({$field:'firstname'})"
@@ -30,7 +30,7 @@
       data-set-null
       data-ng-class="ctrl.isRequired('lastname')"
       data-ng-model="ctrl.src.lastname"
-      data-typeahead="choice.lastname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('lastname', $viewValue) | limitTo:20"
+      data-uib-typeahead="choice.lastname as choice.firstname+' '+choice.lastname for choice in ctrl.findByAttr('lastname', $viewValue) | limitTo:20"
       data-typeahead-min-length="3"
       data-typeahead-on-select="ctrl.onLoad({evt:$event, model:$item})"
       data-ng-change="ctrl.onChange({$field:'lastname'})"

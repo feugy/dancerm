@@ -66,7 +66,7 @@ try
       # must clear require cache also
       delete global.require.cache[attr] for attr of global.require.cache
       global.reload = true
-      win.removeAllListeners()
+      win.removeAllListeners 'close'
       win.reloadIgnoringCache()
 
   parallel [
