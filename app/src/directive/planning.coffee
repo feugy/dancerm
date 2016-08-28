@@ -1,12 +1,10 @@
 _ = require 'lodash'
 i18n = require '../labels/common'
 
-days = i18n.planning.days
-
 class PlanningDirective
 
   # Controller dependencies
-  @$inject: ['$scope', '$element', '$attrs', '$compile']
+  @$inject: ['$scope', '$element', '$attrs', '$compile', '$q']
 
   # Controller scope, injected within constructor
   scope: null
@@ -23,14 +21,23 @@ class PlanningDirective
   # attributes used to group classes inside days
   groupBy: 'hall'
 
+  # list of displayed days
+  days: []
+
+  # true to shrink displayed hours to the range that includes all danceClasses
+  shrinkHours: true
+
   # color legend used. color classe used as key
   legend: {}
 
   # link to Angular directive compiler
   compile: null
 
-  # When highlighting a given kind, store it to allow toggling
-  kind: null
+  # When highlighting a given legend item, store it to allow toggling
+  item: null
+
+  # right offset (percentage) applied to dance classes inside a given day
+  widthOffset: 0
 
   # Controller constructor: bind methods and attributes to current scope
   #
@@ -38,21 +45,26 @@ class PlanningDirective
   # @param element [DOM] directive root element
   # @param attrs [Object] values of attributes
   # @param compile [Object] Angular directive compiler
-  constructor: (@scope, @element, attrs, @compile) ->
+  constructor: (@scope, @element, attrs, @compile, @q) ->
     @groups = {}
     @hours = []
     @legend = {}
+    @days = @scope.days or i18n.planning.weekDays
     @groupBy = attrs.groupBy or 'hall'
-    # now, displays dance classes
-    unwatch = @scope.$watch 'danceClasses', @_displayClasses
-    @_displayClasses @scope.danceClasses
+    @widthOffset = +attrs.widthOffset or 0
+    @shrinkHours = if attrs.shrinkHours? then attrs.shrinkHours.trim().toLowerCase() is 'true' else true
 
     # bind clicks
+    @element.on 'click', '.quarter', (event) =>
+      quarter = $(event.target).closest '.quarter'
+      day = $(event.target).closest '.day'
+      @scope?.onCellClick $event: event, day: day.data('day'), hour: "#{quarter.data 'hour'}:#{15 * quarter.data('quarter') or '00'}"
+
     @element.on 'click', '.danceClass', (event) =>
       danceClass = $(event.target).closest '.danceClass'
       model = _.find @scope.danceClasses, id:danceClass.data('id').toString()
       # invoke click handler
-      @scope.onClick $event: event, danceClasses: [model]
+      @scope?.onClick $event: event, danceClasses: [model]
 
       # disabled unless we provide a selected array
       return unless @scope.selected?
@@ -68,11 +80,11 @@ class PlanningDirective
     @element.on 'click', '.legend > *', (event) =>
       color = $(event.target).attr('class').replace('darken', '').trim()
       @element.find('.darken').removeClass 'darken'
-      if @kind is color
-        @kind = null
+      if @item is color
+        @item = null
         @scope.onClick $event: event, danceClasses: []
       else
-        @kind = color
+        @item = color
         @element.find(".danceClass:not(.#{color}), .legend *:not(.#{color})").addClass 'darken'
         # invoke click handler
         @scope.onClick $event: event, danceClasses: _.filter @scope.danceClasses, color:color
@@ -81,6 +93,36 @@ class PlanningDirective
     @scope.$on '$destroy', =>
       unwatch?()
       @element.off()
+
+    # now, displays dance classes
+    unwatch = @scope.$watch 'danceClasses', @_displayClasses
+    _.defer => @_displayClasses @scope.danceClasses
+
+  # **private**
+  # Compute tooltip for a given course
+  # @param course [DanceClass] displayed course
+  # @param day [String] day name extracted from start
+  # @return [String] course's tooltip content
+  _getTooltipContent: (course, day) =>
+    @q (resolve) => resolve @scope.getTooltipContent(model: course, day: day) or _.template(i18n.lbl.classTooltip)
+      kind: course.kind
+      level: course.level
+      start: course.start.replace(day, '').trim()
+      end: course.end.replace(day, '').trim()
+
+  # **private**
+  # Compute title for a given course
+  # @param course [DanceClass] displayed course
+  # @return [String] course's level
+  _getTitle: (course) =>
+    @q (resolve) => resolve @scope.getTitle(model: course) or course.level
+
+  # **private**
+  # Compute color and legend item for a given course
+  # @param course [DanceClass] displayed course
+  # @return [Array<String>] course's color and legend item
+  _getLegend: (course) =>
+    @q (resolve) => resolve @scope.getLegend(model: course) or [course.color, course.kind]
 
   # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
@@ -94,7 +136,7 @@ class PlanningDirective
     html.push "</div>"
 
     # creates days are parametrized
-    for day in days
+    for day in @days
       html.push "<div class='day' data-day='#{day}'><div class='title'>#{i18n.lbl[day]}</div><div class='groups'>"
       if @groups[day]?
         html.push "<span>#{group}</span>" for group in @groups[day]
@@ -106,11 +148,11 @@ class PlanningDirective
       html.push "</div>"
     # adds legend
     html.push "<div class='legend'>#{i18n.planning.legend}"
-    html.push "<span class='#{color}'>#{kind}</span>" for color, kind of @legend
+    html.push "<span class='#{color}'>#{item}</span>" for color, item of @legend
     html.push '</div>'
 
     @element.empty().append html.join ''
-    @element.addClass "days#{i18n.planning.days.length} hours#{@hours.length}"
+    @element.addClass "days#{@days.length} hours#{@hours.length}"
 
   # **private**
   # Extracts hour span and different dance groups, as well as legend
@@ -130,8 +172,9 @@ class PlanningDirective
         @groups[day].push course[@groupBy]
         @groups[day].sort()
       # keep legend if necessary
-      @legend[course.color] = course.kind unless course.color of @legend
-    @hours = [earliest..latest]
+      [color, item] = @_getLegend course
+      @legend[color] = item unless color of @legend
+    @hours = if @shrinkHours then [earliest..latest] else [7..22]
 
   # **private**
   # Display each available dance class on the planning
@@ -139,49 +182,47 @@ class PlanningDirective
   # @param danceClasses [Array<DanceClass>] list of dance class to display
   _displayClasses: (danceClasses, old) =>
     return unless @scope.danceClasses? and not _.isEqual @scope.danceClasses, old
-    # no available classes
-    return @element.empty() unless @scope.danceClasses?.length > 0
     # analyses to find hour span and dance groups
     @_extractSpans()
     # then build empty calendar
     @_buildCalendar()
 
     # positionnate each course in their respective day and group
-    for course in @scope.danceClasses
+    @scope.danceClasses.forEach (course) =>
       day = course.start[0..2]
 
       # gets start and end hours
       sHour = parseInt course.start.replace day, ''
-      sQuarter = parseInt(course.start[course.start.indexOf(':')+1..])/15
+      sQuarter = Math.round parseInt(course.start[course.start.indexOf(':')+1..])/15
       eHour = parseInt course.end.replace day, ''
-      eQuarter = parseInt(course.end[course.end.indexOf(':')+1..])/15
+      eQuarter = Math.round parseInt(course.end[course.end.indexOf(':')+1..])/15
 
       # gets horizontal positionning
-      column = days.indexOf(day)+2
+      column = @days.indexOf(day)+2
       start = @element.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
       end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
 
-      # gets vertical positionning
-      width = 100/@groups[day].length
-      groupCol = @groups[day].indexOf course[@groupBy]
+      # do not process unless we found a place
+      unless start[0]? and end[0]?
+        console.log "found planning item that can't be displayed #{course.id} #{course.start}-#{course.end}"
+      else
+        # gets vertical positionning
+        width = (100-@widthOffset)/@groups[day].length
+        groupCol = @groups[day].indexOf course[@groupBy]
 
-      # and eventually positionates the rendering inside the right day
-      tooltip = _.template(i18n.lbl.classTooltip)
-        kind: course.kind
-        level: course.level
-        start: course.start.replace(day, '').trim()
-        end: course.end.replace(day, '').trim()
-      render = @compile("""<div class="danceClass #{course.color}" data-id="#{course.id}"
-          data-uib-tooltip="#{tooltip}" data-uib-tooltip-popup-delay="200"
-          data-uib-tooltip-animation="true"
-          data-uib-tooltip-append-to-body="true">#{course.level}</div>""") @scope
-      render.css
-        height: height = (end.position()?.top or start.parent().height()) - start.position().top
-        top: start.position().top
-        left: "#{groupCol*width}%"
-        width: "#{width}%"
-        'line-height': "#{height}px"
-      $(@element.children()[column-1]).append render
+        @_getTitle(course).then (title) => @_getLegend(course).then ([legend]) => @_getTooltipContent(course, day).then (tooltip) =>
+          # and eventually positionates the rendering inside the right day
+          render = @compile("""<div class="danceClass #{legend}" data-id="#{course.id}"
+              data-uib-tooltip="#{tooltip}" data-uib-tooltip-popup-delay="200"
+              data-uib-tooltip-animation="true"
+              data-uib-tooltip-append-to-body="true">#{title}</div>""") @scope
+          render.css
+            height: height = (end.position()?.top or start.parent().height()) - start.position().top
+            top: start.position().top
+            left: "#{groupCol*width}%"
+            width: "#{width}%"
+            'line-height': "#{height}px"
+          $(@element.children()[column-1]).append render
 
     if @scope.selected?
       for {id} in @scope.selected
@@ -205,7 +246,21 @@ module.exports = (app) ->
       # array of selected dance classes
       # if not provided, dance class cannot be selected
       selected: '='
-      # event handler for dance class click. Clicked model as 'danceClass' parameter.
-      onClick: '&'
+      # displayed days
+      days: '=?'
       # attribute used for groupBy
       groupBy: '@'
+      # true to shrink displayed hours to the range that includes all danceClasses
+      shrinkHours: '@'
+      # right offset (percentage) applied to dance classes inside a given day
+      widthOffset: '@'
+      # event handler for dance class click. Clicked model as 'danceClass' parameter.
+      onClick: '&'
+      # event handler for cell click. Clicked quarter day as 'day' parameter, and start time as 'hour' parameter
+      onCellClick: '&'
+      # function that returns tooltip content for a given dance classe (first parameter, second is day string)
+      getTooltipContent: '&'
+      # function that returns title for given dance classe (first parameter)
+      getTitle: '&'
+      # function that returnsand array containing color and legend group for given dance classe (first parameter)
+      getLegend: '&'

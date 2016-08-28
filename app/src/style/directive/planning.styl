@@ -41,14 +41,15 @@ for c, i in colors
   .day
   .time
     box-sizing border-box
+    border-right 1px solid lighten(headerColor, 50%)
     display inline-block
     height 100%
     position relative
     margin-top titleH + titleMrg + groupH
 
   // day limit
-  .day:not(:nth-child(6))
-    border-right 1px solid lighten(headerColor, 50%)
+  .day:nth-last-child(2)
+    border-right none
 
   .quarter
     box-sizing border-box
@@ -136,7 +137,7 @@ for i in 2..7
     // 6.5% for time
     width unit((100 - 6.5) / i, '%')
 
-for i in 6..20
+for i in 6..24
   .planning.hours{i}
     .quarter
       height unit(100 / (i * 4), '%')

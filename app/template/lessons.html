@@ -1,5 +1,52 @@
-<div data-layout>
+<div data-layout data-actions="ctrl.actions">
   <div class="column expanded lessons">
-    <h2 class="title">Prochainement...</h2>
+    <div class="flex-row">
+      <span
+        data-planning
+        data-src="ctrl.lessons"
+        data-days="ctrl.i18n.planning.days"
+        data-group-by="teacher"
+        data-width-offset="10"
+        data-shrink-hours="false"
+        data-get-legend="ctrl.affectLegend(model)"
+        data-get-tooltip-content="ctrl.getPlanningTooltip(model, day)"
+        data-get-title="ctrl.getPlanningTitle(model)"
+        data-on-click="ctrl.editLesson(danceClasses[0])"
+        data-on-cell-click="ctrl.createLesson(day, hour)"></span>
+      <span class="edition">
+        <article class="focusable">
+          <h2>{{::'ttl.editLesson'|i18n}}</h2>
+          <div class="content" data-ng-if="ctrl.lesson == null">{{'msg.pickHour'|i18n}}</div>
+          <div class="content" data-ng-if="ctrl.lesson != null">
+            <div>
+              <label>{{::'lbl.hours'|i18n:{sep:true} }}</label><span class="value">{{ctrl.formatDate(lesson.date)}}</span>
+            </div>
+            <div>
+              <label>{{::'lbl.dancer'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.selectedDancer.firstname+' '+ctrl.selectedDancer.lastname}}</span><input
+                data-ng-if="!ctrl.isReadOnly"
+                type="text"
+                data-set-null
+                data-ng-class="ctrl.required.includes('dancer') && 'invalid'"
+                data-ng-model="ctrl.selectedDancer"
+                data-uib-typeahead="choice.firstname+' '+choice.lastname for choice in ctrl.search($viewValue) | limitTo:20"
+                data-typeahead-min-length="3"
+                data-typeahead-on-select="ctrl.affectDancer($item)"/>
+            </div>
+            <div class="teacher"><label>{{::'lbl.teacher'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.teacher}}</span>
+              <div data-ng-if="!ctrl.isReadOnly" class="btn-group" data-uib-dropdown keyboard-nav>
+                <button class="btn dropdown-toggle" uib-dropdown-toggle data-ng-class="ctrl.required.includes('teacher') && 'invalid'">{{ctrl.lesson.teacher||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li data-ng-repeat="school in ctrl.i18n.lbl.schools"><a href="" data-ng-click="ctrl.setTeacher(school.owner)">{{school.owner}}</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="duration"><label>{{::'lbl.duration'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.duration}}</span><input data-ng-if="!ctrl.isReadOnly" type="number" name="duration" data-ng-model="ctrl.lesson.duration" data-ng-change="ctrl.onChange('duration')" data-set-null/>{{::'lbl.durationUnit'|i18n}}</div>
+            <div class="price"><label>{{::'lbl.price'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.price}}</span><input data-ng-if="!ctrl.isReadOnly" type="number" name="duration" data-ng-model="ctrl.lesson.price" data-ng-change="ctrl.onChange('price')" data-set-null/>{{::'lbl.currency'|i18n}}</div>
+            <div class="details"><label>{{::'lbl.lessonDetails'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.details}}</span><textarea data-ng-if="!ctrl.isReadOnly" data-ng-model="ctrl.lesson.details" data-ng-change="ctrl.onChange('details')" data-set-null/></div>
+            <div class="invoiced"><label>{{::'lbl.lessonInvoiced'|i18n:{sep:true} }}</label><span class="value">{{ctrl.lesson.invoiced ? 'btn.yes' : 'btn.no' | i18n}}</span>
+          </div>
+        </article>
+      </span>
+    </div>
   </div>
 </div>

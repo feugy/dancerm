@@ -60,6 +60,7 @@ module.exports =
     invoice: 'D MMMM YYYY'
     receipt: 'DD/MM/YYYY'
     callList: 'DD/MM'
+    lesson: 'DD/MM/YYYY HH:mm'
 
   # short labels
   lbl:
@@ -84,6 +85,7 @@ module.exports =
     customer: 'Client'
     danceClasses: 'Cours'
     danceClassesFor: 'Cours pour'
+    dancer: 'Danceur(se)'
     day: 'Jour'
     details: 'Détails'
     designation: 'Désignation'
@@ -91,6 +93,8 @@ module.exports =
     due: 'Rgt.'
     dumpPath: 'Fichier de sauvegarde'
     dutyFreeTotal: 'Total HT'
+    duration: 'Durée'
+    durationUnit: ' minutes'
     email: 'E-mail'
     existingValue: 'Valeur actuelle'
     fieldSeparator: ' :'
@@ -103,6 +107,9 @@ module.exports =
     invoiceTotal: 'Total TTC'
     knownBy: 'Connu par'
     lastname: 'Nom'
+    lessonDetails: 'Détails'
+    lessonInvoiced: 'Facturé'
+    lessonKind: 'Danse'
     Mon: 'Lundi'
     noValue: 'pas de valeur'
     noResults: 'Aucun résultat'
@@ -112,6 +119,7 @@ module.exports =
     payer: 'Par'
     period: 'Périodicité'
     phone: 'Téléphone'
+    price: 'Prix'
     quantity: 'Qté.'
     rate: 'Tarif'
     receipt: 'Encaissement'
@@ -148,6 +156,7 @@ module.exports =
     Thu: 'Jeudi'
     title: 'Titre'
     Tue: 'Mardi'
+    teacher: 'Professeur'
     totalPrice: 'Montant HT'
     type: 'Type'
     stampWidth: 'Largeur (mm)'
@@ -168,6 +177,7 @@ module.exports =
   msg:
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
     cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
+    cancelLessonEdition: "Vous allez perdre les modification apportée du cours de {{name}}. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
     confirmMarkAsSent: "Une fois archivée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
@@ -181,6 +191,7 @@ module.exports =
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
+    pickHour: 'Veuillez sélectionner un heure'
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
@@ -189,6 +200,7 @@ module.exports =
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}} € du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la fiche ?"
     requiredInvoiceFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la facture ?"
+    requiredLessonFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enrigstrer le cours ?"
     resolveConflict: "Pour résource le conflit, sélectionnez les valeurs à conserver avant d'enregistrer. Vous pouvez aussi ignorer le conflit et passer au suivant, ou annuler pour stopper la résolution."
     selectInvoice: 'Merci de selectionner une facture depuis la recherche, ou une fiche danseur'
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
@@ -201,12 +213,6 @@ module.exports =
 
   # print texts
   print:
-    # to detect dancers on multiple teachers groups
-    teacherGroups:
-      anthony: 1
-      diana: 2
-      delphine: 2
-      nassim: 2
     invoiceDate: 'Villeurbanne, le '
     invoiceDueDate: 'A régler au plus tard le '
     invoiceDelay: """En cas de retard de paiement, il sera appliqué des pénalités de {{delayFee}} % par mois de retard.
@@ -255,7 +261,8 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
   # planning directive configuration values
   planning:
     # must be same days used in DanceClass's start and end attributes
-    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    weekDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     legend: 'Légende :'
 
   priceList:
@@ -336,6 +343,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     database: 'Base de données'
     duePayment: 'Impayés'
     dumping: 'Sauvegarde des données'
+    editLesson: 'Cours particulier'
     editRegistration: 'Modification de l\'inscription'
     export: 'Exportation'
     generalInfo: 'Information'

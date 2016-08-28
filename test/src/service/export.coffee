@@ -99,7 +99,7 @@ describe 'Export service tests', ->
                   expect(content).to.include "\"#{attr}\":#{value}"
                 else if attr is 'knownBy'
                   expect(content).to.include "\"#{attr}\":[#{if value.length then "\"#{value.join('","')}\"" else ''}]"
-                else unless attr in ['registrations', 'danceClassIds']
+                else unless attr in ['registrations', 'danceClassIds', 'lessonIds']
                   expect(content).to.include "\"#{attr}\":\"#{value}\""
           done()
 

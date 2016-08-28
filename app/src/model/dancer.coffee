@@ -11,7 +11,7 @@ Lesson = require './lesson'
 module.exports = class Dancer extends Persisted
 
   # extends transient fields
-  @_transient = Persisted._transient.concat ['_address', '_card', '_danceClasses']
+  @_transient = Persisted._transient.concat ['_address', '_card', '_danceClasses', '_lessons']
 
   # **static**
   # Find a list of models from the storage provider that match given conditions
@@ -21,7 +21,7 @@ module.exports = class Dancer extends Persisted
   # An expected value may be a function, that will take as arguments the given value and it's model,
   # and must returns a boolean
   #
-  # If 'registrations', 'address' or 'danceClasses' are found within path, the corresponding models
+  # If 'registrations', 'address', 'danceClasses' or 'lessons' are found within path, the corresponding models
   # are automatically resolved and use for traversal
   #
   # @param conditions [Object] keys define path, values are expected values
@@ -37,6 +37,7 @@ module.exports = class Dancer extends Persisted
           {search:'card.', Model: Card, select: 'cardId'}
           {search:'danceClasses.', Model: DanceClass, select: 'danceClassIds'}
           {search:'address.', Model: Address, select: 'addressId'}
+          {search:'lessons.', Model: Lesson, select: 'lessonIds'}
         ]
         idx = path.indexOf search
         if idx >= 0
@@ -86,7 +87,7 @@ module.exports = class Dancer extends Persisted
   danceClassIds: []
 
   # array of lesson taken
-  lessons: []
+  lessonIds: []
 
   # Creates a dancer from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
@@ -106,14 +107,7 @@ module.exports = class Dancer extends Persisted
       addressId: null
       cardId: null
       danceClassIds: []
-      lessons: []
-    # enrich object attributes
-    raw.lessons = (for rawLesson in raw.lessons
-      if rawLesson?.constructor?.name isnt 'Lesson'
-        new Lesson rawLesson
-      else
-        rawLesson
-    )
+      lessonIds: []
     # fill attributes
     super(raw)
     # default card value
@@ -197,3 +191,29 @@ module.exports = class Dancer extends Persisted
       return done err if err?
       registrations = _.sortBy(card.registrations.concat(), 'season').reverse()
       done null, registrations?[0] or null
+
+  # Consult dancer's lessons
+  #
+  # @param done [Function] completion callback, invoked with arguments
+  # @option done err [Error] an error object or null if no error occured
+  # @option done lessons [Array<Lesson>] list (that may be empty) of dancer's lessons, all seasons
+  getLessons: (done) =>
+    return _.defer(=> done null, @_lessons) if @_lessons?
+    # avoid possible duplicates
+    @lessonIds = _.uniq @lessonIds
+    # resolve models
+    map @lessonIds, (id, next) =>
+      Lesson.find id, (err, result) =>
+        console.log "failed to get lesson #{id} of dancer #{@firstname} #{@lastname} (#{@id}): #{err}" if err?
+        next null, result
+    , (err, results) =>
+      # remove undefined values (occured when a dance class was not found)
+      @_lessons = _.compact results
+      done null, @_lessons
+
+  # Set dancer's classes
+  #
+  # @param lessons [Array<Lesson>] list (that may be empty) of dancer's lessons, all seasons
+  setLessons: (lessons) =>
+    @lessonIds = unless lessons? then [] else _.map lessons, 'id'
+    @_lessons = lessons

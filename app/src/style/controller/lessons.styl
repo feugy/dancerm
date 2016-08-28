@@ -1,0 +1,84 @@
+/******************************************************************************
+ * lessons management
+ */
+
+.lessons
+
+  .flex-row
+    display flex
+    height 100%
+    width 100%
+
+    > .edition
+      background mainBackground
+      margin -15px -15px -15px 1em
+      padding 30px 15px 15px
+
+  article
+    border-top 2px solid headingColor
+    position relative
+    padding 0 1em 1em
+
+    > h2
+      background mainBackground
+      border-top none
+      display inline
+      left 25px
+      line-height 10px
+      font-size fontSize*1.6
+      padding 0 5px
+      position relative
+      top -10px
+
+    > .content
+      border-radius inputRadius
+      background colBackground
+      padding 6px 1em 6px 6px
+      margin 6px -12px
+
+      > *
+        align-items center
+        display flex
+        margin-bottom .5em
+
+      input, textarea
+        flex-grow 1
+
+      .duration, .price
+        > input
+          flex-grow 0
+          margin-right .5em
+          text-align right
+          width 4em
+
+      .details
+        align-items flex-start
+
+        > label
+          margin-top 5px
+
+        > textarea
+          resize none
+
+      label
+        width 100px
+        text-align right
+        display inline-block
+        cursor default
+        margin 0 5px 0 0
+        color labelColor
+
+  .planning
+    flex-grow 1
+    overflow-y scroll
+    padding 0 .5em 0 0
+
+    .danceClass
+      margin-right 1em
+
+    .quarter:hover
+    .quarter:hover + .quarter
+    .quarter:hover + .quarter + .quarter
+    .quarter:hover + .quarter + .quarter + .quarter
+      background emphasisColor
+      cursor pointer

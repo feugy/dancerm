@@ -1,5 +1,6 @@
 # lodash must be loaded
 importScripts '../../../../node_modules/lodash/lodash.min.js'
+importScripts '../../../../node_modules/moment/min/moment-with-locales.min.js'
 
 # get database path from url
 path = decodeURIComponent location.search.replace '?path=', ''
@@ -18,15 +19,29 @@ isA = (obj, type) ->
 # @param actual [Object] actual value
 # @return true if the single condition is matched, false otherwise
 checkSingle = (expected, actual) ->
-  if isA expected, 'RegExp'
-    expected.test actual
-  else if isA(expected, 'Object') and expected.$in
-    actual in expected.$in
-  else
-    actual is expected
+  return expected.test actual if isA expected, 'RegExp'
+  # object with operator
+  if isA expected, 'Object'
+    return actual in expected.$in if expected.$in
+    value = actual
+
+    # cast dates/strings to numbers
+    if isA actual, 'String'
+      value = if moment(actual).isValid() then moment(actual).valueOf() else parseInt actual
+
+    return if expected.$lt
+      value < expected.$lt
+    else if expected.$lte
+      value <= expected.$lte
+    else if expected.$gt
+      value > expected.$gt
+    else if expected.$gte
+      value >= expected.$gte
+  # single check
+  actual is expected
 
 # Synchronously check if a raw model match given conditions
-# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $in operators
+# Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $and, $in, $gte, $gt, $lte, $lt operators
 # and exact match.
 # Array values are automatically expanded
 #
@@ -39,6 +54,9 @@ check = (conditions, model) ->
     if attr is '$or'
       # check each possibilities
       return false unless _.some expected, (choice) -> check choice, model
+    else if attr is '$and'
+      # check each possibilities
+      return false unless _.every expected, (choice) -> check choice, model
     else if attr is '$regex'
       # check $regexp operator
       return false unless checkSingle new RexExp(expected), model
@@ -79,7 +97,7 @@ getStore = (name, write, done) ->
 
   # initialize database
   # v1 includes stores 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'
-  # v2 adds store 'Invoice'
+  # v2 adds store 'Invoice' and 'Lesson'
   request = indexedDB.open path, 2
 
   request.onsuccess = ->
@@ -91,7 +109,7 @@ getStore = (name, write, done) ->
     done request.error
 
   request.onupgradeneeded = ({target}) ->
-    for name in ['Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'] when !target.result.objectStoreNames.contains name
+    for name in ['Lesson', 'Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'] when !target.result.objectStoreNames.contains name
       target.result.createObjectStore name, keyPath: 'id'
 
 # Worker message receiver

@@ -34,9 +34,12 @@
 
   .quarter.q0
   .quarter.q2
-  .day:not(:nth-child(6))
+  .day
   .groups > *:not(:last-child)
     border-color darken(textColor, 75%)
+
+  .time
+    border-right none
 
 for color, i in colors
   .tags .color{i+1}
@@ -391,3 +394,28 @@ body
       position absolute
       right 1em
       top 1em
+
+.lessons
+
+    .flex-row > .edition
+      padding 15px 15px 0 15px
+
+      > article
+        border 2px solid headerBackground
+        border-radius 0
+        margin 0 0 15px
+        padding 0
+        width 100%
+
+        > h2
+          display block
+          background headerBackground
+          position static
+          padding 8px 1em
+          line-height 1.1em
+          font-size 150%
+          border none
+          color headingColor
+
+        > .content
+          margin 0
