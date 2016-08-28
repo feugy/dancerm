@@ -33,16 +33,19 @@ section
   ; define the output path files
   setOutPath $INSTDIR
   file ..\package.json
-  file /r ..\bin
+
+  setOutPath $INSTDIR\bin
+  file /r ..\bin\*.*
 
   setOutPath $INSTDIR\app
-  file /r ..\app\script
-  file /r ..\app\style
-  file /r ..\app\template
-  file /r ..\app\vendor
+  file /r ..\app\*.*
 
   setOutPath $INSTDIR\node_modules
-  file /r ..\node_modules
+  file /r ..\node_modules\*.*
+
+  ; grant permission for writing
+  AccessControl::GrantOnFile "$LOCALAPPDATA\dancerm" "(BU)" "GenericRead + GenericWrite"
+  AccessControl::GrantOnFile "$INSTDIR" "(BU)" "FullAccess"
 
   ; creates a shortcut within installation folder and on desktop
   createShortCut "$INSTDIR\DanceRM.lnk" "$INSTDIR\bin\nw.exe" '"$INSTDIR"' "$INSTDIR\app\style\img\dancerm.ico"
@@ -76,5 +79,5 @@ sectionEnd
 
 ; language labels
 !define MUI_TEXT_WELCOME_INFO_TITLE "Bienvenue dans l'installation de l'application $(^NameDA)."
-!define MUI_TEXT_WELCOME_INFO_TEXT "Vous ï¿½tes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
+!define MUI_TEXT_WELCOME_INFO_TEXT "Vous êtes sur le point d'installer $(^NameDA) sur votre ordinateur.$\r$\n$\r$\n$_CLICK"
 !insertmacro MUI_LANGUAGE ${LANG_FRENCH}
