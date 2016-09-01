@@ -25,7 +25,7 @@ module.exports = class Lesson extends Persisted
   details: null
 
   # price and status if already invoiced
-  price: 0
+  price: 45
   invoiced: false
 
   # computed and read-only lesson start hour
@@ -48,7 +48,7 @@ module.exports = class Lesson extends Persisted
       teacher: null
       dancerId: null
       details: null
-      price: 0
+      price: 45
       invoiced: false
     # fill attributes
     super(raw)

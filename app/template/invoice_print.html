@@ -22,7 +22,7 @@
         </div>
       </header>
       <div class="date">
-        <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate()}}</span>
+        <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>
       </div>
       <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
       <div class="items">

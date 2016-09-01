@@ -174,7 +174,7 @@ class PlanningDirective
       # keep legend if necessary
       [color, item] = @_getLegend course
       @legend[color] = item unless color of @legend
-    @hours = if @shrinkHours then [earliest..latest] else [7..22]
+    @hours = if @shrinkHours then [earliest..latest] else [8..22]
 
   # **private**
   # Display each available dance class on the planning
@@ -203,7 +203,7 @@ class PlanningDirective
       end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
 
       # do not process unless we found a place
-      unless start[0]? and end[0]?
+      unless start[0]?
         console.log "found planning item that can't be displayed #{course.id} #{course.start}-#{course.end}"
       else
         # gets vertical positionning
@@ -212,7 +212,10 @@ class PlanningDirective
 
         @_getTitle(course).then (title) => @_getLegend(course).then ([legend]) => @_getTooltipContent(course, day).then (tooltip) =>
           # and eventually positionates the rendering inside the right day
-          render = @compile("""<div class="danceClass #{legend}" data-id="#{course.id}"
+          className = "danceClass #{legend}"
+          className += ' selected' if @scope.selected?.find ({id}) -> id is course.id
+
+          render = @compile("""<div class="#{className}" data-id="#{course.id}"
               data-uib-tooltip="#{tooltip}" data-uib-tooltip-popup-delay="200"
               data-uib-tooltip-animation="true"
               data-uib-tooltip-append-to-body="true">#{title}</div>""") @scope
@@ -223,10 +226,6 @@ class PlanningDirective
             width: "#{width}%"
             'line-height': "#{height}px"
           $(@element.children()[column-1]).append render
-
-    if @scope.selected?
-      for {id} in @scope.selected
-        @element.find("[data-id='#{id}']").addClass 'selected'
 
 # The planning directive displays a given planning in a calendar fancy way
 module.exports = (app) ->
