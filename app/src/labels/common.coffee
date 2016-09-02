@@ -136,7 +136,7 @@ module.exports =
       zipcode: 69100
       city: 'Villeurbanne'
       siret: 'Siret 443 342 431 00014'
-      vat: 'N° TVA FR XX 443 342 431'
+      vat: 'N° TVA FR68 443 342 431'
     ,
       owner: 'Anthony'
       name: 'École de Danse P.M. Ribas'

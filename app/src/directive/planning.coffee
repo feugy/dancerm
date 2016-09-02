@@ -147,12 +147,18 @@ class PlanningDirective
           html.push "<div class='quarter q#{i}' data-hour='#{hour}' data-quarter='#{i}'>&nbsp;</div>"
       html.push "</div>"
     # adds legend
-    html.push "<div class='legend'>#{i18n.planning.legend}"
-    html.push "<span class='#{color}'>#{item}</span>" for color, item of @legend
-    html.push '</div>'
+    html.push "<div class='legend'></div>"
 
     @element.empty().append html.join ''
     @element.addClass "days#{@days.length} hours#{@hours.length}"
+
+    @_buildLegend()
+
+  # **private**
+  # Refresh legend content
+  _buildLegend: =>
+    legend = ("<span class='#{color}'>#{item}</span>" for color, item of @legend)
+    @element.find('.legend').empty().append "#{i18n.planning.legend}#{legend.join('')}"
 
   # **private**
   # Extracts hour span and different dance groups, as well as legend
@@ -161,7 +167,8 @@ class PlanningDirective
     latest = 0
     @legend = {}
     @groups = {}
-    for course in @scope.danceClasses
+    legended = @scope.danceClasses.length
+    @scope.danceClasses.forEach (course) =>
       # computes earliest and latest hours
       day = course.start[0..2]
       earliest = Math.min earliest, parseInt course.start.replace day, ''
@@ -172,8 +179,10 @@ class PlanningDirective
         @groups[day].push course[@groupBy]
         @groups[day].sort()
       # keep legend if necessary
-      [color, item] = @_getLegend course
-      @legend[color] = item unless color of @legend
+      @_getLegend(course).then ([color, item]) =>
+        legended--
+        @legend[color] = item unless color of @legend
+        @_buildLegend() if legended is 0
     @hours = if @shrinkHours then [earliest..latest] else [8..22]
 
   # **private**
