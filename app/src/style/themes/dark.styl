@@ -208,12 +208,16 @@ for color, i in colors
   > div
     border 2px solid headerBackground // colors[7]
 
-    .nav-tabs
-      background headerBackground // colors[7]
+  .registration-tabs
+    background headerBackground // colors[7]
 
   .nav-tabs
     border none
     padding 5px 10px
+    margin-right 290px
+    flex-wrap nowrap
+    overflow-y hidden
+    overflow-x scroll
 
     > li > a
       position static

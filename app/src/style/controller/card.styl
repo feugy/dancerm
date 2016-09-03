@@ -12,21 +12,31 @@
   .nav-tabs
     border-bottom 2px solid headingColor
     padding-left 10px
+    margin-right 300px
+    display flex
+    flex-direction row
+    flex-wrap wrap-reverse
 
-    > li > a
-    > li.active > a
-      border none
-      background mainBackground
-      font-family headingFont
-      color headingColor
-      cursor pointer
-      margin-left 5px
+    > li
+      float none
+      display inline-block
+      padding-top 10px
 
-    > li > a
-      color rgba(textColor, 50%)
+      > a
+      &.active > a
+        border none
+        background mainBackground
+        font-family headingFont
+        color headingColor
+        cursor pointer
+        margin-left 5px
+
+      > a
+        color rgba(textColor, 50%)
 
   .tab-pane
     padding-top 10px
+    background mainBackground
 
   > article > h2
   .nav-tabs > li > a
