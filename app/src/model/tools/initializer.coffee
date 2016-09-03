@@ -167,7 +167,7 @@ plannings = [{
     {kind:'Zumba', color:'color5', level:'8/12 ans', start:'Mon 17:45', end:'Mon 18:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '7a80444ea38b'}
 
     {kind:"Modern'Jazz", color:'color4', level:'débutant/moyen', start:'Mon 19:30', end:'Mon 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'a1b1531b9094'}
-    {kind:"Modern'Jazz", color:'color4', level:'inter/avancé', start:'Wed 20:30', end:'Wed 21:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e18e1f215081'}
+    {kind:"Modern'Jazz", color:'color4', level:'inter/avancé', start:'Wed 20:30', end:'Wed 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e18e1f215081'}
     {kind:"Modern'Jazz", color:'color4', level:'avancé', start:'Mon 20:30', end:'Mon 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id: 'e737857c743e'}
     {kind:"Modern'Jazz", color:'color4', level:'initiation 8/9 ans', start:'Wed 13:30', end:'Wed 14:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '7e81429fdfc5'}
     {kind:"Modern'Jazz", color:'color4', level:'élémentaire 10/12 ans', start:'Wed 14:30', end:'Wed 15:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id: '12653337d46e'}
@@ -192,6 +192,10 @@ plannings = [{
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs latine', start:'Tue 20:00', end:'Tue 22:00', teacher:'Anthony', hall:'Croix-Luizet', _id: '6901b184f50f'}
     {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'compétiteurs standard', start:'Thu 20:30', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '1ca4038625aa'}
 
+    # special for Anthony
+    {kind:'Danse sportive/Rock/Salsa', color:'color3', level:'3', start:'Thu 19:00', end:'Thu 20:30', teacher:'Anthony', hall:'Gratte-ciel 1', _id: 'fc9a810a254e'}
+
+    # special for Diana
     {kind:'Danse sportive', color:'color8', level:'1', start:'Fri 18:00', end:'Fri 19:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: '999e81618dd1'}
     {kind:'Danse sportive', color:'color8', level:'2', start:'Fri 19:00', end:'Fri 20:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: 'a354b697168d'}
   ]
