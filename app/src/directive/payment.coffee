@@ -34,7 +34,7 @@ class PaymentDirective
 
     # reset receipt date to payement's one
     @receiptOpts.open = false
-    @receiptOpts.value = if moment.isMoment @src?.receipt then @src?.receipt.format i18n.formats.receipt else null
+    @receiptOpts.value = if @src?.receipt?.isValid() then @src.receipt.valueOf() else null
 
   # check if field is missing or not
   #

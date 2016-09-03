@@ -4,7 +4,7 @@ i18n = require '../labels/common'
 Dancer = require '../model/dancer'
 
 class DancerDirective
-                
+
   # Controller dependencies
   @$inject: ['$q']
 
@@ -15,7 +15,7 @@ class DancerDirective
   isNew: false
 
   # Option used to configure birth selection popup
-  birthOpts: 
+  birthOpts:
     value: null
     open: false
     showWeeks: false
@@ -44,14 +44,14 @@ class DancerDirective
 
     # reset birth date to dancer's one
     @birthOpts.open = false
-    @birthOpts.value = if moment.isMoment @src?.birth then @src?.birth.format i18n.formats.birth else null
+    @birthOpts.value = if @src?.birth?.isValid() then @src.birth.valueOf() else null
 
   # Invoked by view to update dancer's title according to selected item
   #
   # @param selected [String] the new dancer's title
   setTitle: (selected) =>
     unless selected is i18n.lbl.choose
-      @src?.title = selected 
+      @src?.title = selected
     @onChange?($field: 'title')
 
   # Search within existing models a match on given attribute
@@ -70,7 +70,7 @@ class DancerDirective
     condition = {}
     condition[attr] = new RegExp "^#{typed}", 'i'
     # find matching dancers
-    Dancer.findWhere condition, (err, models) => 
+    Dancer.findWhere condition, (err, models) =>
       @_reqInProgress = false
       if err?
         console.error err
@@ -83,7 +83,7 @@ class DancerDirective
   setBirth: =>
     @src?.birth = moment @birthOpts.value
     @onChange?($field: 'birth')
-    
+
   # Opens the birth selection popup
   #
   # @param event [Event] click event, prevented.
@@ -97,7 +97,7 @@ class DancerDirective
   #
   # @param field [String] field that is tested
   # @return a css class
-  isRequired: (field) => 
+  isRequired: (field) =>
     return 'invalid' if @requiredFields? and field in @requiredFields
     ''
 
@@ -117,7 +117,7 @@ module.exports = (app) ->
     controllerAs: 'ctrl'
     bindToController: true
     # parent scope binding.
-    scope: 
+    scope:
       # displayed dancer
       src: '='
       # True to enable loading capabilities
