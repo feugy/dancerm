@@ -1,4 +1,5 @@
 {map} = require 'async'
+moment = require 'moment'
 i18n = require '../labels/common'
 DanceClass = require '../model/dance_class'
 Payment = require '../model/payment'
@@ -56,7 +57,16 @@ class RegistrationDirective
 
   # Creates a new payment and adds it to the current registration
   addPayment: =>
-    @registration.payments.push new Payment payer: @dancers[0].lastname
+    receipt = moment()
+    # when regitration period is quarter, get last payment date and add 3 month
+    if @registration.period is 'quarter'
+      last = @registration.payments.map((p) => p.receipt.valueOf()).sort().pop()
+      receipt = moment(last).add 3, 'month' if last?
+
+    @registration.payments.push new Payment
+      payer: @dancers[0].lastname
+      receipt:  receipt
+
     @requiredFields.push []
     setTimeout =>
       @element.find('.type .scrollable').last().focus()
