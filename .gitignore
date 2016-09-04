@@ -10,6 +10,7 @@ test/fixture/out.*
 test/script
 test/vendor
 installer/*.exe
+installer/Version.txt
 build/
 cache/
 *.json

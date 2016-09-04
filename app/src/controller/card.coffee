@@ -402,8 +402,8 @@ module.exports = class CardController
     isLast = @dancers.length is 1
     msg = if isLast then 'msg.removeLastDancer' else 'msg.removeDancer'
     @dialog.messageBox(@i18n.ttl.confirm, @filter('i18n')(msg, args: dancer), [
-      {result: false, label: @i18n.btn.no}
-      {result: true, label: @i18n.btn.yes, cssClass: 'btn-warning'}
+      {label: @i18n.btn.no}
+      {label: @i18n.btn.yes, result: true, cssClass: 'btn-warning'}
     ]).result.then (confirm) =>
       return unless confirm
       # remove everything and goes to list

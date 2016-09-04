@@ -176,8 +176,8 @@ module.exports =
   # long messages with html
   msg:
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
-    cancelEdition: "Vous allez perdre les modification apportée à {{names}}. Voulez-vous vraiment continuer ?"
-    cancelLessonEdition: "Vous allez perdre les modification apportée du cours de {{name}}. Voulez-vous vraiment continuer ?"
+    cancelEdition: "Vous allez perdre les modifications de {{names}}. Voulez-vous vraiment continuer ?"
+    cancelLessonEdition: "Vous allez perdre les modifications du cours de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
     confirmMarkAsSent: "Une fois archivée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
@@ -196,6 +196,7 @@ module.exports =
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
     removeLastDancer: "Vous allez supprimer définitivement la fiche de {{dancer.firstname}} {{dancer.lastname}}. Voulez vous vraiment continuer ?"
+    removeLesson: "Vous allez supprimer le cours particulier de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}} € du {{receipt}}. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la fiche ?"
@@ -351,15 +352,16 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     invoice: 'Facture N°{{ref}}'
     invoiceDisplay: '{{owner}} - Facture archivée N°{{ref}}'
     invoiceEdition: '{{owner}} - Edition de la facture N°{{ref}}'
-    invoiceError: 'Erreur de sauvegarde'
     interface: 'Interface'
     knownBy: 'Connu par'
     knownByRepartition: 'Ils ont connus par...'
     missingCertificates: 'Certificats manquants'
     newRegistration: 'Nouvelle inscription'
     print: 'DanceRM : impression pour {{names}}'
-    settlementPrint: "<p>Réglement</p><p>{{registration.season}}</p>"
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
+    removeError: 'Erreur de suppression'
+    saveError: 'Erreur de sauvegarde'
+    settlementPrint: "<p>Réglement</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
     stats: '{{total}} danseurs'

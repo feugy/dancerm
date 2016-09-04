@@ -198,7 +198,7 @@ class InvoiceController
     @invoice.save (err) =>
       if err?
         console.error err
-        return @dialog.messageBox(@i18n.ttl.invoiceError, err.message, [
+        return @dialog.messageBox(@i18n.ttl.saveError, err.message, [
             {label: @i18n.btn.ok}
           ]
         ).result.then done

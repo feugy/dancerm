@@ -121,6 +121,7 @@ module.exports = class LessonsController
     @_actions =
       cancel: label: 'btn.cancel', icon: 'ban-circle', action: @cancel
       save: label: 'btn.save', icon: 'floppy-disk', action: @save
+      remove: label: 'btn.remove', icon: 'trash', action: @remove
 
     # set context actions for planning
     @actions = []
@@ -138,12 +139,12 @@ module.exports = class LessonsController
       @_loadLessons moment().subtract((if day is 0 then 7 else day) - 1, 'd').hours(0).minutes(0).seconds(0)
     , 100
 
-  # restore previous values
+  # restore previous values, after manual confirm
   cancel: =>
     return unless @hasChanged and not @_modalOpened
     @_modalOpened = true
     @dialog.messageBox(@i18n.ttl.confirm,
-      @filter('i18n')('msg.cancelLessonEdition', args: name: "#{@selectedDancer.firstname} #{@selectedDancer.lastname}"), [
+      @filter('i18n')('msg.cancelLessonEdition', args: Object.assign {date: @lesson.date.format @i18n.formats.lesson}, @selectedDancer), [
         {label: @i18n.btn.no, cssClass: 'btn-warning'}
         {label: @i18n.btn.yes, result: true}
       ]
@@ -157,7 +158,43 @@ module.exports = class LessonsController
       @_setChanged false
       @scope.$apply() unless @scope.$$phase
 
-  # Save the current values inside storage
+  # Removes the current lesson from storage, after manual confirm.
+  # Also update selected dancer's lesson ids
+  remove: =>
+    return unless @lesson?.id? and not @isReadOnly
+    @_modalOpened = true
+    @dialog.messageBox(@i18n.ttl.confirm,
+      @filter('i18n')('msg.removeLesson', args: Object.assign {date: @lesson.date.format i18n.formats.lesson}, @selectedDancer), [
+        {label: @i18n.btn.no}
+        {label: @i18n.btn.yes, cssClass: 'btn-warning', result: true}
+      ]
+    ).result.then (confirmed) =>
+      @_modalOpened = false
+      return unless confirmed
+      # remove the lesson itself
+      @lesson.remove (err) =>
+        if err?
+          console.error err
+          return @dialog.messageBox @i18n.ttl.removeError, err.message, [{label: @i18n.btn.ok}]
+        console.log "lesson #{@lesson.id} removed"
+        # and updates selected dancer lesson ids
+        @selectedDancer.lessonIds.splice @selectedDancer.lessonIds.indexOf(@lesson.id), 1
+        @selectedDancer.save (err) =>
+          if err?
+            console.error err
+            return @dialog.messageBox @i18n.ttl.removeError, err.message, [{label: @i18n.btn.ok}]
+          console.log "dancer #{@selectedDancer.id} updated"
+          @lesson = null
+          @selectedDancer = null
+          @_previous = {}
+          @required = []
+          @_setChanged false
+          # refresh planning
+          @_loadLessons()
+          @scope.$apply() unless @scope.$$phase
+
+  # Save the current lesson inside storage.
+  # Also update selected dancer's lesson ids (and maybe previous dancer in case of change).
   #
   # @param force [Boolean] true to ignore required fields. Default to false.
   # @param done [Function] completion callback, invoked with arguments:
@@ -179,11 +216,11 @@ module.exports = class LessonsController
     @lesson.save (err) =>
       if err?
         console.error err
-        return @dialog.messageBox(@i18n.ttl.lessonSaveError, err.message, [
+        return @dialog.messageBox(@i18n.ttl.saveError, err.message, [
             {label: @i18n.btn.ok}
           ]
         ).result.then done
-      console.log "lesson #{@lesson.id} saved"
+      console.log "lesson #{@lesson.id} updated"
 
       process = =>
         # always add the edited lesson to new dancer
@@ -191,15 +228,17 @@ module.exports = class LessonsController
         @selectedDancer.save (err) =>
           if err?
             console.error err
-            return @dialog.messageBox(@i18n.ttl.lessonSaveError, err.message, [
+            return @dialog.messageBox(@i18n.ttl.saveError, err.message, [
                 {label: @i18n.btn.ok}
               ]
             ).result.then done
-          console.log "new dancer #{@selectedDancer.id} saved"
+          console.log "new dancer #{@selectedDancer.id} updated"
 
           @_previous = @lesson.toJSON()
           @onChange()
           @required = []
+          # refresh planning
+          @_loadLessons()
           @scope.$apply() unless @scope.$$phase
           done()
 
@@ -255,6 +294,7 @@ module.exports = class LessonsController
       )
       @isReadOnly = false
       @_previous = {}
+      @_setChanged false
       @scope.$apply() unless @scope.$$phase
 
   # Search within existing dancers a match on lastname/firstname
@@ -336,14 +376,15 @@ module.exports = class LessonsController
   onChange: (field) =>
     # performs comparison between current and old values
     @_setChanged false
-    @_setChanged not _.isEqual @_previous, @lesson.toJSON()
+    @_setChanged not _.isEqual @_previous, @lesson?.toJSON()
 
   # **private**
   # Update hasChanged flag and contextual actions
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
-    next = []
+    # can remove only if id exists
+    next = if @lesson?.id? and not @isReadOnly then [@_actions.remove] else []
     if changed
       # can cancel only if already saved once
       next.unshift @_actions.cancel if changed
@@ -364,14 +405,16 @@ module.exports = class LessonsController
     @required.length isnt 0
 
   # **private**
-  # Set the week start date, and loads lesson for that week
+  # Loads lesson for a given week.
+  # Reuse existing start date (must be a Monday), or updates it if provided
   #
-  # @param start [Date] start day for the week (must be a monday)
+  # @param start [Date] new start day for the week (must be a monday)
   _loadLessons: (start) =>
-    @startDay = start
+    @startDay = start if start?
     Lesson.findWhere $and: [{date: $gte: @startDay.valueOf()}, {date: $lte: @startDay.clone().add(7, 'd').valueOf()}], (err, lessons) =>
       return console.error err if err?
-      @lessons = lessons
+      # perform a copy to allow change detection within a given lesson
+      @lessons = (new Lesson raw.toJSON() for raw in lessons)
       @scope.$apply()
 
   # **private**
