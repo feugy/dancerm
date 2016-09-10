@@ -1,18 +1,35 @@
 <div data-layout data-actions="ctrl.actions">
   <div class="column expanded lessons">
     <div class="flex-row">
-      <span
-        data-planning
-        data-src="ctrl.lessons"
-        data-days="ctrl.i18n.planning.days"
-        data-group-by="teacher"
-        data-width-offset="10"
-        data-shrink-hours="false"
-        data-get-legend="ctrl.affectLegend(model)"
-        data-get-tooltip-content="ctrl.getPlanningTooltip(model, day)"
-        data-get-title="ctrl.getPlanningTitle(model)"
-        data-on-click="ctrl.editLesson(danceClasses[0])"
-        data-on-cell-click="ctrl.createLesson(day, hour)"></span>
+      <span class="planning-container">
+        <nav>
+          <a href="" class="btn btn-default glyphed" data-ng-click="ctrl.onPreviousWeek()"><i class="glyphicon glyphicon-chevron-left"></i>{{'btn.previousWeek'|i18n}}</a>
+          <span uib-dropdown data-is-open="ctrl.dateOpts.open">
+            <h2 data-uib-dropdown-toggle>{{ctrl.currentWeek()}}</h2>
+            <span data-uib-dropdown-menu class="pull-center" data-ng-click="$event.stopPropagation()">
+              <div
+                class="uib-datepicker-popup"
+                data-uib-datepicker
+                data-ng-model="ctrl.dateOpts.value"
+                data-ng-change="ctrl.onPickDate()"
+                data-datepicker-options="ctrl.dateOpts"></div>
+            </span>
+          </span>
+          <a href="" class="btn btn-default glyphed" data-ng-click="ctrl.onNextWeek()">{{'btn.nextWeek'|i18n}}<i class="glyphicon glyphicon-chevron-right"></i></a>
+        </nav>
+        <div
+          data-planning
+          data-src="ctrl.lessons"
+          data-days="ctrl.i18n.planning.days"
+          data-group-by="teacher"
+          data-width-offset="10"
+          data-shrink-hours="false"
+          data-get-legend="ctrl.affectLegend(model)"
+          data-get-tooltip-content="ctrl.getPlanningTooltip(model, day)"
+          data-get-title="ctrl.getPlanningTitle(model)"
+          data-on-click="ctrl.editLesson(danceClasses[0])"
+          data-on-cell-click="ctrl.createLesson(day, hour)"></div>
+      </span>
       <span class="edition">
         <article class="focusable">
           <h2>{{::'ttl.editLesson'|i18n}}</h2>

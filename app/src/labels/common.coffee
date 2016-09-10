@@ -21,9 +21,11 @@ module.exports =
     lessons: 'Cours particuliers'
     markAsSent: 'Archiver'
     newDancer: 'Inscription'
+    nextWeek: 'Semaine suivante'
     no: 'Non'
     ok: 'Ok'
     planning: 'Planning'
+    previousWeek: 'Semaine précédente'
     printAddresses: 'Publipostage'
     printSettlement: 'Réglement intérieur (tampon {{owner}})'
     print: 'Imprimer'
@@ -57,10 +59,10 @@ module.exports =
     invoiceSelection: 'd MMMM yyyy'
     # moment format
     birth: 'DD/MM/YYYY'
-    invoice: 'D MMMM YYYY'
-    receipt: 'DD/MM/YYYY'
     callList: 'DD/MM'
+    invoice: 'D MMMM YYYY'
     lesson: 'DD/MM/YYYY HH:mm'
+    receipt: 'DD/MM/YYYY'
 
   # short labels
   lbl:
@@ -186,11 +188,13 @@ module.exports =
     editRegistration: "Modifier les cours du danseur pour l'année : "
     emptyDancerList: 'Aucun danseur pour ces critères'
     emptyInvoiceList: 'Aucune facture pour ces critères'
+    emptyLessonList: 'Aucun cour particulier pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : <%= emails %>"
     exporting: 'Export en cours, veuillez patienter...'
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
+    lessonListLength: ' cour(s) particulier séléctionné(s)'
     pickHour: 'Veuillez sélectionner un heure'
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
@@ -338,6 +342,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     card: 'Fiche danseurs'
     confirm: 'Confirmation'
     contact: 'Contact'
+    currentWeek: '{{from}} au {{to}} {{monthAndYear}}'
     danceClassesDistribution: 'Distibution des cours'
     dancerList: 'Liste des danseurs'
     dancer: 'Danseur'

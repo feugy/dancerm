@@ -68,17 +68,47 @@
         margin 0 5px 0 0
         color labelColor
 
-  .planning
+  .planning-container
     flex-grow 1
-    overflow-y scroll
-    padding 0 .5em 0 0
+    padding-right .5em
+    display flex
+    flex-direction column
+    height 100%
 
-    .danceClass
-      margin-right 1em
+    nav
+      display flex
+      margin-bottom 1em
+      align-items center
 
-    .quarter:hover
-    .quarter:hover + .quarter
-    .quarter:hover + .quarter + .quarter
-    .quarter:hover + .quarter + .quarter + .quarter
-      background emphasisColor
-      cursor pointer
+      > :nth-child(2)
+        flex-grow 1
+        text-align center
+        margin 0 1em
+
+        h2
+          border-top none
+          cursor pointer
+          line-height 10px
+          font-size fontSize*1.6
+
+        .dropdown-menu
+          border none
+          left calc(50% - 160px)
+          top 1.5em
+
+      > .btn:last-child .glyphicon
+          margin 0 -3px 0 6px
+
+    .planning
+      overflow-y scroll
+      padding 0
+
+      .danceClass
+        margin-right 1em
+
+      .quarter:hover
+      .quarter:hover + .quarter
+      .quarter:hover + .quarter + .quarter
+      .quarter:hover + .quarter + .quarter + .quarter
+        background emphasisColor
+        cursor pointer

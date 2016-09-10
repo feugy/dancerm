@@ -349,23 +349,27 @@ body
   .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled]
     background-color infoBtnBackgroundHover
 
-  .uib-datepicker-popup.dropdown-menu
-    background headerBackground
-    padding 5px
+  .dropdown-menu
 
-    thead > tr > th
-      text-align center
+    &.uib-datepicker-popup
+    .uib-datepicker-popup
 
-      .uib-title
-        display inline-block
-        width 96%
+      background headerBackground
+      padding 5px
 
-    tbody .btn
-      background mainBackground
-      color headerColor
+      thead > tr > th
+        text-align center
 
-    tbody .btn.active
-      background emphasisColor
+        .uib-title
+          display inline-block
+          width 96%
 
-      .text-info
+      tbody .btn
+        background mainBackground
         color headerColor
+
+      tbody .btn.active
+        background emphasisColor
+
+        .text-info
+          color headerColor

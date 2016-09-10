@@ -149,22 +149,28 @@ body
     tr:nth-child(even)
       background mainBackground
 
-  .table.dancers
 
-    // we MUST have fixed width columns
-    for width, i in 30 35 15 20
-      td:nth-child({i+1})
-        width unit(width, '%')
-      th:nth-child({i+1})
-        width unit((width - 2), '%')
 
-  .table.invoices
+  .table
+    // tables  MUST have fixed width columns
+    &.dancers
+      for width, i in 30 35 15 20
+        td:nth-child({i+1})
+          width unit(width, '%')
+        th:nth-child({i+1})
+          width unit((width - 2), '%')
 
-    // we MUST have fixed width columns
-    for width, i in 18 26 44 12
-      td:nth-child({i+1})
-      th:nth-child({i+1})
-        width unit(width, '%')
+    &.invoices
+      for width, i in 18 26 44 12
+        td:nth-child({i+1})
+        th:nth-child({i+1})
+          width unit(width, '%')
+
+    &.lessons
+      for width, i in 33 33 33
+        td:nth-child({i+1})
+        th:nth-child({i+1})
+          width unit(width, '%')
 
 .column-and-main > .column.expanded
 
@@ -173,14 +179,6 @@ body
   > .tags
   > .list-length
     display inline-block
-
-  table tbody tr:hover *
-    cursor default
-
-  td:nth-child(2)
-    font-weight normal
-  td:nth-child(3)
-    font-weight bold
 
   .input-row
     display flex
@@ -191,18 +189,26 @@ body
     .tags
       margin-left 1em
 
-  tr
-    display flex
+  .table
+    tbody tr:hover *
+      cursor default
 
-  // we MUST have fixed width columns
-  // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
-  cols = 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
-  for col, i in cols
-    td:nth-child({i+1}), th:nth-child({i+1})
-      width col
+    td:nth-child(2)
+      font-weight normal
+    td:nth-child(3)
+      font-weight bold
+    tr
+      display flex
 
-  td:nth-child(12), th:nth-child(12)
-    flex 1
+    // we MUST have fixed width columns
+    // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
+    cols = 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
+    for col, i in cols
+      td:nth-child({i+1}), th:nth-child({i+1})
+        width col
+
+    td:nth-child(12), th:nth-child(12)
+      flex 1
 
   h2 > *:not(:last-child)
     margin-right 7px
