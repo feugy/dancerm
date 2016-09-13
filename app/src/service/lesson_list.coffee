@@ -1,6 +1,9 @@
 _ = require 'lodash'
+{each} = require 'async'
+i18n = require '../labels/common'
 {currentSeason, makeInvoice} = require '../util/common'
 SearchList = require './tools/search_list'
+InvoiceItem = require '../model/invoice_item'
 
 # Service responsible for searching for lessons, and keep the list between states.
 # Triggers search.
@@ -58,12 +61,25 @@ module.exports = class LessonList extends SearchList
     season = currentSeason @invoicable[0].date
     # search for concerned dancer's card
     @invoicable[0].getDancer (err, dancer) =>
-      return new Error "failed to get lesson's concerned dancer: #{err.message}" if err?
+      return done new Error "failed to get lesson's concerned dancer: #{err.message}" if err?
       makeInvoice dancer, season, schoolIdx, (err, invoice) =>
         return done err, invoice if err?
-        # TODO add lessons
-        # TODO mark lessons as invoiced
-        done null, invoice
+        # group lessons by price
+        prices = {}
+        for lesson in @invoicable
+          prices[lesson.price] = 0 unless lesson.price of prices
+          prices[lesson.price]++
+        # add one invoice item per different prices
+        for price of prices
+          invoice.items.push new InvoiceItem price: price, quantity: prices[price], name: i18n.lbl.invoiceItemLesson
+        # mark lessons as invoiced
+        each @invoicable, (lesson, next) ->
+          lesson.invoiceId = invoice.id
+          lesson.save next
+        , (err) =>
+          return done new Error "failed to update lessons: #{err}" if err
+          @invoicable = []
+          invoice.save done
 
   # Invoked when some lessons are selected, to evaluate if invoice coupld be generated
   #

@@ -26,7 +26,9 @@ module.exports = class Lesson extends Persisted
 
   # price and status if already invoiced
   price: 45
-  invoiced: false
+
+  #link to a particular invoice (meanin it can't be invoiced anymore)
+  invoiceId: false
 
   # computed and read-only lesson start hour
   @property 'start',
@@ -49,7 +51,7 @@ module.exports = class Lesson extends Persisted
       dancerId: null
       details: null
       price: 45
-      invoiced: false
+      invoiceId: null
     # fill attributes
     super(raw)
     @date = moment @date if @date?

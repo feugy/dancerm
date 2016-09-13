@@ -1,6 +1,5 @@
 ## TODO
 
-- Generate lesson's invoices: add lesson lines
 - Display lesson from lesson list
 - Expanded lesson and invoice lists
 - Display invoice list on dancer card

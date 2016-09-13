@@ -159,28 +159,3 @@ module.exports = class Invoice extends Persisted
       return done err if err?
       Object.assign @customer, address.toJSON() if address?
       done null
-
-  # Set dance classes by setting registration and dancer
-  #
-  # @param dancerId [String] id of the dancer which dance classes will be added
-  # @param registrationId [String] id of the registration containing dance classes
-  # @param done [Function] completion callback, invoked with arguments
-  # @option done err [Error] an error object or null if no error occured
-  ###addDanceClasses: (dancerId, registrationId, done) =>
-    return done null unless dancerId? and registrationId?
-    Registration.find registrationId, (err, registration) =>
-      return done err if err?
-      Dancer.find dancerId, (err, dancer) =>
-        return done err if err?
-        return done null unless dancer? and registration?
-        dancer.getClasses (err, danceClasses) =>
-          return done err if err?
-          @danceClasses.push danceClasses
-            .filter((danceClass) => danceClass.season is registration.season)
-            .map (danceClass) =>
-              name: "#{danceClass.kind} #{danceClass.level} #{danceClass.start}"
-              quantity: 1
-              price: 0
-              VAT: 0
-              discount: 0
-          done null###

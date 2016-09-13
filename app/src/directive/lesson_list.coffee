@@ -35,7 +35,7 @@ class LessonListDirective
   #
   # @param scope [Object] directive scope
   constructor: (@scope) ->
-    unwatch = @scope.$watch 'ctrl.list', @_onMakeGroups
+    unwatch = @scope.$watchCollection 'ctrl.list', @_onMakeGroups
     @_inProgress = false
     @_selected = []
     @groups = []

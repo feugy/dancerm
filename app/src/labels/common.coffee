@@ -106,6 +106,7 @@ module.exports =
     horizontalMargin: 'Marge horizontale (mm)'
     hours: 'Horaire'
     importedValue: 'Valeur importée'
+    invoiceItemLesson: 'Cours particulier'
     invoiceTotal: 'Total TTC'
     knownBy: 'Connu par'
     lastname: 'Nom'

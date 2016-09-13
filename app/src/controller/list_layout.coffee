@@ -96,7 +96,7 @@ module.exports = class ListLayoutController
       @emptyListMessage = 'msg.emptyLessonList'
       @listMessage = 'msg.lessonListLength'
       @columns = [
-        {noSort: true, selectable: (model) -> not model.invoiced}
+        {noSort: true, selectable: (model) -> not model.invoiceId?}
         {name: 'teacher', title: 'lbl.teacherColumn'}
         {name: 'date', title: 'lbl.hours', attr: (lesson) -> lesson.date?.format i18n.formats.lesson}
         {name: 'details', title: 'lbl.details'}
@@ -130,8 +130,10 @@ module.exports = class ListLayoutController
           return unless confirmed
           # if confirmed, effectively display the existing invoice
           @state.go 'list.invoice', id: invoice.id
-      # display the created invoice
+      # display the created invoice and refresh lesson list
       @state.go 'list.invoice', id: invoice.id
+      console.log "refresh lesson list"
+      @performSearch()
       @scope.$apply()
 
   # Displays a given model on the main part
