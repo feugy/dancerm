@@ -3,7 +3,7 @@ moment = require 'moment'
 async = require 'async'
 {join} = require 'path'
 i18n = require '../labels/common'
-{generateId} = require '../util/common'
+{generateId, makeInvoice} = require '../util/common'
 Dancer = require '../model/dancer'
 Card = require '../model/card'
 Address = require '../model/address'
@@ -481,28 +481,12 @@ module.exports = class CardController
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
-      # search for unsent invoices related to that card
-      Invoice.findWhere {cardId: @card.id, season: registration.season, selectedSchool: school, sent: null}, (err, existing) =>
-        return console.error "failed to search for invoices", err if err?
-        # display the first one found (should be only one at a time)
-        return @state.go 'list.invoice', id: existing[0].id if existing.length
-        # or create a new one with the first dancer as customer
-        firstYear = parseInt registration.season
-        invoice = new Invoice
-          cardId: @card.id,
-          season: registration.season
-          selectedSchool: school
-        # only use current date if inside registration season. Otherwise, default September, 15th
-        now = moment().year firstYear
-        invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
-        # generate reference
-        Invoice.getNextRef now.year(), now.month() + 1, school, (err, ref) =>
-          return console.error "failed to get next ref for new invoice", err if err?
-          invoice.ref = ref
-          invoice.setCustomer @dancers[0], =>
-            invoice.save (err) =>
-              return console.error "failed to save new invoice #{invoice.toJSON()}:", err if err?
-              @state.go 'list.invoice', id: invoice.id
+      # search for unsent invoices related to that card, and create a new one if needed
+      makeInvoice @dancers[0], registration.season, school, (err, invoice) =>
+        # there could be an error if invoice already exists, and invoice will be populated.
+        return @state.go 'list.invoice', id: invoice.id if invoice?
+        # or just an error
+        console.error err
 
   # **private**
   # Update hasChanged flag and contextual actions

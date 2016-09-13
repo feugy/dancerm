@@ -59,7 +59,7 @@ module.exports = class SettingsController
   # @param stateParams [Object] invokation route parameters
   constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
     @localStorage = localStorage
-    @vat.value = 100 * if localStorage.vat? then +localStorage.vat else i18n.vat
+    @vat.value = 100 * if localStorage.getItem('vat')? then +localStorage.getItem('vat') else i18n.vat
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false
@@ -92,24 +92,7 @@ module.exports = class SettingsController
   # Check that VAT rate is a valid number, and save it if it's the case
   onChangeVat: () =>
     return if isNaN +@vat.value
-    @localStorage.vat = +@vat.value / 100
-
-  # Adds the currently edited teacher to the list of VAT affected teachers.
-  # Also updates local storage
-  addVatTeacher: () =>
-    return unless @vat.added?.trim()?.length > 0
-    @vat.teachers.push @vat.added.trim().toLowerCase()
-    @vat.added = null
-    @localStorage.vatTeachers = @vat.teachers.concat()
-
-  # Removes a given teachers from those affected by VAT. Also updates local storage
-  #
-  # @param idx [Number] - index of the removed teacher
-  removeVatTeacher: (idx, teacher) =>
-    console.log idx, teacher
-    return unless @vat.teachers[idx]?
-    @vat.teachers.splice idx, 1
-    @localStorage.vatTeachers = @vat.teachers.concat()
+    @localStorage.setItem 'vat', +@vat.value / 100
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into local storage, and button is temporary disabled while compiling
@@ -117,9 +100,9 @@ module.exports = class SettingsController
   # @param theme [Object] theme object, containing 'value' and 'label' attribues
   applyTheme: (theme) =>
     return if @_building
-    @localStorage.theme = theme.value
+    @localStorage.setItem 'theme', theme.value
     @_building = true
-    buildStyles ['dancerm', 'print'], @localStorage.theme or 'none', (err, styles) =>
+    buildStyles ['dancerm', 'print'], @localStorage.getItem('theme') or 'none', (err, styles) =>
       @_building = false
       return console.error err if err?
       global.styles = styles
@@ -133,14 +116,14 @@ module.exports = class SettingsController
   #
   # Dialog won't close unless a path is choosen
   chooseDumpLocation: =>
-    dumpDialog = $("<input style='display:none;' type='file' nwsaveas value='#{@localStorage.dumpPath} accept='application/json'/>")
+    dumpDialog = $("<input style='display:none;' type='file' nwsaveas value='#{@localStorage.getItem 'dumpPath'} accept='application/json'/>")
     dumpDialog.change (evt) =>
       dumpPath = dumpDialog.val()
       dumpDialog.remove()
       # dialog cancellation
       return chooseDumpLocation() unless dumpPath
       # retain entry for next loading, and refresh UI
-      localStorage.dumpPath = dumpPath
+      localStorage.setItem 'dumpPath', dumpPath
       @askDumpLocation = false
       @scope.$apply()
     dumpDialog.trigger 'click'

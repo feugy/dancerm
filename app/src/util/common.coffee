@@ -1,11 +1,14 @@
+_ = require 'lodash'
 moment = require 'moment'
 {join, resolve} = require 'path'
 {appendFile, appendFileSync, readFile, existsSync} = require 'fs-extra'
 {inspect} = require 'util'
 {map} = require 'async'
 {render} = require 'stylus'
+# to avoid circular dependencies
+Invoice = null
 i18n = require '../labels/common'
-_ = require 'lodash'
+
 _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
 
 # Format a given value as a string.
@@ -51,7 +54,7 @@ module.exports =
     # Log file
     logFile = resolve 'log.txt'
     console.log "log to file #{logFile}"
-    ['info', 'debug', 'error', 'log'].forEach (method) ->
+    ['info', 'debug', 'warn', 'error', 'log'].forEach (method) ->
       global.console[method] = (args...) ->
         appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
 
@@ -92,15 +95,16 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
 
   # Return current season from date
   # Season changes at August, 1st.
+  # @params now [Moment] date of which season year is computed. Default to today.
   # @return current season string
-  currentSeason: ->
-    year = module.exports.currentSeasonYear()
+  currentSeason: (now = moment()) ->
+    year = module.exports.currentSeasonYear now
     "#{year}/#{year+1}"
 
   # Return current season's first year from date
+  # @params now [Moment] date of which season year is computed. Default to today.
   # @return current season first year
-  currentSeasonYear: ->
-    now = moment()
+  currentSeasonYear: (now = moment()) ->
     if now.month() >= 7 then now.year() else now.year()-1
 
   # Get the attribute value of an object along a given path
@@ -173,3 +177,38 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
       pipette.css('backgroundColor')
     ), (color) => color isnt 'rgba(255, 0, 255, 0)'
     container.remove()
+
+  # Make an invoice for a given dancer (cardId is used for retrieval), season and school.
+  # Only one unsent invoice is allowed for a given combination of those elements: if it
+  # already exists, an error is raised, but the existing invoice is also returned
+  #
+  # @param dancer [Dancer] the concerned dancer
+  # @param season [Number] first year of the concerned season
+  # @param school [Number] index of the concerned school in i18n.lbl.schools array.
+  # @param done [Function] completion callback, invoked with arguments:
+  # @param done.err [Error] an error object, if the creation failed
+  # @param done.invoice [Invoice] the generated invoice, or the existing one
+  makeInvoice: (dancer, season, school, done) ->
+    Invoice = require '../model/invoice' unless Invoice?
+    # search for unsent invoices related to that card
+    Invoice.findWhere {cardId: dancer.cardId, season: season, selectedSchool: school, sent: null}, (err, existing) =>
+      return done new Error "failed to search for invoices: #{err.message}" if err?
+      # if an unsent invoice already exist, raise an error, but also return the first (and only) invoice
+      return done new Error("unsent invoice already exist for card #{dancer.cardId}, season #{season} and school #{school}"), existing[0] if existing.length
+      # or create a new one with the first dancer as customer
+      firstYear = parseInt season
+      invoice = new Invoice
+        cardId: dancer.cardId,
+        season: season
+        selectedSchool: school
+      # only use current date if inside registration season. Otherwise, default September, 15th
+      now = moment().year firstYear
+      invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
+      # generate reference
+      Invoice.getNextRef now.year(), now.month() + 1, school, (err, ref) =>
+        return done new Error "failed to get next ref for new invoice #{err.message}" if err?
+        invoice.ref = ref
+        invoice.setCustomer dancer, =>
+          invoice.save (err) =>
+            return done new Error "failed to save new invoice #{invoice.toJSON()}: #{err.message}" if err?
+            done null, invoice

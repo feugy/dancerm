@@ -39,12 +39,10 @@ module.exports = class SearchList extends EventEmitter
     @list = []
 
     # reload from locale storage previous execution's search.
-    key = @_getStorageKey()
-    if localStorage?
-      try
-        @criteria = JSON.parse localStorage[key] if localStorage[key]?
-      catch err
-        # silent error
+    try
+      @criteria = JSON.parse localStorage?.getItem(@_getStorageKey()) or {}
+    catch err
+      # silent error
 
   # **private**
   # @returns [String] lowercased string usable as localStorage key
@@ -64,7 +62,7 @@ module.exports = class SearchList extends EventEmitter
     console.log "search for", @criteria
     @emit 'search-start'
     # store into local storage for reload
-    localStorage[@_getStorageKey()] = JSON.stringify @criteria if localStorage?
+    localStorage?.setItem @_getStorageKey(), JSON.stringify @criteria
     # depending on criterias
     conditions = @_parseCriteria()
     console.log "criteria are", conditions

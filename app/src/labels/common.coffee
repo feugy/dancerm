@@ -159,6 +159,7 @@ module.exports =
     title: 'Titre'
     Tue: 'Mardi'
     teacher: 'Professeur'
+    teacherColumn: 'Prof.'
     totalPrice: 'Montant HT'
     type: 'Type'
     stampWidth: 'Largeur (mm)'
@@ -191,10 +192,11 @@ module.exports =
     emptyLessonList: 'Aucun cour particulier pour ces critères'
     exportEmails: "La liste des email suivante à été copiée dans le presse papier : <%= emails %>"
     exporting: 'Export en cours, veuillez patienter...'
+    invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent lui être ajoutés. Voulez vous editer la facture en cours ?'
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: "{{Dancer || 'aucun'}} danseur(s), {{Card || 'aucune'}} fiche(s), {{Address || 'aucune'}} addresse(s) et {{DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès."
-    lessonListLength: ' cour(s) particulier séléctionné(s)'
+    lessonListLength: ' cour(s) séléctionné(s)'
     pickHour: 'Veuillez sélectionner un heure'
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"

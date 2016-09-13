@@ -74,7 +74,7 @@ body
   display flex
   flex-flow column
 
-  .print-call-list
+  .centred-buttons
     text-align center
     margin-bottom 10px
 
@@ -104,8 +104,11 @@ body
 
     // make raw as block, and cell as inline element with fixed width
     tr
-      display block
+      box-sizing border-box
+      display flex
       font-size 0
+      padding 0
+      width 100%
     th, td
       display inline-block
       box-sizing border-box
@@ -113,9 +116,11 @@ body
     th
       font-family headingFont
       cursor pointer
+      text-overflow ellipsis
+      overflow hidden
 
       .glyphicon
-        margin-left 0.5em
+        margin-right 0.5em
     td
       word-break break-word
 
@@ -149,28 +154,27 @@ body
     tr:nth-child(even)
       background mainBackground
 
+  .table:not(.expanded)
 
+  // tables  MUST have fixed width columns
+  .table.dancers
+    for width, i in 30 35 15 20
+      td:nth-child({i+1})
+        width unit(width, '%')
+      th:nth-child({i+1})
+        width unit((width - 2), '%')
 
-  .table
-    // tables  MUST have fixed width columns
-    &.dancers
-      for width, i in 30 35 15 20
-        td:nth-child({i+1})
-          width unit(width, '%')
-        th:nth-child({i+1})
-          width unit((width - 2), '%')
+  .table.invoices
+    for width, i in 18 26 44 12
+      td:nth-child({i+1})
+      th:nth-child({i+1})
+        width unit(width, '%')
 
-    &.invoices
-      for width, i in 18 26 44 12
-        td:nth-child({i+1})
-        th:nth-child({i+1})
-          width unit(width, '%')
-
-    &.lessons
-      for width, i in 33 33 33
-        td:nth-child({i+1})
-        th:nth-child({i+1})
-          width unit(width, '%')
+  .lessons .table
+    for width, i in 5 32 35 28
+      td:nth-child({i+1})
+      th:nth-child({i+1})
+        width unit(width, '%')
 
 .column-and-main > .column.expanded
 
@@ -190,6 +194,9 @@ body
       margin-left 1em
 
   .table
+    th, td
+      flex-shrink 0
+
     tbody tr:hover *
       cursor default
 
@@ -197,8 +204,6 @@ body
       font-weight normal
     td:nth-child(3)
       font-weight bold
-    tr
-      display flex
 
     // we MUST have fixed width columns
     // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address

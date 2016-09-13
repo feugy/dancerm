@@ -1,7 +1,7 @@
 _ = require 'lodash'
 SearchList = require './tools/search_list'
 
-# Service responsible for keeping the card list between states
+# Service responsible for searching for cards, and keep the list between states.
 # Triggers search.
 module.exports = class CardList extends SearchList
 
@@ -13,14 +13,43 @@ module.exports = class CardList extends SearchList
   # Default sort
   @sort: 'lastname'
 
+  # **private**
+  # Call list print preview window
+  _preview: null
+
   # Initialise criteria
   constructor: (args...) ->
+    @_preview = null
     @criteria =
       string: null
       teachers: []
       seasons: []
       danceClasses: []
     super args...
+
+  # @return true if the current list concerned a dance class
+  canPrintCallList: =>
+    not @criteria.string and @criteria.danceClasses.length is 1
+
+  # Print call list from the current day
+  #
+  # @param danceClass [DanceClass] danceClass concerned
+  printCallList: =>
+    return @_preview.focus() if @_preview?
+    nw.Window.open 'app/template/call_list_print.html',
+      frame: true
+      title: window.document.title
+      icon: require('../../../package.json')?.window?.icon
+      focus: true
+      # size to A4 format, landscape
+      width: 1000
+      height: 800
+      , (created) =>
+        @_preview = created
+        # set displayed list and wait for closure
+        @_preview.list = @list
+        @_preview.danceClass = @criteria.danceClasses[0]
+        @_preview.on 'closed', => @_preview = null
 
   # **private**
   # Parse criteria to search options
@@ -45,5 +74,4 @@ module.exports = class CardList extends SearchList
     else if @criteria.teachers?.length > 0
       # add teacher if needed: can be combined with season and name
       conditions['danceClasses.teacher'] = $in: @criteria.teachers
-
     conditions

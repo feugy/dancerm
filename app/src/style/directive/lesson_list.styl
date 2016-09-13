@@ -1,0 +1,29 @@
+/******************************************************************************
+ * Lesson list
+ */
+
+.lesson-list
+  flex-grow 1
+  overflow-y auto
+
+  .group
+    position relative
+
+    &:not(:first-child)
+      margin-top 10px
+
+    > h3
+      background-color colBackground
+      border-top none
+      bottom -7px
+      display inline-block
+      font-size printFontSize
+      left 15px
+      line-height 1em
+      margin 0
+      padding 0 5px
+      position relative
+
+    > .table
+      border-top 2px solid headingColor
+      padding-top 15px

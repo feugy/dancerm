@@ -33,6 +33,10 @@ class ListDirective
   # Displayed values, stored for sorting. Model id is used as key
   _displayedValues: {}
 
+  # **private**
+  # Flag to avoid concurrent renderings
+  _inProgress: false
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -41,6 +45,7 @@ class ListDirective
   constructor: (scope, element, @filter) ->
     @$el = $(element)
     @$el.on 'click', @_onClick
+    @$el.on 'change', @_onToggle
     @_displayedValues = {}
     @_waiting = 0
     @_onRedrawList = _.debounce @_onRedrawList, 100
@@ -71,7 +76,7 @@ class ListDirective
   # Creates the header line for whole list
   _renderHeader: =>
     html = ['<thead><tr>']
-    for {title, name} in @columns
+    for {title, name, selectable} in @columns
       if name is @currentSort
         if @_isDesc
           html.push '<th data-desc'
@@ -79,8 +84,13 @@ class ListDirective
           html.push '<th'
         html.push " data-attr='#{name}'><i class='glyphicon glyphicon-sort-by-alphabet", (unless @_isDesc then '-alt'), "'/>"
       else
-        html.push "<th data-attr='#{name}'>"
-      html.push @filter('i18n')(title), '</th>'
+        html.push "<th #{if name? then "data-attr='#{name}'" else ''}>"
+
+      if title
+        html.push @filter('i18n')(title)
+      else if selectable
+        html.push '<input type="checkbox"/>'
+      html.push '</th>'
     html.push '</tr></thead>'
     html.join ''
 
@@ -129,10 +139,11 @@ class ListDirective
   _renderCell: (model, attr, col, value, store) =>
     html = ['<td data-col="', col, '" ']
     if store
-      # special case for birth : do not store displayed value
-      stored = if attr is 'birth' then model.birth?.unix() or 0 else value
+      # special case for dates : do not store displayed value
+      stored = if value?.isMoment?() then value.unix() else value
       @_displayedValues[model.id][attr] = value
 
+    # column specific rendering
     switch @columns[col].name
       when 'due'
         if value > 0
@@ -146,7 +157,9 @@ class ListDirective
       when 'sent'
         if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'
       else
-        html.push '>', value
+        html.push '>', unless @columns[col].selectable? then value else
+          if @columns[col].selectable model then '<input type="checkbox"/>' else ''
+
     html.push '</td>'
     html.join ''
 
@@ -176,6 +189,23 @@ class ListDirective
           @_sortList sort
         @_onRedrawList()
     true
+
+  # **private**
+  # Checkbox toggle handler. If modified checkbox is in header, toggle all other checkbox
+  #
+  # @param event [Event] click event
+  _onToggle: (event) =>
+    target = $(event.target)
+    selected = target.closest('input').prop 'checked'
+    if target.closest('th').length > 0
+      # toggle checkbox from the header row: change status of all other checkboxes
+      @$el.find('td > input').prop 'checked', selected
+      @onToggle?(model: model, selected: selected) for model in @list
+    else
+      # fire event with proper model
+      col = target.closest('td').data 'col'
+      row = target.closest('tr').data 'row'
+      @onToggle?(model: @list[row], selected: selected)
 
   # **private**
   # Sort list with a given attribute
@@ -223,3 +253,5 @@ module.exports = (app) ->
       currentSort: '='
       # click handler, invoked with concerned model as 'model' parameter, and column as 'column' parameter
       onClick: '&?'
+      # selection toggle handler, invoked with concerned model as 'model' parameter, selection status as 'selected' parameter
+      onToggle: '&?'

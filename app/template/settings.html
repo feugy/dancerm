@@ -7,7 +7,7 @@
           <label class="col-sm-4 control-label">{{::'lbl.dumpPath'|i18n:{sep:true} }}</label>
           <div class="col-sm-8">
             <div class="input-group" data-ng-click="ctrl.chooseDumpLocation()">
-              <input type="text" class="form-control" data-ng-model="ctrl.localStorage.dumpPath"/>
+              <input type="text" class="form-control" data-ng-model="ctrl.localStorage.getItem('dumpPath')"/>
               <span class="input-group-addon"><i class="glyphicon glyphicon-folder-open"/></span>
             </div>
             <blockquote data-ng-if="ctrl.askDumpLocation" class="help-block">
@@ -38,7 +38,7 @@
           <label class="col-sm-4 control-label">{{::'lbl.theme'|i18n:{sep:true} }}</label>
           <div class="col-sm-8">
             <div class="btn-group" data-uib-dropdown keyboard-nav>
-              <button class="btn dropdown-toggle" uib-dropdown-toggle>{{'themes.' + (ctrl.localStorage.theme || 'none') | i18n}}<span class="caret"></span></button>
+              <button class="btn dropdown-toggle" uib-dropdown-toggle>{{'themes.' + (ctrl.localStorage.getItem('theme') || 'none') | i18n}}<span class="caret"></span></button>
               <ul class="dropdown-menu">
                 <li data-ng-repeat="theme in ::ctrl.themes"><a href="" data-ng-click="ctrl.applyTheme(theme)">{{::theme.label}}</a></li>
             </div>

@@ -4,7 +4,7 @@ i18n = require '../labels/common'
 module.exports = class ListLayoutController
 
   # Controller dependencies
-  @$inject: ['cardList', 'invoiceList', '$state']
+  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'dialog']
 
   @declaration:
     controller: ListLayoutController
@@ -14,6 +14,7 @@ module.exports = class ListLayoutController
   # Different available list service
   cardList: null
   invoiceList: null
+  lessonList: null
 
   # Currently selected service
   service: null
@@ -29,6 +30,9 @@ module.exports = class ListLayoutController
   # Link to Angular's state provider
   state: null
 
+  # Link to modal popup service
+  dialog: null
+
   # contextual actions, an array of objects containing properties:
   # - label [String] displayed label with i18n filter
   # - icon [String] optionnal icon name (prepended with 'glyphicon-')
@@ -36,18 +40,21 @@ module.exports = class ListLayoutController
   # modified by main view's controller
   actions: []
 
-  # **private**
-  # Call list print preview window
-  _preview: null
-
   # Controller constructor: bind methods and attributes to current scope
   #
+  # @param scope [Object] controller own scope, for async refresh
   # @param cardList [CardListService] service responsible for card list
   # @param invoiceList [InvoiceListService] service responsible for invoice list
+  # @param lessonList [LessonListService] service responsible for lesson list
   # @param state [Object] Angular's state provider
-  constructor: (@cardList, @invoiceList, @state) ->
-    @_preview = null
-    @select @cardList
+  # @param dialog [Object] Angular dialog service
+  constructor: (@scope, @cardList, @invoiceList, @lessonList, @state, @dialog) ->
+    @schools = i18n.lbl.schools
+
+    @select switch localStorage?.getItem 'search-service'
+      when 'invoice' then @invoiceList
+      when 'lesson' then @lessonList
+      else @cardList
 
     # initialize list
     @performSearch()
@@ -57,6 +64,7 @@ module.exports = class ListLayoutController
   # @param listService [searchList] list service to select
   select: (listService) =>
     @service = listService
+    localStorage.setItem 'search-service', @service.constructor.ModelClass.name.toLowerCase()
     @sort = @service.constructor.sort
     @columns = []
     if @service is @cardList
@@ -83,44 +91,61 @@ module.exports = class ListLayoutController
         {name: 'customer.name', title: 'lbl.customer', attr: (invoice) -> invoice.customer.name}
         {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
       ]
+    else if @service is @lessonList
+      @listClass = 'lessons'
+      @emptyListMessage = 'msg.emptyLessonList'
+      @listMessage = 'msg.lessonListLength'
+      @columns = [
+        {noSort: true, selectable: (model) -> not model.invoiced}
+        {name: 'teacher', title: 'lbl.teacherColumn'}
+        {name: 'date', title: 'lbl.hours', attr: (lesson) -> lesson.date?.format i18n.formats.lesson}
+        {name: 'details', title: 'lbl.details'}
+      ]
     # refresh search
     @performSearch()
+
+  # Select a list of lessons for invoice creation
+  #
+  # @param lessons [Array<Lesson>] selected lessons
+  selectLessons: (lessons) =>
+    @service.select lessons if @service is @lessonList
+    @scope.$apply()
+
+  # Makes a new invoice for the selected lesson and their concerned dancer.
+  # If an unsent invoice for that dancer, season and selected school already exists,
+  # displays a popup that offers to edit the invoice.
+  #
+  # @param schoolIdx [Number] index of the concerned school (in i18n.lbl.schools)
+  onMakeInvoice: (schoolIdx) =>
+    return unless @service is @lessonList
+    @service.makeInvoice schoolIdx, (err, invoice) =>
+      if err?
+        return console.warn err unless invoice?
+        # if an unsent invoice already exist, warn the user and stop here.
+        return @dialog.messageBox(i18n.ttl.confirm, i18n.msg.invoiceAlreadyExist, [
+            {label: i18n.btn.yes, result: true}
+            {label: i18n.btn.no}
+          ]
+        ).result.then (confirmed) =>
+          return unless confirmed
+          # if confirmed, effectively display the existing invoice
+          @state.go 'list.invoice', id: invoice.id
+      # display the created invoice
+      @state.go 'list.invoice', id: invoice.id
+      @scope.$apply()
 
   # Displays a given model on the main part
   #
   # @param model [Dancer|Invoice] choosen model
   display: (model) =>
-    console.log "ask to display #{model.id}"
+    console.log "ask to display #{model?.id}"
     if @service is @cardList
       @state.go 'list.card', id: model.cardId
-    else
+    else if @service is @invoiceList
       @state.go 'list.invoice', id: model.id
+    # nothing on lesson click
+
+  isActive: (kind) => @service is @["#{kind}List"]
 
   # Performs search using the selected service
   performSearch: => @service.performSearch()
-
-  # @return true if the current list concerned a dance class
-  canPrintCallList: =>
-    return false unless @service is @cardList
-    not @service.criteria.string and @service.criteria.danceClasses.length is 1
-
-  # Print call list from the current day
-  #
-  # @param danceClass [DanceClass] danceClass concerned
-  printCallList: =>
-    return unless @service is @cardList
-    return @_preview.focus() if @_preview?
-    nw.Window.open 'app/template/call_list_print.html',
-      frame: true
-      title: window.document.title
-      icon: require('../../../package.json')?.window?.icon
-      focus: true
-      # size to A4 format, landscape
-      width: 1000
-      height: 800
-      , (created) =>
-        @_preview = created
-        # set displayed list and wait for closure
-        @_preview.list = @cardList.list
-        @_preview.danceClass = @cardList.criteria.danceClasses[0]
-        @_preview.on 'closed', => @_preview = null

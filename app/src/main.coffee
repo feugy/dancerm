@@ -70,7 +70,7 @@ try
       win.reloadIgnoringCache()
 
   parallel [
-    (next) -> buildStyles ['dancerm', 'print'], localStorage.theme or 'none', next
+    (next) -> buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', next
     (next) -> $(win.window).on 'load', -> next()
   ], (err, results) ->
     # DOM is ready
@@ -109,6 +109,7 @@ try
       require('../script/directive/filtered_input')(app)
       require('../script/directive/invoice_item')(app)
       require('../script/directive/layout')(app)
+      require('../script/directive/lesson_list')(app)
       require('../script/directive/list')(app)
       require('../script/directive/planning')(app)
       require('../script/directive/payment')(app)

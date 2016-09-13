@@ -1,8 +1,10 @@
 ## TODO
 
-- Select displayed week
+- Generate lesson's invoices: add lesson lines
+- Display lesson from lesson list
+- Expanded lesson and invoice lists
+- Display invoice list on dancer card
 
-- Individual lessons
 - Search by check payer
 - Mandatory fields that cannot be bypassed
 - Invoice & Lesson conflicts

@@ -104,7 +104,6 @@ module.exports = class LessonsController
   # @param filter [Function] Angular's filter factory
   # @param state [Object] Angular state provider
   constructor: (@scope, @rootScope, @dialog, @filter, @state, @q) ->
-    day = moment().day()
     @startDay = null
     @lessons = []
     @lesson = null
@@ -125,6 +124,13 @@ module.exports = class LessonsController
 
     # set context actions for planning
     @actions = []
+    @dateOpts =
+      open: false
+      showWeeks: false
+      startingDay: 1
+      showButtonBar: false
+      value: Date.now()
+
     @_setChanged false
 
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
@@ -134,10 +140,7 @@ module.exports = class LessonsController
 
     # loads all lesson for all the displayed week
     # delay to let css animation be started (for lesson positionning within planning component)
-    _.delay =>
-      # beware: sunday is 0
-      @_loadLessons moment().subtract((if day is 0 then 7 else day) - 1, 'd').hours(0).minutes(0).seconds(0)
-    , 100
+    _.delay @onPickDate, 100
 
   # restore previous values, after manual confirm
   cancel: =>
@@ -370,6 +373,14 @@ module.exports = class LessonsController
         @_setChanged false
         @scope.$apply() unless @scope.$$phase
 
+  # Display current week title
+  # @returns [String] current week title with from and to dates
+  currentWeek: =>
+    @filter('i18n') 'ttl.currentWeek', args:
+      from: @startDay?.date()
+      to: @startDay?.clone().add(6, 'd').date()
+      monthAndYear: @startDay?.format 'MMMM YYYY'
+
   # Change handler: check if any displayed model has changed from its previous values
   #
   # @param field [String] modified field
@@ -377,6 +388,21 @@ module.exports = class LessonsController
     # performs comparison between current and old values
     @_setChanged false
     @_setChanged not _.isEqual @_previous, @lesson?.toJSON()
+
+  # Loads the next week
+  onNextWeek: () =>
+    @_loadLessons @startDay.clone().add(7, 'd')
+
+  # Loads the previous week
+  onPreviousWeek: () =>
+    @_loadLessons @startDay.clone().subtract(7, 'd')
+
+  onPickDate: () =>
+    # beware: sunday is 0
+    selected = moment(@dateOpts.value).hours(0).minutes(0).seconds(0)
+    day = selected.day()
+    @dateOpts.open = false
+    @_loadLessons selected.subtract (if day is 0 then 7 else day) - 1, 'd'
 
   # **private**
   # Update hasChanged flag and contextual actions

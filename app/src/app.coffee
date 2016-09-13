@@ -6,6 +6,7 @@ ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
 CardListService = require '../script/service/card_list'
 InvoiceListService = require '../script/service/invoice_list'
+LessonListService = require '../script/service/lesson_list'
 
 StatsCtrl = require '../script/controller/stats'
 SettingsCtrl = require '../script/controller/settings'
@@ -59,10 +60,11 @@ app.service 'import', ImportService
 app.service 'dialog', DialogService
 app.service 'cardList', CardListService
 app.service 'invoiceList', InvoiceListService
+app.service 'lessonList', LessonListService
 
 # at startup, check that dump path is defined
 app.run ['$location', (location) ->
-  location.url('/settings?firstRun').replace() unless localStorage.dumpPath?
+  location.url('/settings?firstRun').replace() unless localStorage.getItem('dumpPath')?
 ]
 
 # on close, dump data, with a waiting dialog message
@@ -73,6 +75,6 @@ app.close = (done) ->
   injector.get('$rootScope').$apply =>
     injector.get('dialog').messageBox i18n.ttl.dumping, i18n.msg.dumping
   # export data
-  injector.get('export').dump localStorage.dumpPath, done
+  injector.get('export').dump localStorage.getItem('dumpPath'), done
 
 module.exports = app

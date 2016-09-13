@@ -73,6 +73,12 @@ for color, i in colors
 
   > .column .table
 
+    thead > tr
+      border-bottom none
+
+    td, th
+      border-top-color lighten(colBackground, 25%)
+
     tr:nth-child(even)
       background rgba(white, 5%)
 
@@ -423,3 +429,19 @@ body
 
         > .content
           margin 0
+
+.lesson-list > .group
+
+  > h3
+    background-color headerBackground
+    color textColor
+    display block
+    margin 0
+    padding .25em 0
+    position static
+    text-align center
+    margin 5px 0
+
+  > .table
+    border-top 0
+    padding-top 0

@@ -5,21 +5,40 @@
       <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
     </div>
     <div class="btn-group search-toggle">
-      <a href="" class="btn" data-ng-class="{active: listCtrl.service == listCtrl.cardList}" data-ng-click="listCtrl.select(listCtrl.cardList)"><i class="glyphicon glyphicon-user"/></a>
-      <a href="" class="btn" data-ng-class="{active: listCtrl.service == listCtrl.invoiceList}" data-ng-click="listCtrl.select(listCtrl.invoiceList)"><i class="glyphicon glyphicon-euro"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('card')}" data-ng-click="listCtrl.select(listCtrl.cardList)"><i class="glyphicon glyphicon-user"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('invoice')}" data-ng-click="listCtrl.select(listCtrl.invoiceList)"><i class="glyphicon glyphicon-euro"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('lesson')}" data-ng-click="listCtrl.select(listCtrl.lessonList)"><i class="glyphicon glyphicon-book"/></a>
     </div>
     <div data-tags data-src="listCtrl.service.criteria" data-on-remove="listCtrl.performSearch()"></div>
     <div class="list-length" data-ng-hide="listCtrl.service.list.length > 0">{{listCtrl.emptyListMessage|i18n}}</div><!-- different labels -->
     <div class="list-length" data-ng-show="listCtrl.service.list.length > 0">{{listCtrl.service.list.length}}{{listCtrl.listMessage|i18n}}</div>
-    <div class="print-call-list" data-ng-if="listCtrl.canPrintCallList()">
-      <a href="" class="btn glyphed" data-ng-click="listCtrl.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>
+    <div class="centred-buttons" data-ng-if="listCtrl.service.canPrintCallList()">
+      <a href="" class="btn glyphed" data-ng-click="listCtrl.service.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>
     </div>
-    <list data-src="listCtrl.service.list"
+    <div class="centred-buttons" data-ng-if="listCtrl.service.invoicable.length">
+      <span class="btn-group" data-uib-dropdown>
+        <a href="" class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-euro"/>{{::'btn.invoice'|i18n}}<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <!-- don't order by schools, or $index will be the wrong one ! -->
+          <li data-ng-repeat="school in listCtrl.schools"><a href="" data-ng-click="listCtrl.onMakeInvoice($index)">{{::'btn.editInvoice'|i18n:{args:school} }}</a></li>
+        </ul>
+      </span>
+    </div>
+    <list
+      data-src="listCtrl.service.list"
       data-ng-class="listCtrl.listClass"
       data-current-sort="listCtrl.sort"
       data-columns="listCtrl.columns"
-      data-ng-show="listCtrl.service.list.length > 0"
-      data-on-click="listCtrl.display(model)"/>
+      data-ng-if="listCtrl.service.list.length > 0 && !listCtrl.isActive('lesson')"
+      data-on-click="listCtrl.display(model)"></list>
+    <lesson-list
+      data-src="listCtrl.service.list"
+      data-ng-class="listCtrl.listClass"
+      data-current-sort="listCtrl.sort"
+      data-columns="listCtrl.columns"
+      data-ng-if="listCtrl.service.list.length > 0 && listCtrl.isActive('lesson')"
+      data-on-select="listCtrl.selectLessons(lessons)"
+      data-on-click="listCtrl.display(model)"></lesson-list>
   </div>
   <div class="main" data-ui-view="main"></div>
 </div>

@@ -1,7 +1,7 @@
 _ = require 'lodash'
 SearchList = require './tools/search_list'
 
-# Service responsible for keeping the card list between states
+# Service responsible for searching for invoices, and keep the list between states.
 # Triggers search.
 module.exports = class InvoiceList extends SearchList
 
