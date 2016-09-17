@@ -138,14 +138,15 @@ module.exports = class ListLayoutController
 
   # Displays a given model on the main part
   #
-  # @param model [Dancer|Invoice] choosen model
+  # @param model [Dancer|Invoice|Lesson] choosen model
   display: (model) =>
     console.log "ask to display #{model?.id}"
     if @service is @cardList
       @state.go 'list.card', id: model.cardId
     else if @service is @invoiceList
       @state.go 'list.invoice', id: model.id
-    # nothing on lesson click
+    else if @service is @lessonList
+      @state.go 'lessons', id: model.id
 
   isActive: (kind) => @service is @["#{kind}List"]
 

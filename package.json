@@ -55,6 +55,7 @@
   },
   "scripts": {
     "start": ".\\bin\\nw.exe .",
+    "debug": ".\\bin\\nw.exe . --remote-debugging-port=5858",
     "test": "set NODE_ENV=test & .\\bin\\nw.exe test"
   },
   "licence": "LGPL v3",

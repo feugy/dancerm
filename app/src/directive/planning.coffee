@@ -62,13 +62,13 @@ class PlanningDirective
 
     @element.on 'click', '.danceClass', (event) =>
       danceClass = $(event.target).closest '.danceClass'
+      selected = danceClass.hasClass 'selected'
       model = _.find @scope.danceClasses, id:danceClass.data('id').toString()
       # invoke click handler
-      @scope?.onClick $event: event, danceClasses: [model]
+      @scope?.onClick $event: event, danceClasses: [model], selected: selected
 
       # disabled unless we provide a selected array
       return unless @scope.selected?
-      selected = danceClass.hasClass 'selected'
       danceClass.toggleClass 'selected'
       if selected
         # removes already selected id
@@ -91,11 +91,16 @@ class PlanningDirective
 
     # free listeners
     @scope.$on '$destroy', =>
-      unwatch?()
+      unwatch?() for unwatch in unwatches
       @element.off()
 
     # now, displays dance classes
-    unwatch = @scope.$watch 'danceClasses', @_displayClasses
+    unwatches = [
+      @scope.$watch 'danceClasses', @_displayClasses
+      @scope.$watchCollection 'selected', () =>
+        @element.find('.selected').removeClass 'selected'
+        @element.find("[data-id='#{id}']").addClass 'selected' for {id} in @scope.selected
+    ]
     _.defer => @_displayClasses @scope.danceClasses
 
   # **private**
@@ -262,7 +267,8 @@ module.exports = (app) ->
       shrinkHours: '@'
       # right offset (percentage) applied to dance classes inside a given day
       widthOffset: '@'
-      # event handler for dance class click. Clicked model as 'danceClass' parameter.
+      # event handler for dance class click. Clicked model as 'danceClass' parameter, and 'selected' a boolean
+      # indicating that model is already selected
       onClick: '&'
       # event handler for cell click. Clicked quarter day as 'day' parameter, and start time as 'hour' parameter
       onCellClick: '&'

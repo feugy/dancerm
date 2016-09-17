@@ -32,7 +32,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compi
   states.state 'stats', _.extend {url: '/stats'}, StatsCtrl.declaration
   states.state 'settings', _.extend {url: '/settings'}, SettingsCtrl.declaration
   states.state 'detailed', _.extend {url: '/detailed-list'}, ExpandedListCtrl.declaration
-  states.state 'lessons', _.extend {url: '/lessons'}, LessonsCtrl.declaration
+  states.state 'lessons', _.extend {url: '/lessons/:id'}, LessonsCtrl.declaration
 
   states.state 'list.card',
     url: '/card/:id'

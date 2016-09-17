@@ -1,6 +1,5 @@
 ## TODO
 
-- Display lesson from lesson list
 - Expanded lesson and invoice lists
 - Display invoice list on dancer card
 

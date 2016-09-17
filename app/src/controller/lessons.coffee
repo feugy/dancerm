@@ -23,7 +23,7 @@ toDayOffset = (day) =>
 module.exports = class LessonsController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope', 'dialog', '$filter', '$state', '$q']
+  @$inject: ['$scope', '$rootScope', 'dialog', '$filter', '$state', '$q', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -57,6 +57,8 @@ module.exports = class LessonsController
 
   # Currently edited lesson
   lesson: null
+
+  selected: []
 
   # Currently edited dancer, for displayal
   selectedDancer: null
@@ -103,10 +105,12 @@ module.exports = class LessonsController
   # @param dialog [Object] Angular dialog service
   # @param filter [Function] Angular's filter factory
   # @param state [Object] Angular state provider
-  constructor: (@scope, @rootScope, @dialog, @filter, @state, @q) ->
+  # @param stateParams [Object] invokation route parameters
+  constructor: (@scope, @rootScope, @dialog, @filter, @state, @q, stateParams) ->
     @startDay = null
     @lessons = []
     @lesson = null
+    @selected = []
     @selectedDancer = null
     @hasChanged = false
     @required = []
@@ -138,9 +142,21 @@ module.exports = class LessonsController
         @state.go toState.name, toParams if delayed
       , event
 
-    # loads all lesson for all the displayed week
-    # delay to let css animation be started (for lesson positionning within planning component)
-    _.delay @onPickDate, 100
+    if stateParams.id
+      # search for the desired
+      Lesson.find stateParams.id, (err, lesson) =>
+        if err?
+          console.error err
+          return @onPickDate()
+
+        # display week of the edited lesson, and edit the lesson itself
+        day = lesson.date.day()
+        @_loadLessons lesson.date.clone().subtract (if day is 0 then 7 else day) - 1, 'd'
+        @editLesson lesson
+    else
+      # loads all lesson for all the displayed week
+      # delay to let css animation be started (for lesson positionning within planning component)
+      _.delay @onPickDate, 100
 
   # restore previous values, after manual confirm
   cancel: =>
@@ -358,12 +374,20 @@ module.exports = class LessonsController
   # Set the lesson currently edited
   #
   # @param lesson [Lesson] newly edited lesson
-  editLesson: (lesson) =>
+  # @param alreadySelected [Boolean] true if lesson was already edited
+  editLesson: (lesson, alreadySelected) =>
     @_confirmQuit () =>
       @selectedDancer = null
+      @selected.splice 0, @selected.length
+      @lesson = null
+      @isReadOnly = false
+      @required = []
+      @previous = {}
+      return @scope.$apply() if alreadySelected
+
+      @selected.push lesson
       @lesson = lesson
       @isReadOnly = @lesson.invoiceId?
-      @required = []
       @_previous = @lesson.toJSON()
       @lesson.getDancer (err, dancer) =>
         return console.error err if err?

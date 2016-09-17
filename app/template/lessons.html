@@ -20,6 +20,7 @@
         <div
           data-planning
           data-src="ctrl.lessons"
+          data-selected="ctrl.selected"
           data-days="ctrl.i18n.planning.days"
           data-group-by="teacher"
           data-width-offset="10"
@@ -27,7 +28,7 @@
           data-get-legend="ctrl.affectLegend(model)"
           data-get-tooltip-content="ctrl.getPlanningTooltip(model, day)"
           data-get-title="ctrl.getPlanningTitle(model)"
-          data-on-click="ctrl.editLesson(danceClasses[0])"
+          data-on-click="ctrl.editLesson(danceClasses[0], selected)"
           data-on-cell-click="ctrl.createLesson(day, hour)"></div>
       </span>
       <span class="edition">
