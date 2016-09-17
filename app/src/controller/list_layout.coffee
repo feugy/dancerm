@@ -1,5 +1,8 @@
 {join} = require 'path'
 i18n = require '../labels/common'
+Invoice = require '../model/invoice'
+Dancer = require '../model/dancer'
+Lesson = require '../model/lesson'
 
 module.exports = class ListLayoutController
 
@@ -141,11 +144,11 @@ module.exports = class ListLayoutController
   # @param model [Dancer|Invoice|Lesson] choosen model
   display: (model) =>
     console.log "ask to display #{model?.id}"
-    if @service is @cardList
+    if model instanceof Dancer
       @state.go 'list.card', id: model.cardId
-    else if @service is @invoiceList
+    else if model instanceof Invoice
       @state.go 'list.invoice', id: model.id
-    else if @service is @lessonList
+    else if model instanceof Lesson
       @state.go 'lessons', id: model.id
 
   isActive: (kind) => @service is @["#{kind}List"]

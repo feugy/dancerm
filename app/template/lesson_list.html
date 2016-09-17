@@ -1,6 +1,6 @@
 <div class="lesson-list">
   <div class="group" data-ng-repeat="group in ctrl.groups">
-    <h3>{{group.dancer.firstname}} {{group.dancer.lastname}}</h3>
+    <h3 data-ng-click="ctrl.onClick({model: group.dancer, selected: false})">{{group.dancer.firstname}} {{group.dancer.lastname}}</h3>
     <list
       data-src="group.lessons"
       data-columns="ctrl.columns"
