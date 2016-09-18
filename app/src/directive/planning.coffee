@@ -98,6 +98,7 @@ class PlanningDirective
     unwatches = [
       @scope.$watch 'danceClasses', @_displayClasses
       @scope.$watchCollection 'selected', () =>
+        return unless @scope.selected?
         @element.find('.selected').removeClass 'selected'
         @element.find("[data-id='#{id}']").addClass 'selected' for {id} in @scope.selected
     ]

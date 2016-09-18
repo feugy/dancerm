@@ -30,7 +30,8 @@ const paths = {
   testsSrc: 'test/src/**/*.coffee',
   testsDest: 'test/script',
   templateDest: 'app/template',
-  vendor: 'app/vendor'
+  vendor: 'app/vendor',
+  sourceMapRoot: '../../src'
 }
 
 const platforms = ['osx64']
@@ -62,14 +63,15 @@ gulp.task('copy-assets', ['clean'], () =>
 // Build Coffee scripts
 const buildScripts = () =>
   gulp.src(paths.scriptsSrc)
-    .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(coffee({
-      bare: true
+      bare: true,
+      maps: true
     }).on('error', function(err) {
       gutil.log(err.stack)
       gutil.beep()
     }))
-    .pipe(sourcemaps.write({sourceRoot: paths.scriptsSrc.replace('/**/*.coffee', '')}))
+    .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
     .pipe(gulp.dest(paths.scriptsDest))
     .on('end', () => gutil.log('scripts rebuilt'))
 
@@ -81,14 +83,15 @@ gulp.task('build', ['copy-assets', 'build-scripts'])
 // Build tests scripts
 const buildTests = () =>
   gulp.src(paths.testsSrc)
-    .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(coffee({
-      bare: true
+      bare: true,
+      maps: true
     }).on('error', function(err) {
       gutil.log(err.stack)
       gutil.beep()
     }))
-    .pipe(sourcemaps.write({sourceRoot: paths.testsSrc.replace('/**/*.coffee', '')}))
+    .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
     .pipe(gulp.dest(paths.testsDest))
     .on('end', () => gutil.log('test rebuilt'))
 
