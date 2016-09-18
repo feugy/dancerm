@@ -383,7 +383,7 @@ module.exports = class LessonsController
       @isReadOnly = false
       @required = []
       @previous = {}
-      return @scope.$apply() if alreadySelected
+      return @scope.$apply() if alreadySelected or not lesson?
 
       @selected.push lesson
       @lesson = lesson
@@ -473,7 +473,7 @@ module.exports = class LessonsController
   # Invoked with true if the popup was displayed, with false otherwise
   # @param event [Event] optional event that will be cancelled if needed
   _confirmQuit: (process, event = null) =>
-    return process false unless @hasChanged
+    return process false unless @hasChanged and @lessons?
     # stop event (for state changes)
     event?.preventDefault()
     # confirm if dancer changed

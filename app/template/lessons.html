@@ -61,7 +61,7 @@
             <div class="duration"><label>{{::'lbl.duration'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.duration}}</span><input data-ng-if="!ctrl.isReadOnly" type="number" name="duration" data-ng-model="ctrl.lesson.duration" data-ng-change="ctrl.onChange('duration')" data-set-null/>{{::'lbl.durationUnit'|i18n}}</div>
             <div class="price"><label>{{::'lbl.price'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.price}}</span><input data-ng-if="!ctrl.isReadOnly" type="number" name="duration" data-ng-model="ctrl.lesson.price" data-ng-change="ctrl.onChange('price')" data-set-null/>{{::'lbl.currency'|i18n}}</div>
             <div class="details"><label>{{::'lbl.lessonDetails'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.details}}</span><textarea data-ng-if="!ctrl.isReadOnly" data-ng-model="ctrl.lesson.details" data-ng-change="ctrl.onChange('details')" data-set-null/></div>
-            <div class="invoiced"><label>{{::'lbl.lessonInvoiced'|i18n:{sep:true} }}</label><span class="value">{{ctrl.lesson.invoiced ? 'btn.yes' : 'btn.no' | i18n}}</span>
+            <div class="invoiced"><label>{{::'lbl.lessonInvoiced'|i18n:{sep:true} }}</label><span class="value">{{ctrl.lesson.invoiceId ? 'btn.yes' : 'btn.no' | i18n}}</span>
           </div>
         </article>
       </span>

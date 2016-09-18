@@ -157,8 +157,8 @@ class ListDirective
       when 'sent', 'invoiced'
         if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'
       else
-        html.push '>', unless @columns[col].selectable? then value else
-          if @columns[col].selectable model then '<input type="checkbox"/>' else ''
+        html.push unless @columns[col].selectable? then ">#{value}" else
+          if @columns[col].selectable model then 'data-selectable="true"><input type="checkbox"/>' else ''
 
     html.push '</td>'
     html.join ''
@@ -170,6 +170,8 @@ class ListDirective
   # @param event [Event] click event
   _onClick: (event) =>
     target = $(event.target)
+    # selectable cell should not trigger clicks
+    return if target.closest('td').data 'selectable'
     col = target.closest('td').data 'col'
     row = target.closest('tr').data 'row'
     if col? and row?
@@ -199,8 +201,10 @@ class ListDirective
     selected = target.closest('input').prop 'checked'
     if target.closest('th').length > 0
       # toggle checkbox from the header row: change status of all other checkboxes
-      @$el.find('td > input').prop 'checked', selected
-      @onToggle?(model: model, selected: selected) for model in @list
+      for input in @$el.find 'td > input'
+        $(input).prop 'checked', selected
+        model = @list[$(input).closest('tr').data 'row']
+        @onToggle?(model: model, selected: selected)
     else
       # fire event with proper model
       col = target.closest('td').data 'col'

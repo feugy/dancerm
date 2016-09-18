@@ -235,10 +235,14 @@ body
         td:nth-child({i+1})
           width col
 
-        // align numbers right
-        if unit(col) == 'em'
+        // align numbers right, and boolean center
+        if i >= 4 && i <= 7
           td:nth-child({i+1})
             text-align right
+        if i == 3
+          td:nth-child({i+1})
+          th:nth-child({i+1})
+            text-align center
 
       td:nth-child(10)
       th:nth-child(10)
@@ -251,10 +255,14 @@ body
       th:nth-child({i+1})
         width col
 
-      // align numbers right
-      if unit(col) == 'em'
+      // align numbers right, and boolean/select center
+      if i == 5
         td:nth-child({i+1})
           text-align right
+      if i == 0 || i == 3
+        td:nth-child({i+1})
+        th:nth-child({i+1})
+          text-align center
 
       td:nth-child(7)
       th:nth-child(7)

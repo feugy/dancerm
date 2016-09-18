@@ -81,7 +81,7 @@ module.exports = class LessonList extends SearchList
           @invoicable = []
           invoice.save done
 
-  # Invoked when some lessons are selected, to evaluate if invoice coupld be generated
+  # Invoked when some lessons are selected, to evaluate if invoice could be generated
   #
   # @params lessons [Array<Lessons>] selected lessons
   select: (lessons) =>
