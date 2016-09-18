@@ -51,6 +51,24 @@ module.exports = class CardList extends SearchList
         @_preview.danceClass = @criteria.danceClasses[0]
         @_preview.on 'closed', => @_preview = null
 
+  # Displays addresses printing window
+  printAddresses: =>
+    return @_preview.focus() if @_preview?
+    return unless @list?.length > 0
+    nw.Window.open 'app/template/addresses_print.html',
+      frame: true
+      title: window.document.title
+      icon: require('../../../package.json')?.window?.icon
+      focus: true
+      # size to A4 format, 3/4 height
+      width: 1000
+      height: 800
+      , (created) =>
+        @_preview = created
+        # set displayed list and wait for closure
+        @_preview.list = @list
+        @_preview.on 'closed', => @_preview = null
+
   # **private**
   # Parse criteria to search options
   # @returns [Object] option for findWhere method.

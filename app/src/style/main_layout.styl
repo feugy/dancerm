@@ -184,6 +184,17 @@ body
   > .list-length
     display inline-block
 
+  .lesson-list > .group > h3
+    text-align left
+    padding .5em
+
+  .search-toggle
+    margin-top 0
+    margin-left 1em
+
+    .glyphicon
+      top 5px
+
   .input-row
     display flex
 
@@ -205,15 +216,49 @@ body
     td:nth-child(3)
       font-weight bold
 
-    // we MUST have fixed width columns
-    // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
-    cols = 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
-    for col, i in cols
-      td:nth-child({i+1}), th:nth-child({i+1})
+    // tables  MUST have fixed width columns
+    &.dancers
+      // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
+      for col, i in 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
+        td:nth-child({i+1})
+        th:nth-child({i+1})
+          width col
+
+      td:nth-child(12)
+      th:nth-child(12)
+        flex 1
+
+    &.invoices
+      // school, ref, date, sent, total, dutyfreeTotal, taxTotal, discount, customer name, customer address
+      for col, i in 10% 10% 10% 4em 5em 5em 5em 5em 20%
+        th:nth-child({i+1})
+        td:nth-child({i+1})
+          width col
+
+        // align numbers right
+        if unit(col) == 'em'
+          td:nth-child({i+1})
+            text-align right
+
+      td:nth-child(10)
+      th:nth-child(10)
+        flex 1
+
+  .lessons .table
+    // select box, teacher, date, invoiced, duration, price, details
+    for col, i in 5em 15% 15% 6em 10em 5em
+      td:nth-child({i+1})
+      th:nth-child({i+1})
         width col
 
-    td:nth-child(12), th:nth-child(12)
-      flex 1
+      // align numbers right
+      if unit(col) == 'em'
+        td:nth-child({i+1})
+          text-align right
+
+      td:nth-child(7)
+      th:nth-child(7)
+        flex 1
 
   h2 > *:not(:last-child)
     margin-right 7px

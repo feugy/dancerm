@@ -10,7 +10,7 @@
       <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('lesson')}" data-ng-click="listCtrl.select(listCtrl.lessonList)"><i class="glyphicon glyphicon-book"/></a>
     </div>
     <div data-tags data-src="listCtrl.service.criteria" data-on-remove="listCtrl.performSearch()"></div>
-    <div class="list-length" data-ng-hide="listCtrl.service.list.length > 0">{{listCtrl.emptyListMessage|i18n}}</div><!-- different labels -->
+    <div class="list-length" data-ng-hide="listCtrl.service.list.length > 0">{{listCtrl.emptyListMessage|i18n}}</div>
     <div class="list-length" data-ng-show="listCtrl.service.list.length > 0">{{listCtrl.service.list.length}}{{listCtrl.listMessage|i18n}}</div>
     <div class="centred-buttons" data-ng-if="listCtrl.service.canPrintCallList()">
       <a href="" class="btn glyphed" data-ng-click="listCtrl.service.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>

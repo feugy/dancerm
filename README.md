@@ -1,6 +1,6 @@
 ## TODO
 
-- Expanded lesson and invoice lists
+- List directive: sort on numerical values
 - Display invoice list on dancer card
 
 - Search by check payer

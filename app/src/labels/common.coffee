@@ -105,6 +105,7 @@ module.exports =
     genericDanceClass: 'Abonnement danse'
     horizontalMargin: 'Marge horizontale (mm)'
     hours: 'Horaire'
+    invoiceDate: 'Emise le'
     importedValue: 'Valeur importée'
     invoiceItemLesson: 'Cours particulier'
     invoiceTotal: 'Total TTC'

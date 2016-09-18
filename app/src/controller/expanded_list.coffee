@@ -2,22 +2,65 @@ _ = require 'lodash'
 {join} = require 'path'
 moment = require 'moment'
 i18n = require '../labels/common'
+ListController = require './tools/list'
 
-module.exports = class ExpandedListController
+module.exports = class ExpandedListController extends ListController
 
   # Controller dependencies
-  @$inject: ['$scope', 'cardList', 'export', 'dialog']
+  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'export', 'dialog']
 
   @declaration:
     controller: ExpandedListController
     controllerAs: 'ctrl'
     templateUrl: 'expanded_list.html'
 
-  # Controller's own scope, for event listening
-  scope: null
-
-  # Link to card list service
-  cardList: null
+  # Columns used depending on the selected service
+  @colSpec:
+    card: [
+      {name: 'title', title: 'lbl.title'}
+      {name: 'firstname', title: 'lbl.firstname'}
+      {name: 'lastname', title: 'lbl.lastname'}
+      {name: 'certified', title: 'lbl.certified', attr: (dancer, done) ->
+        dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+      }
+      {name: 'due', title: 'lbl.due', attr: (dancer, done) ->
+        dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0}
+      {name: 'age', title: 'lbl.age', attr: (dancer) ->
+        if dancer.birth? then moment().diff dancer.birth, 'years' else ''}
+      {name: 'birth', title: 'lbl.birth', attr: (dancer) ->
+        if dancer.birth? then dancer.birth.format i18n.formats.birth else ''}
+      {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer, done) ->
+        dancer.getCard (err, card) ->
+          return done err, "" if err? or not card.knownBy
+          done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''}
+      {name: 'phone', title: 'lbl.phone', attr: (dancer, done) ->
+        dancer.getAddress (err, address) -> done err, address?.phone}
+      {name: 'cellphone', title: 'lbl.cellphone'}
+      {name: 'email', title: 'lbl.email'}
+      {name: 'address', title: 'lbl.address', attr: (dancer, done) ->
+        dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"}
+    ]
+    invoice: [
+      {name: 'school', title: 'lbl.school', attr: ({selectedSchool}) -> i18n.lbl.schools[selectedSchool].owner}
+      {name: 'ref', title: 'lbl.ref'}
+      {name: 'date', title: 'lbl.invoiceDate', attr: ({date}) -> date.format i18n.formats.invoice}
+      {name: 'sent', title: 'lbl.sent', attr: ({sent}) -> sent?}
+      {name: 'total', title: 'lbl.invoiceTotal', attr: ({total}) -> "#{total} #{i18n.lbl.currency}"}
+      {name: 'dutyFreeTotal', title: 'lbl.dutyFreeTotal', attr: ({dutyFreeTotal}) -> "#{dutyFreeTotal} #{i18n.lbl.currency}"}
+      {name: 'taxTotal', title: 'lbl.taxTotal', attr: ({taxTotal}) -> "#{taxTotal} #{i18n.lbl.currency}"}
+      {name: 'discount', title: 'lbl.discount', attr: ({discount}) -> "#{discount} %"}
+      {name: 'customer.name', title: 'lbl.customer', attr: ({customer}) -> customer.name}
+      {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
+    ]
+    lesson: [
+      {noSort: true, selectable: (model) -> not model.invoiceId?}
+      {name: 'teacher', title: 'lbl.teacherColumn'}
+      {name: 'date', title: 'lbl.hours', attr: ({date}) -> date?.format i18n.formats.lesson}
+      {name: 'invoiced', title: 'lbl.lessonInvoiced', attr: ({invoiceId}) -> invoiceId?}
+      {name: 'duration', title: 'lbl.duration', attr: ({duration}) -> "#{duration} #{i18n.lbl.durationUnit}"}
+      {name: 'price', title: 'lbl.price', attr: ({price}) -> "#{price} #{i18n.lbl.currency}"}
+      {name: 'details', title: 'lbl.details'}
+    ]
 
   # Link to Angular's dialog service
   dialog: null
@@ -25,92 +68,30 @@ module.exports = class ExpandedListController
   # Link to export service
   exporter: null
 
-  # Sort column
-  sort: null
-
-  # Sort order: ascending if true
-  sortAsc: true
-
-  # contextual actions, an array of objects containing properties:
-  # - label [String] displayed label with i18n filter
-  # - icon [String] optionnal icon name (prepended with 'glyphicon-')
-  # - action [Function] function invoked (without argument) when clicked
-  # modified by main view's controller
-  actions: []
-
   # Displayed columns
-  columns: [
-    {name: 'title', title: 'lbl.title'}
-    {name: 'firstname', title: 'lbl.firstname'}
-    {name: 'lastname', title: 'lbl.lastname'}
-    {name: 'certified', title: 'lbl.certified', attr: (dancer, done) ->
-      dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
-    }, {name: 'due', title: 'lbl.due', attr: (dancer, done) ->
-      dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
-    }, {name: 'age', title: 'lbl.age', attr: (dancer) ->
-      if dancer.birth? then moment().diff dancer.birth, 'years' else ''
-    }, {name: 'birth', title: 'lbl.birth', attr: (dancer) ->
-      if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
-    }, {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer, done) ->
-      dancer.getCard (err, card) ->
-        return done err, "" if err? or not card.knownBy
-        done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
-    }, {name: 'phone', title: 'lbl.phone', attr: (dancer, done) ->
-      dancer.getAddress (err, address) -> done err, address?.phone
-    }, {name: 'cellphone', title: 'lbl.cellphone'}
-    {name: 'email', title: 'lbl.email'}
-    {name: 'address', title: 'lbl.address', attr: (dancer, done) ->
-      dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
-    }]
-
-  # **private**
-  # single print preview insance
-  _preview: null
+  columns: []
 
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] controller's own scope, for event listening
   # @param cardList [Object] Card list service
+  # @param invoiceList [InvoiceListService] service responsible for invoice list
+  # @param lessonList [LessonListService] service responsible for lesson list
+  # @param state [Object] Angular's state provider
   # @param export [Object] Export service
   # @param dialog [Object] Angular's dialog service
-  constructor: (@scope, cardList, @exporter, @dialog) ->
-    # keeps current sort for inversion
-    @sort = null
-    @sortAsc = true
-    @_preview = null
-
+  constructor: (scope, cardList, invoiceList, lessonList, state, @exporter, @dialog) ->
+    super scope, cardList, invoiceList, lessonList, state
+    service.on 'search-end', @_updateActions for service in [@cardList, @invoiceList, @lessonList]
     # update actions on search end
-    @scope.$on '$destroy', => @cardList.removeListener 'search-end', @_updateActions
+    @scope.$on '$destroy', =>
+      service.removeListener 'search-end', @_updateActions for service in [@cardList, @invoiceList, @lessonList]
 
-    _.delay =>
-      # defer affectation to avoid building list while animating view transition
-      @cardList = cardList
-      @cardList.on 'search-end', @_updateActions
-      @_updateActions()
-      @scope.$apply()
-    , 500
-
-  # Sort list by given attribute and order
-  #
-  # @param attr [String] sort attribute
-  onSort: (attr) =>
-    # invert if using same sort.
-    if attr is @sort
-      @cardList.list.reverse()
-      @sortAsc = !@sortAsc
-    else
-      @sortAsc = true
-      @sort = attr
-      # TODO specific attributes
-      ###if attr is 'due'
-        attr = (model) -> model?.registrations?[0]?.due()
-      else if attr is 'address'
-        attr = (model) -> model?.address?.zipcode###
-      @cardList.list = _.sortBy @cardList.list, attr
+    @_updateActions()
 
   # Choose a target file and export list as xlsx
   export: =>
-    return unless @cardList.list?.length > 0
+    return unless @service.list?.length > 0
     dialog = $('<input style="display:none;" type="file" nwsaveas accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
     dialog.change (evt) =>
       filePath = dialog.val()
@@ -124,7 +105,7 @@ module.exports = class ExpandedListController
         waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
       # Perform export
-      @exporter.toFile filePath, @cardList.list, (err) =>
+      @exporter.toFile filePath, @service.list, (err) =>
         waitingDialog.close()
         if err?
           console.error "Export failed: #{err}"
@@ -136,32 +117,10 @@ module.exports = class ExpandedListController
     # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
     null
 
-  # Displays addresses printing window
-  printAddresses: =>
-    return @_preview.focus() if @_preview?
-    return unless @cardList.list?.length > 0
-    _console = global.console
-    nw.Window.open 'app/template/addresses_print.html',
-      frame: true
-      title: window.document.title
-      icon: require('../../../package.json')?.window?.icon
-      focus: true
-      # size to A4 format, 3/4 height
-      width: 1000
-      height: 800
-      , (created) =>
-        @_preview = created
-        # set displayed list and wait for closure
-        @_preview.list = @cardList.list
-        @_preview.on 'closed', => @_preview = null
-    # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
-    null
-
-
   # Export email as string
   exportEmails: =>
-    return unless @cardList.list?.length > 0
-    emails = _.uniq(dancer.email.trim() for dancer in @cardList.list when dancer.email?.trim().length > 0).sort().join ', '
+    return unless @service.list?.length > 0
+    emails = _.uniq(dancer.email.trim() for dancer in @service.list when dancer.email?.trim().length > 0).sort().join ', '
     # put in the system clipboard
     clipboard = nw.Clipboard.get()
     clipboard.set emails, 'text'
@@ -171,11 +130,8 @@ module.exports = class ExpandedListController
   # **private**
   # When search is finished, update actions regarding the number of results
   _updateActions: =>
-    if @cardList.list.length > 0
-      @actions = [
-        {label: 'btn.export', icon: 'export', action: @export},
-        {label: 'btn.printAddresses', icon: 'envelope', action: @printAddresses}
+    @actions = []
+    if @service.list.length > 0 and @service is @cardList
+      @actions.push {label: 'btn.export', icon: 'export', action: @export},
+        {label: 'btn.printAddresses', icon: 'envelope', action: @service.printAddresses},
         {label: 'btn.exportEmails', icon: 'tags', action: @exportEmails}
-      ]
-    else
-      @actions = []

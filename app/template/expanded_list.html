@@ -2,16 +2,32 @@
   <div class="column expanded">
     <div class="input-row">
       <div class="input-group">
-        <input class="form-control" type="text" data-ng-model="ctrl.cardList.criteria.string" data-ng-keyup="ctrl.cardList.performSearch()" placeholder="{{::'placeholder.search'|i18n}}"/>
+        <input class="form-control" type="text" data-ng-model="ctrl.service.criteria.string" data-ng-keyup="ctrl.performSearch()" placeholder="{{::'placeholder.search'|i18n}}"/>
         <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
       </div>
-      <span data-tags data-src="ctrl.cardList.criteria" data-on-remove="ctrl.cardList.performSearch()"></span>
+      <div class="btn-group search-toggle">
+        <a href="" class="btn" data-ng-class="{active: ctrl.isActive('card')}" data-ng-click="ctrl.select(ctrl.cardList)"><i class="glyphicon glyphicon-user"/></a>
+        <a href="" class="btn" data-ng-class="{active: ctrl.isActive('invoice')}" data-ng-click="ctrl.select(ctrl.invoiceList)"><i class="glyphicon glyphicon-euro"/></a>
+        <a href="" class="btn" data-ng-class="{active: ctrl.isActive('lesson')}" data-ng-click="ctrl.select(ctrl.lessonList)"><i class="glyphicon glyphicon-book"/></a>
+      </div>
+      <span data-tags data-src="ctrl.service.criteria" data-on-remove="ctrl.performSearch()"></span>
     </div>
-    <div class="list-length" data-ng-hide="ctrl.cardList.list.length > 0">{{::'msg.emptyDancerList'|i18n}}</div>
-    <div class="list-length" data-ng-show="ctrl.cardList.list.length > 0">{{ctrl.cardList.list.length}}{{::'msg.dancerListLength'|i18n}}</div>
-    <list data-src="ctrl.cardList.list"
+    <div class="list-length" data-ng-hide="ctrl.service.list.length > 0">{{ctrl.emptyListMessage|i18n}}</div>
+    <div class="list-length" data-ng-show="ctrl.service.list.length > 0">{{ctrl.service.list.length}}{{ctrl.listMessage|i18n}}</div>
+    <list
+      data-src="ctrl.service.list"
+      data-ng-class="ctrl.listClass"
+      data-current-sort="ctrl.sort"
       data-columns="ctrl.columns"
-      data-on-click="ctrl.displayDancer(model)"
-      data-ng-show="ctrl.cardList.list.length > 0"/>
+      data-ng-if="ctrl.service.list.length > 0 && !ctrl.isActive('lesson')"
+      data-on-click="ctrl.display(model)"></list>
+    <lesson-list
+      data-src="ctrl.service.list"
+      data-ng-class="ctrl.listClass"
+      data-current-sort="ctrl.sort"
+      data-columns="ctrl.columns"
+      data-ng-if="ctrl.service.list.length > 0 && ctrl.isActive('lesson')"
+      data-on-select="ctrl.selectLessons(lessons)"
+      data-on-click="ctrl.display(model)"></lesson-list>
   </div>
 </div>

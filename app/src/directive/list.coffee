@@ -154,7 +154,7 @@ class ListDirective
         html.push '><i class="glyphicon glyphicon-'
         html.push if value then 'ok' else 'exclamation-sign'
         html.push '"/>'
-      when 'sent'
+      when 'sent', 'invoiced'
         if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'
       else
         html.push '>', unless @columns[col].selectable? then value else
