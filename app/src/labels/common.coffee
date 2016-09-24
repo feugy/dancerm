@@ -82,7 +82,7 @@ module.exports =
     charged: 'Réglement de'
     choose: '---'
     city: 'Ville'
-    classTooltip: '<%= kind %> (<%= level %>) <%= start %>~<%= end %>'
+    classTooltip: '<p><%= kind %> (<%= level %>)</p><p><%= start %>~<%= end %></p>'
     currency: ' €'
     customer: 'Client'
     danceClasses: 'Cours'

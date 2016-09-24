@@ -2,6 +2,7 @@
 
 ## TODO
 
+- Lesson list: sort on dates
 - List directive: sort on numerical values
 - Display invoice list on dancer card
 
