@@ -142,7 +142,6 @@ module.exports = class Persisted extends Base
       # run conventional treatment
       initCache @name
       start = Date.now()
-      console.log '>>> coucou findWhere', @name, conditions
       persistance.find @name, conditions, (err, results) =>
         # enrich with model if results available
         if results?

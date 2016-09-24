@@ -15,7 +15,7 @@ module.exports = class LessonList extends SearchList
 
   # **static**
   # Default sort
-  @sort: 'teacher'
+  @sort: 'date'
 
   # List of lessons that can be used for an invoice
   invoicable = []

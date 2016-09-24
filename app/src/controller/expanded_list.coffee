@@ -20,45 +20,113 @@ module.exports = class ExpandedListController extends ListController
       {name: 'title', title: 'lbl.title'}
       {name: 'firstname', title: 'lbl.firstname'}
       {name: 'lastname', title: 'lbl.lastname'}
-      {name: 'certified', title: 'lbl.certified', attr: (dancer, done) ->
-        dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+      {
+        name: 'certified'
+        title: 'lbl.certified'
+        attr: (dancer, done) ->
+          dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
       }
-      {name: 'due', title: 'lbl.due', attr: (dancer, done) ->
-        dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0}
-      {name: 'age', title: 'lbl.age', attr: (dancer) ->
-        if dancer.birth? then moment().diff dancer.birth, 'years' else ''}
-      {name: 'birth', title: 'lbl.birth', attr: (dancer) ->
-        if dancer.birth? then dancer.birth.format i18n.formats.birth else ''}
-      {name: 'knownBy', title: 'lbl.knownBy', attr: (dancer, done) ->
-        dancer.getCard (err, card) ->
-          return done err, "" if err? or not card.knownBy
-          done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''}
-      {name: 'phone', title: 'lbl.phone', attr: (dancer, done) ->
-        dancer.getAddress (err, address) -> done err, address?.phone}
+      {
+        name: 'due'
+        title: 'lbl.due'
+        attr: (dancer, done) ->
+          dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0}
+      {
+        name: 'age'
+        title: 'lbl.age'
+        attr: (dancer) ->
+          if dancer.birth? then moment().diff dancer.birth, 'years' else ''
+        sorter: (dancer, value) -> +value
+      }
+      {
+        name: 'birth'
+        title: 'lbl.birth'
+        attr: (dancer) ->
+          if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
+        sorter: ({birth}) -> birth?.valueOf()
+      }
+      {
+        name: 'knownBy'
+        title: 'lbl.knownBy'
+        attr: (dancer, done) ->
+          dancer.getCard (err, card) ->
+            return done err, "" if err? or not card.knownBy
+            done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
+      }
+      {
+        name: 'phone'
+        title: 'lbl.phone'
+        attr: (dancer, done) ->
+          dancer.getAddress (err, address) -> done err, address?.phone
+      }
       {name: 'cellphone', title: 'lbl.cellphone'}
       {name: 'email', title: 'lbl.email'}
-      {name: 'address', title: 'lbl.address', attr: (dancer, done) ->
-        dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"}
+      {
+        name: 'address'
+        title: 'lbl.address'
+        attr: (dancer, done) ->
+          dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
+      }
     ]
     invoice: [
       {name: 'school', title: 'lbl.school', attr: ({selectedSchool}) -> i18n.lbl.schools[selectedSchool].owner}
       {name: 'ref', title: 'lbl.ref'}
-      {name: 'date', title: 'lbl.invoiceDate', attr: ({date}) -> date.format i18n.formats.invoice}
+      {
+        name: 'date'
+        title: 'lbl.invoiceDate'
+        attr: ({date}) -> date.format i18n.formats.invoice
+        sorter: ({date}) -> date.valueOf()
+      }
       {name: 'sent', title: 'lbl.sent', attr: ({sent}) -> sent?}
-      {name: 'total', title: 'lbl.invoiceTotal', attr: ({total}) -> "#{total} #{i18n.lbl.currency}"}
-      {name: 'dutyFreeTotal', title: 'lbl.dutyFreeTotal', attr: ({dutyFreeTotal}) -> "#{dutyFreeTotal} #{i18n.lbl.currency}"}
-      {name: 'taxTotal', title: 'lbl.taxTotal', attr: ({taxTotal}) -> "#{taxTotal} #{i18n.lbl.currency}"}
-      {name: 'discount', title: 'lbl.discount', attr: ({discount}) -> "#{discount} %"}
+      {
+        name: 'total',
+        title: 'lbl.invoiceTotal',
+        attr: ({total}) -> "#{total} #{i18n.lbl.currency}"
+        sorter: ({total}) -> total
+      }
+      {
+        name: 'dutyFreeTotal'
+        title: 'lbl.dutyFreeTotal'
+        attr: ({dutyFreeTotal}) -> "#{dutyFreeTotal} #{i18n.lbl.currency}"
+        sorter: ({dutyFreeTotal}) -> dutyFreeTotal
+      }
+      {
+        name: 'taxTotal'
+        title: 'lbl.taxTotal'
+        attr: ({taxTotal}) -> "#{taxTotal} #{i18n.lbl.currency}"
+        sorter: ({taxTotal}) -> taxTotal
+      }
+      {
+        name: 'discount'
+        title: 'lbl.discount'
+        attr: ({discount}) -> "#{discount} %"
+        sorter: ({discount}) -> discount
+      }
       {name: 'customer.name', title: 'lbl.customer', attr: ({customer}) -> customer.name}
       {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
     ]
     lesson: [
-      {noSort: true, selectable: (model) -> not model.invoiceId?}
+      {selectable: (model) -> not model.invoiceId?}
       {name: 'teacher', title: 'lbl.teacherColumn'}
-      {name: 'date', title: 'lbl.hours', attr: ({date}) -> date?.format i18n.formats.lesson}
+      {
+        name: 'date'
+        title: 'lbl.hours'
+        attr: ({date}) -> date?.format i18n.formats.lesson
+        sorter: ({date}) -> date?.valueOf()
+      }
       {name: 'invoiced', title: 'lbl.lessonInvoiced', attr: ({invoiceId}) -> invoiceId?}
-      {name: 'duration', title: 'lbl.duration', attr: ({duration}) -> "#{duration} #{i18n.lbl.durationUnit}"}
-      {name: 'price', title: 'lbl.price', attr: ({price}) -> "#{price} #{i18n.lbl.currency}"}
+      {
+        name: 'duration'
+        title: 'lbl.duration'
+        attr: ({duration}) -> "#{duration} #{i18n.lbl.durationUnit}"
+        sorter: ({duration}) -> duration
+      }
+      {
+        name: 'price'
+        title: 'lbl.price'
+        attr: ({price}) -> "#{price} #{i18n.lbl.currency}"
+        sorter: ({price}) -> price
+      }
       {name: 'details', title: 'lbl.details'}
     ]
 

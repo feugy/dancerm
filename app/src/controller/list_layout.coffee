@@ -17,11 +17,17 @@ module.exports = class ListLayoutController extends ListController
     card: [
       {name: 'firstname', title: 'lbl.firstname'}
       {name: 'lastname', title: 'lbl.lastname'}
-      {name: 'certified', title: 'lbl.certified', attr: (dancer, done) ->
-        dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+      {
+        name: 'certified'
+        title: 'lbl.certified'
+        attr: (dancer, done) ->
+          dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
       }
-      {name: 'due', title: 'lbl.due', attr: (dancer, done) ->
-        dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
+      {
+        name: 'due'
+        title: 'lbl.due'
+        attr: (dancer, done) ->
+          dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
       }
     ]
     invoice: [
@@ -31,9 +37,14 @@ module.exports = class ListLayoutController extends ListController
       {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
     ]
     lesson: [
-      {noSort: true, selectable: (model) -> not model.invoiceId?}
+      {selectable: (model) -> not model.invoiceId?}
       {name: 'teacher', title: 'lbl.teacherColumn'}
-      {name: 'date', title: 'lbl.hours', attr: (lesson) -> lesson.date?.format i18n.formats.lesson}
+      {
+        name: 'date'
+        title: 'lbl.hours'
+        attr: (lesson) -> lesson.date?.format i18n.formats.lesson
+        sorter: (lesson) -> lesson.date?.valueOf()
+      }
       {name: 'details', title: 'lbl.details'}
     ]
 

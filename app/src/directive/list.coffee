@@ -11,8 +11,16 @@ class ListDirective
   # Angular's filter factory
   filter: null
 
-  # list of displayed columns, containing an object with title and attr.
-  # title is an i18n path and attr, either a model's attribute or a function (that take rendered model as parameter)
+  # list of displayed columns, containing an object with following properties:
+  # - name [String] is the model property name that holds displayed value, also use as sorting key
+  # - title [Sting] is an i18n path used as column header
+  # - attr [String|Function], either a string or a function:
+  # If attr not provided, name will be used to get value from model.
+  # If attr is a string, it will be considered as the model's property name which holds displayed value
+  # If attr is a function with a single parameter, it is invoked with the model as parameter, and return is used as displayed value
+  # If attr is a function with two parameters, it is invoked with the model and a callback, expected to be called with an
+  # optional error as first parameter, and the displayed value as second parameter.
+  # - sorter [Function] if provided, this function is invoked with model and displayed value as parameter. Its return is used for sorting
   columns: []
 
   # Displayed list
@@ -31,7 +39,7 @@ class ListDirective
 
   # **private**
   # Displayed values, stored for sorting. Model id is used as key
-  _displayedValues: {}
+  _sortedValues: {}
 
   # **private**
   # Flag to avoid concurrent renderings
@@ -41,12 +49,12 @@ class ListDirective
   #
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
-  # @param filter [Functino] angular's filter factory
+  # @param filter [Function] angular's filter factory
   constructor: (scope, element, @filter) ->
     @$el = $(element)
     @$el.on 'click', @_onClick
     @$el.on 'change', @_onToggle
-    @_displayedValues = {}
+    @_sortedValues = {}
     @_waiting = 0
     @_onRedrawList = _.debounce @_onRedrawList, 100
 
@@ -68,9 +76,9 @@ class ListDirective
     @$el.empty().append @_renderHeader()
     body = $('<tbody class="hideable">').appendTo @$el
     @_waiting = 0
-    @_displayedValues = {}
+    @_sortedValues = {}
     body.append (@_renderRow model, i for model, i in @list).join ''
-    @_callbackEnded()
+    @_allValuesRendered()
 
   # **private**
   # Creates the header line for whole list
@@ -98,10 +106,11 @@ class ListDirective
   # Creates line for a single model
   #
   # @param model [Persisted] concerned model
+  # @param idx [Number] model index in the entire list
   # @return the rendered string
   _renderRow: (model, idx) =>
-    html = ['<tr data-row="', idx, '">']
-    @_displayedValues[model.id] = {_idx: idx}
+    html = ["<tr data-row='#{idx}' data-id='#{model.id}'>"]
+    @_sortedValues[model.id] = {_idx: idx}
     @columns.forEach (column, i) =>
       value = ''
       if _.isFunction column.attr
@@ -114,8 +123,8 @@ class ListDirective
             if err?
               console.error "failed to resolve #{column.name} of model #{model.id}: ", err
             else
-              @$el.find("##{id}").replaceWith @_renderCell model, column.name, i, value, true
-            @_callbackEnded()
+              @$el.find("##{id}").replaceWith @_renderCell model, column.name, i, value, column.sorter, true
+            @_allValuesRendered()
           return html.push "<td id='", id, "'></td>"
         else
           # just model
@@ -123,7 +132,7 @@ class ListDirective
       else
         value = model[column.attr or column.name]
 
-      html.push @_renderCell model, column.name, i, value, column.attr?
+      html.push @_renderCell model, column.name, i, value, column.sorter, column.attr?
     html.push '</tr>'
     html.join ''
 
@@ -134,15 +143,24 @@ class ListDirective
   # @param attr [String] attribute for which value is rendered
   # @param col [Number] concerned column index wihin columns array
   # @param value [Any] rendered value
+  # @param sorter [Function] optional sorter function applied to displayed value
   # @param store [Boolean] store value for sort
   # @return the rendered string
-  _renderCell: (model, attr, col, value, store) =>
+  _renderCell: (model, attr, col, value, sorter, store) =>
     html = ['<td data-col="', col, '" ']
-    if store
-      # special case for dates : do not store displayed value
-      stored = if value?.isMoment?() then value.unix() else value
-      @_displayedValues[model.id][attr] = value
+    # sortable value might be different from displayed value
+    unless @columns[col].selectable?
+      sortableValue = value
+      if sorter?
+        sortableValue = sorter model, value
+      else if _.isString value
+        sortableValue = value.trim().toLowerCase()
+      @_sortedValues[model.id][attr] = sortableValue
 
+    # Avoid displaying nulls
+    value = '' unless value?
+
+    # TODO find a way to externalize this code
     # column specific rendering
     switch @columns[col].name
       when 'due'
@@ -164,6 +182,18 @@ class ListDirective
     html.join ''
 
   # **private**
+  # Reorder rows to reflect @list order, and also redraw header
+  _updateRowOrder: () =>
+    @$el.find('thead').replaceWith @_renderHeader()
+    body = @$el.find 'tbody'
+    # list has the new order @_sortedValues[id]._idx is the old position
+    rows = (for {id}, i in @list
+      @_sortedValues[id]._idx = i
+      body.find "tr[data-id='#{id}']"
+    )
+    body.empty().append rows
+
+  # **private**
   # Single click handler, that retrieve row and column.
   # Triggers scope on click handler
   #
@@ -181,15 +211,11 @@ class ListDirective
       sort = header.data 'attr'
       isDesc = header.data('desc')?
       if sort?
-        # just reverse sort order
         if @currentSort is sort
-          @_isDesc = not isDesc
-          @list.reverse()
+          @_sortList @currentSort, not @_isDesc
         else
-          @currentSort = sort
-          @_isDesc = true
-          @_sortList sort
-        @_onRedrawList()
+          @_sortList sort, true
+        @_updateRowOrder()
     true
 
   # **private**
@@ -212,27 +238,31 @@ class ListDirective
       @onToggle?(model: @list[row], selected: selected)
 
   # **private**
-  # Sort list with a given attribute
+  # Sort list with a given attribute.
+  # @_sortedValues must have been populated
+  # @list, @currentSort and @_isDesc are modified
+  # No redraw is performed
   #
   # @param column [String] column name used for sort
-  _sortList: (column) =>
-    # use model value or rendered value
-    for {name, attr} in @columns when column is name
-      if attr?
-        # sort by displayed values, and get ordered indexes.
-        ordered = _.sortBy (model for id, model of @_displayedValues), column
-        # order models with these indexes
-        @list = (@list[_idx] for {_idx} in ordered)
-      else
-        # use model value
-        @list = _.sortBy @list, column
-      return @_onRedrawList()
+  # @param isDesc [Boolean] true for descending sort, false for ascending
+  _sortList: (column, isDesc) =>
+    @currentSort = column
+    @_isDesc = isDesc
+    console.log ">> sort by #{@currentSort} #{@_isDesc}", (values for id, values of @_sortedValues)
+    # sort by displayed values, and get ordered indexes.
+    ordered = _.sortBy (values for id, values of @_sortedValues), column
+    # order models with these indexes
+    @list = (@list[_idx] for {_idx} in ordered)
+    @list.reverse() unless @_isDesc
 
   # **private**
   # Enable sort when waiting is finished
-  _callbackEnded: =>
+  _allValuesRendered: =>
     return unless @_waiting is 0
     @_inProgress = false
+    # sorting
+    @_sortList @currentSort, @_isDesc
+    @_updateRowOrder()
 
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->
