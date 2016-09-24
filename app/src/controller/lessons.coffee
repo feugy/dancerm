@@ -283,7 +283,11 @@ module.exports = class LessonsController
   # @param day [String] extracted day string
   # @returns [String] tooltip content
   getPlanningTooltip: (lesson, day) => @q (resolve, reject) ->
-    lesson.getDancer (err, dancer) -> if err? then reject err else resolve "#{dancer.firstname} #{dancer.lastname} #{lesson.start.replace(day, '').trim()}~#{lesson.end.replace(day, '').trim()}"
+    lesson.getDancer (err, dancer) -> if err? then reject err else resolve """<p>#{dancer.firstname} #{dancer.lastname}</p>
+      <p>#{if lesson.invoiceId? then i18n.lbl.lessonInvoiced else ''}</p>
+      <p>#{lesson.start.replace(day, '').trim()}~#{lesson.end.replace(day, '').trim()}</p>
+      <p>#{if lesson.details then lesson.details else ''}</p>
+    """
 
   # Compute displayed title for a given lesson
   #

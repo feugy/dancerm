@@ -61,7 +61,7 @@ module.exports =
     birth: 'DD/MM/YYYY'
     callList: 'DD/MM'
     invoice: 'D MMMM YYYY'
-    lesson: 'DD/MM/YYYY HH:mm'
+    lesson: 'ddd D MMM HH:mm'
     receipt: 'DD/MM/YYYY'
 
   # short labels

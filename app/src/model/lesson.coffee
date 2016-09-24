@@ -32,7 +32,7 @@ module.exports = class Lesson extends Persisted
 
   # computed and read-only lesson start hour
   @property 'start',
-    get: -> @date.locale('en').format 'ddd HH:mm'
+    get: -> @date.clone().locale('en').format 'ddd HH:mm'
 
   # computed and read-only lesson end
   @property 'end',

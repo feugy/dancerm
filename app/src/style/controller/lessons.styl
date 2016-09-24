@@ -19,6 +19,7 @@
     border-top 2px solid headingColor
     position relative
     padding 0 1em 1em
+    min-width 300px
 
     > h2
       background mainBackground
@@ -52,10 +53,14 @@
           text-align right
           width 4em
 
+        > .value
+          margin-right .5em
+
       .details
         align-items flex-start
 
         > label
+        > .value
           margin-top 5px
 
         > textarea
@@ -104,12 +109,17 @@
       overflow-y scroll
       padding 0
 
+      .tooltip p
+        margin 0
+
       .danceClass
         margin-right 1em
 
       .quarter:hover
-      .quarter:hover + .quarter
-      .quarter:hover + .quarter + .quarter
-      .quarter:hover + .quarter + .quarter + .quarter
-        background emphasisColor
         cursor pointer
+
+      .quarter:hover:not(.selected)
+      .quarter:hover + .quarter:not(.selected)
+      .quarter:hover + .quarter + .quarter:not(.selected)
+      .quarter:hover + .quarter + .quarter + .quarter:not(.selected)
+        background-color emphasisColor

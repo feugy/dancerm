@@ -4,7 +4,7 @@ i18n = require '../labels/common'
 class PlanningDirective
 
   # Controller dependencies
-  @$inject: ['$scope', '$element', '$attrs', '$compile', '$q']
+  @$inject: ['$scope', '$element', '$attrs', '$compile', '$q', '$sce']
 
   # Controller scope, injected within constructor
   scope: null
@@ -45,7 +45,9 @@ class PlanningDirective
   # @param element [DOM] directive root element
   # @param attrs [Object] values of attributes
   # @param compile [Object] Angular directive compiler
-  constructor: (@scope, @element, attrs, @compile, @q) ->
+  # @param q [Object] Angular promise factory
+  # @param sce [Object] Angular strict content escape utility
+  constructor: (@scope, @element, attrs, @compile, @q, @sce) ->
     @groups = {}
     @hours = []
     @legend = {}
@@ -53,14 +55,21 @@ class PlanningDirective
     @groupBy = attrs.groupBy or 'hall'
     @widthOffset = +attrs.widthOffset or 0
     @shrinkHours = if attrs.shrinkHours? then attrs.shrinkHours.trim().toLowerCase() is 'true' else true
+    @clickableCells = if attrs.clickableCells? then attrs.clickableCells.trim().toLowerCase() is 'true' else false
 
-    # bind clicks
+    # click on quarter: select cell and trigger onCellClick handler
     @element.on 'click', '.quarter', (event) =>
+      return unless @scope.clickableCells
       quarter = $(event.target).closest '.quarter'
-      day = $(event.target).closest '.day'
-      @scope?.onCellClick $event: event, day: day.data('day'), hour: "#{quarter.data 'hour'}:#{15 * quarter.data('quarter') or '00'}"
+      day = $(event.target).closest('.day').data 'day'
+      return unless day?
+      @element.find('.quarter.selected').removeClass 'selected'
+      quarter.addClass 'selected'
+      @scope?.onCellClick $event: event, day: day, hour: "#{quarter.data 'hour'}:#{15 * quarter.data('quarter') or '00'}"
 
+    # click on dance classes: toggle selected class, update current selection and trigger onClick handler
     @element.on 'click', '.danceClass', (event) =>
+      @element.find('.quarter.selected').removeClass 'selected'
       danceClass = $(event.target).closest '.danceClass'
       selected = danceClass.hasClass 'selected'
       model = _.find @scope.danceClasses, id:danceClass.data('id').toString()
@@ -77,7 +86,9 @@ class PlanningDirective
         # adds id
         @scope.selected.push model
 
+    # click on legent: toggle darken class on all related dance classes, trigger onClick handler
     @element.on 'click', '.legend > *', (event) =>
+      @element.find('.quarter.selected').removeClass 'selected'
       color = $(event.target).attr('class').replace('darken', '').trim()
       @element.find('.darken').removeClass 'darken'
       if @item is color
@@ -229,9 +240,8 @@ class PlanningDirective
           # and eventually positionates the rendering inside the right day
           className = "danceClass #{legend}"
           className += ' selected' if @scope.selected?.find ({id}) -> id is course.id
-
           render = @compile("""<div class="#{className}" data-id="#{course.id}"
-              data-uib-tooltip="#{tooltip}" data-uib-tooltip-popup-delay="200"
+              data-uib-tooltip-html='#{JSON.stringify(tooltip).replace /'/g, '&#39;'}' data-uib-tooltip-popup-delay="200"
               data-uib-tooltip-animation="true"
               data-uib-tooltip-append-to-body="true">#{title}</div>""") @scope
           render.css
@@ -264,10 +274,12 @@ module.exports = (app) ->
       days: '=?'
       # attribute used for groupBy
       groupBy: '@'
-      # true to shrink displayed hours to the range that includes all danceClasses
+      # true to shrink displayed hours to the range that includes all danceClasses (default to true)
       shrinkHours: '@'
-      # right offset (percentage) applied to dance classes inside a given day
+      # right offset (percentage) applied to dance classes inside a given day (default to 0)
       widthOffset: '@'
+      # if true, click on cells trigger onCellClick (default to false)
+      clickableCells: '@'
       # event handler for dance class click. Clicked model as 'danceClass' parameter, and 'selected' a boolean
       # indicating that model is already selected
       onClick: '&'
