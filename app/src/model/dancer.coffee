@@ -1,5 +1,5 @@
 _ = require 'lodash'
-{eachSeries, map} = require 'async'
+{map} = require 'async'
 moment = require 'moment'
 Persisted = require './tools/persisted'
 Address = require './address'
@@ -13,55 +13,13 @@ module.exports = class Dancer extends Persisted
   # extends transient fields
   @_transient = Persisted._transient.concat ['_address', '_card', '_danceClasses', '_lessons']
 
-  # **static**
-  # Find a list of models from the storage provider that match given conditions
-  # Condition is an object, whose fields are path within the dancer, with their expected values.
-  # (interpreted in the same order)
-  # In path, dots are supported, and allow diving in sub object or sub array.
-  # An expected value may be a function, that will take as arguments the given value and it's model,
-  # and must returns a boolean
-  #
-  # If 'registrations', 'address', 'danceClasses' or 'lessons' are found within path, the corresponding models
-  # are automatically resolved and use for traversal
-  #
-  # @param conditions [Object] keys define path, values are expected values
-  # @param done [Function] completion callback, invoked with arguments:
-  # @option done err [Error] an error object or null if no error occured
-  # @option done models [Array<Persisted>] an array (that may be empty) of matching models
-  @findWhere: (conditions, done) ->
-    # check each conditions
-    eachSeries _.toPairs(conditions), ([path, expected], next) =>
-      steps = path.split '.'
-      # check if condition include linked values
-      for {search, Model, select} in [
-          {search:'card.', Model: Card, select: 'cardId'}
-          {search:'danceClasses.', Model: DanceClass, select: 'danceClassIds'}
-          {search:'address.', Model: Address, select: 'addressId'}
-          {search:'lessons.', Model: Lesson, select: 'lessonIds'}
-        ]
-        idx = path.indexOf search
-        if idx >= 0
-          # extract subcondition and performs query
-          subCondition = {}
-          subPath = path[idx+search.length..]
-          subCondition[subPath] = expected
-          return Model.findWhere subCondition, (err, models) ->
-            return next err if err?
-            # only kept dancers with relevant linked model ids
-            delete conditions[path]
-            path = path[0...idx] + select
-            current = _.map models, 'id'
-            if conditions[path]?.$in?
-              # Logical and between existing conditions
-              current = _.intersection conditions[path].$in, current
-            conditions[path] = $in: current
-            next()
-      # no specific conditions
-      next()
-    , (err) =>
-      return done err if err?
-      # run superclass treatment
-      super conditions, done
+  # supported nested models
+  @_nestedModels: [
+    {search:'card.', Model: Card, select: 'cardId'}
+    {search:'danceClasses.', Model: DanceClass, select: 'danceClassIds'}
+    {search:'address.', Model: Address, select: 'addressId'}
+    {search:'lessons.', Model: Lesson, select: 'lessonIds'}
+  ]
 
   created: null
 
@@ -217,3 +175,6 @@ module.exports = class Dancer extends Persisted
   setLessons: (lessons) =>
     @lessonIds = unless lessons? then [] else _.map lessons, 'id'
     @_lessons = lessons
+
+# need to init here because of circular dependencies
+Lesson._nestedModels[0].Model = Dancer

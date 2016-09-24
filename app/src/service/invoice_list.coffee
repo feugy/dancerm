@@ -36,5 +36,5 @@ module.exports = class InvoiceList extends SearchList
     match = seed.match /^(\d{4})[/\-\.](\d{2})/
     conditions.date = new RegExp "^#{match[1]}-#{match[2]}" if match?
     # or find by customer
-    conditions['customer.name'] = new RegExp seed, 'i' unless conditions.date? or seed.length <= 3
+    conditions['customer.name'] = new RegExp seed, 'i' unless conditions.date? or seed.length < 3
     conditions

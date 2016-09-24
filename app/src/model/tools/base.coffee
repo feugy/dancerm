@@ -4,6 +4,7 @@ _ = require 'lodash'
 # Abstract base functionnalities of models
 module.exports = class Base
 
+  # **static** **private**
   # transient fields are not serialized into JSON
   @_transient = ['$$hashKey']
 

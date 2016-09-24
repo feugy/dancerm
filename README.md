@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Search lessons by dancer name
 - List directive: sort on numerical values
 - Display invoice list on dancer card
 

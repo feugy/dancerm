@@ -44,7 +44,11 @@ module.exports = class LessonList extends SearchList
     match = seed.match /^(\d{4})[/\-\.](\d{2})/
     conditions.date = new RegExp "^#{match[1]}-#{match[2]}" if match?
     # or find by dancer
-    conditions['dancer.name'] = new RegExp seed, 'i' unless conditions.date? or seed.length <= 3
+    unless conditions.date? or seed.length < 3
+      conditions.$or = [
+        {'dancer.firstname': new RegExp "^#{seed}", 'i'},
+        {'dancer.lastname': new RegExp "^#{seed}", 'i'}
+      ]
     conditions
 
   # Invoked when an invoice should be generated for the selected invoicable lessons, and a particular school

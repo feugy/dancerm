@@ -10,6 +10,11 @@ module.exports = class Lesson extends Persisted
   # extends transient fields
   @_transient = Persisted._transient.concat ['_dancer']
 
+  # supported nested models
+  @_nestedModels: [
+    {search:'dancer.', Model: Dancer, select: 'dancerId'}
+  ]
+
   # date with start hour
   date: null
   # lesson duration, in minutes
