@@ -1,3 +1,4 @@
+{debounce} = require 'lodash'
 Invoice = require '../../model/invoice'
 Dancer = require '../../model/dancer'
 Lesson = require '../../model/lesson'
@@ -20,6 +21,7 @@ module.exports = class ListController
   sort: null
   emptyListMessage: null
   listMessage: null
+  placeholder: null
 
   # Link to Angular's state provider
   state: null
@@ -39,6 +41,9 @@ module.exports = class ListController
   # @param lessonList [LessonListService] service responsible for lesson list
   # @param state [Object] Angular's state provider
   constructor: (@scope, @cardList, @invoiceList, @lessonList, @state) ->
+    # Performs search using the selected service
+    @performSearch = debounce (=> @service.performSearch()), 500
+
     @select switch localStorage?.getItem 'search-service'
       when 'invoice' then @invoiceList
       when 'lesson' then @lessonList
@@ -56,24 +61,27 @@ module.exports = class ListController
       @listClass = 'dancers'
       @emptyListMessage = 'msg.emptyDancerList'
       @listMessage = 'msg.dancerListLength'
+      @placeholder = 'placeholder.searchCards'
       @columns = @constructor.colSpec.card
     else if @service is @invoiceList
       @listClass = 'invoices'
       @emptyListMessage = 'msg.emptyInvoiceList'
       @listMessage = 'msg.invoiceListLength'
+      @placeholder = 'placeholder.searchInvoices'
       @columns = @constructor.colSpec.invoice
     else if @service is @lessonList
       @listClass = 'lessons'
       @emptyListMessage = 'msg.emptyLessonList'
       @listMessage = 'msg.lessonListLength'
+      @placeholder = 'placeholder.searchLessons'
       @columns = @constructor.colSpec.lesson
     # refresh search
     @performSearch()
 
-  isActive: (kind) => @service is @["#{kind}List"]
-
-  # Performs search using the selected service
-  performSearch: => @service.performSearch()
+  # indicates whether a given service is active or not
+  # @param kind [String] service kind (one of 'lesson', 'card', 'invoice')
+  # returns [Boolean] true if this service is active
+  isActive: (kind) => @service is @["#{kind.toLowerCase()}List"]
 
   # Select a list of lessons for invoice creation
   #

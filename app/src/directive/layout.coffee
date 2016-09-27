@@ -33,7 +33,7 @@ class LayoutDirective
       {label: 'btn.newDancer', icon: 'user', action: => @state.go 'list.card', {id:null}, reload: true}
       {label: 'btn.planning', icon: 'calendar', action: => @state.go 'list.planning'}
       {label: 'btn.detailed', icon: 'th-list', action: => @state.go 'detailed'}
-      {label: 'btn.lessons', icon: 'book', action: => @state.go 'lessons'}
+      {label: 'btn.lessons', icon: 'education', action: => @state.go 'lessons'}
       {label: 'btn.invoice', icon: 'euro', action: => @state.go 'list.invoice'}
       {label: 'btn.stats', icon: 'dashboard', action: => @state.go 'stats'}
       {label: 'btn.settings', icon: 'wrench', action: => @state.go 'settings'}

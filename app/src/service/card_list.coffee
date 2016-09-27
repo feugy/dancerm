@@ -73,14 +73,22 @@ module.exports = class CardList extends SearchList
   # Parse criteria to search options
   # @returns [Object] option for findWhere method.
   _parseCriteria: =>
+    # always get newest value of payer prefix
+    @_payerPrefix = new RegExp "^\s*#{localStorage?.getItem('payerPrefix') or 'p'}\s*:", 'i'
+
     conditions = {}
     # depending on criterias
-    if @criteria.string?.length >= 3
-      # find all dancers by first name/last name
-      conditions.$or = [
-        {firstname: new RegExp "^#{@criteria.string}", 'i'},
-        {lastname: new RegExp "^#{@criteria.string}", 'i'}
-      ]
+    seed = @criteria.string
+    if seed?.length >= 3
+      if seed.match @_payerPrefix
+        # find by payer
+        conditions['card.registrations.payments.payer'] = new RegExp seed.replace(@_payerPrefix, '').trim(), 'i'
+      else
+        # find all dancers by first name/last name
+        conditions.$or = [
+          {firstname: new RegExp "^#{seed}", 'i'},
+          {lastname: new RegExp "^#{seed}", 'i'}
+        ]
 
     # find all dancers by season and optionnaly by teacher for this season
     if @criteria.seasons?.length > 0

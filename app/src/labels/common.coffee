@@ -121,6 +121,7 @@ module.exports =
     payment: 'Réglement'
     paymentKind: 'Mode de réglement'
     payer: 'Par'
+    payerPrefix: 'Prefix de recherche par payeur'
     period: 'Périodicité'
     phone: 'Téléphone'
     price: 'Prix'
@@ -216,7 +217,9 @@ module.exports =
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
 
   placeholder:
-    search: 'chercher par nom/prénom'
+    searchCards: 'danceurs par nom/prénom'
+    searchLessons: 'cours par année/mois/danceur'
+    searchInvoices: 'factures par année/mois/client'
     selectSeason: 'saison...'
     selectTeacher: 'professeur...'
 
@@ -337,6 +340,12 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
   themes:
     dark: 'Dark'
     none: "'The' original"
+
+  # Tooltips
+  tip:
+    searchCards: 'Chercher des danceurs'
+    searchLessons: 'Chercher des cours particuliers'
+    searchInvoices: 'Chercher des factures'
 
   # titles
   ttl:

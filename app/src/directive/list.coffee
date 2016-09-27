@@ -248,7 +248,6 @@ class ListDirective
   _sortList: (column, isDesc) =>
     @currentSort = column
     @_isDesc = isDesc
-    console.log ">> sort by #{@currentSort} #{@_isDesc}", (values for id, values of @_sortedValues)
     # sort by displayed values, and get ordered indexes.
     ordered = _.sortBy (values for id, values of @_sortedValues), column
     # order models with these indexes

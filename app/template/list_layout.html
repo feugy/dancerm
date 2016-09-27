@@ -1,13 +1,13 @@
 <div data-layout data-actions="listCtrl.actions">
   <div class="column">
     <div class="input-group">
-      <input class="form-control" type="text" data-ng-model="listCtrl.service.criteria.string" data-ng-keyup="listCtrl.performSearch()" placeholder="{{::'placeholder.search'|i18n}}"/>
+      <input class="form-control" type="text" data-ng-model="listCtrl.service.criteria.string" data-ng-keyup="listCtrl.performSearch()" placeholder="{{listCtrl.placeholder|i18n}}"/>
       <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
     </div>
     <div class="btn-group search-toggle">
-      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('card')}" data-ng-click="listCtrl.select(listCtrl.cardList)"><i class="glyphicon glyphicon-user"/></a>
-      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('invoice')}" data-ng-click="listCtrl.select(listCtrl.invoiceList)"><i class="glyphicon glyphicon-euro"/></a>
-      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('lesson')}" data-ng-click="listCtrl.select(listCtrl.lessonList)"><i class="glyphicon glyphicon-book"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('card')}" data-ng-click="listCtrl.select(listCtrl.cardList)" title="{{'tip.searchCards'|i18n}}"><i class="glyphicon glyphicon-user"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('invoice')}" data-ng-click="listCtrl.select(listCtrl.invoiceList)" title="{{'tip.searchInvoices'|i18n}}"><i class="glyphicon glyphicon-euro"/></a>
+      <a href="" class="btn" data-ng-class="{active: listCtrl.isActive('lesson')}" data-ng-click="listCtrl.select(listCtrl.lessonList)" title="{{'tip.searchLessons'|i18n}}"><i class="glyphicon glyphicon-education"/></a>
     </div>
     <div data-tags data-src="listCtrl.service.criteria" data-on-remove="listCtrl.performSearch()"></div>
     <div class="list-length" data-ng-hide="listCtrl.service.list.length > 0">{{listCtrl.emptyListMessage|i18n}}</div>

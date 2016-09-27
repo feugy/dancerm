@@ -42,6 +42,9 @@ module.exports = class SettingsController
     teachers: []
     added: null
 
+  # edited payer prefix
+  payerPrefix: null
+
   # list of available theme
   themes: []
 
@@ -60,6 +63,7 @@ module.exports = class SettingsController
   constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
     @localStorage = localStorage
     @vat.value = 100 * if localStorage.getItem('vat')? then +localStorage.getItem('vat') else i18n.vat
+    @payerPrefix = localStorage.getItem('payerPrefix') or 'p'
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @askDumpLocation = location.search()?.firstRun is true
     @_building = false
@@ -93,6 +97,11 @@ module.exports = class SettingsController
   onChangeVat: () =>
     return if isNaN +@vat.value
     @localStorage.setItem 'vat', +@vat.value / 100
+
+  # Check that payer prefix is a non empty word, and save it
+  onChangePayerPrefix: () =>
+    return unless @payerPrefix?.trim()?.length >= 1
+    @localStorage.setItem 'payerPrefix', @payerPrefix.trim()
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into local storage, and button is temporary disabled while compiling
