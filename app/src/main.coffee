@@ -22,6 +22,7 @@ try
   # make some variable globals for other scripts
   global.win = win
   global.$ = $
+  global.tinycolor = tinycolor
   global.angular = angular
   global.localStorage = localStorage
   global.version = version
