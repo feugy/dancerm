@@ -200,9 +200,10 @@ module.exports = class CardController
         else
           console.log "save card #{model.id}"
         model.save (err) =>
-          @_previous[model.id] = model.toJSON() unless err?
-          # to avoid saving the same address multiple times
-          saved.push model.id
+          unless err?
+            @_previous[model.id] = model.toJSON()
+            # to avoid saving the same address multiple times
+            saved.push model.id
           next err
       , (err) =>
         if err?
@@ -302,7 +303,7 @@ module.exports = class CardController
             deffered.promise
           isEdit: -> dancer.danceClassIds.length > 0
       }, RegisterController.declaration
-    ).result.then(({confirmed, season, danceClasses}) =>
+    ).result.then ({confirmed, season, danceClasses}) =>
       return unless confirmed
       registration = null
       # search for existing registration
@@ -320,7 +321,6 @@ module.exports = class CardController
       dancer.setClasses danceClasses
       @scope.$broadcast 'dance-classes-changed', dancer
       @_onChange "dancer[#{@dancers.indexOf dancer}].danceClassIds"
-    ).catch (err) => console.error err
 
   # Indicates whether this dancer's address was reused or not
   #
