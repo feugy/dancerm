@@ -193,16 +193,16 @@ module.exports = class CardController
       models.push @card
       saved = []
 
-      async.each models, (model, next) =>
-        return next() if model.id? and ((model.id in saved) or _.isEqual model.toJSON(), @_previous[model.id])
+      async.eachSeries models, (model, next) =>
+        return next() if model._v > 0 and (model.id? and ((model.id in saved) or _.isEqual model.toJSON(), @_previous[model.id]))
         if model.constructor.name is 'Address'
           console.log "save addresss #{model.street} #{model.zipcode} (#{model.id})"
         else
           console.log "save card #{model.id}"
-        # to avoid saving the same address multiple times
-        saved.push model.id
         model.save (err) =>
           @_previous[model.id] = model.toJSON() unless err?
+          # to avoid saving the same address multiple times
+          saved.push model.id
           next err
       , (err) =>
         if err?
@@ -514,7 +514,8 @@ module.exports = class CardController
     # set an id to address to allow sharing with other dancers
     address = new Address id: generateId()
     @required[address.id] = []
-    @card = new Card()
+    # set an id to card to allow change detection
+    @card = new Card id: generateId()
     @required.regs = ([] for registration in @card.registrations)
     dancer.setAddress address
     dancer.setCard @card
@@ -568,7 +569,7 @@ module.exports = class CardController
               # do not fail on unknown address: instead, put new address with error message
               address = new Address id: generateId(), zipcode: 0, street: i18n.err.missingAddress
               dancer.setAddress address
-              console.log "failed to get address of dancer #{dancer.id}: #{err}"
+              console.error "failed to get address of dancer #{dancer.id}: #{err}"
             next null, address
         , (err, addresses) =>
           console.error err if err?

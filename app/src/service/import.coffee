@@ -220,7 +220,7 @@ module.exports = class Import
             added.push card
             report.errors.push "created unexisting card id (#{model.cardId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
           unless model.addressId in addressIds
-            addr = new Address id: model.cardId or generateId()
+            addr = new Address id: model.addressId or generateId()
             model.setAddress addr
             added.push addr
             report.errors.push "created unexisting address id (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
