@@ -191,12 +191,13 @@ module.exports = class SettingsController
       @import.fromFile filePath, (err, models, report) =>
         return displayEnd err if err?
         console.info "importation report:", report
-        msg = @filter('i18n') 'msg.importSuccess', args: report.byClass
+        msg = @filter('i18n') 'msg.importSuccess', args: report
 
         # get all existing dancers
         @import.merge models, (err, byClass, conflicts) =>
           return displayEnd err if err
-          console.info "merge report:", byClass, conflicts
+          console.info "merge report:", byClass, conflicts.map ({existing, imported}) =>
+            "\nexisting #{existing.constructor.name} #{JSON.stringify(existing.toJSON(), null, 2)}\nimported #{imported.constructor.name} #{JSON.stringify(imported.toJSON(), null, 2)}"
           # resolve conflicts one by one
           return displayEnd() if conflicts.length is 0
           @dialog.modal(_.extend {

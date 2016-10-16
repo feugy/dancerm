@@ -210,14 +210,9 @@ module.exports = class CardController
           console.error err
           return done err
         console.log "addresses and card saved"
-        # affect to dancers (for those which address was new) and save dancers
-        i = 0
         async.eachSeries @dancers, (dancer, next) =>
-          i++
           return next() unless dancer.id? and not _.isEqual dancer.toJSON(), @_previous[dancer.id]
           console.log "save #{dancer.firstname} #{dancer.lastname} (#{dancer.id})"
-          dancer.setAddress models[i-1]
-          dancer.setCard @card
           dancer.save (err) =>
             @_previous[dancer.id] = dancer.toJSON() unless err?
             next err
@@ -552,7 +547,7 @@ module.exports = class CardController
       # updates registrations and their invoices, order registration here rather than in code
       @card.registrations.sort (a, b) -> a.season < b.season ? -1 : 1
       @required.regs = ([] for registration in @card.registrations)
-      @required.regClasses = ('' for payment in registration.payments)
+      @required.regClasses = ('' for registration in @card.registrations)
       @invoices = (for registration in @card.registrations
         invoices.filter(({season, sent}) -> season is registration.season and sent?).sort (a, b) -> a.sent.diff b.sent)
 
@@ -603,7 +598,7 @@ module.exports = class CardController
     # performs comparison between current and old values
     @_setChanged false
     for model in [@card].concat @dancers, @addresses when not _.isEqual @_previous[model.id], model.toJSON()
-      console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
+      # console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
       # quit at first modification
       return @_setChanged true
 
@@ -646,6 +641,6 @@ module.exports = class CardController
   _resetRequired: =>
     @required[dancer.id] = [] for dancer in @dancers
     @required[address.id] = [] for address in @addresses
+    @required.regClasses = ('' for registration in @card?.registrations or [])
     for registration, i in @card?.registrations or []
       @required.regs[i] = ([] for payment in registration.payments)
-      @required.regClasses = ('' for payment in registration.payments)

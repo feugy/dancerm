@@ -189,6 +189,7 @@ module.exports = class Import
   # Check that imported data does not contain relationnal errors
   # - a dancer must have an address
   # - a dancer must have a card
+  # - dancer's address must not be its card
   #
   # @param imported [Array<Persisted>] imported models, cards, dance-classes, addresses and dancers
   # @param report [Object] extraction report, that will be filled with encountered errors
@@ -215,15 +216,15 @@ module.exports = class Import
         # at last, creates address and card model for dancer that does not match existing on
         for model in imported when model.constructor.name is Dancer.name
           unless model.cardId in cardIds
-            card = new Card id: model.cardId or generateId()
+            report.errors.push "created unexisting card (#{model.cardId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
+            card = new Card id: generateId()
             model.setCard card
             added.push card
-            report.errors.push "created unexisting card id (#{model.cardId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
-          unless model.addressId in addressIds
-            addr = new Address id: model.addressId or generateId()
+          if not(model.addressId in addressIds) or model.addressId is model.cardId
+            report.errors.push "created unexisting address (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
+            addr = new Address id: generateId()
             model.setAddress addr
             added.push addr
-            report.errors.push "created unexisting address id (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
         done null, imported.concat added
 
   # **private**

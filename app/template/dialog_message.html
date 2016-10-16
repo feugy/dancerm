@@ -2,7 +2,7 @@
   <h3>{{::title}}</h3>
 </div>
 <div class="modal-body">
-  <p>{{::message}}</p>
+  <p data-ng-bind-html="::message"></p>
 </div>
 <div class="modal-footer">
   <button data-ng-repeat="btn in ::buttons" data-ng-click="close(btn.result)" class="btn" data-ng-class="btn.cssClass">{{::btn.label}}</button>

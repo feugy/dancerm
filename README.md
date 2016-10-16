@@ -1,7 +1,7 @@
 ## Bugs
 
-- Save 2 addresses in new card for 2 dancers makes empty addresses (Nicolas Vincent, Julie Digne)
-- No change detection in payment's payer (Nicolas Vincent & Julie Digne)
+- Address and dancer removal
+- Conflicts
 
 ## TODO
 
