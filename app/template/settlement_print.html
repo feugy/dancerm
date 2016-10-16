@@ -7,12 +7,11 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].name'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].street'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.selectedSchool + '].city'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].phone'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].siret'|i18n}}</p>
-        <p>{{::'lbl.schools[' + ctrl.selectedSchool + '].vat'|i18n}}</p>
+        <p>{{::ctrl.conf.teachers[ctrl.selectedTeacher].name}}</p>
+        <p>{{::ctrl.conf.teachers[ctrl.selectedTeacher].street}}</p>
+        <p>{{::ctrl.conf.teachers[ctrl.selectedTeacher].zipcode}} {{::ctrl.conf.teachers[ctrl.selectedTeacher].city}}</p>
+        <p>{{::ctrl.conf.teachers[ctrl.selectedTeacher].phone}}</p>
+        <p>{{::'lbl.siret'|i18n}} {{::ctrl.conf.teachers[ctrl.selectedTeacher].siret}}</p>
       </div>
       <div class="title" data-ng-bind-html="::'ttl.settlementPrint'|i18n:{args:{registration:ctrl.registration} }"></div>
     </header>

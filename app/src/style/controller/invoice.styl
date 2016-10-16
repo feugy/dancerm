@@ -63,6 +63,9 @@
     .subtotal
       width 100%
 
+      &.hide-discount .discount
+        display none
+
       input
       .input-group
         flex-grow 1
@@ -90,6 +93,7 @@
         .quantity
         .vat
         .price
+        .discount
         .total
           width 15%
           text-align right
@@ -231,6 +235,9 @@
 
   .customer
     text-align right
+
+    input:not([type=number])
+      width 100%
 
     .zip-and-city
       display flex

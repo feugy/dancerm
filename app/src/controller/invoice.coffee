@@ -16,7 +16,7 @@ isInvalidDate = (value) -> not(value?) or not moment(value).isValid()
 class InvoiceController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['dialog', '$state', '$filter', '$stateParams', 'invoiceList'] else []
+  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['conf', 'dialog', '$state', '$filter', '$stateParams', 'invoiceList'] else []
 
   # Route declaration
   @declaration:
@@ -38,6 +38,9 @@ class InvoiceController
 
   # Angular's state service
   state: null
+
+  # Configuration service
+  conf: null
 
   # Angular's filters factory
   filter: null
@@ -96,9 +99,10 @@ class InvoiceController
   # @param filter [Function] Angular's filter factory
   # @param state [Object] Angular state provider
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @dialog, @state, @filter, stateParams, @invoiceList) ->
+  constructor: (@scope, @rootScope, @conf, @dialog, @state, @filter, stateParams, @invoiceList) ->
     @invoice = null
     @hasChanged = false
+    @hideItemDiscount = false
     @_modalOpened = false
     @_previous = {}
     @isReadOnly = false
@@ -272,7 +276,7 @@ class InvoiceController
   # Add a new item to the current invoice
   addItem: =>
     return if @isReadOnly
-    @invoice.items.push new InvoiceItem vat: if @withVat then @i18n.vat else 0
+    @invoice.items.push new InvoiceItem vat: if @withVat then @conf.vat else 0
     @_onChange 'items'
 
   # Removes an existing item from the current invoice
@@ -289,7 +293,7 @@ class InvoiceController
   changeVat: =>
     return unless @invoice
     for item, i in @invoice.items
-      item.vat = if @withVat then @i18n.vat else 0
+      item.vat = if @withVat then @conf.vat else 0
     @_onChange 'item[0].vat'
 
   # check if field is missing or not
@@ -319,6 +323,8 @@ class InvoiceController
     @required =
       invoice: []
       items: ([] for item in @invoice.items)
+    # hide item discount if reado-only and no items has discount
+    @hideItemDiscount = @isReadOnly and not @invoice.items.find((item) => item.discount > 0)?
     @_previous = @invoice.toJSON()
     # set vat depending on the first item content
     @withVat = @invoice.items.some (item) -> item.vat > 0
@@ -365,7 +371,7 @@ class InvoiceController
           matched = @_previous.ref?.match(invoiceRefExtract) or []
           currYear = +matched[1]
           currMonth = +matched[2]
-          Invoice.getNextRef year, month, @invoice.selectedSchool, (err, next) =>
+          Invoice.getNextRef year, month, @invoice.selectedTeacher, (err, next) =>
             unless err?
               # reuse previous ref if keeping same year and month
               @suggestedRef = if year is currYear and month is currMonth then @_previous.ref else next

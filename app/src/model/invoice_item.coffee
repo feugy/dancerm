@@ -22,9 +22,12 @@ module.exports = class InvoiceItem extends Base
   # VAT percentage applied (bellow 0)
   vat: 0
 
+  # Discount percentage
+  discount: 0
+
   # computed and read-only duty-free invoice total
   @property 'dutyFreeTotal',
-    get: -> _.round(@price / (1 + @vat) * @quantity, 2) or 0
+    get: -> _.round((1 - @discount/100) * @price / (1 + @vat) * @quantity, 2) or 0
 
   # computed and read-only tax total
   @property 'taxTotal',
@@ -32,7 +35,7 @@ module.exports = class InvoiceItem extends Base
 
   # computed and read-only invoice total
   @property 'total',
-    get: -> _.round(@price * @quantity, 2) or 0
+    get: -> _.round((1 - @discount/100) * @price * @quantity, 2) or 0
 
   # Creates a payment from a set of raw JSON arguments
   #

@@ -5,7 +5,7 @@ ListController = require './tools/list'
 module.exports = class ListLayoutController extends ListController
 
   # Controller dependencies
-  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'dialog']
+  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'conf', 'dialog']
 
   @declaration:
     controller: ListLayoutController
@@ -14,39 +14,9 @@ module.exports = class ListLayoutController extends ListController
 
   # Columns used depending on the selected service
   @colSpec:
-    card: [
-      {name: 'firstname', title: 'lbl.firstname'}
-      {name: 'lastname', title: 'lbl.lastname'}
-      {
-        name: 'certified'
-        title: 'lbl.certified'
-        attr: (dancer, done) ->
-          dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
-      }
-      {
-        name: 'due'
-        title: 'lbl.due'
-        attr: (dancer, done) ->
-          dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
-      }
-    ]
-    invoice: [
-      {name: 'school', title: 'lbl.school', attr: (invoice) -> i18n.lbl.schools[invoice.selectedSchool].owner}
-      {name: 'ref', title: 'lbl.ref'}
-      {name: 'customer.name', title: 'lbl.customer', attr: (invoice) -> invoice.customer.name}
-      {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
-    ]
-    lesson: [
-      {selectable: (model) -> not model.invoiceId?}
-      {name: 'teacher', title: 'lbl.teacherColumn'}
-      {
-        name: 'date'
-        title: 'lbl.hours'
-        attr: (lesson) -> lesson.date?.format i18n.formats.lesson
-        sorter: (lesson) -> lesson.date?.valueOf()
-      }
-      {name: 'details', title: 'lbl.details'}
-    ]
+    card: []
+    invoice: []
+    lesson: []
 
   # Link to modal popup service
   dialog: null
@@ -58,19 +28,50 @@ module.exports = class ListLayoutController extends ListController
   # @param invoiceList [InvoiceListService] service responsible for invoice list
   # @param lessonList [LessonListService] service responsible for lesson list
   # @param state [Object] Angular's state provider
+  # @param conf [Object] Configuration service
   # @param dialog [Object] Angular dialog service
-  constructor: (scope, cardList, invoiceList, lessonList, state, @dialog) ->
-    @schools = i18n.lbl.schools
-    super scope, cardList, invoiceList, lessonList, state
+  constructor: (scope, cardList, invoiceList, lessonList, state, conf, @dialog) ->
+    super scope, cardList, invoiceList, lessonList, state, conf
+
+    unless @constructor.colSpec.length
+      @constructor.colSpec.card.push {name: 'firstname', title: 'lbl.firstname'},
+        {name: 'lastname', title: 'lbl.lastname'},
+        {
+          name: 'certified'
+          title: 'lbl.certified'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+        },
+        {
+          name: 'due'
+          title: 'lbl.due'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
+        }
+
+      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacherColumn', attr: (invoice) => @conf.teachers[invoice.selectedTeacher].owner},
+        {name: 'ref', title: 'lbl.ref'},
+        {name: 'customer.name', title: 'lbl.customer', attr: (invoice) -> invoice.customer.name},
+        {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
+
+      @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
+        {name: 'teacher', title: 'lbl.teacherColumn'},
+        {
+          name: 'date'
+          title: 'lbl.hours'
+          attr: (lesson) -> lesson.date?.format i18n.formats.lesson
+          sorter: (lesson) -> lesson.date?.valueOf()
+        },
+        {name: 'details', title: 'lbl.details'}
 
   # Makes a new invoice for the selected lesson and their concerned dancer.
-  # If an unsent invoice for that dancer, season and selected school already exists,
+  # If an unsent invoice for that dancer, season and selected teacher already exists,
   # displays a popup that offers to edit the invoice.
   #
-  # @param schoolIdx [Number] index of the concerned school (in i18n.lbl.schools)
-  onMakeInvoice: (schoolIdx) =>
+  # @param teacherIdx [Number] index of the concerned teacher (in conf.teachers)
+  onMakeInvoice: (teacherIdx) =>
     return unless @service is @lessonList
-    @service.makeInvoice schoolIdx, (err, invoice) =>
+    @service.makeInvoice teacherIdx, (err, invoice) =>
       if err?
         return console.warn err unless invoice?
         # if an unsent invoice already exist, warn the user and stop here.

@@ -1,6 +1,7 @@
 _ = require 'lodash'
 
 i18n = require '../script/labels/common'
+ConfService = require '../script/service/conf'
 ExportService = require '../script/service/export'
 ImportService = require '../script/service/import'
 DialogService = require '../script/service/dialog'
@@ -55,6 +56,7 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compi
 ]
 
 # make export an Angular service
+app.service 'conf', ConfService
 app.service 'export', ExportService
 app.service 'import', ImportService
 app.service 'dialog', DialogService
@@ -63,8 +65,9 @@ app.service 'invoiceList', InvoiceListService
 app.service 'lessonList', LessonListService
 
 # at startup, check that dump path is defined
-app.run ['$location', (location) ->
-  location.url('/settings?firstRun').replace() unless localStorage.getItem('dumpPath')?
+app.run ['$location', 'conf', (location, conf) ->
+  conf.load () ->
+    location.url('/settings?firstRun').replace() unless conf.dumpPath? and conf.teachers.length
 ]
 
 # on close, dump data, with a waiting dialog message
@@ -74,7 +77,8 @@ app.close = (done) ->
   # display waiting message
   injector.get('$rootScope').$apply =>
     injector.get('dialog').messageBox i18n.ttl.dumping, i18n.msg.dumping
+  dumpPath = injector.get('conf').dumpPath
   # export data
-  injector.get('export').dump localStorage.getItem('dumpPath'), done
+  injector.get('export').dump dumpPath, done
 
 module.exports = app

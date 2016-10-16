@@ -23,7 +23,7 @@ toDayOffset = (day) =>
 module.exports = class LessonsController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope', 'dialog', '$filter', '$state', '$q', '$stateParams']
+  @$inject: ['$scope', '$rootScope', 'dialog', '$filter', '$state', '$q', 'conf', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -51,6 +51,9 @@ module.exports = class LessonsController
 
   # Angular's promise factory
   q: null
+
+  # Configuration service
+  conf: null
 
   # List of displayed lessons
   lessons: []
@@ -106,7 +109,7 @@ module.exports = class LessonsController
   # @param filter [Function] Angular's filter factory
   # @param state [Object] Angular state provider
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @dialog, @filter, @state, @q, stateParams) ->
+  constructor: (@scope, @rootScope, @dialog, @filter, @state, @q, @conf, stateParams) ->
     @startDay = null
     @lessons = []
     @lesson = null

@@ -71,6 +71,7 @@ try
       win.reloadIgnoringCache()
 
   parallel [
+    # TODO this setting might come from conf service instead
     (next) -> buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', next
     (next) -> $(win.window).on 'load', -> next()
   ], (err, results) ->

@@ -43,14 +43,15 @@
   <!-- registrations -->
   <uib-tabset class="registration-tabs">
     <uib-tab data-ng-repeat="registration in ctrl.card.registrations"
-         data-heading="{{::registration.season}}">
+         data-heading="{{::registration.season}}"
+         classes="{{ctrl.required.regClasses[$index]}}">
       <registration
         data-src="registration"
         data-dancers="ctrl.dancers"
         data-invoices="ctrl.invoices[$index]"
         data-on-remove="ctrl.removeRegistration(model)"
-        data-on-print-settlement="ctrl.printSettlement(registration, selectedSchool)"
-        data-on-edit-invoice="ctrl.editInvoice(registration, school)"
+        data-on-print-settlement="ctrl.printSettlement(registration, selectedTeacher)"
+        data-on-edit-invoice="ctrl.editInvoice(registration, teacher)"
         data-on-display-invoice="ctrl.displayInvoice(invoice)"
         data-required-fields="ctrl.required.regs[$index]"
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>

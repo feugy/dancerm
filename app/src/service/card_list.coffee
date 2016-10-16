@@ -74,7 +74,7 @@ module.exports = class CardList extends SearchList
   # @returns [Object] option for findWhere method.
   _parseCriteria: =>
     # always get newest value of payer prefix
-    @_payerPrefix = new RegExp "^\s*#{localStorage?.getItem('payerPrefix') or 'p'}\s*:", 'i'
+    @_payerPrefix = new RegExp "^\s*#{@conf.payerPrefix}\s*:", 'i'
 
     conditions = {}
     # depending on criterias

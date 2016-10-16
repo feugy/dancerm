@@ -1,4 +1,5 @@
 {fixConsole} = require '../script/util/common'
+ConfService = require '../script/service/conf'
 
 # on DOM loaded
 fixConsole()
@@ -12,6 +13,8 @@ angular.element(win.window).on 'load', ->
 
   # requires and registers custom class
   app = angular.module('printPreview', []).controller 'Print', window.customClass
+
+  app.service 'conf', ConfService
 
   # Simple directive that whill replace current element with HTML raw text
   app.directive 'placeholder', ->

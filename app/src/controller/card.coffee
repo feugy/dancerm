@@ -316,6 +316,7 @@ module.exports = class CardController
         @card.registrations.splice 0, 0, registration
         @_previous[registration.id] = registration.toJSON()
         @required.regs.push []
+        @required.regClasses.push ''
 
       # add selected class ids to dancer
       dancer.setClasses danceClasses
@@ -374,8 +375,8 @@ module.exports = class CardController
   # Print the settlement for a given year
   #
   # @param registration [Registration] the concerned registration
-  # @param selectedSchool [Number] index of the selected school
-  printSettlement: (registration, selectedSchool) =>
+  # @param selectedTeacher [Number] index of the selected teacher
+  printSettlement: (registration, selectedTeacher) =>
     return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
@@ -390,7 +391,7 @@ module.exports = class CardController
           @_preview = created
           # set parameters and wait for closure
           @_preview.card = @card
-          @_preview.selectedSchool = selectedSchool
+          @_preview.selectedTeacher = selectedTeacher
           @_preview.season = registration.season
           @_preview.on 'closed', => @_preview = null
 
@@ -476,13 +477,13 @@ module.exports = class CardController
   # Save the card before
   #
   # @param registration [Registration] for which invoice is edited
-  # @param school [Number] index of the selected school
-  editInvoice: (registration, school) =>
+  # @param teacher [Number] index of the selected teacher
+  editInvoice: (registration, teacher) =>
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
       # search for unsent invoices related to that card, and create a new one if needed
-      makeInvoice @dancers[0], registration.season, school, (err, invoice) =>
+      makeInvoice @dancers[0], registration.season, teacher, (err, invoice) =>
         # there could be an error if invoice already exists, and invoice will be populated.
         return @state.go 'list.invoice', id: invoice.id if invoice?
         # or just an error
@@ -507,16 +508,14 @@ module.exports = class CardController
   _reset: =>
     @knownBy = {}
     @required = {}
+    @_resetRequired()
     @knownByOther = null
     # creates an empty dancer with empty address and card
     dancer = new Dancer id: generateId()
-    @required[dancer.id] = []
     # set an id to address to allow sharing with other dancers
     address = new Address id: generateId()
-    @required[address.id] = []
     # set an id to card to allow change detection
     @card = new Card id: generateId()
-    @required.regs = ([] for registration in @card.registrations)
     dancer.setAddress address
     dancer.setCard @card
     @dancers = [dancer]
@@ -553,6 +552,7 @@ module.exports = class CardController
       # updates registrations and their invoices, order registration here rather than in code
       @card.registrations.sort (a, b) -> a.season < b.season ? -1 : 1
       @required.regs = ([] for registration in @card.registrations)
+      @required.regClasses = ('' for payment in registration.payments)
       @invoices = (for registration in @card.registrations
         invoices.filter(({season, sent}) -> season is registration.season and sent?).sort (a, b) -> a.sent.diff b.sent)
 
@@ -603,7 +603,7 @@ module.exports = class CardController
     # performs comparison between current and old values
     @_setChanged false
     for model in [@card].concat @dancers, @addresses when not _.isEqual @_previous[model.id], model.toJSON()
-      # console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
+      console.log "model #{model.id} (#{model.constructor.name}) has changed on #{field}"
       # quit at first modification
       return @_setChanged true
 
@@ -637,6 +637,8 @@ module.exports = class CardController
           )
           tmp
       )
+      console.log JSON.stringify @required.regs[i], null, 2
+      @required.regClasses[i] = if @required.regs[i].find((fields) => fields.length) then 'invalid' else ''
     missing
 
   # **private**
@@ -644,5 +646,6 @@ module.exports = class CardController
   _resetRequired: =>
     @required[dancer.id] = [] for dancer in @dancers
     @required[address.id] = [] for address in @addresses
-    for registration, i in @card.registrations
+    for registration, i in @card?.registrations or []
       @required.regs[i] = ([] for payment in registration.payments)
+      @required.regClasses = ('' for payment in registration.payments)

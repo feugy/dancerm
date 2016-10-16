@@ -6,7 +6,10 @@ Dancer = require '../script/model/dancer'
 # Angular controller for settlement print preview
 window.customClass = class Print
 
-  @$inject: ['$filter', '$rootScope']
+  @$inject: ['$filter', '$rootScope', 'conf']
+
+  # configuration service
+  conf: null
 
   # printed registration
   registration: null
@@ -26,10 +29,10 @@ window.customClass = class Print
   # dancer's classes, in the same order as dancers
   danceClasses: []
 
-  constructor: (filter, rootScope) ->
+  constructor: (filter, rootScope, @conf) ->
     # get data from mother window
     @registration = _.find win.card.registrations, season: win.season
-    @selectedSchool = +win.selectedSchool
+    @selectedTeacher = +win.selectedTeacher
     # get card dancers
     Dancer.findWhere {cardId: win.card.id}, (err, dancers) =>
       return console.error err if err?

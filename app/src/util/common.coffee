@@ -178,34 +178,34 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
     ), (color) => color isnt 'rgba(255, 0, 255, 0)'
     container.remove()
 
-  # Make an invoice for a given dancer (cardId is used for retrieval), season and school.
+  # Make an invoice for a given dancer (cardId is used for retrieval), season and teacher.
   # Only one unsent invoice is allowed for a given combination of those elements: if it
   # already exists, an error is raised, but the existing invoice is also returned
   #
   # @param dancer [Dancer] the concerned dancer
   # @param season [Number] first year of the concerned season
-  # @param school [Number] index of the concerned school in i18n.lbl.schools array.
+  # @param teacher [Number] index of the concerned teacher in conf.teachers array.
   # @param done [Function] completion callback, invoked with arguments:
   # @param done.err [Error] an error object, if the creation failed
   # @param done.invoice [Invoice] the generated invoice, or the existing one
-  makeInvoice: (dancer, season, school, done) ->
+  makeInvoice: (dancer, season, teacher, done) ->
     Invoice = require '../model/invoice' unless Invoice?
     # search for unsent invoices related to that card
-    Invoice.findWhere {cardId: dancer.cardId, season: season, selectedSchool: school, sent: null}, (err, existing) =>
+    Invoice.findWhere {cardId: dancer.cardId, season: season, selectedTeacher: teacher, sent: null}, (err, existing) =>
       return done new Error "failed to search for invoices: #{err.message}" if err?
       # if an unsent invoice already exist, raise an error, but also return the first (and only) invoice
-      return done new Error("unsent invoice already exist for card #{dancer.cardId}, season #{season} and school #{school}"), existing[0] if existing.length
+      return done new Error("unsent invoice already exist for card #{dancer.cardId}, season #{season} and teacher #{teacher}"), existing[0] if existing.length
       # or create a new one with the first dancer as customer
       firstYear = parseInt season
       invoice = new Invoice
         cardId: dancer.cardId,
         season: season
-        selectedSchool: school
+        selectedTeacher: teacher
       # only use current date if inside registration season. Otherwise, default September, 15th
       now = moment().year firstYear
       invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
       # generate reference
-      Invoice.getNextRef now.year(), now.month() + 1, school, (err, ref) =>
+      Invoice.getNextRef now.year(), now.month() + 1, teacher, (err, ref) =>
         return done new Error "failed to get next ref for new invoice #{err.message}" if err?
         invoice.ref = ref
         invoice.setCustomer dancer, =>

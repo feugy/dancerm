@@ -7,7 +7,7 @@ ConflictsController = require './conflicts'
 module.exports = class SettingsController
 
   # controller dependencies
-  @$inject: ['$scope', '$rootScope', 'dialog', 'import', '$filter', '$location']
+  @$inject: ['$scope', '$rootScope', 'dialog', 'import', '$filter', 'conf', '$location']
 
   # route declaration
   @declaration:
@@ -30,17 +30,11 @@ module.exports = class SettingsController
   # Angular filters factory
   filter: null
 
-  # link to edited properties stored inside localStorage
-  localStorage: null
+  # Configuration service
+  conf: null
 
-  # true to display message regarding dump location
-  askDumpLocation: false
-
-  # edited VAT configuration
-  vat:
-    value: null
-    teachers: []
-    added: null
+  # edited VAT configuration (percent)
+  vat: null
 
   # edited payer prefix
   payerPrefix: null
@@ -60,12 +54,11 @@ module.exports = class SettingsController
   # @param import [import] Import service
   # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @dialog, @import, @filter, location) ->
-    @localStorage = localStorage
-    @vat.value = 100 * if localStorage.getItem('vat')? then +localStorage.getItem('vat') else i18n.vat
-    @payerPrefix = localStorage.getItem('payerPrefix') or 'p'
+  constructor: (@scope, @rootScope, @dialog, @import, @filter, @conf, location) ->
+    @conf.load () =>
+      @vat = @conf.vat * 100
+      @scope.$apply()
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
-    @askDumpLocation = location.search()?.firstRun is true
     @_building = false
     imgRoot = '../style/img'
     @about = [
@@ -88,30 +81,63 @@ module.exports = class SettingsController
     ]
 
     # cancel navigation if asking for location
-    if @askDumpLocation
+    if location.search()?.firstRun
       @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
         # stop state change until user choose what to do with pending changes
-        event.preventDefault() if @askDumpLocation
+        event.preventDefault() unless @conf.dumpPath? && @conf.teachers.length > 0
 
   # Check that VAT rate is a valid number, and save it if it's the case
   onChangeVat: () =>
-    return if isNaN +@vat.value
-    @localStorage.setItem 'vat', +@vat.value / 100
+    return if isNaN +@vat
+    @conf.vat = +@vat / 100
+    @conf.save()
 
   # Check that payer prefix is a non empty word, and save it
   onChangePayerPrefix: () =>
     return unless @payerPrefix?.trim()?.length >= 1
-    @localStorage.setItem 'payerPrefix', @payerPrefix.trim()
+    @conf.payerPrefix = @conf.payerPrefix.trim()
+    @conf.save()
+
+  # Updates validates required fields and if valid, save teachers configuration
+  onChangeTeachers: () =>
+    # TODO chech that owner name is unique
+    @conf.teachers = @conf.teachers.map (teacher) ->
+      copy = Object.assign {}, teacher
+      delete copy.$$hashKey
+      copy
+    @conf.save()
+
+  # Add a new teacher
+  onAddTeacher: () =>
+    @conf.teachers.push {}
+    @onChangeTeachers()
+
+  # Remove a particular teacher, after confirmation
+  #
+  # @param teacher [Object] removed teacher
+  onRemoveTeacher: (teacher) =>
+    idx = @conf.teachers.indexOf teacher
+    return if idx is -1
+    @dialog.messageBox(i18n.ttl.confirm, @filter('i18n')('msg.removeTeacher', args: teacher), [
+        {label: i18n.btn.no}
+        {label: i18n.btn.yes, cssClass: 'btn-warning', result: true}
+      ]
+    ).result.then (confirmed) =>
+      return unless confirmed
+      # TODO remove plannings, priceList, lessons, registrations, invoices
+      @conf.teachers.splice idx, 1
+      @onChangeTeachers()
 
   # According to the selected theme, rebuild styles and apply them.
-  # New theme is saved into local storage, and button is temporary disabled while compiling
+  # New theme is saved into configuration, and button is temporary disabled while compiling
   #
   # @param theme [Object] theme object, containing 'value' and 'label' attribues
   applyTheme: (theme) =>
     return if @_building
-    @localStorage.setItem 'theme', theme.value
+    @conf.theme = theme.value
+    @conf.save()
     @_building = true
-    buildStyles ['dancerm', 'print'], @localStorage.getItem('theme') or 'none', (err, styles) =>
+    buildStyles ['dancerm', 'print'], theme.value or 'none', (err, styles) =>
       @_building = false
       return console.error err if err?
       global.styles = styles
@@ -125,16 +151,15 @@ module.exports = class SettingsController
   #
   # Dialog won't close unless a path is choosen
   chooseDumpLocation: =>
-    dumpDialog = $("<input style='display:none;' type='file' nwsaveas value='#{@localStorage.getItem 'dumpPath'} accept='application/json'/>")
+    dumpDialog = $("<input style='display:none;' type='file' nwsaveas value='#{@conf.dumpPath} accept='application/json'/>")
     dumpDialog.change (evt) =>
       dumpPath = dumpDialog.val()
       dumpDialog.remove()
       # dialog cancellation
       return chooseDumpLocation() unless dumpPath
       # retain entry for next loading, and refresh UI
-      localStorage.setItem 'dumpPath', dumpPath
-      @askDumpLocation = false
-      @scope.$apply()
+      @conf.dumpPath = dumpPath
+      @conf.save () => @scope.$apply()
     dumpDialog.trigger 'click'
     # to avoid issecdom error when directly bound with ngClick
     null

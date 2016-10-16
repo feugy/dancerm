@@ -30,7 +30,7 @@ module.exports = class Export
       filePath = resolve normalize filePath
       console.info "dump data in #{filePath}..."
       start = moment()
-      classes = [Address, Card, Dancer, DanceClass]
+      classes = [Address, Card, Dancer, DanceClass, Invoice, Lesson]
       dbPath = getDbPath()
       # since node-webkit 0.10.5 and nedb, using sync fs API is less error-prone than classical async API
       ensureFileSync filePath

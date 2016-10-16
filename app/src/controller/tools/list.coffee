@@ -40,11 +40,9 @@ module.exports = class ListController
   # @param invoiceList [InvoiceListService] service responsible for invoice list
   # @param lessonList [LessonListService] service responsible for lesson list
   # @param state [Object] Angular's state provider
-  constructor: (@scope, @cardList, @invoiceList, @lessonList, @state) ->
-    # Performs search using the selected service
-    @performSearch = debounce (=> @service.performSearch()), 500
-
-    @select switch localStorage?.getItem 'search-service'
+  # @param conf [Object] Configuration service
+  constructor: (@scope, @cardList, @invoiceList, @lessonList, @state, @conf) ->
+    @select switch @conf.searchService
       when 'invoice' then @invoiceList
       when 'lesson' then @lessonList
       else @cardList
@@ -53,10 +51,15 @@ module.exports = class ListController
   #
   # @param listService [searchList] list service to select
   select: (listService) =>
-    @service = listService
-    localStorage.setItem 'search-service', @service.constructor.ModelClass.name.toLowerCase()
-    @sort = @service.constructor.sort
-    @columns = []
+    if @service isnt listService
+      @service = listService
+      # Performs search using the selected service
+      @performSearch = debounce (=> @service.performSearch()), 500
+      @conf.searchService = @service.constructor.ModelClass.name.toLowerCase()
+      @conf.save()
+      @sort = @service.constructor.sort
+      @columns = []
+
     if @service is @cardList
       @listClass = 'dancers'
       @emptyListMessage = 'msg.emptyDancerList'

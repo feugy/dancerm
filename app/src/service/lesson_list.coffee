@@ -51,22 +51,22 @@ module.exports = class LessonList extends SearchList
       ]
     conditions
 
-  # Invoked when an invoice should be generated for the selected invoicable lessons, and a particular school
+  # Invoked when an invoice should be generated for the selected invoicable lessons, and a particular teacher
   #
-  # @params schoolIdx [Number] index of the select school for which the invoice will be generated
+  # @params teacherIdx [Number] index of the select teacher for which the invoice will be generated
   # @param done [Function] completion callback, invoked with arguments:
   # @param done.err [Error] an error object, if the creation failed
   # @param done.invoice [Invoice] the generated invoice, or the existing one
-  makeInvoice: (schoolIdx, done) =>
+  makeInvoice: (teacherIdx, done) =>
     return unless @invoicable.length
-    console.log "make new invoice for #{schoolIdx} and lessons #{@invoicable.map (l) -> l.id}"
+    console.log "make new invoice for #{teacherIdx} and lessons #{@invoicable.map (l) -> l.id}"
     # get latest lesson, and use it to get the season
     @invoicable.sort (a, b) -> b.date.valueOf() - a.date.valueOf()
     season = currentSeason @invoicable[0].date
     # search for concerned dancer's card
     @invoicable[0].getDancer (err, dancer) =>
       return done new Error "failed to get lesson's concerned dancer: #{err.message}" if err?
-      makeInvoice dancer, season, schoolIdx, (err, invoice) =>
+      makeInvoice dancer, season, teacherIdx, (err, invoice) =>
         return done err, invoice if err?
         # group lessons by price
         prices = {}

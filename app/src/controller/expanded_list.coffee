@@ -7,7 +7,7 @@ ListController = require './tools/list'
 module.exports = class ExpandedListController extends ListController
 
   # Controller dependencies
-  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'export', 'dialog']
+  @$inject: ['$scope', 'cardList', 'invoiceList', 'lessonList', '$state', 'conf', 'export', 'dialog']
 
   @declaration:
     controller: ExpandedListController
@@ -16,119 +16,9 @@ module.exports = class ExpandedListController extends ListController
 
   # Columns used depending on the selected service
   @colSpec:
-    card: [
-      {name: 'title', title: 'lbl.title'}
-      {name: 'firstname', title: 'lbl.firstname'}
-      {name: 'lastname', title: 'lbl.lastname'}
-      {
-        name: 'certified'
-        title: 'lbl.certified'
-        attr: (dancer, done) ->
-          dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
-      }
-      {
-        name: 'due'
-        title: 'lbl.due'
-        attr: (dancer, done) ->
-          dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0}
-      {
-        name: 'age'
-        title: 'lbl.age'
-        attr: (dancer) ->
-          if dancer.birth? then moment().diff dancer.birth, 'years' else ''
-        sorter: (dancer, value) -> +value
-      }
-      {
-        name: 'birth'
-        title: 'lbl.birth'
-        attr: (dancer) ->
-          if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
-        sorter: ({birth}) -> birth?.valueOf()
-      }
-      {
-        name: 'knownBy'
-        title: 'lbl.knownBy'
-        attr: (dancer, done) ->
-          dancer.getCard (err, card) ->
-            return done err, "" if err? or not card.knownBy
-            done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
-      }
-      {
-        name: 'phone'
-        title: 'lbl.phone'
-        attr: (dancer, done) ->
-          dancer.getAddress (err, address) -> done err, address?.phone
-      }
-      {name: 'cellphone', title: 'lbl.cellphone'}
-      {name: 'email', title: 'lbl.email'}
-      {
-        name: 'address'
-        title: 'lbl.address'
-        attr: (dancer, done) ->
-          dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
-      }
-    ]
-    invoice: [
-      {name: 'school', title: 'lbl.school', attr: ({selectedSchool}) -> i18n.lbl.schools[selectedSchool].owner}
-      {name: 'ref', title: 'lbl.ref'}
-      {
-        name: 'date'
-        title: 'lbl.invoiceDate'
-        attr: ({date}) -> date.format i18n.formats.invoice
-        sorter: ({date}) -> date.valueOf()
-      }
-      {name: 'sent', title: 'lbl.sent', attr: ({sent}) -> sent?}
-      {
-        name: 'total',
-        title: 'lbl.invoiceTotal',
-        attr: ({total}) -> "#{total} #{i18n.lbl.currency}"
-        sorter: ({total}) -> total
-      }
-      {
-        name: 'dutyFreeTotal'
-        title: 'lbl.dutyFreeTotal'
-        attr: ({dutyFreeTotal}) -> "#{dutyFreeTotal} #{i18n.lbl.currency}"
-        sorter: ({dutyFreeTotal}) -> dutyFreeTotal
-      }
-      {
-        name: 'taxTotal'
-        title: 'lbl.taxTotal'
-        attr: ({taxTotal}) -> "#{taxTotal} #{i18n.lbl.currency}"
-        sorter: ({taxTotal}) -> taxTotal
-      }
-      {
-        name: 'discount'
-        title: 'lbl.discount'
-        attr: ({discount}) -> "#{discount} %"
-        sorter: ({discount}) -> discount
-      }
-      {name: 'customer.name', title: 'lbl.customer', attr: ({customer}) -> customer.name}
-      {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
-    ]
-    lesson: [
-      {selectable: (model) -> not model.invoiceId?}
-      {name: 'teacher', title: 'lbl.teacherColumn'}
-      {
-        name: 'date'
-        title: 'lbl.hours'
-        attr: ({date}) -> date?.format i18n.formats.lesson
-        sorter: ({date}) -> date?.valueOf()
-      }
-      {name: 'invoiced', title: 'lbl.lessonInvoiced', attr: ({invoiceId}) -> invoiceId?}
-      {
-        name: 'duration'
-        title: 'lbl.duration'
-        attr: ({duration}) -> "#{duration} #{i18n.lbl.durationUnit}"
-        sorter: ({duration}) -> duration
-      }
-      {
-        name: 'price'
-        title: 'lbl.price'
-        attr: ({price}) -> "#{price} #{i18n.lbl.currency}"
-        sorter: ({price}) -> price
-      }
-      {name: 'details', title: 'lbl.details'}
-    ]
+    card: []
+    invoice: []
+    lesson: []
 
   # Link to Angular's dialog service
   dialog: null
@@ -146,10 +36,125 @@ module.exports = class ExpandedListController extends ListController
   # @param invoiceList [InvoiceListService] service responsible for invoice list
   # @param lessonList [LessonListService] service responsible for lesson list
   # @param state [Object] Angular's state provider
+  # @param conf [Object] Configuration service
   # @param export [Object] Export service
   # @param dialog [Object] Angular's dialog service
-  constructor: (scope, cardList, invoiceList, lessonList, state, @exporter, @dialog) ->
-    super scope, cardList, invoiceList, lessonList, state
+  constructor: (scope, cardList, invoiceList, lessonList, state, conf, @exporter, @dialog) ->
+    super scope, cardList, invoiceList, lessonList, state, conf
+
+    unless @constructor.colSpec.length
+      @constructor.colSpec.card.push {name: 'title', title: 'lbl.title'},
+        {name: 'firstname', title: 'lbl.firstname'},
+        {name: 'lastname', title: 'lbl.lastname'},
+        {
+          name: 'certified'
+          title: 'lbl.certified'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.certified(dancer) or false
+        },
+        {
+          name: 'due'
+          title: 'lbl.due'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
+        },
+        {
+          name: 'age'
+          title: 'lbl.age'
+          attr: (dancer) ->
+            if dancer.birth? then moment().diff dancer.birth, 'years' else ''
+          sorter: (dancer, value) -> +value
+        },
+        {
+          name: 'birth'
+          title: 'lbl.birth'
+          attr: (dancer) ->
+            if dancer.birth? then dancer.birth.format i18n.formats.birth else ''
+          sorter: ({birth}) -> birth?.valueOf()
+        },
+        {
+          name: 'knownBy'
+          title: 'lbl.knownBy'
+          attr: (dancer, done) ->
+            dancer.getCard (err, card) ->
+              return done err, "" if err? or not card.knownBy
+              done null, ("<span class='known-by'>#{i18n.knownByMeanings[knownBy] or knownBy}</span>" for knownBy in card.knownBy).join ''
+        },
+        {
+          name: 'phone'
+          title: 'lbl.phone'
+          attr: (dancer, done) ->
+            dancer.getAddress (err, address) -> done err, address?.phone
+        },
+        {name: 'cellphone', title: 'lbl.cellphone'},
+        {name: 'email', title: 'lbl.email'},
+        {
+          name: 'address'
+          title: 'lbl.address'
+          attr: (dancer, done) ->
+            dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
+        }
+
+      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher].owner},
+        {name: 'ref', title: 'lbl.ref'},
+        {
+          name: 'date'
+          title: 'lbl.invoiceDate'
+          attr: ({date}) -> date.format i18n.formats.invoice
+          sorter: ({date}) -> date.valueOf()
+        },
+        {name: 'sent', title: 'lbl.sent', attr: ({sent}) -> sent?},
+        {
+          name: 'total',
+          title: 'lbl.invoiceTotal',
+          attr: ({total}) -> "#{total} #{i18n.lbl.currency}"
+          sorter: ({total}) -> total
+        },
+        {
+          name: 'dutyFreeTotal'
+          title: 'lbl.dutyFreeTotal'
+          attr: ({dutyFreeTotal}) -> "#{dutyFreeTotal} #{i18n.lbl.currency}"
+          sorter: ({dutyFreeTotal}) -> dutyFreeTotal
+        },
+        {
+          name: 'taxTotal'
+          title: 'lbl.taxTotal'
+          attr: ({taxTotal}) -> "#{taxTotal} #{i18n.lbl.currency}"
+          sorter: ({taxTotal}) -> taxTotal
+        },
+        {
+          name: 'discount'
+          title: 'lbl.discount'
+          attr: ({discount}) -> "#{discount} %"
+          sorter: ({discount}) -> discount
+        },
+        {name: 'customer.name', title: 'lbl.customer', attr: ({customer}) -> customer.name},
+        {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
+
+      @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
+        {name: 'teacher', title: 'lbl.teacher'},
+        {
+          name: 'date'
+          title: 'lbl.hours'
+          attr: ({date}) -> date?.format i18n.formats.lesson
+          sorter: ({date}) -> date?.valueOf()
+        },
+        {name: 'invoiced', title: 'lbl.lessonInvoiced', attr: ({invoiceId}) -> invoiceId?},
+        {
+          name: 'duration'
+          title: 'lbl.duration'
+          attr: ({duration}) -> "#{duration} #{i18n.lbl.durationUnit}"
+          sorter: ({duration}) -> duration
+        },
+        {
+          name: 'price'
+          title: 'lbl.price'
+          attr: ({price}) -> "#{price} #{i18n.lbl.currency}"
+          sorter: ({price}) -> price
+        },
+        {name: 'details', title: 'lbl.details'}
+
+
     service.on 'search-end', @_updateActions for service in [@cardList, @invoiceList, @lessonList]
     # update actions on search end
     @scope.$on '$destroy', =>

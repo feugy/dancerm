@@ -8,12 +8,13 @@
       <header>
         <img src="../style/img/ribas.png" class="logo"/>
         <div class="school">
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].name'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].street'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].zipcode'|i18n}} {{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].city'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].phone'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].siret'|i18n}}</p>
-          <p>{{::'lbl.schools[' + ctrl.invoice.selectedSchool + '].vat'|i18n}}</p>
+          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].name}}</p>
+          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].street}}</p>
+          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].zipcode}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].city}}</p>
+          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].phone}}</p>
+          <p>{{::'lbl.siret'|i18n}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].siret}}</p>
+          <p data-ng-if="ctrl.withVat">{{::'lbl.vatNumber'|i18n}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].vat}}</p>
+          <p data-ng-if="!ctrl.withVat">{{ctrl.conf.noVatMention}}</p>
         </div>
         <div class="customer">
           <p>{{::ctrl.invoice.customer.name}}</p>
@@ -25,18 +26,20 @@
         <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>
       </div>
       <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
-      <div class="items">
+      <div class="items ng-class:ctrl.hideItemDiscount ? 'hide-discount' : '';">
         <div class="header-line">
           <span class="name">{{::'lbl.designation'|i18n}}</span>
           <span class="quantity">{{::'lbl.quantity'|i18n}}</span>
-          <span class="price">{{::'lbl.unitaryPrice'|i18n}}</span>
-          <span class="vat">{{::'lbl.vatValue'|i18n}}</span>
-          <span class="total">{{::'lbl.totalPrice'|i18n}}</span>
+          <span class="price">{{::ctrl.withVat ? 'lbl.unitaryPriceWithVat' : 'lbl.unitaryPrice' |i18n}}</span>
+          <span class="discount">{{::'lbl.discount'|i18n}}</span>
+          <span class="vat" data-ng-if="ctrl.withVat">{{::'lbl.vatRate'|i18n}}</span>
+          <span class="total">{{::ctrl.withVat ? 'lbl.totalPriceWithVat' : 'lbl.totalPrice' |i18n}}</span>
         </div>
         <invoice-item
           data-ng-repeat="item in ctrl.invoice.items"
           data-src="item"
-          data-read-only="true">
+          data-read-only="true"
+          data-with-vat="ctrl.withVat">
         </invoice-item>
       </div>
       <div class="total-line">
@@ -46,16 +49,16 @@
             <span>{{::'lbl.discount'|i18n}}</span>
             <span>{{::ctrl.invoice.discount}} %</span>
           </div>
-          <div>
+          <div data-ng-if="ctrl.withVat">
             <span>{{::'lbl.dutyFreeTotal'|i18n}}</span>
             <span>{{ctrl.invoice.dutyFreeTotal|number}}{{::'lbl.currency'|i18n}}</span>
           </div>
-          <div>
+          <div data-ng-if="ctrl.withVat">
             <span>{{::'lbl.taxTotal'|i18n}}</span>
             <span>{{ctrl.invoice.taxTotal|number}}{{::'lbl.currency'|i18n}}</span>
           </div>
           <div class="total">
-            <span>{{::'lbl.invoiceTotal'|i18n}}</span>
+            <span>{{::ctrl.withVat ? 'lbl.invoiceTotalWithVat' : 'lbl.invoiceTotal' |i18n}}</span>
             <span>{{ctrl.invoice.total|number}}{{::'lbl.currency'|i18n}}</span>
           </div>
         </span>
@@ -66,7 +69,7 @@
       <div class="delay">
         <span>{{'print.invoiceDelay'|i18n:{args: ctrl.invoice} }}</span>
       </div>
-      <div class="various">
+      <div class="various" data-ng-if="!ctrl.withVat">
         <span>{{'print.invoiceVarious'|i18n}}</span>
       </div>
     </div>

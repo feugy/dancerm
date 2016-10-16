@@ -8,6 +8,7 @@ module.exports =
     addExistingDancer: 'Existant'
     addInvoiceItem: 'Ajouter une ligne'
     addPayment: 'Nouveau paiement'
+    addTeacher: 'Ajouter un professeur'
     callList: "Liste d'appel"
     cancel: 'Annuler'
     close: 'Fermer'
@@ -108,7 +109,8 @@ module.exports =
     invoiceDate: 'Emise le'
     importedValue: 'Valeur importée'
     invoiceItemLesson: 'Cours particulier'
-    invoiceTotal: 'Total TTC'
+    invoiceTotal: 'Total'
+    invoiceTotalWithVat: 'Total TTC'
     knownBy: 'Connu par'
     lastname: 'Nom'
     lessonDetails: 'Détails'
@@ -116,6 +118,8 @@ module.exports =
     lessonKind: 'Danse'
     Mon: 'Lundi'
     noValue: 'pas de valeur'
+    noVatSetting: 'Mention si non applicable'
+    noVatMention: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
     noResults: 'Aucun résultat'
     other: '(autre)'
     payment: 'Réglement'
@@ -133,7 +137,7 @@ module.exports =
     registration: 'Inscription'
     Sat: 'Samedi'
     school: 'Ecole'
-    schools: [
+    ###schools: [
       owner: 'Diana'
       name: 'École de Danse P.M. Ribas'
       phone: 'Tél. 04 78 85 32 23'
@@ -151,8 +155,10 @@ module.exports =
       city: 'Villeurbanne'
       siret: 'Siret 499 909 935 00011'
       vat: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
-    ]
+      # Membre d'une Association Agréée par l'Administration fiscale. Le Règlement des honoraires par chèques libellés à mon nom est accepté
+    ]###
     sent: 'Arch.'
+    siret: 'Siret'
     street: 'Voie'
     Sun: 'Dimanche'
     sum: 'Total'
@@ -163,17 +169,20 @@ module.exports =
     Tue: 'Mardi'
     teacher: 'Professeur'
     teacherColumn: 'Prof.'
-    totalPrice: 'Montant HT'
+    totalPrice: 'Montant'
+    totalPriceWithVat: 'Montant HT'
     type: 'Type'
     stampWidth: 'Largeur (mm)'
     stampHeight: 'Hauteur (mm)'
     suggestedRef: 'Prochaine référence valide: {{ref}}'
-    unitaryPrice: 'Prix HT'
+    unitaryPrice: 'Prix unitaire'
+    unitaryPriceWithVat: 'Prix unitaire HT'
     unknown: 'Inconnu'
     version: 'v{{version}}'
     value: 'Valeur'
-    vat: 'dont T.V.A.'
-    vatValue: 'TVA'
+    vatNumber: 'N° TVA'
+    vatRate: 'Taux TVA'
+    vatSettingsValue: 'Valeur'
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
     withVat: 'Appliquer la TVA'
@@ -184,6 +193,7 @@ module.exports =
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
     cancelEdition: "Vous allez perdre les modifications de {{names}}. Voulez-vous vraiment continuer ?"
     cancelLessonEdition: "Vous allez perdre les modifications du cours de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
+    configureTeachers: "Pour pouvoir éditer des factures, DanceRM à besoin de connaitre les coordonnéess, le Siret et éventuellement le numéro de TVA des proffesseurs"
     confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
     confirmMarkAsSent: "Une fois archivée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
@@ -208,6 +218,7 @@ module.exports =
     removeLesson: "Vous allez supprimer le cours particulier de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}} € du {{receipt}}. Voulez-vous vraiment continuer ?"
+    removeTeacher: "Vous allez supprimer définitivement le professeur {{owner}}, ainsi que ses cours particuliers et factures. Cette opération est irréversible. Voulez-vous vraiment continuer ?"
     requiredFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la fiche ?"
     requiredInvoiceFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enregistrer la facture ?"
     requiredLessonFields: "Les champs surlignés n'ont pas été remplis. Voulez vous tout de même enrigstrer le cours ?"
@@ -322,6 +333,13 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
       {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
       {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
       {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
+      {category: 'Compétiteurs'}
+      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
+      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
+      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
+      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
+      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
+      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
     ]
 
   # different ways to learn the school existence
@@ -383,7 +401,5 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
     stats: '{{total}} danseurs'
+    teacherSettings: 'Professeurs inscrits'
     vatSettings: 'Paramètres de TVA'
-
-  # VAT rate
-  vat: 0.20

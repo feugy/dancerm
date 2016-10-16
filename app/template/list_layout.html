@@ -19,8 +19,8 @@
       <span class="btn-group" data-uib-dropdown>
         <a href="" class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-euro"/>{{::'btn.invoice'|i18n}}<span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <!-- don't order by schools, or $index will be the wrong one ! -->
-          <li data-ng-repeat="school in listCtrl.schools"><a href="" data-ng-click="listCtrl.onMakeInvoice($index)">{{::'btn.editInvoice'|i18n:{args:school} }}</a></li>
+          <!-- don't order by teacher, or $index will be the wrong one ! -->
+          <li data-ng-repeat="teacher in listCtrl.conf.teacher"><a href="" data-ng-click="listCtrl.onMakeInvoice($index)">{{::'btn.editInvoice'|i18n:{args:teacher} }}</a></li>
         </ul>
       </span>
     </div>

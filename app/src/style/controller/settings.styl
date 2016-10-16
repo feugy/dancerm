@@ -3,6 +3,47 @@
  */
 
 .settings.main
+  overflow-y auto
+
+  .teacher-grid
+    justify-content space-around
+    display flex
+    flex-wrap wrap
+    padding 0
+
+    > *
+      width calc(50% - 2em)
+      min-width 430px
+      margin 1em
+      text-align center
+
+    .teacher
+      background-color colBackground
+      text-align left
+      padding 1em
+
+      .remove
+        float left
+
+      .form-group
+        display flex
+        align-items center
+
+        > label
+          display inline-block
+          flex-grow 0
+          flex-shrink 0
+          margin 0
+          padding-right 1em
+          text-align right
+          width 25%
+
+          &:not(:first-child)
+            width 15%
+
+        > *
+          flex-grow 1
+          min-width 0
 
   > section
     display flex
@@ -11,24 +52,14 @@
     > :not(aside)
       display inline-block
       flex 1
-      margin .5em
+      margin 0 .5em
       padding 1em
 
     input
       height 30px
 
-    .add-vat-teacher
-      margin-left .5em
-      vertical-align top
-
-    .vat-teachers
-      padding 0
-
-      > li
-        list-style none
-
-        > .glyphicon
-          margin-right 1em
+    .no-vat-mention input
+      min-width 300px
 
   > section:not(:first-child) > :not(aside)
     border-top 1px solid headingColor
@@ -38,6 +69,7 @@
 
   aside
     width 200px
+    flex-shrink 0
     padding 1em
     margin 0
     border-right 1px solid headingColor

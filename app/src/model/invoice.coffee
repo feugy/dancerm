@@ -13,7 +13,7 @@ module.exports = class Invoice extends Persisted
   @_transient = Persisted._transient.concat ['total', 'dutyFreeTotal', 'taxTotal']
 
   # **static**
-  # Check if a given reference match the expected format, and isn't already used (for a given school)
+  # Check if a given reference match the expected format, and isn't already used (for a given teacher)
   # Specify the self parameter to check if an existing Invoice can reuse its ref
   #
   # @param ref [String] checked refernce
@@ -23,11 +23,11 @@ module.exports = class Invoice extends Persisted
   # @option done valid [Boolean] true if reference can be used
   @isRefValid: (ref, self, done) ->
     return done null, false unless ref? and invoiceRefFormat.test ref
-    @findWhere {ref: ref, selectedSchool: self.selectedSchool}, (err, [exist]) ->
+    @findWhere {ref: ref, selectedTeacher: self.selectedTeacher}, (err, [exist]) ->
       done err, not exist? or exist.id is self.id
 
   # **static**
-  # Get the next free reference relative to a given date (for a given school).
+  # Get the next free reference relative to a given date (for a given teacher).
   # Find all references of the same month and year, order by rank, and return next rank.
   # If no references of the same month and year exist, return ref N°1 for that month.
   # During reference parsing, year on 4 digits is expected to come first, then month on 2 digits,
@@ -37,12 +37,12 @@ module.exports = class Invoice extends Persisted
   #
   # @param year [Number] desired year
   # @param month [Number] desired month (1-based)
-  # @param school [Number] index of the considered school
+  # @param teacher [Number] index of the considered teacher
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   # @option done ref [String] reference generated
-  @getNextRef: (year, month, school, done) ->
-    @findWhere {selectedSchool: school}, (err, models) ->
+  @getNextRef: (year, month, teacher, done) ->
+    @findWhere {selectedTeacher: teacher}, (err, models) ->
       return done err if err?
       # gets all existing references
       refs = models.map (model) -> model.ref.match(invoiceRefFormat)?.splice(1, 3) or []
@@ -74,8 +74,8 @@ module.exports = class Invoice extends Persisted
   # when valuated, invoice is readonly
   sent: null
 
-  # index of selected school for that invoice
-  selectedSchool: 0
+  # index of selected teacher for that invoice
+  selectedTeacher: 0
 
   # link to card and season, if applicable
   cardId: null
@@ -91,7 +91,7 @@ module.exports = class Invoice extends Persisted
 
   # computed and read-only invoice total
   @property 'total',
-    get: -> _.round((1 - @discount/100) * @items.reduce(((total, item) -> total + item.total), 0), 2) or 0
+    get: -> _.round((1 - @discount/100) * @items.reduce(((total, item) -> total + item.total), 0), 0) or 0
 
   # Creates an invoice from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
@@ -113,7 +113,7 @@ module.exports = class Invoice extends Persisted
       sent: null
       cardId: null
       season: null
-      selectedSchool: 0
+      selectedTeacher: 0
     # enrich object attributes
     raw.items = (for rawItem in raw.items
       if rawItem?.constructor?.name isnt 'InvoiceItem'

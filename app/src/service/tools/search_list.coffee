@@ -13,7 +13,7 @@ module.exports = class SearchList extends EventEmitter
 
   # **static**
   # Service's dependencies
-  @$inject: ['$rootScope', 'dialog']
+  @$inject: ['$rootScope', 'dialog', 'conf']
 
   # Current list of models.
   # Change search and invoke performSearch to change
@@ -29,7 +29,8 @@ module.exports = class SearchList extends EventEmitter
   # Build service singleton
   # @param rootScope [Scope] angular rootscope, to apply digest at search end
   # @param dialog [Object] Dialog service to display search errors
-  constructor: (@rootScope, @dialog) ->
+  # @param conf [Object] Configuration service
+  constructor: (@rootScope, @dialog, @conf) ->
     throw new Error "#{@constructor.name} must provide static property ModelClass" unless @constructor.ModelClass?
     throw new Error "#{@constructor.name} must provide static property sort" unless @constructor.sort?
     throw new Error "#{@constructor.name} must provide function _parseCriteria" unless @_parseCriteria?
@@ -39,14 +40,11 @@ module.exports = class SearchList extends EventEmitter
     @list = []
 
     # reload from locale storage previous execution's search.
-    try
-      @criteria = JSON.parse localStorage?.getItem(@_getStorageKey()) or {}
-    catch err
-      # silent error
+    @criteria = @conf[@_getStorageKey()] if @conf[@_getStorageKey()]?
 
   # **private**
-  # @returns [String] lowercased string usable as localStorage key
-  _getStorageKey: => "#{@constructor.ModelClass.name.toLowerCase()}-search"
+  # @returns [String] lowercased string usable as configuration key
+  _getStorageKey: => "#{@constructor.ModelClass.name.toLowerCase()}Search"
 
   # Getter to check if service is currently searching
   #
@@ -62,7 +60,8 @@ module.exports = class SearchList extends EventEmitter
     console.log "search for", @criteria
     @emit 'search-start'
     # store into local storage for reload
-    localStorage?.setItem @_getStorageKey(), JSON.stringify @criteria
+    @conf[@_getStorageKey()] = @criteria
+    @conf.save()
     # depending on criterias
     conditions = @_parseCriteria()
     console.log "criteria are", conditions
@@ -75,6 +74,7 @@ module.exports = class SearchList extends EventEmitter
       @_searchPending = false
       if err?
         @dialog.messageBox i18n.ttl.search, _.template(i18n.err.search)(err), [label: i18n.btn.nok]
+        @emit 'search-end'
       else
         # sort and update list content, without reaffecting the list
         @_displayResults _.sortBy dancers, @constructor.sort

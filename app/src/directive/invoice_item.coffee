@@ -76,7 +76,11 @@ module.exports = (app) ->
     <filtered-input class="duty-free-input" type="number" name="price" data-parse="ctrl.applyTax" data-format="ctrl.removeTax" data-ng-model="ctrl.src.price" data-ng-class="ctrl.isRequired('price')" data-ng-change="ctrl.onChange({$field:'price'})" data-set-zero></filtered-input>{{'lbl.currency'|i18n}}
   </span>
   <span class="price" data-ng-if="ctrl.readOnly">{{::ctrl.removeTax(ctrl.src.price)}}{{'lbl.currency'|i18n}}</span>
-  <span class="vat">{{ctrl.vat|number}}%</span>
+  <span class="discount">
+    <span data-ng-if="ctrl.readOnly">{{::ctrl.src.discount}}</span>
+    <input type="number" name="discount" data-ng-model="ctrl.src.discount" data-ng-class="ctrl.isRequired('discount')" data-ng-change="ctrl.onChange({$field:'discount'})" data-ng-if="!ctrl.readOnly" data-set-zero/>%
+  </span>
+  <span class="vat" data-ng-if="ctrl.withVat">{{ctrl.vat|number}}%</span>
   <span class="total">{{ctrl.src.dutyFreeTotal|number}}{{'lbl.currency'|i18n}}</span>
 </div>"""
     # will replace hosting element
@@ -99,6 +103,8 @@ module.exports = (app) ->
       options: '=?'
       # read-only flag.
       readOnly: '=?'
+      # Vat column flag.
+      withVat: '=?'
       # removal handler, used when item needs to be removed
       onRemove: '&?'
       # used to propagate model modifications, invoked with $field as parameter
