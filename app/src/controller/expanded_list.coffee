@@ -42,7 +42,7 @@ module.exports = class ExpandedListController extends ListController
   constructor: (scope, cardList, invoiceList, lessonList, state, conf, @exporter, @dialog) ->
     super scope, cardList, invoiceList, lessonList, state, conf
 
-    unless @constructor.colSpec.length
+    unless @constructor.colSpec.card.length
       @constructor.colSpec.card.push {name: 'title', title: 'lbl.title'},
         {name: 'firstname', title: 'lbl.firstname'},
         {name: 'lastname', title: 'lbl.lastname'},

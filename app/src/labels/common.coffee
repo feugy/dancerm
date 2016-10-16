@@ -13,7 +13,7 @@ module.exports =
     cancel: 'Annuler'
     close: 'Fermer'
     detailed: 'Liste détaillée'
-    editInvoice: '{{owner}} - Editer une facture'
+    editInvoice: 'Editer une facture pour {{owner}}'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
     ignore: 'Ignorer'

@@ -15,14 +15,8 @@
     <div class="centred-buttons" data-ng-if="listCtrl.service.canPrintCallList()">
       <a href="" class="btn glyphed" data-ng-click="listCtrl.service.printCallList()"><i class="glyphicon glyphicon-print"/>{{::'btn.callList'|i18n}}</a>
     </div>
-    <div class="centred-buttons" data-ng-if="listCtrl.service.invoicable.length">
-      <span class="btn-group" data-uib-dropdown>
-        <a href="" class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-euro"/>{{::'btn.invoice'|i18n}}<span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <!-- don't order by teacher, or $index will be the wrong one ! -->
-          <li data-ng-repeat="teacher in listCtrl.conf.teacher"><a href="" data-ng-click="listCtrl.onMakeInvoice($index)">{{::'btn.editInvoice'|i18n:{args:teacher} }}</a></li>
-        </ul>
-      </span>
+    <div class="centred-buttons" data-ng-if="listCtrl.service.invoiceTeacher">
+      <a href="" class="btn glyphed" data-ng-click="listCtrl.onMakeInvoice()"><i class="glyphicon glyphicon-euro"/>{{::'btn.editInvoice'|i18n:{args:listCtrl.service.invoiceTeacher} }}</a>
     </div>
     <list
       data-src="listCtrl.service.list"

@@ -33,7 +33,7 @@ module.exports = class ListLayoutController extends ListController
   constructor: (scope, cardList, invoiceList, lessonList, state, conf, @dialog) ->
     super scope, cardList, invoiceList, lessonList, state, conf
 
-    unless @constructor.colSpec.length
+    unless @constructor.colSpec.card.length
       @constructor.colSpec.card.push {name: 'firstname', title: 'lbl.firstname'},
         {name: 'lastname', title: 'lbl.lastname'},
         {
@@ -67,11 +67,9 @@ module.exports = class ListLayoutController extends ListController
   # Makes a new invoice for the selected lesson and their concerned dancer.
   # If an unsent invoice for that dancer, season and selected teacher already exists,
   # displays a popup that offers to edit the invoice.
-  #
-  # @param teacherIdx [Number] index of the concerned teacher (in conf.teachers)
-  onMakeInvoice: (teacherIdx) =>
+  onMakeInvoice: () =>
     return unless @service is @lessonList
-    @service.makeInvoice teacherIdx, (err, invoice) =>
+    @service.makeInvoice (err, invoice) =>
       if err?
         return console.warn err unless invoice?
         # if an unsent invoice already exist, warn the user and stop here.
