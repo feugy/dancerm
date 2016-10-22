@@ -20,6 +20,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-as-promised": "5.3.0",
+    "electron": "1.4.3",
     "gulp": "3.9.1",
     "gulp-coffee": "2.3.2",
     "gulp-download": "https://github.com/Metrime/gulp-download/archive/master.tar.gz",
@@ -55,17 +56,8 @@
     "src/style/fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
   },
   "scripts": {
-    "start": ".\\bin\\nw.exe .",
-    "debug": ".\\bin\\nw.exe . --remote-debugging-port=5858",
-    "test": "set NODE_ENV=test & .\\bin\\nw.exe test"
+    "start": "electron ."
   },
   "licence": "LGPL v3",
-  "main": "app/template/app.html",
-  "window": {
-    "icon": "app/style/img/dancerm.png",
-    "frame": false,
-    "show": false,
-    "min_width": 1000,
-    "min_height": 700
-  }
+  "main": "app/script/main.js"
 }

@@ -1,6 +1,7 @@
 _ = require 'lodash'
 moment = require 'moment'
 i18n = require '../labels/common'
+{version} = require '../../../package.json'
 
 class AppMenuDirective
 

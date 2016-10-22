@@ -112,6 +112,7 @@ module.exports =
     invoiceItemLesson: 'Cours particulier'
     invoiceTotal: 'Total'
     invoiceTotalWithVat: 'Total TTC'
+    json: 'Fichier JSON'
     knownBy: 'Connu par'
     lastname: 'Nom'
     lessonDetails: 'Détails'
@@ -187,6 +188,7 @@ module.exports =
     verticalMargin: 'Marge verticale (mm)'
     Wed: 'Mercredi'
     withVat: 'Appliquer la TVA'
+    xlsx: 'Classeur Excel'
     zipcode: 'Code postal'
 
   # long messages with html
@@ -378,6 +380,8 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     address: 'Adresse'
     application: 'DanceRM'
     card: 'Fiche danseurs'
+    chooseDumpLocation: 'Selection du fichier de sauvegarde'
+    chooseImportedFile: 'Selection du fichier à importer'
     confirm: 'Confirmation'
     contact: 'Contact'
     currentWeek: '{{from}} au {{to}} {{monthAndYear}}'
