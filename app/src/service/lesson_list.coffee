@@ -67,6 +67,7 @@ module.exports = class LessonList extends SearchList
     season = currentSeason @invoicable[0].date
     # search for concerned dancer's card
     @invoicable[0].getDancer (err, dancer) =>
+      err = new Error "lesson #{@invoicable[0].id} dancer can't be found" unless dancer? or err?
       return done new Error "failed to get lesson's concerned dancer: #{err.message}" if err?
       makeInvoice dancer, season, @conf.teachers.indexOf(@invoiceTeacher), (err, invoice) =>
         return done err, invoice if err?

@@ -10,6 +10,8 @@ Dancer = require '../model/dancer'
 DanceClass = require '../model/dance_class'
 Address = require '../model/address'
 Card = require '../model/card'
+Lesson = require '../model/lesson'
+Invoice = require '../model/invoice'
 Registration = require '../model/registration'
 {generateId} = require '../util/common'
 
@@ -22,6 +24,8 @@ classes =
   Address: Address
   Dancer: Dancer
   Card: Card
+  Invoice: Invoice
+  Lesson: Lesson
 
 # Import utility class.
 # Allow importation of dancers from XLSX files
@@ -91,6 +95,7 @@ module.exports = class Import
             # read at least one worksheet
             return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
 
+            # TODO add lessons/invoice here ?
             # extracted models
             models =
               Address: []
@@ -187,9 +192,12 @@ module.exports = class Import
 
   # **private**
   # Check that imported data does not contain relationnal errors
-  # - a dancer must have an address
-  # - a dancer must have a card
+  # - a dancer must have an address (creates it if it doesn't exists)
+  # - a dancer must have a card (creates it if it doesn't exists)
   # - dancer's address must not be its card
+  # - dancer's lessons must exists (deletes reference if not)
+  # - registration's invoices must exists (deletes reference if not)
+  # - lesson's invoices must exists (deletes reference if not)
   #
   # @param imported [Array<Persisted>] imported models, cards, dance-classes, addresses and dancers
   # @param report [Object] extraction report, that will be filled with encountered errors
@@ -200,32 +208,68 @@ module.exports = class Import
     # check relationnal constraints: add unexisting addresses and card
     addressIds = []
     cardIds = []
+    # remove unexisting invoice & lesson references
+    invoiceIds = []
+    lessonIds = []
+    dancerIds = []
+
     # first get imported addresses and cards
     for model in imported
       addressIds.push model.id if model.constructor.name is Address.name
       cardIds.push model.id if model.constructor.name is Card.name
-    # then merge with existing addresses and cards
+      invoiceIds.push model.id if model.constructor.name is Invoice.name
+      lessonIds.push model.id if model.constructor.name is Lesson.name
+
+    # then merge with existing addresses, cards and invoices
     Address.findAllRaw (err, addresses) =>
       return done err if err
       addressIds.push address.id for address in addresses when not(address.id in addressIds)
       Card.findAllRaw (err, cards) =>
         return done err if err
         cardIds.push card.id for card in cards when not(card.id in cardIds)
+        Invoice.findAllRaw (err, invoices) =>
+          return done err if err
+          invoiceIds.push invoice.id for invoice in invoices when not(invoice.id in invoiceIds)
+          Lesson.findAllRaw (err, lessons) =>
+            return done err if err
+            lessonIds.push lesson.id for lesson in lessons when not(lesson.id in lessonIds)
 
-        added = []
-        # at last, creates address and card model for dancer that does not match existing on
-        for model in imported when model.constructor.name is Dancer.name
-          unless model.cardId in cardIds
-            report.errors.push "created unexisting card (#{model.cardId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
-            card = new Card id: generateId()
-            model.setCard card
-            added.push card
-          if not(model.addressId in addressIds) or model.addressId is model.cardId
-            report.errors.push "created unexisting address (#{model.addressId}) for dancer #{model.firstname} #{model.lastname} (#{model.id})"
-            addr = new Address id: generateId()
-            model.setAddress addr
-            added.push addr
-        done null, imported.concat added
+            added = []
+            for model in imported
+              # at last, creates address and card model for dancer that does not match existing on
+              switch model.constructor.name
+                when Dancer.name
+                  errMsg = "#{model.firstname} #{model.lastname} (#{model.id})"
+                  unless model.cardId in cardIds
+                    report.errors.push "created unexisting card (#{model.cardId}) for dancer #{errMsg}"
+                    card = new Card id: generateId()
+                    model.setCard card
+                    added.push card
+                  if not(model.addressId in addressIds) or model.addressId is model.cardId
+                    report.errors.push "created unexisting address (#{model.addressId}) for dancer #{errMsg}"
+                    addr = new Address id: generateId()
+                    model.setAddress addr
+                    added.push addr
+                  # avoid keeping references to unexisting lessons
+                  for id in model.lessonIds when not(id in lessonIds)
+                    report.errors.push "remove unexisting lesson reference (#{id}) for dancer #{errMsg}"
+                    model.lessonIds[i] = null
+                  model.lessonIds = model.lessonIds.filter (id) -> id?
+
+                # avoid keeping references from lessons and registration to unexisting invoices
+                when Card.name
+                  for registration in model.registrations
+                    for id, i in registration.invoiceIds when not(id in invoiceIds)
+                      report.errors.push "remove unexisting invoice reference (#{id}) for registration #{model.season} of card #{model.id}"
+                      registration.invoiceIds[i] = null
+                    registration.invoiceIds = registration.invoiceIds.filter (id) -> id?
+
+                when Lesson.name
+                  unless model.invoiceId in invoiceIds
+                    report.errors.push "remove unexisting invoice reference (#{model.invoiceId}) for lesson of dancer #{model.dancerId} (#{model.id})"
+                    model.invoiceId = null
+
+            done null, imported.concat added
 
   # **private**
   # Extract dancers from a given worksheet data matrix

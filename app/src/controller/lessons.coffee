@@ -286,7 +286,7 @@ module.exports = class LessonsController
   # @param day [String] extracted day string
   # @returns [String] tooltip content
   getPlanningTooltip: (lesson, day) => @q (resolve, reject) ->
-    lesson.getDancer (err, dancer) -> if err? then reject err else resolve """<p>#{dancer.firstname} #{dancer.lastname}</p>
+    lesson.getDancer (err, dancer) -> if err? then reject err else resolve """<p>#{dancer?.firstname} #{dancer?.lastname}</p>
       <p>#{if lesson.invoiceId? then i18n.lbl.lessonInvoiced else ''}</p>
       <p>#{lesson.start.replace(day, '').trim()}~#{lesson.end.replace(day, '').trim()}</p>
       <p>#{if lesson.details then lesson.details else ''}</p>
@@ -297,7 +297,7 @@ module.exports = class LessonsController
   # @param lesson [Lesson] displayed lesson
   # @returns [String] title in planning
   getPlanningTitle: (lesson) => @q (resolve, reject) ->
-    lesson.getDancer (err, dancer) -> if err? then reject err else resolve "#{dancer.firstname} #{dancer.lastname}"
+    lesson.getDancer (err, dancer) -> if err? then reject err else resolve "#{dancer?.firstname} #{dancer?.lastname}"
 
   # Affect a given color depending on the teacher
   #
@@ -399,7 +399,7 @@ module.exports = class LessonsController
       @lesson.getDancer (err, dancer) =>
         return console.error err if err?
         @selectedDancer = dancer
-        console.log "load lesson #{@lesson.id} (dancer #{@selectedDancer.id}))"
+        console.log "load lesson #{@lesson.id} (dancer #{@selectedDancer?.id}))"
         # reset changes and displays everything
         @_setChanged false
         @scope.$apply() unless @scope.$$phase

@@ -50,9 +50,12 @@ module.exports =
   invoiceRefFormat: /^\D*(\d{4})\D*(\d{2})\D*(\d+).*$/
   invoiceRefExtract: /^\D*(\d{4})\D*(\d{2})?\D*(\d+)?$/
 
-  fixConsole: ->
+  # Replace global console functions to ouput in a file.
+  #
+  # @param path [String] path to log file
+  fixConsole: (path = 'log.txt') ->
     # Log file
-    logFile = resolve 'log.txt'
+    logFile = resolve path
     console.log "log to file #{logFile}"
     ['info', 'debug', 'warn', 'error', 'log'].forEach (method) ->
       global.console[method] = (args...) ->
@@ -68,11 +71,12 @@ module.exports =
     obj isnt undefined and obj isnt null and clazz.toLowerCase() is type.toLowerCase()
 
   # Used to dump errors into error file located in app data folder
+  # Generates an event handler that expect a single error parameter
   #
-  # @param err [Error] the error to dump
-  dumpError: (err) ->
+  # @param path [String] path to log file
+  dumpError: (path = 'log.txt') -> (err) ->
     now = new Date()
-    appendFileSync resolve('log.txt'), """
+    appendFileSync resolve(path), """
 ------------
 Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
 #{err.message}

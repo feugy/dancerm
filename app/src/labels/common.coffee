@@ -208,7 +208,7 @@ module.exports =
     invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent lui être ajoutés. Voulez vous editer la facture en cours ?'
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
-    importSuccess: """<p>{{byClass.Dancer || 'aucun'}} danseur(s), {{byClass.Card || 'aucune'}} fiche(s), {{byClass.Address || 'aucune'}} addresse(s) et {{byClass.DanceClass || 'aucun'}} cour(s) ont été importé(s) avec succès.</p>
+    importSuccess: """<p>{{byClass.Dancer || 'aucun'}} danseur(s), {{byClass.Card || 'aucune'}} fiche(s), {{byClass.Address || 'aucune'}} addresse(s), {{byClass.Invoice || 'aucune'}} facture(s), {{byClass.DanceClass || 'aucun'}} cour(s) et {{byClass.Lesson || 'aucun'}} cour(s) particulier(s) ont été importé(s) avec succès.</p>
   <p>Erreurs et corrections:</p>
   <p>{{errors.join('<br/>') || 'aucune'}}</p>
   """

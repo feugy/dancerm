@@ -8,6 +8,8 @@ Dancer = require '../model/dancer'
 DanceClass = require '../model/dance_class'
 Card = require '../model/card'
 Address = require '../model/address'
+Invoice = require '../model/invoice'
+Lesson = require '../model/lesson'
 i18n = require '../labels/common'
 {getAttr, getDbPath} = require '../util/common'
 
@@ -50,6 +52,7 @@ module.exports = class Export
         console.info "dump in #{filePath} finished in #{moment().diff start}ms !"
         done err
     catch err
+      console.error "Error while dimping data:", err
       done err
 
   # Exports a dancer list to an XlsX file
@@ -116,9 +119,9 @@ module.exports = class Export
             first = true
             for attr of columns
               if 'address.' is attr[...8]
-                value = addresses[i][attr[8..]]
+                value = addresses[i]?[attr[8..]]
               else if 'card.' is attr[...5]
-                value = cards[i][attr[5..]]
+                value = cards[i]?[attr[5..]]
               else
                 value = dancer[attr]
 

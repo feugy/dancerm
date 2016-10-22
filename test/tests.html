@@ -10,6 +10,9 @@
       const fs = require('fs')
       const Mocha = require('mocha')
       const join = require('path').join
+      const {dumpError, fixConsole} = require('../app/script/util/common')
+
+      fixConsole('../test-log.txt')
 
       // manually add styles cause we can't refer to node_modules directly in html
       const style = document.createElement('style')
@@ -18,7 +21,6 @@
       document.getElementsByTagName('head')[0].appendChild(style)
 
       process.env.NODE_ENV = 'test'
-      // process.on('uncaughtException', err => console.error(err))
 
       // init mocha
       const mocha = new Mocha()

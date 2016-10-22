@@ -16,6 +16,7 @@ cache/
 *.json
 errors.txt
 log.txt
+test-log.txt
 .sublime-*
 .vscode
 *.dump

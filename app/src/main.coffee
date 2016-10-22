@@ -9,7 +9,7 @@ i18n = require '../script/labels/common'
 
 require('moment').locale 'fr'
 
-process.on 'uncaughtException', dumpError
+process.on 'uncaughtException', dumpError()
 
 try
   fixConsole()
@@ -123,7 +123,7 @@ try
       console.log 'init database...'
       init (err) ->
         if err?
-          dumpError err
+          dumpError() err
           console.error err
           # close all windows without dumping data
           hasDump = true
@@ -138,4 +138,4 @@ try
     , 200 # needed for colors to be retrieved
 
 catch err
-  dumpError err
+  dumpError() err
