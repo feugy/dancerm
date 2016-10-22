@@ -175,7 +175,7 @@ module.exports = class LessonsController
       return unless confirmed
       # cancel and restore previous values
       @rootScope.$broadcast 'cancel-edit'
-      Object.assign @lesson, @_previous
+      @lesson = new Lesson @_previous
       @_previous = @lesson.toJSON()
       @_setChanged false
       @scope.$apply() unless @scope.$$phase
@@ -304,8 +304,9 @@ module.exports = class LessonsController
   # @param lesson [Lesson] displayed color
   # @returns [Array<String>] computed color and legend item
   affectLegend: (lesson) =>
-    @_colors[lesson.teacher] = "color#{++@_nextColor}" unless lesson.teacher of @_colors
-    [@_colors[lesson.teacher], lesson.teacher]
+    teacher = @conf.teachers[lesson.selectedTeacher].owner
+    @_colors[teacher] = "color#{++@_nextColor}" unless teacher of @_colors
+    [@_colors[teacher], teacher]
 
   # Create a new lesson for given time
   #
@@ -371,12 +372,12 @@ module.exports = class LessonsController
 
   # Affect a given teacher to the edited lesson
   #
-  # @param teacher [String] newly affected teacher
+  # @param teacher [Number] newly affected teacher
   setTeacher: (teacher) =>
     return unless @lesson?
-    @lesson.teacher = teacher
+    @lesson.selectedTeacher = teacher
     @required = _.difference @required, ['teacher']
-    @onChange 'teacher'
+    @onChange 'selectedTeacher'
 
   # Set the lesson currently edited
   #
@@ -442,7 +443,7 @@ module.exports = class LessonsController
   _setChanged: (changed) =>
     # can remove only if id exists
     next = if @lesson?.id? and not @isReadOnly then [@_actions.remove] else []
-    if changed
+    if changed or not @lesson?.id?
       # can cancel only if already saved once
       next.unshift @_actions.cancel if changed
       next.unshift @_actions.save
@@ -457,7 +458,7 @@ module.exports = class LessonsController
   _checkRequired: =>
     @required = []
     @required.push 'dancer' unless @lesson?.dancerId?
-    @required.push 'teacher' if isInvalidString @lesson?.teacher
+    @required.push 'teacher' if @lesson?.selectedTeacher < 0 or @lesson?.selectedTeacher >= @conf.teachers.length
     # returns true if lesson is missing a field
     @required.length isnt 0
 

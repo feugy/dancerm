@@ -20,8 +20,8 @@ module.exports = class Lesson extends Persisted
   # lesson duration, in minutes
   duration: null
 
-  # who taught what
-  teacher: null
+  # index of selected teacher for that invoice
+  selectedTeacher: 0
 
   # link to concerned dancer
   dancerId: null
@@ -52,7 +52,7 @@ module.exports = class Lesson extends Persisted
     _.defaults raw,
       date: moment().seconds(0).milliseconds(0)
       duration: 60
-      teacher: null
+      selectedTeacher: 0
       dancerId: null
       details: null
       price: 45

@@ -99,8 +99,8 @@ module.exports = class LessonList extends SearchList
     @invoiceTeacher = null
     return unless lessons.length > 0
     firstDancerId = lessons[0].dancerId
-    firstTeacher = lessons[0].teacher
+    firstTeacher = lessons[0].selectedTeacher
     # store lessons that can be invoiced if they all belongs to the same dancer from the same teacher
-    unless lessons.find(({teacher}) => teacher isnt firstTeacher) or lessons.find(({dancerId}) -> dancerId isnt firstDancerId)
+    unless lessons.find(({selectedTeacher}) => selectedTeacher isnt firstTeacher) or lessons.find(({dancerId}) -> dancerId isnt firstDancerId)
       @invoicable = lessons.concat()
-      @invoiceTeacher = @conf.teachers.find ({owner}) => firstTeacher is owner
+      @invoiceTeacher = @conf.teachers[firstTeacher]

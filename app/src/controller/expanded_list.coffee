@@ -132,7 +132,7 @@ module.exports = class ExpandedListController extends ListController
         {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
 
       @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
-        {name: 'teacher', title: 'lbl.teacher'},
+        {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher].owner},
         {
           name: 'date'
           title: 'lbl.hours'

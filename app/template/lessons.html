@@ -53,9 +53,11 @@
             </div>
             <div class="teacher"><label>{{::'lbl.teacher'|i18n:{sep:true} }}</label><span data-ng-if="ctrl.isReadOnly" class="value">{{ctrl.lesson.teacher}}</span>
               <div data-ng-if="!ctrl.isReadOnly" class="btn-group" data-uib-dropdown keyboard-nav>
-                <button class="btn dropdown-toggle" uib-dropdown-toggle data-ng-class="ctrl.required.includes('teacher') && 'invalid'">{{ctrl.lesson.teacher||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
+                <button class="btn dropdown-toggle"
+                  uib-dropdown-toggle
+                  data-ng-class="ctrl.required.includes('teacher') && 'invalid'">{{ctrl.conf.teachers[ctrl.lesson.selectedTeacher].owner||ctrl.i18n.lbl.choose}}<span class="caret"></span></button>
                 <ul class="dropdown-menu">
-                  <li data-ng-repeat="teacher in ctrl.conf.teachers"><a href="" data-ng-click="ctrl.setTeacher(teacher.owner)">{{teacher.owner}}</a></li>
+                  <li data-ng-repeat="teacher in ctrl.conf.teachers"><a href="" data-ng-click="ctrl.setTeacher($index)">{{teacher.owner}}</a></li>
                 </ul>
               </div>
             </div>

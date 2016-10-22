@@ -55,7 +55,7 @@ module.exports = class ListLayoutController extends ListController
         {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
 
       @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
-        {name: 'teacher', title: 'lbl.teacherColumn'},
+        {name: 'teacher', title: 'lbl.teacherColumn', attr: (lesson) => @conf.teachers[lesson.selectedTeacher].owner},
         {
           name: 'date'
           title: 'lbl.hours'
