@@ -197,16 +197,22 @@ module.exports = class SettingsController
         @import.merge models, (err, byClass, conflicts) =>
           return displayEnd err if err
           console.info "merge report:", byClass, conflicts.map ({existing, imported}) =>
-            "\nexisting #{existing.constructor.name} #{JSON.stringify(existing.toJSON(), null, 2)}\nimported #{imported.constructor.name} #{JSON.stringify(imported.toJSON(), null, 2)}"
+            "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
+
+          msg = @filter('i18n') 'msg.importSuccess', args: byClass: byClass
           # resolve conflicts one by one
           return displayEnd() if conflicts.length is 0
           @dialog.modal(_.extend {
               size: 'lg'
               backdrop: 'static'
               keyboard: false
-              resolve: conflicts: => conflicts
+              resolve:
+                conflicts: => conflicts
+                byClass: => byClass
             }, ConflictsController.declaration
-          ).result.then displayEnd
+          ).result.then =>
+            msg = @filter('i18n') 'msg.importSuccess', args: byClass: byClass
+            displayEnd()
 
     dialog.trigger 'click'
     null

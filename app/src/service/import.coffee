@@ -58,7 +58,7 @@ module.exports = class Import
           byClass[className]++
           imported.save next
         else
-          if JSON.stringify(existing.toJSON()) isnt JSON.stringify imported.toJSON()
+          if JSON.stringify(_.omit existing.toJSON(), '_v') isnt JSON.stringify _.omit imported.toJSON(), '_v'
             # existing and imported are not equal: conflict detected
             conflicts.push existing: existing, imported: imported
           # existing version is above imported version: no importation

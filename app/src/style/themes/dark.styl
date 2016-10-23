@@ -295,6 +295,12 @@ scrollRadius = 12px
 
 body
 
+  input[type=checkbox]
+  input.checkbox
+
+    &:checked:before
+      content '\2714'
+
   .tag
     border-radius 1em
     color headingColor

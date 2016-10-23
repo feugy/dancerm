@@ -16,7 +16,7 @@ module.exports =
     editInvoice: 'Editer une facture pour {{owner}}'
     export: 'Exporter la liste'
     exportEmails: 'Copier les emails'
-    ignore: 'Ignorer'
+    ignore: 'Ne rien modifier'
     invoice: 'Factures'
     import: 'Importer des données'
     lessons: 'Cours particuliers'
@@ -34,6 +34,7 @@ module.exports =
     remove: 'Supprimer'
     removeAddress: 'Supprimer'
     save: 'Enregistrer'
+    saveConflict: 'Sauver les valeurs cochées'
     stats: 'Statistiques'
     settings: 'Paramètres'
     yes: 'Oui'
@@ -191,6 +192,9 @@ module.exports =
   # long messages with html
   msg:
     about: "DanceRM est un logiciel de gestion de clientèle minimaliste développé pour l'école de danse Ribas à Villeurbanne."
+    cancelConflictResolution: """En annulant, les prochains conflits seront ignorés.
+Si vous souhaitez reprendre la résolution de ces conflits plus tard, il suffit d'importer de nouveau le même fichier.
+Voulez vous interrompre la résolution des conflits ?"""
     cancelEdition: "Vous allez perdre les modifications de {{names}}. Voulez-vous vraiment continuer ?"
     cancelLessonEdition: "Vous allez perdre les modifications du cours de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     configureTeachers: "Pour pouvoir éditer des factures, DanceRM à besoin de connaitre les coordonnéess, le Siret et éventuellement le numéro de TVA des proffesseurs"

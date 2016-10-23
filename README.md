@@ -1,7 +1,7 @@
 ## Bugs
 
-- Address and dancer removal
 - Conflicts
+  - multiple modifications on payments
 
 ## TODO
 

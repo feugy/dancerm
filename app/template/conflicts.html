@@ -19,11 +19,11 @@
           <span data-ng-if="!field.kind">{{'lbl.' + field.label|i18n:{sep:true} }}</span>
         </td>
         <td>
-          <input data-ng-model="field.useImported" data-ng-value="false" type="radio" id="{{field.label}}-e"/>
+          <input class="checkbox" data-ng-model="field.useImported" data-ng-value="false" type="radio" id="{{field.label}}-e"/>
           <label for="{{field.label}}-e" data-ng-bind-html="field.existing"></label>
         </td>
         <td>
-          <input data-ng-model="field.useImported" data-ng-value="true" type="radio" id="{{field.label}}-i"/>
+          <input class="checkbox" data-ng-model="field.useImported" data-ng-value="true" type="radio" id="{{field.label}}-i"/>
           <label for="{{field.label}}-i" data-ng-bind-html="field.imported"></label>
         </td>
       </tr>
@@ -31,7 +31,7 @@
   </table>
 </div>
 <div class="modal-footer">
-  <a href="" data-ng-click="ctrl.save()" class="btn btn-primary">{{::'btn.save'|i18n}}</a>
+  <a href="" data-ng-click="ctrl.save()" class="btn btn-primary">{{::'btn.saveConflict'|i18n}}</a>
   <a href="" data-ng-click="ctrl.loadNext()" class="btn">{{::'btn.ignore'|i18n}}</a>
   <a href="" data-ng-click="ctrl.cancel()" class="btn">{{::'btn.cancel'|i18n}}</a>
 </div>

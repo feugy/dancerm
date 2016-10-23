@@ -31,6 +31,7 @@ describe 'Conflicts controller tests', ->
     new DanceClass id: '043737c8e083', _v: 0, season: '2013/2014', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '2 8/12 ans', start: 'Wed 17:30', end: 'Wed 18:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
     new DanceClass id: '00117fb1e188', _v: 0, season: '2013/2014', kind: 'Initiation', color: 'color1', level: '5/7 ans', start: 'Mon 17:00', end: 'Mon 17:45', teacher: 'Anthony', hall: 'Gratte-ciel 2'
     new DanceClass id: '0249f2c4b254', _v: 0, season: '2014/2015', kind: 'Danse sportive/Rock/Salsa', color: 'color3', level: '1 8/12 ans', start: 'Wed 16:30', end: 'Wed 17:30', teacher: 'Anthony', hall: 'Gratte-ciel 2'
+    new Address id: 'f2569714287b', _v: 0, street: '1 cours Emile Zola', city: 'Villeurbanne', zipcode: 69100
   ]
 
   before init
@@ -49,7 +50,7 @@ describe 'Conflicts controller tests', ->
 
   # build tested controller
   buildController = (conflicts, close, done, apply = ->) ->
-    new ConflictsController {$apply: ->}, conflicts, {close: close}, {trustAsHtml: (obj) -> obj}, done
+    new ConflictsController {$apply: ->}, conflicts, {}, {close: close}, {trustAsHtml: (obj) -> obj}, {}, done
 
   it 'should not displayed conflict if no conflicts found', (done) ->
     buildController [], done, (->), => done new Error '$apply must not be invoked'
@@ -99,6 +100,12 @@ describe 'Conflicts controller tests', ->
       expect(ctrl.conflicts[ctrl.rank].imported).to.be.an.instanceOf Dancer
       expect(ctrl.conflicts[ctrl.rank].imported.toJSON()).to.deep.equal models[6].toJSON()
       done()
+
+  it 'should handle address changes not associated to dancer', (done) ->
+    buildController [
+      existing: models[14]
+      imported: new Address _.extend models[14].toJSON(), street: '19 rue Francis de Préssensé'
+    ], done, (->) , => done new Error '$apply must not be invoked'
 
   it 'should find card changes and associate them to first dancer', (done) ->
     newCharged = 350

@@ -11,7 +11,7 @@ i18n = require '../labels/common'
 module.exports = class ConflictsController
 
   # Controller dependencies
-  @$inject: ['$rootScope', 'conflicts', '$uibModalInstance', '$sce']
+  @$inject: ['$rootScope', 'conflicts', 'byClass', '$uibModalInstance', '$sce', 'dialog']
 
   # Popup declaration
   @declaration:
@@ -19,8 +19,14 @@ module.exports = class ConflictsController
     controllerAs: 'ctrl'
     templateUrl: 'conflicts.html'
 
+  # Link to Angular dialog service
+  dialog: null
+
   # list of conflicts, with `existing` and `imported` properties
   conflicts: []
+
+  # Number of models saved, organized by class
+  byClass: {}
 
   # display name of edited dancer
   name: ''
@@ -51,12 +57,14 @@ module.exports = class ConflictsController
   #
   # @param rootScope [Object] Angular's root scope for refreshs
   # @param rawConflicts [Object] list of conflicts, with `existing` and `imported` properties
+  # @param byClass [Object] number of saved models by class
   # @param dialog [Object] current dialog instance
   # @param sce [Object] Angular's Strict Contextual Escaping facility
+  # @param dialog [Object] Link to Angular dialog service
   #
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no problem occured
-  constructor: (@rootScope, rawConflicts, @_dialog, @sce, done = ->) ->
+  constructor: (@rootScope, rawConflicts, @byClass, @_dialog, @sce, @dialog, done = ->) ->
     _done = (err) ->
       console.error err if err?
       done err
@@ -98,7 +106,7 @@ module.exports = class ConflictsController
       return _done err if err?
       # add extra dancers to manage addresses and cards
       ids = (id for {id} in dancers)
-      for [dancer],i in extraDancers
+      for [dancer],i in extraDancers when dancer?
         ids.push dancer.id
         # use a fake dancer to carry the modified address or card
         fake = new Dancer dancer.toJSON()
@@ -412,8 +420,12 @@ module.exports = class ConflictsController
       saveable[modified.id] = modified if modified.id?
 
     # save models
-    async.each (model for id, model of saveable), (model, next) ->
-      model.save next
+    async.each (model for id, model of saveable), (model, next) =>
+      model.save (err) =>
+        className = model.constructor.name
+        @byClass[className] = 0 unless className of @byClass
+        @byClass[className]++
+        next err
     , (err) =>
       return console.error err if err?
       @loadNext()
@@ -422,5 +434,10 @@ module.exports = class ConflictsController
   #
   # @param confirmed [Boolean] true if the creation is confirmed
   cancel: =>
-    # TODO confirm
-    @_dialog.close()
+    @dialog.messageBox(i18n.ttl.confirm, i18n.msg.cancelConflictResolution,
+      [
+          {label: i18n.btn.no}
+          {label: i18n.btn.yes, cssClass: 'btn-warning', result: true}
+      ]
+    ).result.then (confirmed) =>
+      @_dialog.close() if confirmed
