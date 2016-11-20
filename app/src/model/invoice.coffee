@@ -147,15 +147,16 @@ module.exports = class Invoice extends Persisted
     @date = moment date
     @dueDate = @date.clone().add(interval, 'days')
 
-  # Set customer by setting dancer
+  # Set customers by setting dancer
+  # Takes first dancer's address, and concatenate all dancer's names
   #
-  # @param dancer [Dancer] dancer used as customer
+  # @param dancers [Array<Dancer>] dancers used as customers
   # @param done [Function] completion callback, invoked with arguments
   # @option done err [Error] an error object or null if no error occured
-  setCustomer: (dancer, done) =>
-    return done null unless dancer?
-    @customer.name = "#{dancer.title} #{dancer.firstname} #{dancer.lastname}"
-    dancer.getAddress (err, address) =>
+  setCustomers: (dancers, done) =>
+    return done null unless dancers? && dancers.length
+    @customer.name = ("#{dancer.title} #{dancer.firstname} #{dancer.lastname}" for dancer in dancers).join '\n'
+    dancers[0].getAddress (err, address) =>
       return done err if err?
       Object.assign @customer, address.toJSON() if address?
       done null

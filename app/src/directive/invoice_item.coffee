@@ -56,9 +56,9 @@ module.exports = (app) ->
 <div class="invoice-item focusable" data-ng-class="ctrl.readOnly ? 'read-only' : ''">
   <button class="btn remove" data-ng-if="!ctrl.readOnly" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/></button>
   <span class="name">
-    <span data-ng-if="ctrl.readOnly">{{::ctrl.src.name}}</span>
+    <textarea msd-elastic readonly data-ng-if="ctrl.readOnly" data-ng-model="::ctrl.src.name" rows="1"></textarea>
     <span data-ng-if="!ctrl.readOnly" class="input-group" data-uib-dropdown keyboard-nav>
-      <input type="text" name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-class="ctrl.isRequired('name')" data-set-null/>
+      <textarea msd-elastic name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-class="ctrl.isRequired('name')" data-set-null rows="1"></textarea>
       <a href="" class="input-group-addon" uib-dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="option in ctrl.options">

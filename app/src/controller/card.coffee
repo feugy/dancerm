@@ -477,8 +477,10 @@ module.exports = class CardController
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
+      # new invoice date
+      date = registration.created or registration.payments[0]?.receipt or moment()
       # search for unsent invoices related to that card, and create a new one if needed
-      makeInvoice @dancers[0], registration.season, teacher, (err, invoice) =>
+      makeInvoice @dancers, date, registration.season, teacher, (err, invoice) =>
         # there could be an error if invoice already exists, and invoice will be populated.
         return @state.go 'list.invoice', id: invoice.id if invoice?
         # or just an error

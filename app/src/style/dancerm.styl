@@ -11,6 +11,7 @@ declareFonts()
 .pipette
   background rgba(255, 0, 255, 0)
 
+@require 'checkbox'
 @require 'animation'
 @require 'main_layout'
 @require 'directive/app_menu'
@@ -79,43 +80,6 @@ body
 
   :focus
     outline none
-
-  input[type=checkbox]
-  input.checkbox
-    -webkit-appearance none
-    margin-right 5px
-    vertical-align top
-
-    height 1em
-    width 1em
-    cursor pointer
-    position relative
-    -webkit-transition .15s
-    border-radius inputRadius
-
-    &:hover
-    &:focus
-      background focusBackground
-
-      &:before
-      &:checked:before
-        color focusTextColor
-        outline focusColor auto 5px
-
-    &:before
-    &:checked:before
-      position absolute
-      top 0
-      left 0
-      width 100%
-      height 100%
-      line-height 1em
-      text-align center
-      content ''
-      color textColor
-
-    &:checked:before
-      content '\2714'
 
 /******************************************************************************
  * Focusable components

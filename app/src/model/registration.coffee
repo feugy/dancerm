@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 {map} = require 'async'
 {currentSeason} = require '../util/common'
 Base = require './tools/base'
@@ -43,6 +44,7 @@ module.exports = class Registration extends Base
   constructor: (raw = {}) ->
     # set default values
     _.defaults raw,
+      created: moment()
       season: currentSeason()
       certificates: {}
       charged: 0
@@ -61,6 +63,9 @@ module.exports = class Registration extends Base
     )
     # fill attributes
     super(raw)
+    # enrich object attributes
+    @created = moment @created
+    @created = null unless @created.isValid()
     @charged = +@charged
 
   # Updates balance by summing payments.

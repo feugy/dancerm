@@ -1,9 +1,9 @@
-<div class="invoice">
+<div class="invoice ng-class:ctrl.isReadOnly?'read-only':'';">
   <article class="focusable invoice-title" data-ng-if="!ctrl.invoice">
     <h2 class="title">{{'msg.selectInvoice'|i18n}}</h2>
   </article>
   <article class="focusable invoice-title" data-ng-if="ctrl.invoice">
-    <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:{ref: ctrl.invoice.ref, owner: ctrl.conf.teachers[ctrl.invoice.selectedTeacher].owner} } }}</h2>
+    <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:{ref: ctrl.invoice.ref, owner: ctrl.teacher.owner} } }}</h2>
     <div class="with-vat" data-ng-if="!ctrl.isReadOnly">
       <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
     </div>
@@ -12,20 +12,20 @@
     <header>
       <img src="../style/img/ribas.png" class="logo"/>
       <div class="school">
-        <p>{{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].name}}</p>
-        <p>{{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].street}}</p>
-        <p>{{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].zipcode}} {{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].city}}</p>
-        <p>{{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].phone}}</p>
-        <p>{{::'lbl.siret'|i18n}} {{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].siret}}</p>
-        <p data-ng-if="ctrl.withVat">{{::'lbl.vatNumber'|i18n}} {{ctrl.conf.teachers[ctrl.invoice.selectedTeacher].vat}}</p>
+        <p>{{ctrl.teacher.name}}</p>
+        <p>{{ctrl.teacher.street}}</p>
+        <p>{{ctrl.teacher.zipcode}} {{ctrl.teacher.city}}</p>
+        <p>{{ctrl.teacher.phone}}</p>
+        <p>{{::'lbl.siret'|i18n}} {{ctrl.teacher.siret}}</p>
+        <p data-ng-if="ctrl.withVat">{{::'lbl.vatNumber'|i18n}} {{ctrl.teacher.vat}}</p>
         <p data-ng-if="!ctrl.withVat">{{ctrl.conf.noVatMention}}</p>
       </div>
       <div class="customer" data-ng-if="!ctrl.isReadOnly">
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.name" data-ng-class="ctrl.isRequired('name')" data-ng-change="ctrl._onChange('customer.name')" data-set-null/>
+          <textarea msd-elastic data-ng-model="ctrl.invoice.customer.name" data-ng-class="ctrl.isRequired('name')" data-ng-change="ctrl._onChange('customer.name')" data-set-null rows="1"></textarea>
         </p>
         <p>
-          <input type="text" data-ng-model="ctrl.invoice.customer.street" data-ng-class="ctrl.isRequired('street')" data-ng-change="ctrl._onChange('customer.street')" data-set-null/>
+          <textarea msd-elastic data-ng-model="ctrl.invoice.customer.street" data-ng-class="ctrl.isRequired('street')" data-ng-change="ctrl._onChange('customer.street')" data-set-null rows="1"></textarea>
         </p>
         <p class="zip-and-city">
           <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
@@ -33,8 +33,8 @@
         </p>
       </div>
       <div class="customer" data-ng-if="ctrl.isReadOnly">
-        <p>{{::ctrl.invoice.customer.name}}</p>
-        <p>{{::ctrl.invoice.customer.street}}</p>
+        <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.name" rows="1"></textarea>
+        <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.street" rows="1"></textarea>
         <p>{{::ctrl.invoice.customer.zipcode}} {{::ctrl.invoice.customer.city}}</p>
       </div>
     </header>

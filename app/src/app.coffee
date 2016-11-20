@@ -21,7 +21,7 @@ LessonsCtrl = require '../script/controller/lessons'
 console.log "running with angular v#{angular.version.full}"
 
 # declare main module that configures routing
-app = angular.module 'app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router', 'nvd3']
+app = angular.module 'app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router', 'nvd3', 'monospaced.elastic']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compileProvider', (location, router, states, compile) ->
   # html5 mode cause problems when loading templates

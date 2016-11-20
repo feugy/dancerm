@@ -7,6 +7,11 @@
   flex-direction column
   height 100%
 
+  textarea
+    resize vertical
+  &.read-only textarea
+    resize none
+
   .invoice-title
     border-top 2px solid headingColor
     padding 0 1em
@@ -67,6 +72,7 @@
         display none
 
       input
+      textarea
       .input-group
         flex-grow 1
         min-width 0
@@ -74,6 +80,7 @@
 
       > div
         display flex
+        align-items flex-start
 
         > span
           font-family printFontFamily
@@ -87,7 +94,7 @@
           flex-grow 1
           justify-content flex-start
 
-          input
+          textarea
             text-align left
 
         .quantity
@@ -138,6 +145,7 @@
     .customer > *
     .school > *
     input
+    textarea
     .date > span
     .input-group > *
       font-family printFontFamily
@@ -148,6 +156,14 @@
     textarea:not(:hover):not(:focus):not(.ng-invalid)
       color black
       border-color transparent
+
+
+    textarea[readonly]:hover
+    textarea[readonly]:focus
+      border-color transparent
+      outline none
+      cursor default
+      -webkit-user-select none
 
     .input-group .input-group-addon
       background-color rgba(black, 0.07)
@@ -166,7 +182,7 @@
       box-shadow none
 
     input:hover:not(:focus)
-    textarea:hover:not(:focus)
+    textarea:hover:not(:focus):not([readonly])
       border-color transparent
       background-color rgba(black, 0.07)
 
@@ -234,10 +250,6 @@
         margin-top 1.5em
 
   .customer
-    text-align right
-
-    input:not([type=number])
-      width 100%
 
     .zip-and-city
       display flex

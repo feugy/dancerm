@@ -8,17 +8,17 @@
       <header>
         <img src="../style/img/ribas.png" class="logo"/>
         <div class="school">
-          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].name}}</p>
-          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].street}}</p>
-          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].zipcode}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].city}}</p>
-          <p>{{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].phone}}</p>
-          <p>{{::'lbl.siret'|i18n}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].siret}}</p>
-          <p data-ng-if="ctrl.withVat">{{::'lbl.vatNumber'|i18n}} {{::ctrl.conf.teachers[ctrl.invoice.selectedTeacher].vat}}</p>
+          <p>{{ctrl.teacher.name}}</p>
+          <p>{{ctrl.teacher.street}}</p>
+          <p>{{ctrl.teacher.zipcode}} {{ctrl.teacher.city}}</p>
+          <p>{{ctrl.teacher.phone}}</p>
+          <p>{{::'lbl.siret'|i18n}} {{ctrl.teacher.siret}}</p>
+          <p data-ng-if="ctrl.withVat">{{::'lbl.vatNumber'|i18n}} {{ctrl.teacher.vat}}</p>
           <p data-ng-if="!ctrl.withVat">{{ctrl.conf.noVatMention}}</p>
         </div>
         <div class="customer">
-          <p>{{::ctrl.invoice.customer.name}}</p>
-          <p>{{::ctrl.invoice.customer.street}}</p>
+          <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.name" rows="1"></textarea>
+          <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.street" rows="1"></textarea>
           <p>{{::ctrl.invoice.customer.zipcode}} {{::ctrl.invoice.customer.city}}</p>
         </div>
       </header>
@@ -75,6 +75,8 @@
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
+    <script type="application/javascript" src="../vendor/angular-locale.fr.js"></script>
+    <script type="application/javascript" src="../vendor/angular-elastic.js"></script>
     <script type="application/javascript" src="../script/controller/invoice.js"></script>
     <script type="application/javascript" src="../script/print.js"></script>
   </body>

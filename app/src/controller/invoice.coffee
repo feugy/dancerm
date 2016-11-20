@@ -16,7 +16,7 @@ isInvalidDate = (value) -> not(value?) or not moment(value).isValid()
 class InvoiceController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope'].concat unless isPrintCtx then ['conf', 'dialog', '$state', '$filter', '$stateParams', 'invoiceList'] else []
+  @$inject: ['$scope', '$rootScope', 'conf'].concat unless isPrintCtx then ['dialog', '$state', '$filter', '$stateParams', 'invoiceList'] else []
 
   # Route declaration
   @declaration:
@@ -65,6 +65,9 @@ class InvoiceController
 
   # apply VAT or not
   withVat: false
+
+  # shortcut to @conf.teachers[@invoice.selectedTeacher]
+  teacher: null
 
   # Option used to configure date selection popup
   dateOpts:
@@ -317,6 +320,7 @@ class InvoiceController
   # @param invoice [Invoice] Loaded invoice
   _onLoad: (invoice) =>
     @invoice = invoice
+    @teacher = @conf.teachers[@invoice.selectedTeacher]
     @dueDate = @invoice?.dueDate
     @isReadOnly = @invoice?.sent?
     @dateOpts.value = @invoice?.date.valueOf()

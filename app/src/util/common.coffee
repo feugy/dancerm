@@ -186,33 +186,32 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
   # Only one unsent invoice is allowed for a given combination of those elements: if it
   # already exists, an error is raised, but the existing invoice is also returned
   #
-  # @param dancer [Dancer] the concerned dancer
+  # @param dancers [Array<Dancer>] the concerned dancers
+  # @param date [Moment] invoice's date
   # @param season [Number] first year of the concerned season
   # @param teacher [Number] index of the concerned teacher in conf.teachers array.
   # @param done [Function] completion callback, invoked with arguments:
   # @param done.err [Error] an error object, if the creation failed
   # @param done.invoice [Invoice] the generated invoice, or the existing one
-  makeInvoice: (dancer, season, teacher, done) ->
+  makeInvoice: (dancers, date, season, teacher, done) ->
     Invoice = require '../model/invoice' unless Invoice?
     # search for unsent invoices related to that card
-    Invoice.findWhere {cardId: dancer.cardId, season: season, selectedTeacher: teacher, sent: null}, (err, existing) =>
+    Invoice.findWhere {cardId: dancers[0].cardId, season: season, selectedTeacher: teacher, sent: null}, (err, existing) =>
       return done new Error "failed to search for invoices: #{err.message}" if err?
       # if an unsent invoice already exist, raise an error, but also return the first (and only) invoice
-      return done new Error("unsent invoice already exist for card #{dancer.cardId}, season #{season} and teacher #{teacher}"), existing[0] if existing.length
+      return done new Error("unsent invoice already exist for card #{dancers[0].cardId}, season #{season} and teacher #{teacher}"), existing[0] if existing.length
       # or create a new one with the first dancer as customer
       firstYear = parseInt season
       invoice = new Invoice
-        cardId: dancer.cardId,
+        cardId: dancers[0].cardId
         season: season
         selectedTeacher: teacher
-      # only use current date if inside registration season. Otherwise, default September, 15th
-      now = moment().year firstYear
-      invoice.changeDate if now.isBetween "#{firstYear}-08-01", "#{firstYear + 1}-07-31" then now else moment "#{firstYear}-09-15"
+      invoice.changeDate date
       # generate reference
-      Invoice.getNextRef now.year(), now.month() + 1, teacher, (err, ref) =>
+      Invoice.getNextRef date.year(), date.month() + 1, teacher, (err, ref) =>
         return done new Error "failed to get next ref for new invoice #{err.message}" if err?
         invoice.ref = ref
-        invoice.setCustomer dancer, =>
+        invoice.setCustomers dancers, =>
           invoice.save (err) =>
             return done new Error "failed to save new invoice #{invoice.toJSON()}: #{err.message}" if err?
             done null, invoice

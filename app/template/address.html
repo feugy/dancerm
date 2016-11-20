@@ -4,14 +4,14 @@
   <h4>{{::'ttl.address'|i18n}}</h4>
   <div data-ng-if="ctrl.readOnly" class="row">
     <span class="col-md-8 read-only">
-      <span class="street">{{ctrl.src.street}}</span>
+      <textarea msd-elastic data-ng-model="ctrl.src.street"class="street" rows="1"></textarea>
       <span class="zipcode">{{ctrl.src.zipcode}}</span>
       <span class="city">{{ctrl.src.city}}</span>
     </span>
     <span class="col-md-4 read-only phone"><label>{{::'lbl.phone'|i18n:{sep:true} }}</label><span>{{ctrl.src.phone}}</span></span>
   </div>
   <div data-ng-if="!ctrl.readOnly" class="row">
-    <span class="col-md-12 street"><label>{{::'lbl.street'|i18n:{sep:true} }}</label><textarea data-ng-model="ctrl.src.street" data-set-null data-ng-change="ctrl.onChange({$field:'street'})" data-ng-class="ctrl.isRequired('street')"/></span>
+    <span class="col-md-12 street"><label>{{::'lbl.street'|i18n:{sep:true} }}</label><textarea msd-elastic data-ng-model="ctrl.src.street" data-set-null data-ng-change="ctrl.onChange({$field:'street'})" data-ng-class="ctrl.isRequired('street')" rows="1"></textarea></span>
   </div>
   <div data-ng-if="!ctrl.readOnly" class="row">
     <span class="col-md-3 zipcode"><label>{{::'lbl.zipcode'|i18n:{sep:true} }}</label><input type="number" name="zipcode" data-ng-model="ctrl.src.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-ng-change="ctrl.onChange({$field:'zipcode'})" data-set-null/></span>

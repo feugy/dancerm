@@ -1,4 +1,5 @@
 _ = require 'lodash'
+moment = require 'moment'
 {each} = require 'async'
 i18n = require '../labels/common'
 {currentSeason, makeInvoice} = require '../util/common'
@@ -69,7 +70,7 @@ module.exports = class LessonList extends SearchList
     @invoicable[0].getDancer (err, dancer) =>
       err = new Error "lesson #{@invoicable[0].id} dancer can't be found" unless dancer? or err?
       return done new Error "failed to get lesson's concerned dancer: #{err.message}" if err?
-      makeInvoice dancer, season, @conf.teachers.indexOf(@invoiceTeacher), (err, invoice) =>
+      makeInvoice [dancer], moment(), season, @conf.teachers.indexOf(@invoiceTeacher), (err, invoice) =>
         return done err, invoice if err?
         console.log "make new invoice for #{@invoiceTeacher.owner} and lessons #{@invoicable.map (l) -> l.id}"
         # group lessons by price
