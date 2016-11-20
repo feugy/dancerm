@@ -1,3 +1,4 @@
+{roundEuro} = require '../util/common'
 {round} = require 'lodash'
 InvoiceItem = require '../model/invoice_item'
 i18n = require '../labels/common'
@@ -24,6 +25,7 @@ class InvoiceItemDirective
   # @param without {Number} duty-free value
   # @returns {Number} value with tax included
   applyTax: (without) =>
+    # roundEuro without * (1 + @src?.vat), 2
     round without * (1 + @src?.vat), 2
 
   # Removes taxes (if defined) to get duty-free value
@@ -31,6 +33,7 @@ class InvoiceItemDirective
   # @param withTax {Number} value with tax included
   # @returns {Number} duty-free value
   removeTax: (withTax) =>
+    # roundEuro withTax / (1 + @src?.vat), 2
     round withTax / (1 + @src?.vat), 2
 
   # Prefill current edited values with given option

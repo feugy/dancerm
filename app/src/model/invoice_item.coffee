@@ -1,6 +1,7 @@
 _ = require 'lodash'
 moment = require 'moment'
 Base = require './tools/base'
+{roundEuro} = require '../util/common'
 
 # Item of a given invoice.
 # Related to a given dance class, and one or more dancers.
@@ -27,15 +28,15 @@ module.exports = class InvoiceItem extends Base
 
   # computed and read-only duty-free invoice total
   @property 'dutyFreeTotal',
-    get: -> _.round((1 - @discount/100) * @price / (1 + @vat) * @quantity, 2) or 0
+    get: -> roundEuro((1 - @discount/100) * @price / (1 + @vat) * @quantity, 2) or 0
 
   # computed and read-only tax total
   @property 'taxTotal',
-    get: -> _.round(@total - @dutyFreeTotal, 2) or 0
+    get: -> roundEuro(@total - @dutyFreeTotal, 2) or 0
 
   # computed and read-only invoice total
   @property 'total',
-    get: -> _.round((1 - @discount/100) * @price * @quantity, 2) or 0
+    get: -> roundEuro((1 - @discount/100) * @price * @quantity, 2) or 0
 
   # Creates a payment from a set of raw JSON arguments
   #

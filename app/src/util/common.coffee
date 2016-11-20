@@ -215,3 +215,17 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
           invoice.save (err) =>
             return done new Error "failed to save new invoice #{invoice.toJSON()}: #{err.message}" if err?
             done null, invoice
+
+  # Round a number to the upper half euro:
+  # 5.0 -> 5.0
+  # 5.15 -> 5.5
+  # 5.5 -> 5.5
+  # 5.51 -> 6.0
+  # 5.6 -> 6.0
+  #
+  # @param num [Number] number to round
+  # @returns [Number] rounded value
+  roundEuro: (num) ->
+    floor = Math.floor num
+    cents = Math.floor(100 * num) % 100
+    if cents is 0 then floor else if cents <= 50 then floor + .5 else floor + 1
