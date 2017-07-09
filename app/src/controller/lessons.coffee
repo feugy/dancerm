@@ -304,7 +304,7 @@ module.exports = class LessonsController
   # @param lesson [Lesson] displayed color
   # @returns [Array<String>] computed color and legend item
   affectLegend: (lesson) =>
-    teacher = @conf.teachers[lesson.selectedTeacher].owner
+    teacher = @conf.teachers[lesson.selectedTeacher]?.owner
     @_colors[teacher] = "color#{++@_nextColor}" unless teacher of @_colors
     [@_colors[teacher], teacher]
 

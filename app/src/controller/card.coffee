@@ -2,6 +2,7 @@ _ = require 'lodash'
 moment = require 'moment'
 async = require 'async'
 {join} = require 'path'
+windowManager = require('electron').remote.require 'electron-window-manager'
 i18n = require '../labels/common'
 {generateId, makeInvoice} = require '../util/common'
 Dancer = require '../model/dancer'
@@ -375,20 +376,20 @@ module.exports = class CardController
     return @_preview.focus() if @_preview?
     @save true, (err) =>
       return console.error err if err?
-      nw.Window.open 'app/template/settlement_print.html',
-        frame: true
-        icon: require('../../../package.json')?.window?.icon
-        focus: true
-        # size to A4 format, 3/4 height
-        width: 1000
-        height: 800
-        , (created) =>
-          @_preview = created
-          # set parameters and wait for closure
-          @_preview.card = @card
-          @_preview.selectedTeacher = selectedTeacher
-          @_preview.season = registration.season
-          @_preview.on 'closed', => @_preview = null
+
+      windowManager.sharedData.set 'styles', global.styles.print
+      windowManager.sharedData.set 'card', @card
+      windowManager.sharedData.set 'selectedTeacher', selectedTeacher
+      windowManager.sharedData.set 'season', registration.season
+
+      # open hidden print window
+      @_preview = windowManager.createNew 'settlement', window.document.title, null, 'print'
+      @_preview.open '/settlement_print.html', true
+      @_preview.focus()
+
+      @_preview.object.on 'closed', =>
+        # dereference the window object, to destroy it
+        @_preview = null
 
   # Invoked when dancer needs to be removed.
   # First display a confirmation dialog, and then dissociate the dancer from this card

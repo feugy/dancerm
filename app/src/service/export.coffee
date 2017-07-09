@@ -52,7 +52,7 @@ module.exports = class Export
         console.info "dump in #{filePath} finished in #{moment().diff start}ms !"
         done err
     catch err
-      console.error "Error while dimping data:", err
+      console.error "Error while dumping data:", err
       done err
 
   # Exports a dancer list to an XlsX file

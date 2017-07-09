@@ -2,7 +2,7 @@
 {fork} = require 'child_process'
 
 reqId = 1
-# other possible: nedb. But does not support importing 8000 models
+# other possible: indexeddb & nedb. The later one does not support importing 8000 models
 workerImpl = 'indexeddb'
 
 # Recursively walk down an object, replacing its regexp values per an array
@@ -42,17 +42,17 @@ class Persistance
         @_worker.onerror = (err) =>
           err?.preventDefault()
           console.error "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
-          # TODO invoke onResult with error
+          throw data
 
-      when 'nedb'
-        @_worker = fork "#{__dirname}/nedb_worker.js"
+      when 'nedb', 'mongodb'
+        @_worker = fork "#{__dirname}/#{workerImpl}_worker.js"
         @_worker.on 'message', (data) =>
           return @_onResult data if data?.id
           if isA data, 'error'
-            console.error "persistance worker #{data.message} #{data.stack}"
+            console.error "persistance worker: #{data.message} #{data.stack}"
+            throw data
           else
-            console.log "persistance worker #{JSON.stringify data}"
-          # TODO invoke onResult with error
+            console.log "persistance worker:", data
 
   # **private**
   # Used when the worker answered a result
@@ -71,12 +71,14 @@ class Persistance
 # > drop
 # remove all models for this class
 #
+# @param name [String] model name
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
 #
 # > findById
 # Get a single model from its id
 #
+# @param name [String] model name
 # @param id [String] searched id
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
@@ -85,6 +87,7 @@ class Persistance
 # > find
 # Get a list of model matching given criteria
 #
+# @param name [String] model name
 # @param criteria [Object] search criteria, like a mongo's query
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
@@ -93,6 +96,7 @@ class Persistance
 # > save
 # Add a new model (if id is not set or does not match existing) or erase existing model
 #
+# @param name [String] model name
 # @param model [Persisted] saved model new values
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
@@ -100,6 +104,7 @@ class Persistance
 # > remove
 # removed an existing model
 #
+# @param name [String] model name
 # @param id [String] deleted id
 # @param done [Function] completion callback, invoked with arguments:
 # @option done err [Error] an error object or null if no error occured
@@ -108,7 +113,7 @@ class Persistance
     id = reqId++
     @_queue[id] = done
     op = 'postMessage'
-    if workerImpl is 'nedb'
+    if workerImpl isnt 'indexeddb'
       op = 'send'
       # escape query regexpes
       args[1] = encodeRegExp args[1] if action is 'find'

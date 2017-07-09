@@ -1,6 +1,7 @@
 _ = require 'lodash'
 {join} = require 'path'
 moment = require 'moment'
+{clipboard, remote: {dialog}} = require 'electron'
 i18n = require '../labels/common'
 ListController = require './tools/list'
 
@@ -95,7 +96,7 @@ module.exports = class ExpandedListController extends ListController
             dancer.getAddress (err, address) -> done err, "#{address?.street} #{address?.zipcode} #{address?.city}"
         }
 
-      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher].owner},
+      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher]?.owner},
         {name: 'ref', title: 'lbl.ref'},
         {
           name: 'date'
@@ -132,7 +133,7 @@ module.exports = class ExpandedListController extends ListController
         {name: 'customer.address', title: 'lbl.address', attr: ({customer: {street, zipcode, city}}) -> "#{street} #{zipcode} #{city}"}
 
       @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
-        {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher].owner},
+        {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher]?.owner},
         {
           name: 'date'
           title: 'lbl.hours'
@@ -165,40 +166,32 @@ module.exports = class ExpandedListController extends ListController
   # Choose a target file and export list as xlsx
   export: =>
     return unless @service.list?.length > 0
-    dialog = $('<input style="display:none;" type="file" nwsaveas accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
-    dialog.change (evt) =>
-      filePath = dialog.val()
-      dialog.remove()
-      # dialog cancellation
-      return unless filePath
+    filePath = dialog.showSaveDialog
+      title: i18n.ttl.chooseExportLocation
+      filters: [name: i18n.lbl.xlsx, extensions: ['xlsx']]
+    # dialog cancellation
+    return unless filePath
+    # waiting message box
+    waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
 
-      # waiting message box
-      waitingDialog = null
-      @scope.$apply =>
-        waitingDialog = @dialog.messageBox i18n.ttl.export, i18n.msg.exporting
-
-      # Perform export
-      @exporter.toFile filePath, @service.list, (err) =>
-        waitingDialog.close()
-        if err?
-          console.error "Export failed: #{err}"
-          # displays an error dialog
-          @dialog.messageBox i18n.ttl.export, _.template(i18n.err.exportFailed)(err), [label: i18n.btn.ok]
-        @scope.$apply()
-
-    dialog.trigger 'click'
-    # to avoid isSecDom error https://docs.angularjs.org/error/$parse/isecdom?p0=ctrl.export%28%29
-    null
+    # Perform export
+    @exporter.toFile filePath, @service.list, (err) =>
+      waitingDialog.close()
+      if err?
+        console.error "Export failed: #{err}"
+        # displays an error dialog
+        @dialog.messageBox i18n.ttl.export, _.template(i18n.err.exportFailed)(err), [label: i18n.btn.ok]
+      @scope.$apply()
 
   # Export email as string
   exportEmails: =>
     return unless @service.list?.length > 0
     emails = _.uniq(dancer.email.trim() for dancer in @service.list when dancer.email?.trim().length > 0).sort().join ', '
     # put in the system clipboard
-    clipboard = nw.Clipboard.get()
-    clipboard.set emails, 'text'
+    clipboard.writeText emails, 'selection'
+    truncatedEmails = _.truncate emails, length: 750, separator: ', '
     # display a popup with string to copy
-    @dialog.messageBox i18n.ttl.export, _.template(i18n.msg.exportEmails)(emails:emails), [label: i18n.btn.ok]
+    @dialog.messageBox i18n.ttl.export, _.template(i18n.msg.exportEmails)(emails:truncatedEmails), [label: i18n.btn.ok]
 
   # **private**
   # When search is finished, update actions regarding the number of results

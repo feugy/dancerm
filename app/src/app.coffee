@@ -1,49 +1,21 @@
 _ = require 'lodash'
-{remote} = require 'electron'
+{remote, ipcRenderer} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
 require('moment').locale 'fr'
 {dumpError, buildStyles, getColorsFromTheme, fixConsole} = require '../script/util/common'
 {init} = require '../script/model/tools/initializer'
 i18n = require '../script/labels/common'
 
-process.on 'uncaughtException', dumpError
+process.on 'uncaughtException', dumpError()
 fixConsole()
 
-win = remote.getCurrentWindow()
+win = windowManager.get 'main'
 hasDump = false
 
 console.log "running with angular #{angular.version.full}"
 
 # declare main module that configures routing
 app = angular.module 'app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router', 'nvd3', 'monospaced.elastic']
-
-win.on 'close', (evt) ->
-  unless hasDump
-    # cancel close and perform dump
-    evt.preventDefault()
-    console.log 'ask to close...'
-    hasDump = true
-
-    injector = angular.element('body.app').injector()
-    # display waiting message
-    injector.get('$rootScope').$apply =>
-      injector.get('dialog').messageBox i18n.ttl.dumping, i18n.msg.dumping
-
-    dumpPath = injector.get('conf').dumpPath
-    # export data
-    return injector.get('export').dump dumpPath, (err) =>
-      if err?
-        console.error 'close after save error', err
-      else
-        console.log 'close after save'
-      win.close()
-
-  # stores in local storage application state
-  console.log 'close !'
-  bounds = win.getBounds()
-  localStorage.setItem attr, bounds[attr] for attr of bounds
-  localStorage.setItem 'maximized', win.isMaximized()
-  win.removeAllListeners 'close'
-
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compileProvider', (location, router, states, compile) ->
   # html5 mode cause problems when loading templates
@@ -107,6 +79,12 @@ app.run ['$location', 'conf', (location, conf) ->
     location.url('/settings?firstRun').replace() unless conf.dumpPath? and conf.teachers.length
 ]
 
+# store current window's position and state in local storage
+storePosition = ->
+  bounds = win.object.getBounds()
+  localStorage.setItem attr, bounds[attr] for attr of bounds
+  localStorage.setItem 'maximized', win.object.isMaximized()
+
 # build styles
 buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', (err, styles) ->
   # DOM is ready
@@ -119,17 +97,62 @@ buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', (err,
   # set application title
   window.document?.title = i18n.ttl.application
 
-  $(window).on 'keydown', (event) ->
-    console.log "coucou ! #{event.which}"
-    # opens dev tools on F12 or Command+Option+J
-    win.webContents.openDevTools() if event.which is 123 or event.witch is 74 and event.metaKey and event.altKey
-    # reloads full app on F5
-    if event.which is 116
-      # must clear require cache also
-      delete global.require.cache[attr] for attr of global.require.cache
-      global.reload = true
-      win.removeAllListeners 'close'
-      win.webContents.reloadIgnoringCache()
+  # save before close
+  $(window).on 'beforeunload', (evt) ->
+    unless hasDump
+      # cancel close and perform dump
+      evt.preventDefault()
+      console.log 'ask to close...'
+      hasDump = true
+
+      injector = angular.element('body.app').injector()
+      # display waiting message
+      injector.invoke ['dialog', (dialog) =>
+        dialog.messageBox i18n.ttl.dumping, i18n.msg.dumping
+      ]
+
+      dumpPath = injector.get('conf').dumpPath
+      # export data
+      injector.get('export').dump dumpPath, (err) =>
+        if err?
+          console.error 'close after save error', err
+        else
+          console.log 'close after save'
+        win.close()
+      return false
+
+    # stores in local storage application state
+    console.log 'close !'
+    storePosition()
+
+  # reload full windows
+  win.registerShortcut 'F5', ->
+    storePosition()
+    # must clear require cache also
+    delete global.require.cache[attr] for attr of global.require.cache
+    global.reload = true
+    $(window).off 'beforeunload'
+    windowManager.shortcuts.unregisterAll win.object
+    win.reload true
+
+  # toggle dev tools
+  win.registerShortcut 'CommandOrControl+F12', -> win.toggleDevTools true
+
+  # show updates notification from Main process
+  ipcRenderer.on 'updates', (event, update) =>
+    injector = angular.element('body.app').injector()
+    # display modal message for updates
+    injector.invoke ['dialog', '$filter', (dialog, filter) =>
+      dialog.messageBox(i18n.ttl.updateInstalled, filter('i18n')('msg.updateInstalled', args: update), [
+          {label: @i18n.btn.no}
+          {label: @i18n.btn.yes, cssClass: 'btn-warning', result: true}
+        ]
+      ).result.then (confirmed) =>
+        return unless confirmed
+        # if confirmed, restart everything
+        remote.app.relaunch()
+        remote.app.exit 0
+    ]
 
   console.log 'init database...'
   init (err) ->
@@ -145,14 +168,14 @@ buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', (err,
     if localStorage.getItem 'x'
       x = +localStorage.getItem 'x'
       y = +localStorage.getItem 'y'
-      win.setPosition x, y
+      win.move x, y
     if localStorage.getItem 'width'
       width = +localStorage.getItem 'width'
       height = +localStorage.getItem 'height'
-      win.setSize width, height
+      win.resize width, height
 
     # we are ready: shows it !
-    win.show()
+    win.object.show()
     # local storage stores strings !
     win.maximize() if 'true' is localStorage.getItem 'maximized'
     # starts the application

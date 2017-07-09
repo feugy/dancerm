@@ -11,7 +11,8 @@
 
 ## TODO Electron
 
-- printing
-- change icon
 - tests with spectron
-- package with electron-packager and electron-installer
+
+## TODO MongoDB
+
+- import > callstack when merging with distant mongo (works fine locally)

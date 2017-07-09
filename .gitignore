@@ -13,6 +13,7 @@ installer/*.exe
 installer/Version.txt
 build/
 cache/
+dist/
 *.json
 errors.txt
 log.txt
@@ -23,3 +24,4 @@ test-log.txt
 *.log
 bin
 bin-*
+usefull.md

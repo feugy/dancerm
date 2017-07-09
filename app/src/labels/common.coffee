@@ -209,7 +209,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     emptyDancerList: 'Aucun danseur pour ces critères'
     emptyInvoiceList: 'Aucune facture pour ces critères'
     emptyLessonList: 'Aucun cour particulier pour ces critères'
-    exportEmails: "La liste des email suivante à été copiée dans le presse papier : <%= emails %>"
+    exportEmails: "<p>La liste des email suivante à été copiée dans le presse papier :</p><p><%= emails %></p>"
     exporting: 'Export en cours, veuillez patienter...'
     invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent lui être ajoutés. Voulez vous editer la facture en cours ?'
     invoiceListLength: ' facture(s) séléctionnée(s)'
@@ -235,6 +235,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     selectInvoice: 'Merci de selectionner une facture depuis la recherche, ou une fiche danseur'
     searchDancer: "En sélectionnant un danseur, vous fusionnerez sa fiche d'inscription avec celle de {{firstname}} {{lastname}}."
     searchDancerWarn: "Attention, cette opération est irréversible, et les modifications en cours seront enregistrées."
+    updateInstalled: "<p>Une nouvelle mise à jour ({{version}}) est à été installée, et sera appliquée au prochain redémarrage.</p><p>Voulez vous redémarrer maintenant ?</p>"
 
   placeholder:
     searchCards: 'danceurs par nom/prénom'
@@ -381,6 +382,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     application: 'DanceRM'
     card: 'Fiche danseurs'
     chooseDumpLocation: 'Selection du fichier de sauvegarde'
+    chooseExportLocation: 'Selection du fichier à exporter'
     chooseImportedFile: 'Selection du fichier à importer'
     confirm: 'Confirmation'
     contact: 'Contact'
@@ -413,4 +415,5 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     searchDancer: 'Fusionner deux fiches'
     stats: '{{total}} danseurs'
     teacherSettings: 'Professeurs inscrits'
+    updateInstalled: 'Mise à jour disponible'
     vatSettings: 'Paramètres de TVA'

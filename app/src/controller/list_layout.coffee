@@ -49,13 +49,13 @@ module.exports = class ListLayoutController extends ListController
             dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
         }
 
-      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacherColumn', attr: (invoice) => @conf.teachers[invoice.selectedTeacher].owner},
+      @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacherColumn', attr: (invoice) => @conf.teachers[invoice.selectedTeacher]?.owner},
         {name: 'ref', title: 'lbl.ref'},
         {name: 'customer.name', title: 'lbl.customer', attr: (invoice) -> invoice.customer.name},
         {name: 'sent', title: 'lbl.sent', attr: (invoice) -> invoice.sent?}
 
       @constructor.colSpec.lesson.push {selectable: (model) -> not model.invoiceId?},
-        {name: 'teacher', title: 'lbl.teacherColumn', attr: (lesson) => @conf.teachers[lesson.selectedTeacher].owner},
+        {name: 'teacher', title: 'lbl.teacherColumn', attr: (lesson) => @conf.teachers[lesson.selectedTeacher]?.owner},
         {
           name: 'date'
           title: 'lbl.hours'

@@ -1,5 +1,7 @@
 _ = require 'lodash'
 {map} = require 'async'
+{remote} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
 i18n = require '../script/labels/common'
 Dancer = require '../script/model/dancer'
 
@@ -31,10 +33,13 @@ window.customClass = class Print
 
   constructor: (filter, rootScope, @conf) ->
     # get data from mother window
-    @registration = _.find win.card.registrations, season: win.season
-    @selectedTeacher = +win.selectedTeacher
+    card = windowManager.sharedData.fetch 'card'
+    season = windowManager.sharedData.fetch 'season'
+    @selectedTeacher = windowManager.sharedData.fetch 'selectedTeacher'
+    @registration = _.find card.registrations, season: season
+
     # get card dancers
-    Dancer.findWhere {cardId: win.card.id}, (err, dancers) =>
+    Dancer.findWhere {cardId: card.id}, (err, dancers) =>
       return console.error err if err?
       @dancers = dancers
       map @dancers, (dancer, next) ->
@@ -62,8 +67,9 @@ window.customClass = class Print
           window.document?.title = filter('i18n') 'ttl.print', args: names: @names
           rootScope.$apply()
 
+          remote.getCurrentWindow().show()
           window.print()
-          _.defer -> win.close()
+          _.defer -> remote.getCurrentWindow().close()
 
   # Retrieve dance classes of a given dancer
   #

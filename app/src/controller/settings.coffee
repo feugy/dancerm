@@ -197,10 +197,10 @@ module.exports = class SettingsController
       msg = @filter('i18n') 'msg.importSuccess', args: report
 
       # get all existing dancers
-      @import.merge models, (err, byClass, conflicts) =>
+      @import.merge models, (err, report, conflicts) =>
         return displayEnd err if err
-        console.info "merge report:", byClass, conflicts.map ({existing, imported}) =>
-          "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
+        console.info "merge report:", report #, conflicts.map ({existing, imported}) =>
+        #  "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
         # resolve conflicts one by one
         return displayEnd() if conflicts.length is 0
         @dialog.modal(_.extend {
@@ -209,6 +209,6 @@ module.exports = class SettingsController
             keyboard: false
             resolve:
               conflicts: => conflicts
-              byClass: => byClass
+              byClass: => report.byClass
           }, ConflictsController.declaration
         ).result.then displayEnd
