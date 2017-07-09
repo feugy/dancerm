@@ -1,8 +1,8 @@
 {
   "name": "dancerm",
-  "version": "4.0.0-b1",
+  "version": "4.0.1",
   "author": "Feugy <damien.feugas@gmail.com>",
-  "description": "DanceRM is a very simple Customer Relationship Management adapted to the world of dance schools",
+  "description": "DanceRM is a very simple Customer Relationship Management adapted to dance schools",
   "repository": {
     "type": "git",
     "url": "https://github.com/feugy/dancerm.git"
@@ -10,9 +10,17 @@
   "licence": "LGPL v3",
   "main": "app/script/main.js",
   "scripts": {
+    "build": "run-s -s build:clean build:compile-and-vendor",
+    "build:clean": "gulp clean",
+    "build:compile": "gulp build",
+    "build:compile-and-vendor": "run-p -s build:vendor build:compile",
+    "build:vendor": "gulp vendor",
+    "build:watch": "gulp",
+    "dev": "run-s -s build:clean build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "release": "electron-builder build"
+    "release": "run-s -s build release:builder",
+    "release:builder": "electron-builder build -p always"
   },
   "dependencies": {
     "async": "2.0.1",
@@ -43,6 +51,7 @@
     "gulp-sourcemaps": "2.6.0",
     "gulp-util": "3.0.7",
     "mocha": "3.0.2",
+    "npm-run-all": "4.0.2",
     "rimraf": "2.5.4",
     "run-sequence": "1.2.2"
   },
@@ -69,6 +78,7 @@
     "src/style/fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
   },
   "build": {
+    "productName": "DanceRM",
     "files": [
       "**/*",
       "!.*",

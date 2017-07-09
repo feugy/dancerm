@@ -14,6 +14,7 @@ installer/Version.txt
 build/
 cache/
 dist/
+dev-app-update.yml
 *.json
 errors.txt
 log.txt
