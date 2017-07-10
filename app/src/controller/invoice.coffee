@@ -84,6 +84,9 @@ class InvoiceController
     invoice: []
     items: []
 
+  # possible prices displayed when editing lines
+  priceList: []
+
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
@@ -320,6 +323,7 @@ class InvoiceController
     @invoice.changeDate @_previous.date
     @dateOpts.value = @invoice.date.valueOf()
     @_previous = @invoice.toJSON()
+    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
     @_setChanged false
 
   # **private**
@@ -328,6 +332,7 @@ class InvoiceController
   _onLoad: (invoice) =>
     @invoice = invoice
     @teacher = @conf.teachers[@invoice.selectedTeacher]
+    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
     @dueDate = @invoice.dueDate
     @isReadOnly = @invoice.sent?
     @dateOpts.value = @invoice.date.valueOf()

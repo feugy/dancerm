@@ -299,6 +299,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     legend: 'Légende :'
 
   priceList:
+    default: [{category: 'Aucun prix défini'}]
     '2016/2017': [
       {category: 'Adultes, 1 an'}
       {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
