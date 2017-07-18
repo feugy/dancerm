@@ -1,6 +1,6 @@
 _ = require 'lodash'
 moment = require 'moment'
-{each, map} = require 'async'
+{each, map, mapLimit} = require 'async'
 {readFile, stat} = require 'fs'
 path = require 'path'
 xlsx = require 'xlsx.js'
@@ -39,23 +39,30 @@ module.exports = class Import
   # @option done byClass [Object] number of modified or added models by class (name as key)
   # @option done conflicts [Array<Object>] conflicted models, in an object containing `existing` and `imported` keys
   merge: (imported, done) =>
-    byClass = {}
+    start = Date.now()
+    report =
+      byClass: {}
+      readTime: 0
+      saveTime: 0
     conflicts = []
 
-    map imported, (model, next) ->
+    # run with limitted concurrency
+    mapLimit imported, 5, (model, next) ->
       # try to find existing model for each imported model, and return an object with both
       model.constructor.find model.id, (err, existing) ->
-        return next err if err? and -1 is err.message.indexOf 'not found'
+        return next err if err? and not err.message.includes 'not found'
         next null, existing: existing or null, imported: model
     , (err, processed) =>
+      report.readTime = Date.now() - start
       return done err if err?
-      map processed, ({existing, imported}, next) ->
+      # run in serie
+      mapLimit processed, 1, ({existing, imported}, next) ->
         unless existing?
           # no existing model: save imported model
           # imported version is above existing one: save imported model
           className = imported.constructor.name
-          byClass[className] = 0 unless className of byClass
-          byClass[className]++
+          report.byClass[className] = 0 unless className of report.byClass
+          report.byClass[className]++
           imported.save next
         else
           if JSON.stringify(_.omit existing.toJSON(), '_v') isnt JSON.stringify _.omit imported.toJSON(), '_v'
@@ -63,7 +70,9 @@ module.exports = class Import
             conflicts.push existing: existing, imported: imported
           # existing version is above imported version: no importation
           next()
-      , (err) -> done err, byClass, conflicts
+      , (err) ->
+        report.saveTime = Date.now() - start - report.readTime
+        done err, report, conflicts
 
   # Read the content of an XlsX file, and extract dancers from it
   #

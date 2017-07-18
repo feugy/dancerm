@@ -1,15 +1,17 @@
-{fixConsole} = require '../script/util/common'
+{remote} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
+{fixConsole, dumpError} = require '../script/util/common'
 ConfService = require '../script/service/conf'
+require('moment').locale 'fr'
 
 # on DOM loaded
+process.on 'uncaughtException', dumpError()
 fixConsole()
-win = nw.Window.get()
-window.win = win
 
-angular.element(win.window).on 'load', ->
+angular.element(window).on 'load', ->
   doc = angular.element(document)
   # adds dynamic styles
-  doc.find('head').append "<style type='text/css'>#{global.styles['print']}</style>"
+  doc.find('head').append "<style type='text/css'>#{windowManager.sharedData.fetch 'styles'}</style>"
 
   # requires and registers custom class
   app = angular.module('printPreview', []).controller 'Print', window.customClass

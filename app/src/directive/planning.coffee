@@ -142,6 +142,13 @@ class PlanningDirective
     @q (resolve) => resolve @scope.getLegend(model: course) or [course.color, course.kind]
 
   # **private**
+  # Compute label for a given group
+  # @param group [String] displayed group
+  # @return [String] displayed group label
+  _getGroup: (group) =>
+    @q (resolve) => resolve @scope.getGroup(model: group) or group
+
+  # **private**
   # Rebuild the empty calendar. Hour span and dance groups must have been initialized
   _buildCalendar: =>
     html = []
@@ -156,7 +163,7 @@ class PlanningDirective
     for day in @days
       html.push "<div class='day' data-day='#{day}'><div class='title'>#{i18n.lbl[day]}</div><div class='groups'>"
       if @groups[day]?
-        html.push "<span>#{group}</span>" for group in @groups[day]
+        html.push "<span data-group='#{group}'></span>" for group in @groups[day]
       html.push "</div>"
       # add quarter from the earliest to the latest hours
       for hour in @hours
@@ -170,6 +177,14 @@ class PlanningDirective
     @element.addClass "days#{@days.length} hours#{@hours.length}"
 
     @_buildLegend()
+    @_buildGroups()
+
+  # **private**
+  # Refresh group conent
+  _buildGroups: =>
+    groups = _.chain(@groups).values().flattenDeep().uniq().value()
+    @q.all(@_getGroup group for group in groups).then (labels) =>
+      @element.find("[data-group='#{group}']").empty().append labels[i] for group, i in groups
 
   # **private**
   # Refresh legend content
@@ -289,5 +304,7 @@ module.exports = (app) ->
       getTooltipContent: '&'
       # function that returns title for given dance classe (first parameter)
       getTitle: '&'
-      # function that returnsand array containing color and legend group for given dance classe (first parameter)
+      # function that returns an array containing color and legend group for given dance classe (first parameter)
       getLegend: '&'
+      # function taht returns a label for a given group (first parameter)
+      getGroup: '&'

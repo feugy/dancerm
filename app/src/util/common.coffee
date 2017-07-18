@@ -5,9 +5,12 @@ moment = require 'moment'
 {inspect} = require 'util'
 {map} = require 'async'
 {render} = require 'stylus'
+{remote, app} = require 'electron'
 # to avoid circular dependencies
 Invoice = null
 i18n = require '../labels/common'
+
+userData = (if app then app else remote.app).getPath 'userData'
 
 _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
 
@@ -55,11 +58,13 @@ module.exports =
   # @param path [String] path to log file
   fixConsole: (path = 'log.txt') ->
     # Log file
-    logFile = resolve path
+    logFile = resolve userData, path
     console.log "log to file #{logFile}"
     ['info', 'debug', 'warn', 'error', 'log'].forEach (method) ->
+      original = global.console[method]
       global.console[method] = (args...) ->
         appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
+        original args...
 
   # Working instanceof operator. No inheritance, no custom types
   #
@@ -76,12 +81,13 @@ module.exports =
   # @param path [String] path to log file
   dumpError: (path = 'log.txt') -> (err) ->
     now = new Date()
-    appendFileSync resolve(path), """
+    logFile = resolve userData, path
+    appendFileSync logFile, """
 ------------
 Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
 #{err.message}
 #{err.stack}\n\n"""
-    process.exit 0
+    if remote then remote.process.exit -1 else process.exit -1
 
   # Generate a random id containing 12 characters
   # @return a generated id
@@ -92,7 +98,7 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
   #
   # @return absolute path to store database files
   getDbPath: ->
-    if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test' or not nw?
+    if process.env.NODE_ENV?.toLowerCase()?.trim() is 'test'
       'dancerm-test'
     else
       'dancerm'
@@ -152,7 +158,7 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
   # @option done results [Object] an associative array containing for each file (as key) the corresponding css
   buildStyles: (files, theme, done) ->
     map files, (sheet, next) ->
-      folder = join '.', 'app', 'src', 'style'
+      folder = join __dirname, '..', '..', 'src', 'style'
       readFile join(folder, "#{sheet}.styl"), 'utf8', (err, content) ->
         return next err if err?
         # adds themes variable if it exists
@@ -162,7 +168,7 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
         # now add variables and compiles
         render "@require 'variable'\n#{content}",
           filename: "#{sheet}.css"
-          paths: ['./app/src/style']
+          paths: [folder]
         , next
     , (err, sheets) ->
       return done err if err?

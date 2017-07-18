@@ -1,5 +1,7 @@
 _ = require 'lodash'
 {map} = require 'async'
+{remote} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
 i18n = require '../script/labels/common'
 
 # Angular controller for addresses print preview
@@ -25,12 +27,10 @@ window.customClass = class Print
   #
   # @param scope [Object] controller's own scope
   constructor: (scope) ->
-    win = window.win
-
     console.log "Print addresses"
 
     # get data from mother window
-    dancers = win.list
+    dancers = windowManager.sharedData.fetch 'list'
 
     # regroup by addresses and get details
     groupByAddress = {}
@@ -61,6 +61,7 @@ window.customClass = class Print
           }
       )
       scope.$apply()
+      remote.getCurrentWindow().show()
 
   # Stop click propagation on checkboxes to avoid double toggleing a stamp.
   #
@@ -73,4 +74,4 @@ window.customClass = class Print
     # remove configuration and unselected stamps
     angular.element(document).find('body').addClass 'printing'
     window.print()
-    _.defer -> win.close()
+    _.defer -> remote.getCurrentWindow().close()

@@ -16,10 +16,8 @@ const gutil = require('gulp-util')
 const rimraf = require('rimraf')
 const coffee = require('gulp-coffee')
 const sourcemaps = require('gulp-sourcemaps')
-const download = require('gulp-download')
-const NwBuilder = require('nw-builder')
-const runSequence = require('run-sequence')
-const manifest = require('./package.json')
+const download = require('gulp-downloader')
+const {frontDependencies} = require('./package.json')
 
 
 const paths = {
@@ -29,8 +27,6 @@ const paths = {
   scriptsDest: 'app/script',
   testsSrc: 'test/src/**/*.coffee',
   testsDest: 'test/script',
-  templateDest: 'app/template',
-  vendor: 'app/vendor',
   sourceMapRoot: '../../src'
 }
 
@@ -45,12 +41,16 @@ gulp.task('clean', done =>
 
 // download vendor libraries from the net
 gulp.task('vendor', () => {
-  const deps = manifest.frontDependencies
   const conf = []
-  for (const file in deps) {
-    conf.push({file: file, url: deps[file]})
+  for (const file in frontDependencies) {
+    conf.push({fileName: file, request: {url: frontDependencies[file]}})
   }
-  return download(conf)
+  return download(conf, {verbose: true})
+    .on('end', () => gutil.log('files downloaded'))
+    .on('error', err => {
+      gutil.log(err)
+      gutil.beep()
+    })
     .pipe(gulp.dest('app/'))
 })
 
@@ -63,17 +63,17 @@ gulp.task('copy-assets', ['clean'], () =>
 // Build Coffee scripts
 const buildScripts = () =>
   gulp.src(paths.scriptsSrc)
-    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.init())
     .pipe(coffee({
-      bare: true,
-      maps: true
-    }).on('error', function(err) {
-      gutil.log(err.stack)
-      gutil.beep()
+      bare: true
     }))
+    .on('end', () => gutil.log('scripts rebuilt'))
+    .on('error', err => {
+      gutil.log(`${err.filename}: ${err.message}\n${JSON.stringify(err.location, null, 2)}`)
+      gutil.beep()
+    })
     .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
     .pipe(gulp.dest(paths.scriptsDest))
-    .on('end', () => gutil.log('scripts rebuilt'))
 
 gulp.task('build-scripts', ['clean'], buildScripts)
 
@@ -83,52 +83,19 @@ gulp.task('build', ['copy-assets', 'build-scripts'])
 // Build tests scripts
 const buildTests = () =>
   gulp.src(paths.testsSrc)
-    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.init())
     .pipe(coffee({
-      bare: true,
-      maps: true
-    }).on('error', function(err) {
-      gutil.log(err.stack)
-      gutil.beep()
+      bare: true
     }))
+    .on('end', () => gutil.log('test rebuilt'))
+    .on('error', function(err) {
+      gutil.log(`${err.filename}: ${err.message}\n${JSON.stringify(err.location, null, 2)}`)
+      gutil.beep()
+    })
     .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
     .pipe(gulp.dest(paths.testsDest))
-    .on('end', () => gutil.log('test rebuilt'))
 
 gulp.task('build-tests', ['build'], buildTests)
-
-// Make distribution packages
-gulp.task('dist', () =>
-  runSequence('clean', 'vendor', 'build', done => {
-    const options = {
-      files: ['./package.json',
-        './app/src/**/*.styl',
-        './' + paths.scriptsDest + '/**',
-        './' + paths.assetsDest + '/**',
-        './' + paths.templateDest + '/**',
-        './' + paths.vendor + '/**',
-        './node_modules/**'],
-      version: '0.14.7',
-      platforms: platforms,
-      macIcns: 'app/src/style/img/dancerm.icns',
-      winIco: 'app/src/style/img/dancerm.ico',
-      platformOverrides: {
-        osx: {
-          toolbar: true
-        }
-      }
-    }
-    for (const package in manifest.devDependencies) {
-      if (package !== 'rimraf') {
-        // rimraf is needed by fs-extra: don't remove it
-        options.files.push('!./node_modules/' + package + '/**')
-      }
-    }
-
-    const nw = new NwBuilder(options)
-    nw.on('log', gutil.log.bind(gutil)).build(done)
-  })
-)
 
 // Clean, build, and then watch for files changes
 gulp.task('watch', ['build-tests'], () => {

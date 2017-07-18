@@ -23,7 +23,7 @@
         </div>
       </header>
       <div class="date">
-        <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>
+        <span>{{::'print.invoiceDate'|i18n}} {{ctrl.displayDate(ctrl.invoice.date)}}</span>
       </div>
       <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
       <div class="items ng-class:ctrl.hideItemDiscount ? 'hide-discount' : '';">
@@ -73,6 +73,11 @@
         <span>{{'print.invoiceVarious'|i18n}}</span>
       </div>
     </div>
+    <script type="application/javascript">
+      global.isPrintCtx = true
+      // see explanation https://github.com/electron/electron/issues/254
+      window.$ = window.jQuery = require('../vendor/jquery')
+    </script>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
     <script type="application/javascript" src="../vendor/angular-locale.fr.js"></script>

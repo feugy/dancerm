@@ -1,4 +1,5 @@
 _ = require 'lodash'
+{dialog} = require('electron').remote
 i18n = require '../labels/common'
 ConflictsController = require './conflicts'
 {buildStyles, getColorsFromTheme} = require '../util/common'
@@ -66,9 +67,9 @@ module.exports = class SettingsController
         @filter('i18n') 'lbl.author', args: author: 'Feugy'
         @filter('i18n') 'lbl.version', args: version: require('../../../package.json').version
       ]}
-      {title: 'NW.js', image: "#{imgRoot}/nwjs.png", specs: [
-        @filter('i18n') 'lbl.author', args: author: 'Roger Wang'
-        @filter('i18n') 'lbl.version', args: version: process.versions['node-webkit']
+      {title: 'Electron', image: "#{imgRoot}/electron.png", specs: [
+        @filter('i18n') 'lbl.author', args: author: 'Github'
+        @filter('i18n') 'lbl.version', args: version: process.versions.electron
       ]}
       {title: 'AngularJS', image: "#{imgRoot}/angular.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Google'
@@ -151,68 +152,63 @@ module.exports = class SettingsController
   #
   # Dialog won't close unless a path is choosen
   chooseDumpLocation: =>
-    dumpDialog = $("<input style='display:none;' type='file' nwsaveas value='#{@conf.dumpPath} accept='application/json'/>")
-    dumpDialog.change (evt) =>
-      dumpPath = dumpDialog.val()
-      dumpDialog.remove()
-      # dialog cancellation
-      return chooseDumpLocation() unless dumpPath
-      # retain entry for next loading, and refresh UI
-      @conf.dumpPath = dumpPath
-      @conf.save () => @scope.$apply()
-    dumpDialog.trigger 'click'
-    # to avoid issecdom error when directly bound with ngClick
-    null
+    dumpPath = dialog.showSaveDialog
+      defaultPath: @conf.dumpPath
+      title: @filter('i18n') 'ttl.chooseDumpLocation'
+      filters: [name: @filter('i18n')('lbl.json'), extensions: ['json']]
+    # dialog cancellation
+    return @chooseDumpLocation() unless dumpPath?
+    # retain entry for next loading, and refresh UI
+    @conf.dumpPath = dumpPath
+    @conf.save()
 
   # Display a file selection dialog to pick a dump file, that may be an xlsx or a 'json' file
   # Try to import contents (use dialog for progression) and resolve potential conflicts afterwise
   importDancers: =>
-    dialog = $('<input style="display:none;" type="file" accept=".dump,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>')
-    dialog.change (evt) =>
-      filePath = dialog.val()
-      dialog.remove()
-      # dialog cancellation
-      return unless filePath
-      dialog = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
+    filePath = dialog.showOpenDialog
+      defaultPath: @conf.dumpPath
+      title: @filter('i18n') 'ttl.chooseImportedFile'
+      filters: [
+        {name: @filter('i18n')('lbl.json'), extensions: ['json', 'dump']}
+        {name: @filter('i18n')('lbl.xlsx'), extensions: ['xlsx']}
+      ]
+      properties: ['openFile']
+    filePath = filePath and filePath[0]
+    # dialog cancellation
+    return unless filePath
+    message = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
 
-      msg = null
-      displayEnd = (err) =>
-        if err?
-          console.error "got error", err
-          msg = @filter('i18n') 'err.importFailed', args: err
-        _.delay =>
-          @rootScope.$apply =>
-            dialog.close()
-            @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
-              # refresh all
-              @rootScope.$broadcast 'model-imported'
-        , 100
+    msg = null
+    displayEnd = (err) =>
+      if err?
+        console.error "got error", err
+        msg = @filter('i18n') 'err.importFailed', args: err
+      _.delay =>
+        @rootScope.$apply =>
+          message.close()
+          @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
+            # refresh all
+            @rootScope.$broadcast 'model-imported'
+      , 100
 
-      @import.fromFile filePath, (err, models, report) =>
-        return displayEnd err if err?
-        console.info "importation report:", report
-        msg = @filter('i18n') 'msg.importSuccess', args: report
+    @import.fromFile filePath, (err, models, report) =>
+      return displayEnd err if err?
+      console.info "importation report:", report
+      msg = @filter('i18n') 'msg.importSuccess', args: report
 
-        # get all existing dancers
-        @import.merge models, (err, byClass, conflicts) =>
-          return displayEnd err if err
-          console.info "merge report:", byClass, conflicts.map ({existing, imported}) =>
-            "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
-
-          msg = @filter('i18n') 'msg.importSuccess', args: byClass: byClass
-          # resolve conflicts one by one
-          return displayEnd() if conflicts.length is 0
-          @dialog.modal(_.extend {
-              size: 'lg'
-              backdrop: 'static'
-              keyboard: false
-              resolve:
-                conflicts: => conflicts
-                byClass: => byClass
-            }, ConflictsController.declaration
-          ).result.then =>
-            msg = @filter('i18n') 'msg.importSuccess', args: byClass: byClass
-            displayEnd()
-
-    dialog.trigger 'click'
-    null
+      # get all existing dancers
+      @import.merge models, (err, report, conflicts) =>
+        return displayEnd err if err
+        console.info "merge report:", report #, conflicts.map ({existing, imported}) =>
+        #  "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
+        # resolve conflicts one by one
+        return displayEnd() if conflicts.length is 0
+        @dialog.modal(_.extend {
+            size: 'lg'
+            backdrop: 'static'
+            keyboard: false
+            resolve:
+              conflicts: => conflicts
+              byClass: => report.byClass
+          }, ConflictsController.declaration
+        ).result.then displayEnd

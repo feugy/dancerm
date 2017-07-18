@@ -1,4 +1,5 @@
 _ = require 'lodash'
+windowManager = require('electron').remote.require 'electron-window-manager'
 SearchList = require './tools/search_list'
 
 # Service responsible for searching for cards, and keep the list between states.
@@ -36,38 +37,36 @@ module.exports = class CardList extends SearchList
   # @param danceClass [DanceClass] danceClass concerned
   printCallList: =>
     return @_preview.focus() if @_preview?
-    nw.Window.open 'app/template/call_list_print.html',
-      frame: true
-      title: window.document.title
-      icon: require('../../../package.json')?.window?.icon
-      focus: true
-      # size to A4 format, landscape
-      width: 1000
-      height: 800
-      , (created) =>
-        @_preview = created
-        # set displayed list and wait for closure
-        @_preview.list = @list
-        @_preview.danceClass = @criteria.danceClasses[0]
-        @_preview.on 'closed', => @_preview = null
+
+    windowManager.sharedData.set 'styles', global.styles.print
+    windowManager.sharedData.set 'list', @list
+    windowManager.sharedData.set 'danceClass', @criteria.danceClasses[0]
+
+    # open hidden print window
+    @_preview = windowManager.createNew 'call_list', window.document.title, null, 'print'
+    @_preview.open '/call_list_print.html', true
+    @_preview.focus()
+
+    @_preview.object.on 'closed', =>
+      # dereference the window object, to destroy it
+      @_preview = null
 
   # Displays addresses printing window
   printAddresses: =>
     return @_preview.focus() if @_preview?
     return unless @list?.length > 0
-    nw.Window.open 'app/template/addresses_print.html',
-      frame: true
-      title: window.document.title
-      icon: require('../../../package.json')?.window?.icon
-      focus: true
-      # size to A4 format, 3/4 height
-      width: 1000
-      height: 800
-      , (created) =>
-        @_preview = created
-        # set displayed list and wait for closure
-        @_preview.list = @list
-        @_preview.on 'closed', => @_preview = null
+
+    windowManager.sharedData.set 'styles', global.styles.print
+    windowManager.sharedData.set 'list', @list
+
+    # open hidden print window
+    @_preview = windowManager.createNew 'addresses', window.document.title, null, 'print'
+    @_preview.open '/addresses_print.html', true
+    @_preview.focus()
+
+    @_preview.object.on 'closed', =>
+      # dereference the window object, to destroy it
+      @_preview = null
 
   # **private**
   # Parse criteria to search options

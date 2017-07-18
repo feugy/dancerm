@@ -1,4 +1,6 @@
 _ = require 'lodash'
+{remote} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
 moment = require 'moment'
 
 # Angular controller for call list print preview
@@ -22,15 +24,14 @@ window.customClass = class CallListPrint
   #
   # @param filter [Function] angular's filter factory
   constructor: (@filter) ->
-    win = window.win
 
     # get data from mother window
-    @danceClass = win.danceClass
+    @danceClass = windowManager.sharedData.fetch 'danceClass'
 
     console.log "Print call list for #{@danceClass.level} #{@danceClass.kind} #{@danceClass.id}"
 
     # group by card and then order by firstname
-    @list = _.chain(win.list)
+    @list = _.chain(windowManager.sharedData.fetch 'list')
       .groupBy('cardId')
       .each((group, key, list) -> list[key] = _.sortBy group, 'firstname')
       .values()
@@ -45,8 +46,10 @@ window.customClass = class CallListPrint
     # then add a week and print for next 12 occurences
     @dates = (start.add(7, 'day').format @filter('i18n')('formats.callList') for i in [0..11])
 
-    window.print()
-    _.defer -> win.close()
+    _.defer ->
+      remote.getCurrentWindow().show()
+      window.print()
+      _.defer -> remote.getCurrentWindow().close()
 
   # Display dance class title
   #

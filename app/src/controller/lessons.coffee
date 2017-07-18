@@ -299,12 +299,18 @@ module.exports = class LessonsController
   getPlanningTitle: (lesson) => @q (resolve, reject) ->
     lesson.getDancer (err, dancer) -> if err? then reject err else resolve "#{dancer?.firstname} #{dancer?.lastname}"
 
+  # Return teacher name from rank
+  #
+  # @param rank [Number] rank of selected teacher in current lesson
+  # @returns [String] Teacher name
+  getTeacherFromRank: (rank) => @conf.teachers[rank]?.owner or rank
+
   # Affect a given color depending on the teacher
   #
   # @param lesson [Lesson] displayed color
   # @returns [Array<String>] computed color and legend item
   affectLegend: (lesson) =>
-    teacher = @conf.teachers[lesson.selectedTeacher].owner
+    teacher = @conf.teachers[lesson.selectedTeacher]?.owner
     @_colors[teacher] = "color#{++@_nextColor}" unless teacher of @_colors
     [@_colors[teacher], teacher]
 

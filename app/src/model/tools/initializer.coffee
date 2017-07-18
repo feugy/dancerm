@@ -199,6 +199,52 @@ plannings = [{
     {kind:'Danse sportive', color:'color8', level:'1', start:'Fri 18:00', end:'Fri 19:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: '999e81618dd1'}
     {kind:'Danse sportive', color:'color8', level:'2', start:'Fri 19:00', end:'Fri 20:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: 'a354b697168d'}
   ]
+}, {
+  season: '2017/2018'
+  classes: [
+    {kind:'Eveil', color:'color1', level:'initiation 1', start:'Wed 13:30', end:'Wed 14:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'b1b79e862981'}
+    {kind:'Eveil', color:'color1', level:'initiation 1', start:'Mon 17:15', end:'Mon 18:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'a7cd7f9a2771'}
+    {kind:'Eveil', color:'color1', level:'initiation 2', start:'Wed 14:30', end:'Wed 15:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'d47199903565'}
+
+    {kind:'Rock/Salsa', color:'color2', level:'niveau 2', start:'Mon 20:30', end:'Mon 21:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '1229cc6d6dbb'}
+    {kind:'Rock/Salsa', color:'color2', level:'niveau 1', start:'Wed 20:00', end:'Wed 21:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '5051bae25f81'}
+    {kind:'Rock/Salsa', color:'color2', level:'niveau 3', start:'Wed 21:00', end:'Wed 22:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'a9d20d078bce'}
+
+    {kind:'Danse de salon', color:'color3', level:'niveau 1', start:'Tue 20:45', end:'Tue 21:45', teacher:'Anthony', hall:'Gratte-ciel 1', _id:'03ab98b6210a'}
+    {kind:'Danse de salon', color:'color3', level:'niveau 2', start:'Mon 19:30', end:'Mon 20:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'2db2b2180e34'}
+    {kind:'Danse de salon', color:'color3', level:'niveau 3', start:'Tue 20:45', end:'Tue 21:45', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'c63ffe7ce704'}
+
+    {kind:"Modern'Jazz", color:'color4', level:'ados avancé', start:'Mon 18:00', end:'Mon 19:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'6209e501663a'}
+    {kind:"Modern'Jazz", color:'color4', level:'adulte moyen/inter', start:'Mon 19:30', end:'Mon 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'d0a35da7c9b1'}
+    {kind:"Modern'Jazz", color:'color4', level:'adulte avancé', start:'Mon 20:30', end:'Mon 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'58850ce8b70a'}
+    {kind:"Modern'Jazz", color:'color4', level:'élémentaire 1', start:'Wed 13:30', end:'Wed 14:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'7471a6c3b5c8'}
+    {kind:"Modern'Jazz", color:'color4', level:'élémentaire 2', start:'Wed 14:30', end:'Wed 15:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'2f1e504cde43'}
+    {kind:"Modern'Jazz", color:'color4', level:'pré-ados/ados moyen', start:'Wed 15:30', end:'Wed 16:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'d47187603566'}
+    {kind:"Modern'Jazz", color:'color4', level:'enfant technique', start:'Wed 16:30', end:'Wed 17:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'68a32cddd0ae'}
+    {kind:"Modern'Jazz", color:'color4', level:'ados intermédiaire', start:'Wed 17:30', end:'Wed 18:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'30fb92d8beba'}
+    {kind:"Modern'Jazz", color:'color4', level:'ados technique', start:'Wed 18:30', end:'Wed 19:30', teacher:'Delphine', hall:'Gratte-ciel 2', _id:'cf53bcf6c020'}
+    {kind:"Modern'Jazz", color:'color4', level:'barre à terre', start:'Wed 19:30', end:'Wed 20:30', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'8fa12caffe0c'}
+    {kind:"Modern'Jazz", color:'color4', level:'adulte inter/avancé', start:'Wed 20:30', end:'Wed 22:00', teacher:'Delphine', hall:'Gratte-ciel 1', _id:'a1b859839678'}
+
+    {kind:'Zumba', color:'color5', level:'zumbakid/ado', start:'Mon 18:00', end:'Mon 18:45', teacher:'Anthony', hall:'Gratte-ciel 2', _id: '92f12890da8a'}
+    {kind:'Zumba', color:'color5', level:'zumbakid/ado', start:'Tue 17:00', end:'Tue 17:45', teacher:'Anthony', hall:'Gratte-ciel 2', _id: 'acdbd2fe07ec'}
+    {kind:'Zumba', color:'color5', level:'zumba', start:'Tue 19:30', end:'Tue 20:30', teacher:'Anthony', hall:'Gratte-ciel 1', _id: '947466408d47'}
+    {kind:'Zumba', color:'color5', level:'zumba', start:'Wed 18:30', end:'Wed 19:30', teacher:'Anthony', hall:'Gratte-ciel 1', _id:'a7f6afa8ec7f'}
+
+    {kind:'Hip Hop', color:'color6', level:'enfant 8/12 ans', start:'Tue 17:45', end:'Tue 18:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id:'96a8a5a38572'}
+    {kind:'Hip Hop', color:'color6', level:'ado 1', start:'Tue 18:30', end:'Tue 19:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id:'ecb5f6b33578'}
+    {kind:'Hip Hop', color:'color6', level:'ado 2/adulte', start:'Tue 19:30', end:'Tue 20:30', teacher:'Nassim', hall:'Gratte-ciel 2', _id:'1e9fa3d5795f'}
+
+    {kind:'Danse sportive', color:'color7', level:'enfant 1', start:'Wed 15:30', end:'Wed 16:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'5d3f805e8dd9'}
+    {kind:'Danse sportive', color:'color7', level:'enfant 2', start:'Wed 16:30', end:'Wed 17:30', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'9dbf0057797a'}
+    {kind:'Danse sportive', color:'color7', level:'solo team 1', start:'Thu 18:00', end:'Thu 19:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'5d59163867e5'}
+    {kind:'Danse sportive', color:'color7', level:'solo team 2', start:'Thu 19:00', end:'Thu 20:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'eb1ac8ec29b1'}
+    {kind:'Danse sportive', color:'color7', level:'compétiteurs latine', start:'Tue 20:00', end:'Tue 22:00', teacher:'Anthony', hall:'Croix-Luizet', _id:'6983f6d5acaf'}
+    {kind:'Danse sportive', color:'color7', level:'compétiteurs standard', start:'Thu 20:30', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 1', _id:'4be87d67ff85'}
+
+    {kind:'Salsa/Bachata', color:'color8', level:'niveau 1', start:'Thu 20:00', end:'Thu 21:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'fa8d7b7c8578'}
+    {kind:'Salsa/Bachata', color:'color8', level:'niveau 2', start:'Thu 21:00', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'a56e2966dac9'}
+  ]
 }]
 
 # Merge existing and expected dance classes of a given planning

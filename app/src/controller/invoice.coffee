@@ -1,6 +1,8 @@
 _ = require 'lodash'
 moment = require 'moment'
-isPrintCtx = not module?
+{remote} = require 'electron'
+windowManager = remote.require 'electron-window-manager'
+isPrintCtx = global.isPrintCtx or false
 # if used in print context, path to other dependencies are different
 i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
 Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
@@ -82,6 +84,9 @@ class InvoiceController
     invoice: []
     items: []
 
+  # possible prices displayed when editing lines
+  priceList: []
+
   # **private**
   # Store if a modal is currently opened
   _modalOpened: false
@@ -132,9 +137,11 @@ class InvoiceController
 
     # if used in the context of printing, skip internal init as we are just displaying preview
     if isPrintCtx
-      @_onLoad win.invoice
-      window.print()
-      _.defer -> win.close()
+      @_onLoad new Invoice JSON.parse windowManager.sharedData.fetch 'invoiceRaw'
+      _.defer ->
+        remote.getCurrentWindow().show()
+        window.print()
+        _.defer -> remote.getCurrentWindow().close()
       return
 
     # redirect to invoice list if needded
@@ -237,15 +244,15 @@ class InvoiceController
         @_onLoad @invoice
 
   # @returns [String] formated date for printing
-  displayDate: (date) =>  date?.format? @i18n.formats.invoice
+  displayDate: (date) => date?.format? @i18n.formats.invoice
 
   # Invoked when date change in the date picker
   # Updates the invoice's' date
   setDate: =>
-    return if @isReadOnly
+    return if @isReadOnly or not @invoice?
     newDate = moment @dateOpts.value
-    @invoice?.changeDate newDate
-    @dueDate = @invoice?.dueDate
+    @invoice.changeDate newDate
+    @dueDate = @invoice.dueDate
     @_onChange 'date'
 
   # Opens the date selection popup
@@ -263,18 +270,20 @@ class InvoiceController
     # save will be effective only it has changed
     @save false, (err) =>
       return console.error err if err?
-      nw.Window.open 'app/template/invoice_print.html',
-        frame: true
-        icon: require('../../../package.json')?.window?.icon
-        focus: true
-        # size to A4 format, 3/4 height
-        width: 1000
-        height: 800
-        , (created) =>
-          @_preview = created
-          # set parameters and wait for closure
-          @_preview.invoice = @invoice
-          @_preview.on 'closed', => @_preview = null
+
+      windowManager.sharedData.set 'styles', global.styles.print
+      # for an unknown reason, sending @invoice, or even the JSON equivalent
+      # introduct serialization glitches in getter and setter.
+      windowManager.sharedData.set 'invoiceRaw', JSON.stringify @invoice.toJSON()
+
+      # open hidden print window
+      @_preview = windowManager.createNew 'invoice', window.document.title, null, 'print'
+      @_preview.open '/invoice_print.html', true
+      @_preview.focus()
+
+      @_preview.object.on 'closed', =>
+        # dereference the window object, to destroy it
+        @_preview = null
 
   # Add a new item to the current invoice
   addItem: =>
@@ -306,6 +315,7 @@ class InvoiceController
   isRequired: (field) =>
     return 'invalid' if @required.invoice?.includes field
     ''
+
   # **private**
   # Reset current fields to previous values
   _reset: =>
@@ -313,6 +323,7 @@ class InvoiceController
     @invoice.changeDate @_previous.date
     @dateOpts.value = @invoice.date.valueOf()
     @_previous = @invoice.toJSON()
+    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
     @_setChanged false
 
   # **private**
@@ -321,9 +332,10 @@ class InvoiceController
   _onLoad: (invoice) =>
     @invoice = invoice
     @teacher = @conf.teachers[@invoice.selectedTeacher]
-    @dueDate = @invoice?.dueDate
-    @isReadOnly = @invoice?.sent?
-    @dateOpts.value = @invoice?.date.valueOf()
+    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
+    @dueDate = @invoice.dueDate
+    @isReadOnly = @invoice.sent?
+    @dateOpts.value = @invoice.date.valueOf()
     @required =
       invoice: []
       items: ([] for item in @invoice.items)
@@ -390,11 +402,11 @@ class InvoiceController
       invoice: []
       items: ([] for item in @invoice.items)
     # check the invoice itself
-    @required.invoice.push 'ref' if isInvalidString @invoice?.ref
-    @required.invoice.push 'date' if isInvalidDate @invoice?.date
-    @required.invoice.push (field for field in ['name', 'street', 'city', 'zipcode'] when isInvalidString @invoice?.customer?[field])...
+    @required.invoice.push 'ref' if isInvalidString @invoice.ref
+    @required.invoice.push 'date' if isInvalidDate @invoice.date
+    @required.invoice.push (field for field in ['name', 'street', 'city', 'zipcode'] when isInvalidString @invoice.customer?[field])...
     # check each items
-    for item, i in @invoice?.items or []
+    for item, i in @invoice.items or []
       @required.items[i].push 'name' if isInvalidString item.name
     # returns true if invoice or any of its item is missing a field
     @required.invoice.length isnt 0 or @required.items.some (item) -> item.length isnt 0
