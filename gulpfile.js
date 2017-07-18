@@ -69,7 +69,7 @@ const buildScripts = () =>
     }))
     .on('end', () => gutil.log('scripts rebuilt'))
     .on('error', err => {
-      gutil.log(`${err.filename}: ${err.message}\n${err.location}`)
+      gutil.log(`${err.filename}: ${err.message}\n${JSON.stringify(err.location, null, 2)}`)
       gutil.beep()
     })
     .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
@@ -89,7 +89,7 @@ const buildTests = () =>
     }))
     .on('end', () => gutil.log('test rebuilt'))
     .on('error', function(err) {
-      gutil.log(err.stack)
+      gutil.log(`${err.filename}: ${err.message}\n${JSON.stringify(err.location, null, 2)}`)
       gutil.beep()
     })
     .pipe(sourcemaps.write({sourceRoot: paths.sourceMapRoot}))
