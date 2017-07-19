@@ -67,7 +67,10 @@ const buildScripts = () =>
     .pipe(coffee({
       bare: true
     }))
-    .on('end', () => gutil.log('scripts rebuilt'))
+    .on('end', () => {
+      gutil.log('scripts rebuilt')
+      gutil.beep()
+    })
     .on('error', err => {
       gutil.log(`${err.filename}: ${err.message}\n${JSON.stringify(err.location, null, 2)}`)
       gutil.beep()

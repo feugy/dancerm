@@ -78,12 +78,14 @@ module.exports = class ConflictsController
     async.each rawConflicts, ({imported}, next) =>
       found = false
       if imported instanceof Card
-        # search for imported dancers with this card
+        # search for imported dancers with this card, to recreate refs
         for dancer in dancers when dancer.cardId is imported.id
           found = true
           dancer.setCard imported
           break
         unless found
+          # on the card was modified, no modifications on related dancers.
+          # we need to pick existing dancers to display conflict window
           resolved.push imported
           return Dancer.findWhere {cardId: imported.id}, (err, dancers) =>
             # dancers may be empty or contain multiple dancers: we'll use the first

@@ -82,12 +82,12 @@ module.exports =
   dumpError: (path = 'log.txt') -> (err) ->
     now = new Date()
     logFile = resolve userData, path
-    appendFileSync logFile, """
+    appendFile logFile, """
 ------------
 Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
 #{err.message}
-#{err.stack}\n\n"""
-    if remote then remote.process.exit -1 else process.exit -1
+#{err.stack}\n\n""", ->
+      if remote then remote.process.exit -1 else process.exit -1
 
   # Generate a random id containing 12 characters
   # @return a generated id

@@ -47,7 +47,7 @@ module.exports = class Import
     conflicts = []
 
     # run with limitted concurrency
-    mapLimit imported, 5, (model, next) ->
+    mapLimit imported, Number.POSITIVE_INFINITY, (model, next) ->
       # try to find existing model for each imported model, and return an object with both
       model.constructor.find model.id, (err, existing) ->
         return next err if err? and not err.message.includes 'not found'
@@ -56,20 +56,27 @@ module.exports = class Import
       report.readTime = Date.now() - start
       return done err if err?
       # run in serie
-      mapLimit processed, 1, ({existing, imported}, next) ->
+      mapLimit processed, Number.POSITIVE_INFINITY, ({existing, imported}, next) ->
         unless existing?
           # no existing model: save imported model
           # imported version is above existing one: save imported model
           className = imported.constructor.name
           report.byClass[className] = 0 unless className of report.byClass
           report.byClass[className]++
-          imported.save next
+          imported.save (err) ->
+            if className is Invoice.name and err?.message?.includes 'is misformated or already used'
+              # found an invoice reference already used
+              conflicts.push {existing: {ref: imported.ref}, imported}
+              return next()
+            next err
         else
-          if JSON.stringify(_.omit existing.toJSON(), '_v') isnt JSON.stringify _.omit imported.toJSON(), '_v'
-            # existing and imported are not equal: conflict detected
-            conflicts.push existing: existing, imported: imported
-          # existing version is above imported version: no importation
-          next()
+          # defer is needed here to avoid call stack overflow during jsonification ??
+          _.defer ->
+            if JSON.stringify(_.omit existing.toJSON(), '_v') isnt JSON.stringify _.omit imported.toJSON(), '_v'
+              # existing and imported are not equal: conflict detected
+              conflicts.push {existing, imported}
+            # existing version is above imported version: no importation
+            next()
       , (err) ->
         report.saveTime = Date.now() - start - report.readTime
         done err, report, conflicts

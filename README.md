@@ -1,5 +1,9 @@
 ## Bugs
 
+- Invoice Ref unicity based on selected teacher
+- Migrate old invoice
+  - items[].discount: null > 0
+  - selectedSchool > selectedTeacher
 - Conflicts
   - multiple modifications on payments
 

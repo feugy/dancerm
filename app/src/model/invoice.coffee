@@ -136,7 +136,7 @@ module.exports = class Invoice extends Persisted
   save: (done) =>
     Invoice.isRefValid @ref, @, (err, isValid) =>
       return done err, null if err?
-      return done new Error "Reference '#{@ref}' is misformated or already used" unless isValid
+      return done new Error "Reference '#{@ref}' for teacher #{@selectedTeacher} is misformated or already used" unless isValid
       super done
 
   # Set date value, and affect due date automatically
