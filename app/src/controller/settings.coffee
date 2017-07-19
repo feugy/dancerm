@@ -47,6 +47,10 @@ module.exports = class SettingsController
   # flag to temporary disable button while theme are building
   _building: false
 
+  # **private**
+  # Flag to avoid calling multiple dialog
+  _dumpDialogDisplayed: false
+
   # On loading, search for current season
   #
   # @param scope [Object] controller's own scope, for event listening
@@ -61,6 +65,7 @@ module.exports = class SettingsController
       @scope.$apply()
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @_building = false
+    @_dumpDialogDisplayed = false
     imgRoot = '../style/img'
     @about = [
       {title: 'DanceRM', image: "#{imgRoot}/dancerm.png", specs: [
@@ -152,10 +157,13 @@ module.exports = class SettingsController
   #
   # Dialog won't close unless a path is choosen
   chooseDumpLocation: =>
+    return if @_dumpDialogDisplayed
+    @_dumpDialogDisplayed = true
     dumpPath = dialog.showSaveDialog
       defaultPath: @conf.dumpPath
       title: @filter('i18n') 'ttl.chooseDumpLocation'
       filters: [name: @filter('i18n')('lbl.json'), extensions: ['json']]
+    _.defer => @_dumpDialogDisplayed = false
     # dialog cancellation
     return @chooseDumpLocation() unless dumpPath?
     # retain entry for next loading, and refresh UI

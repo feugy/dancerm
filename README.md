@@ -5,6 +5,8 @@
 
 ## TODO
 
+- splash screen
+- hide empty days in planning
 - Invoice & Lesson conflicts
 - unit test for indexedDB operator support ($and, $lt, $gt, $lte, $gte)
 - Mandatory fields that cannot be bypassed
