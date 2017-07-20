@@ -1,3 +1,4 @@
-test/src/**/*.coffee
+--require espower-coffee/guess
 --compilers coffee:coffee-script/register
+--check-leaks
 --reporter spec

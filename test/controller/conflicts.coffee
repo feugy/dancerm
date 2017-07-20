@@ -1,14 +1,14 @@
 _ = require 'lodash'
+assert = require 'power-assert'
 async = require 'async'
-{expect} = require 'chai'
-{init} = require '../../../app/script/model/tools/initializer'
-Address = require '../../../app/script/model/address'
-Card = require '../../../app/script/model/card'
-DanceClass = require '../../../app/script/model/dance_class'
-Dancer = require '../../../app/script/model/dancer'
-Payment = require '../../../app/script/model/payment'
-Registration = require '../../../app/script/model/registration'
-ConflictsController = require '../../../app/script/controller/conflicts'
+{init} = require '../../app/src/model/tools/initializer'
+Address = require '../../app/src/model/address'
+Card = require '../../app/src/model/card'
+DanceClass = require '../../app/src/model/dance_class'
+Dancer = require '../../app/src/model/dancer'
+Payment = require '../../app/src/model/payment'
+Registration = require '../../app/src/model/registration'
+ConflictsController = require '../../app/src/controller/conflicts'
 
 describe 'Conflicts controller tests', ->
 
@@ -65,12 +65,12 @@ describe 'Conflicts controller tests', ->
       imported: new Dancer _.extend models[7].toJSON(), cellphone: '0601020304'
     }], (=> done new Error 'close must not be called'), (err) =>
       return done err if err?
-      expect(ctrl.fields).to.have.lengthOf 1
+      assert ctrl.fields.length is 1
       # then firstname change was identified
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'firstname'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'firstname'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal models[6].firstname
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal newName
+      assert ctrl.fields[0].label is 'firstname'
+      assert ctrl.fields[0].path is 'firstname'
+      assert ctrl.fields[0].existing is models[6].firstname
+      assert ctrl.fields[0].imported is newName
       done()
 
   it 'should find address changes and associate them to first dancer', (done) ->
@@ -81,24 +81,24 @@ describe 'Conflicts controller tests', ->
       imported: new Address _.extend models[0].toJSON(), street: newStreet, phone: newPhone
     ], (=> done new Error 'close must not be called'), (err) =>
       return done err if err?
-      expect(ctrl.fields).to.have.lengthOf 2
+      assert ctrl.fields.length is 2
       # then street change was identified
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'street'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_address'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'street'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal models[0].street
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal newStreet
+      assert ctrl.fields[0].label is 'street'
+      assert ctrl.fields[0].parentPath is '_address'
+      assert ctrl.fields[0].path is 'street'
+      assert ctrl.fields[0].existing is models[0].street
+      assert ctrl.fields[0].imported is newStreet
       # then phone change was identified
-      expect(ctrl.fields[1]).to.have.property('label').that.equal 'phone'
-      expect(ctrl.fields[1]).to.have.property('parentPath').that.equal '_address'
-      expect(ctrl.fields[1]).to.have.property('path').that.equal 'phone'
-      expect(ctrl.fields[1]).to.have.property('existing').that.equal models[0].phone
-      expect(ctrl.fields[1]).to.have.property('imported').that.equal newPhone
+      assert ctrl.fields[1].label is 'phone'
+      assert ctrl.fields[1].parentPath is '_address'
+      assert ctrl.fields[1].path is 'phone'
+      assert ctrl.fields[1].existing is models[0].phone
+      assert ctrl.fields[1].imported is newPhone
       # then dancer was resolved from storage, either existing and imported
-      expect(ctrl.conflicts[ctrl.rank].existing).to.be.an.instanceOf Dancer
-      expect(ctrl.conflicts[ctrl.rank].existing.toJSON()).to.deep.equal models[6].toJSON()
-      expect(ctrl.conflicts[ctrl.rank].imported).to.be.an.instanceOf Dancer
-      expect(ctrl.conflicts[ctrl.rank].imported.toJSON()).to.deep.equal models[6].toJSON()
+      assert ctrl.conflicts[ctrl.rank].existing instanceof Dancer
+      assert.deepStrictEqual ctrl.conflicts[ctrl.rank].existing.toJSON(), models[6].toJSON()
+      assert ctrl.conflicts[ctrl.rank].imported instanceof Dancer
+      assert.deepStrictEqual ctrl.conflicts[ctrl.rank].imported.toJSON(), models[6].toJSON()
       done()
 
   it 'should handle address changes not associated to dancer', (done) ->
@@ -119,30 +119,30 @@ describe 'Conflicts controller tests', ->
       imported: newCard
     ], (=> done new Error 'close must not be called'), (err) =>
       return done err if err?
-      expect(ctrl.fields).to.have.lengthOf 3
+      assert ctrl.fields.length is 3
       # then card's change was identified
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'knownBy'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'knownBy'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal 'pagesjaunes.fr, site web'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal 'pagesjaunes.fr, site web, anciens'
+      assert ctrl.fields[0].label is 'knownBy'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'knownBy'
+      assert ctrl.fields[0].existing is 'pagesjaunes.fr, site web'
+      assert ctrl.fields[0].imported is 'pagesjaunes.fr, site web, anciens'
       # then registration's change was identified
-      expect(ctrl.fields[1]).to.have.property('label').that.equal 'charged'
-      expect(ctrl.fields[1]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[1]).to.have.property('path').that.equal 'registrations[0].charged'
-      expect(ctrl.fields[1]).to.have.property('existing').that.equal ''+models[3].registrations[0].charged
-      expect(ctrl.fields[1]).to.have.property('imported').that.equal ''+newCharged
+      assert ctrl.fields[1].label is 'charged'
+      assert ctrl.fields[1].parentPath is '_card'
+      assert ctrl.fields[1].path is 'registrations[0].charged'
+      assert ctrl.fields[1].existing is "#{models[3].registrations[0].charged}"
+      assert ctrl.fields[1].imported is "#{newCharged}"
       # then payement's addition was identified
-      expect(ctrl.fields[2]).to.have.property('kind').that.equal 'payment'
-      expect(ctrl.fields[2]).to.have.property('season').that.equal models[3].registrations[0].season
-      expect(ctrl.fields[2]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[2]).to.have.property('path').that.equal 'registrations[0].payments[2]'
-      expect(ctrl.fields[2]).to.have.property('imported').that.deep.equal ctrl._formatPayment newPayment
+      assert ctrl.fields[2].kind is 'payment'
+      assert ctrl.fields[2].season is models[3].registrations[0].season
+      assert ctrl.fields[2].parentPath is '_card'
+      assert ctrl.fields[2].path is 'registrations[0].payments[2]'
+      assert.deepStrictEqual ctrl.fields[2].imported, ctrl._formatPayment newPayment
       # then dancer was resolved from storage, either existing and imported
-      expect(ctrl.conflicts[ctrl.rank].existing).to.be.an.instanceOf Dancer
-      expect(ctrl.conflicts[ctrl.rank].existing.toJSON()).to.deep.equal models[6].toJSON()
-      expect(ctrl.conflicts[ctrl.rank].imported).to.be.an.instanceOf Dancer
-      expect(ctrl.conflicts[ctrl.rank].imported.toJSON()).to.deep.equal models[6].toJSON()
+      assert ctrl.conflicts[ctrl.rank].existing instanceof Dancer
+      assert.deepStrictEqual ctrl.conflicts[ctrl.rank].existing.toJSON(), models[6].toJSON()
+      assert ctrl.conflicts[ctrl.rank].imported instanceof Dancer
+      assert.deepStrictEqual ctrl.conflicts[ctrl.rank].imported.toJSON(), models[6].toJSON()
       done()
 
   it 'should save modified dancer', (done) ->
@@ -155,8 +155,7 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[8].id, (err, saved) =>
         return done err if err?
-        console.log saved.toJSON(), _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
-        expect(saved.toJSON()).to.deep.equal _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
+        assert.deepStrictEqual saved.toJSON(), _.extend models[8].toJSON(), firstname: newName, _v: models[8]._v+1
         done()
     ), =>
       ctrl.fields[0].useImported = true
@@ -174,16 +173,16 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[6].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[6].toJSON(), _v: models[6]._v+1, danceClassIds: [models[11].id, models[12].id]
+        assert.deepStrictEqual saved.toJSON(), _.extend models[6].toJSON(), _v: models[6]._v+1, danceClassIds: [models[11].id, models[12].id]
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal '2013/2014'
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'danceClasses'
-      expect(ctrl.fields[0]).to.have.property('danceClassAdded').that.deep.equal [models[12].id]
-      expect(ctrl.fields[0]).to.have.property('danceClassRemoved').that.has.lengthOf 0
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal "#{models[11].kind} #{models[11].level}"
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal "#{models[11].kind} #{models[11].level}, #{models[12].kind} #{models[12].level}"
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is '2013/2014'
+      assert ctrl.fields[0].label is 'danceClasses'
+      assert.deepStrictEqual ctrl.fields[0].danceClassAdded, [models[12].id]
+      assert ctrl.fields[0].danceClassRemoved.length is 0
+      assert ctrl.fields[0].existing is "#{models[11].kind} #{models[11].level}"
+      assert ctrl.fields[0].imported is "#{models[11].kind} #{models[11].level}, #{models[12].kind} #{models[12].level}"
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -199,16 +198,16 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, danceClassIds: [models[10].id]
+        assert.deepStrictEqual saved.toJSON(), _.extend models[7].toJSON(), _v: models[7]._v+1, danceClassIds: [models[10].id]
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal '2013/2014'
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'danceClasses'
-      expect(ctrl.fields[0]).to.have.property('danceClassAdded').that.has.lengthOf 0
-      expect(ctrl.fields[0]).to.have.property('danceClassRemoved').that.deep.equal [models[11].id]
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal "#{models[10].kind} #{models[10].level}, #{models[11].kind} #{models[11].level}"
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal "#{models[10].kind} #{models[10].level}"
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is '2013/2014'
+      assert ctrl.fields[0].label is 'danceClasses'
+      assert ctrl.fields[0].danceClassAdded.length is 0
+      assert.deepStrictEqual ctrl.fields[0].danceClassRemoved, [models[11].id]
+      assert ctrl.fields[0].existing is "#{models[10].kind} #{models[10].level}, #{models[11].kind} #{models[11].level}"
+      assert ctrl.fields[0].imported is "#{models[10].kind} #{models[10].level}"
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -221,14 +220,14 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, addressId: models[1].id
+        assert.deepStrictEqual saved.toJSON(), _.extend models[7].toJSON(), _v: models[7]._v+1, addressId: models[1].id
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'address'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'addressId'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal "<div>#{models[0].street} #{models[0].zipcode} #{models[0].city}</div>"
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal "<div>#{models[1].street} #{models[1].zipcode} #{models[1].city}</div>"
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].kind is 'address'
+      assert ctrl.fields[0].path is 'addressId'
+      assert ctrl.fields[0].existing is "<div>#{models[0].street} #{models[0].zipcode} #{models[0].city}</div>"
+      assert ctrl.fields[0].imported is "<div>#{models[1].street} #{models[1].zipcode} #{models[1].city}</div>"
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -243,15 +242,15 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Address.find models[1].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[1].toJSON(), _v: models[1]._v+1, zipcode: newZipcode
+        assert.deepStrictEqual saved.toJSON(), _.extend models[1].toJSON(), _v: models[1]._v+1, zipcode: newZipcode
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_address'
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'zipcode'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'zipcode'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal ''+models[1].zipcode
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal ''+newZipcode
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].parentPath is '_address'
+      assert ctrl.fields[0].label is 'zipcode'
+      assert ctrl.fields[0].path is 'zipcode'
+      assert ctrl.fields[0].existing is "#{models[1].zipcode}"
+      assert ctrl.fields[0].imported is "#{newZipcode}"
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -268,16 +267,16 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: models[3].toJSON().registrations.concat [newRegistration.toJSON()]
+        assert.deepStrictEqual saved.toJSON(), _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: models[3].toJSON().registrations.concat [newRegistration.toJSON()]
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal newRegistration.season
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'registration'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[1]'
-      expect(ctrl.fields[0]).to.have.property('danceClassAdded').that.has.lengthOf 0
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal """<div>#{newRegistration.season}</div>
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is newRegistration.season
+      assert ctrl.fields[0].kind is 'registration'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations[1]'
+      assert ctrl.fields[0].danceClassAdded.length is 0
+      assert ctrl.fields[0].imported is """<div>#{newRegistration.season}</div>
         <div>Cours :&nbsp;#{}</div>
         <div>Réglement de :&nbsp;#{newRegistration.charged} € (à l'année)</div>\n"""
       ctrl.fields[0].useImported = true
@@ -299,23 +298,23 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: [registration.toJSON()]
+        assert.deepStrictEqual saved.toJSON(), _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: [registration.toJSON()]
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 2
-      expect(ctrl.fields[0]).to.have.property('season').that.equal registration.season
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'details'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].details'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal ''
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal newDetails
+      assert ctrl.fields.length is 2
+      assert ctrl.fields[0].season is registration.season
+      assert ctrl.fields[0].label is 'details'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations[0].details'
+      assert ctrl.fields[0].existing is ''
+      assert ctrl.fields[0].imported is newDetails
       ctrl.fields[0].useImported = true
-      expect(ctrl.fields[1]).to.have.property('season').that.equal registration.season
-      expect(ctrl.fields[1]).to.have.property('label').that.equal 'certificates'
-      expect(ctrl.fields[1]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[1]).to.have.property('path').that.equal 'registrations[0].certificates'
-      expect(ctrl.fields[1]).to.have.property('existing').that.equal 0
-      expect(ctrl.fields[1]).to.have.property('imported').that.equal 1
+      assert ctrl.fields[1].season is registration.season
+      assert ctrl.fields[1].label is 'certificates'
+      assert ctrl.fields[1].parentPath is '_card'
+      assert ctrl.fields[1].path is 'registrations[0].certificates'
+      assert ctrl.fields[1].existing is 0
+      assert ctrl.fields[1].imported is 1
       ctrl.fields[1].useImported = true
       # when saving it
       ctrl.save()
@@ -331,21 +330,21 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Card.find models[3].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: []
+        assert.deepStrictEqual saved.toJSON(), _.extend models[3].toJSON(), _v: models[3]._v+1, registrations: []
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal removed.season
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'registration'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations'
-      expect(ctrl.fields[0]).to.have.property('spliced').that.equal 0
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal """<div>#{removed.season}</div>
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is removed.season
+      assert ctrl.fields[0].kind is 'registration'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations'
+      assert ctrl.fields[0].spliced is 0
+      assert ctrl.fields[0].existing is """<div>#{removed.season}</div>
         <div>Cours :&nbsp;#{models[11].kind} #{models[11].level}</div>
         <div>Réglement de :&nbsp;#{removed.charged} € (à l'année)</div>
         <div>04/08/2014 - 150 € Espèces (Simonin) </div>
         <div>26/08/2014 - 150 € Chèque (Simonin) </div>"""
-      expect(ctrl.fields[0]).not.to.have.property 'imported'
+      assert not ctrl.fields[0].imported?
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -363,15 +362,15 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Card.find models[4].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[4].toJSON(), _v: models[4]._v+1, registrations: [_.extend models[4].registrations[0].toJSON(), payments: [newPayment.toJSON()]]
+        assert.deepStrictEqual saved.toJSON(), _.extend models[4].toJSON(), _v: models[4]._v+1, registrations: [_.extend models[4].registrations[0].toJSON(), payments: [newPayment.toJSON()]]
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal modified.registrations[0].season
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'payment'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments[0]'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>04/10/2014 - 100 € ANCV (Durand) </div>'
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is modified.registrations[0].season
+      assert ctrl.fields[0].kind is 'payment'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations[0].payments[0]'
+      assert ctrl.fields[0].imported is '<div>04/10/2014 - 100 € ANCV (Durand) </div>'
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -390,16 +389,16 @@ describe 'Conflicts controller tests', ->
         return done err if err?
         copy = _.extend models[3].toJSON(), _v: models[3]._v+1
         copy.registrations[0].payments[1].type = newType
-        expect(saved.toJSON()).to.deep.equal copy
+        assert.deepStrictEqual saved.toJSON(), copy
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal modified.registrations[0].season
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'payment'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments[1]'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal '<div>26/08/2014 - 150 € ANCV (Simonin) </div>'
+      assert ctrl.fields.length is 1
+      assert ctrl.fields[0].season is modified.registrations[0].season
+      assert ctrl.fields[0].kind is 'payment'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations[0].payments[1]'
+      assert ctrl.fields[0].existing is '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
+      assert ctrl.fields[0].imported is '<div>26/08/2014 - 150 € ANCV (Simonin) </div>'
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -417,17 +416,17 @@ describe 'Conflicts controller tests', ->
         return done err if err?
         copy = _.extend models[3].toJSON(), _v: models[3]._v+1
         copy.registrations[0].payments.pop()
-        expect(saved.toJSON()).to.deep.equal copy
+        assert.deepStrictEqual saved.toJSON(), copy
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('season').that.equal modified.registrations[0].season
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'payment'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'registrations[0].payments'
-      expect(ctrl.fields[0]).to.have.property('spliced').that.equal 1
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
-      expect(ctrl.fields[0]).not.to.have.property 'imported'
+      assert ctrl.fields.length is  1
+      assert ctrl.fields[0].season is modified.registrations[0].season
+      assert ctrl.fields[0].kind is 'payment'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'registrations[0].payments'
+      assert ctrl.fields[0].spliced is 1
+      assert ctrl.fields[0].existing is '<div>26/08/2014 - 150 € Chèque (Simonin) </div>'
+      assert not ctrl.fields[0].imported?
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()
@@ -440,20 +439,20 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Dancer.find models[7].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend models[7].toJSON(), _v: models[7]._v+1, cardId: models[4].id
+        assert.deepStrictEqual saved.toJSON(), _.extend models[7].toJSON(), _v: models[7]._v+1, cardId: models[4].id
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('kind').that.equal 'card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'cardId'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal """
+      assert ctrl.fields.length is  1
+      assert ctrl.fields[0].kind is 'card'
+      assert ctrl.fields[0].path is 'cardId'
+      assert ctrl.fields[0].existing is """
         <div>pagesjaunes.fr, site web</div>
         <ul><li><div>2013/2014</div>
         <div>Cours :&nbsp;Rock/Salsa confirmé, Danse sportive/Rock/Salsa 2 8/12 ans</div>
         <div>Réglement de :&nbsp;300 € (à l'année)</div>
         <div>04/08/2014 - 150 € Espèces (Simonin) </div>
         <div>26/08/2014 - 150 € Chèque (Simonin) </div></li></ul>"""
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal """
+      assert ctrl.fields[0].imported is """
         <div></div>
         <ul><li><div>2014/2015</div>
         <div>Cours :&nbsp;</div>
@@ -474,15 +473,15 @@ describe 'Conflicts controller tests', ->
       # then model was saved
       Card.find models[5].id, (err, saved) =>
         return done err if err?
-        expect(saved.toJSON()).to.deep.equal _.extend modified.toJSON(), _v: models[5]._v+1
+        assert.deepStrictEqual saved.toJSON(), _.extend modified.toJSON(), _v: models[5]._v+1
         done()
     ), =>
-      expect(ctrl.fields).to.have.lengthOf 1
-      expect(ctrl.fields[0]).to.have.property('label').that.equal 'knownBy'
-      expect(ctrl.fields[0]).to.have.property('parentPath').that.equal '_card'
-      expect(ctrl.fields[0]).to.have.property('path').that.equal 'knownBy'
-      expect(ctrl.fields[0]).to.have.property('existing').that.equal 'Groupon'
-      expect(ctrl.fields[0]).to.have.property('imported').that.equal 'site web, anciens'
+      assert ctrl.fields.length is  1
+      assert ctrl.fields[0].label is 'knownBy'
+      assert ctrl.fields[0].parentPath is '_card'
+      assert ctrl.fields[0].path is 'knownBy'
+      assert ctrl.fields[0].existing is 'Groupon'
+      assert ctrl.fields[0].imported is 'site web, anciens'
       ctrl.fields[0].useImported = true
       # when saving it
       ctrl.save()

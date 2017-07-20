@@ -50,7 +50,6 @@ module.exports = class Invoice extends Persisted
         .map ([y, m, ref]) -> +ref
         .sort (a, b) -> a - b
       last = refs[refs.length-1] or 0
-      console.log year, month, refs
       done null, "#{year}-#{_.padStart month, 2, '0'}-#{_.padStart last + 1, 3, '0'}"
 
   # invoice reference

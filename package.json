@@ -19,7 +19,8 @@
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "test": "lab test/service/export.coffee",
+    "test": "run-s -s test:renderer",
+    "test:renderer": "electron-mocha --renderer test/**/*.coffee",
     "release": "run-s -s build release:builder",
     "release:builder": "electron-builder build -p always"
   },
@@ -39,21 +40,17 @@
     "xlsx.js": "2.3.1"
   },
   "devDependencies": {
-    "btoa": "1.1.2",
     "coffee-script": "1.12.6",
-    "convert-source-map": "1.5.0",
     "download": "6.2.5",
     "electron": "1.6.11",
     "electron-builder": "19.13.0",
+    "electron-mocha": "4.0.0",
     "electron-test-utils": "1.0.0",
-    "espower-source": "2.2.0",
-    "lab": "14.1.1",
-    "lab-espower-transformer": "1.1.0",
+    "espower-coffee": "1.1.0",
     "mkdirp": "0.5.1",
     "npm-run-all": "4.0.2",
     "power-assert": "1.4.4",
-    "rimraf": "2.5.4",
-    "spectron": "3.7.2"
+    "rimraf": "2.5.4"
   },
   "frontDependencies": {
     "app/vendor/jquery.js": "http://code.jquery.com/jquery-3.1.0.min.js",
