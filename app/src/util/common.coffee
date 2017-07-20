@@ -10,9 +10,9 @@ moment = require 'moment'
 Invoice = null
 i18n = require '../labels/common'
 
-userData = (if app then app else remote.app).getPath 'userData'
-
 _hexa = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
+
+getLogFile = (path) -> resolve (if app then app else remote.app).getPath('userData'), path
 
 # Format a given value as a string.
 # @param value [Any] - the value formated
@@ -58,7 +58,7 @@ module.exports =
   # @param path [String] path to log file
   fixConsole: (path = 'log.txt') ->
     # Log file
-    logFile = resolve userData, path
+    logFile = getLogFile path
     console.log "log to file #{logFile}"
     ['info', 'debug', 'warn', 'error', 'log'].forEach (method) ->
       original = global.console[method]
@@ -81,7 +81,7 @@ module.exports =
   # @param path [String] path to log file
   dumpError: (path = 'log.txt') -> (err) ->
     now = new Date()
-    logFile = resolve userData, path
+    logFile = getLogFile path
     appendFile logFile, """
 ------------
 Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
