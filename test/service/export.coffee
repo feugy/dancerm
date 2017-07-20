@@ -1,20 +1,24 @@
-{expect} = require 'chai'
+assert = require 'power-assert'
+lab = require 'lab'
 {each, map, eachSeries} = require 'async'
 _ = require 'lodash'
 path = require 'path'
 {exists, readFile, ensureDir, remove} = require 'fs-extra'
-Export = require '../../../app/script/service/export'
-Import = require '../../../app/script/service/import'
-{init} = require '../../../app/script/model/tools/initializer'
-Dancer = require '../../../app/script/model/dancer'
-Address = require '../../../app/script/model/address'
-Registration = require '../../../app/script/model/registration'
-Card = require '../../../app/script/model/card'
-DanceClass = require '../../../app/script/model/dance_class'
-Lesson = require '../../../app/script/model/lesson'
-Invoice = require '../../../app/script/model/invoice'
-InvoiceItem = require '../../../app/script/model/invoice_item'
-{getDbPath, generateId} = require '../../../app/script/util/common'
+Export = require '../../app/src/service/export'
+Import = require '../../app/src/service/import'
+{init} = require '../../app/src/model/tools/initializer'
+Dancer = require '../../app/src/model/dancer'
+Address = require '../../app/src/model/address'
+Registration = require '../../app/src/model/registration'
+Card = require '../../app/src/model/card'
+DanceClass = require '../../app/src/model/dance_class'
+Lesson = require '../../app/src/model/lesson'
+Invoice = require '../../app/src/model/invoice'
+InvoiceItem = require '../../app/src/model/invoice_item'
+{getDbPath, generateId} = require '../../app/src/util/common'
+
+exports.lab = lab.script()
+{describe, it, before} = exports.lab
 
 describe 'Export service tests', ->
 
@@ -73,8 +77,7 @@ describe 'Export service tests', ->
   lessons[1].dancerId = dancers[0].id
   lessons[2].dancerId = dancers[0].id
 
-  before (done) ->
-    @timeout 10000
+  before {timeout: 10e3}, (done) ->
     init (err) ->
       return done err if err?
       each [Card, Address, Dancer, DanceClass, Invoice, Lesson], (clazz, next) ->
@@ -87,8 +90,7 @@ describe 'Export service tests', ->
           , next
         , done
 
-  it 'should export base as compact format', (done) ->
-    @timeout 30000
+  it 'should export base as compact format', {timeout: 30e3}, (done) ->
     # when exporting the list into a file
     out = path.join __dirname, '..', '..', 'fixture', 'out.dump.json'
     tested.dump out, (err) ->

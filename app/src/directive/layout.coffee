@@ -36,7 +36,7 @@ class LayoutDirective
       {label: 'btn.lessons', icon: 'education', action: => @state.go 'lessons'}
       {label: 'btn.invoice', icon: 'euro', action: => @state.go 'list.invoice'}
       {label: 'btn.stats', icon: 'dashboard', action: => @state.go 'stats'}
-      {label: 'btn.settings', icon: 'wrench', action: => @state.go 'settings'}
+      {label: 'btn.settings', class: 'settings', icon: 'wrench', action: => @state.go 'settings'}
     ]
 
     unwatch = rootScope.$on '$stateChangeSuccess', @_updateLinks

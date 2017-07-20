@@ -1,16 +1,15 @@
-{expect} = require 'chai'
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
-{init} = require '../../../app/script/model/tools/initializer'
-DanceClass = require '../../../app/script/model/dance_class'
+{init} = require '../../app/src/model/tools/initializer'
+DanceClass = require '../../app/src/model/dance_class'
 
 describe 'DanceClass model tests', ->
 
   before init
 
   beforeEach (done) -> DanceClass.drop done
-  
+
   it 'should new dance class be created with default values', ->
     # when creating a dancer withou values
     tested = new DanceClass()

@@ -1,7 +1,7 @@
 <div class="layout">
   <nav class="actions">
     <ul class="nav-link">
-      <li data-ng-repeat="item in layout.links track by $index" class="{{item.active ? 'active' : ''}}" data-ng-click="item.action()"><i data-ng-if="item.icon" class="glyphicon glyphicon-{{item.icon}}"/>{{item.label|i18n}}</li>
+      <li data-ng-repeat="item in layout.links track by $index" class="{{item.class}} {{item.active ? 'active' : ''}}" data-ng-click="item.action()"><i data-ng-if="item.icon" class="glyphicon glyphicon-{{item.icon}}"/>{{item.label|i18n}}</li>
     </ul>
     <ul class="context">
       <li data-ng-repeat="item in layout.actions track by $id(item)" data-ng-click="item.action()"><i data-ng-if="item.icon" class="glyphicon glyphicon-{{item.icon}}"/>{{item.label|i18n}}</li>

@@ -1,28 +1,27 @@
-{expect} = require 'chai'
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
 {join} = require 'path'
 {remove, mkdir} = require 'fs-extra'
-{getDbPath} = require '../../../app/script/util/common'
-{init} = require '../../../app/script/model/tools/initializer'
-Import = require '../../../app/script/service/import'
-Dancer = require '../../../app/script/model/dancer'
-Card = require '../../../app/script/model/card'
-DanceClass = require '../../../app/script/model/dance_class'
-Registration = require '../../../app/script/model/registration'
-Payment = require '../../../app/script/model/payment'
-Address = require '../../../app/script/model/address'
+{getDbPath} = require '../../app/src/util/common'
+{init} = require '../../app/src/model/tools/initializer'
+Import = require '../../app/src/service/import'
+Dancer = require '../../app/src/model/dancer'
+Card = require '../../app/src/model/card'
+DanceClass = require '../../app/src/model/dance_class'
+Registration = require '../../app/src/model/registration'
+Payment = require '../../app/src/model/payment'
+Address = require '../../app/src/model/address'
 
 describe 'Import service tests', ->
 
   before init
 
-  beforeEach (done) -> 
-    async.each [Card, Address, Dancer, DanceClass], (clazz, next) -> 
+  beforeEach (done) ->
+    async.each [Card, Address, Dancer, DanceClass], (clazz, next) ->
       clazz.drop next
     , done
-      
+
   tested = new Import()
 
   describe 'given xlsx files', ->
@@ -46,7 +45,7 @@ describe 'Import service tests', ->
         new Dancer danceClassIds: [], title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-01-01', cellphone: '0617979688'
       ]
       # links between models
-      links = [{}, {}, {}, {}, {}, 
+      links = [{}, {}, {}, {}, {},
         {}, {}, {}, {}, {},
         {address: 0, card: 5},
         {address: 1, card: 6},
@@ -61,7 +60,7 @@ describe 'Import service tests', ->
         for model, i in models
           if i < 5
             expect(model).to.be.an.instanceOf Address
-          else if 5 <= i < 10 
+          else if 5 <= i < 10
             expect(model).to.be.an.instanceOf Card
           else
             expect(model).to.be.an.instanceOf Dancer
@@ -105,7 +104,7 @@ describe 'Import service tests', ->
         new Dancer danceClassIds: [], title: 'Mlle', firstname: 'Sirine', lastname: 'Mohammedi', birth: '2002-01-01', cellphone:'0670823944'
       ]
       # links between models
-      links = [{}, {}, {}, {}, 
+      links = [{}, {}, {}, {},
         {}, {}, {}, {},
         {address: 0, card: 4},
         {address: 0, card: 4},
@@ -153,7 +152,7 @@ describe 'Import service tests', ->
     it 'should import extract dancers', (done) ->
       expected = [
         new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
-        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[ 
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
           new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
           new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
         ]]
@@ -180,7 +179,7 @@ describe 'Import service tests', ->
       new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
       new Address id: '3900cc712ba3', _v: 0, street: '2 rue clément marrot', city: 'Lyon', zipcode: 69007
       new Address id: '000bcbc38576', _v: 1, street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode: 69009
-      new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[ 
+      new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
         new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
         new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
       ]]
@@ -261,12 +260,12 @@ describe 'Import service tests', ->
     it 'should conflicts be detected', (done) ->
       imported = [
         new Dancer id: 'ea18ba8a36c9', _v: 1, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083', '00acbfb5e7d6'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
-        new Card id: '40b728d54a0d', _v: 1, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 450, period: 'year', payments:[ 
+        new Card id: '40b728d54a0d', _v: 1, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 450, period: 'year', payments:[
           new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
           new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
           new Payment type: 'check', value: 150, receipt: '2014-10-14', payer: 'Simonin', bank: 'La Poste'
         ]]
-      
+
       ]
 
       # when merging new and existing dancers

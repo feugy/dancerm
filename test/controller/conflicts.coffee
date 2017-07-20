@@ -1,14 +1,13 @@
 _ = require 'lodash'
 async = require 'async'
-{expect} = require 'chai'
-{init} = require '../../../app/script/model/tools/initializer'
-Address = require '../../../app/script/model/address'
-Card = require '../../../app/script/model/card'
-DanceClass = require '../../../app/script/model/dance_class'
-Dancer = require '../../../app/script/model/dancer'
-Payment = require '../../../app/script/model/payment'
-Registration = require '../../../app/script/model/registration'
-ConflictsController = require '../../../app/script/controller/conflicts'
+{init} = require '../../app/src/model/tools/initializer'
+Address = require '../../app/src/model/address'
+Card = require '../../app/src/model/card'
+DanceClass = require '../../app/src/model/dance_class'
+Dancer = require '../../app/src/model/dancer'
+Payment = require '../../app/src/model/payment'
+Registration = require '../../app/src/model/registration'
+ConflictsController = require '../../app/src/controller/conflicts'
 
 describe 'Conflicts controller tests', ->
 

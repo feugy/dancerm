@@ -1,14 +1,13 @@
-{expect} = require 'chai'
 async = require 'async'
 _ = require 'lodash'
 moment = require 'moment'
-{init} = require '../../../app/script/model/tools/initializer'
-Dancer = require '../../../app/script/model/dancer'
-Address = require '../../../app/script/model/address'
-Registration = require '../../../app/script/model/registration'
-Payment = require '../../../app/script/model/payment'
-DanceClass = require '../../../app/script/model/dance_class'
-Card = require '../../../app/script/model/card'
+{init} = require '../../app/src/model/tools/initializer'
+Dancer = require '../../app/src/model/dancer'
+Address = require '../../app/src/model/address'
+Registration = require '../../app/src/model/registration'
+Payment = require '../../app/src/model/payment'
+DanceClass = require '../../app/src/model/dance_class'
+Card = require '../../app/src/model/card'
 
 describe 'Dancer model tests', ->
 

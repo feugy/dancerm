@@ -2,8 +2,6 @@
 {fork} = require 'child_process'
 
 reqId = 1
-# other possible: indexeddb & nedb. The later one does not support importing 8000 models
-workerImpl = 'indexeddb'
 
 # Recursively walk down an object, replacing its regexp values per an array
 # containing the regexp pattern and flags.
@@ -33,7 +31,9 @@ class Persistance
   # Worker spawned to handle persistance
   _worker: null
 
-  constructor: ->
+  # Builds Persistance layer
+  # @param workerImp [String = 'indexeddb'] indexeddb mongodb & nedb. The later one does not support importing 8000 models
+  constructor: (workerImpl = 'indexeddb') ->
     @_queue = {}
     switch workerImpl
       when 'indexeddb'

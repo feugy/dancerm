@@ -10,6 +10,8 @@ process.on 'uncaughtException', dumpError()
 fixConsole()
 
 createWindow = ->
+  require('../../test/mock') require 'electron' if process.env.RUNNING_IN_SPECTRON
+
   console.log "running DanceRM #{app.getVersion()} on electron #{process.versions.electron}"
   windowManager.init appBase: "file://#{__dirname}/../template", devMode: false
 

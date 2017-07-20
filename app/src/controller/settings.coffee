@@ -173,7 +173,7 @@ module.exports = class SettingsController
   # Display a file selection dialog to pick a dump file, that may be an xlsx or a 'json' file
   # Try to import contents (use dialog for progression) and resolve potential conflicts afterwise
   importDancers: =>
-    filePath = dialog.showOpenDialog
+    dialog.showOpenDialog
       defaultPath: @conf.dumpPath
       title: @filter('i18n') 'ttl.chooseImportedFile'
       filters: [
@@ -181,42 +181,42 @@ module.exports = class SettingsController
         {name: @filter('i18n')('lbl.xlsx'), extensions: ['xlsx']}
       ]
       properties: ['openFile']
-    filePath = filePath and filePath[0]
-    # dialog cancellation
-    return unless filePath
-    message = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
+    , ([filePath]) =>
+      # dialog cancellation
+      return unless filePath
+      message = @dialog.messageBox @filter('i18n')('ttl.import'), @filter('i18n') 'msg.importing'
 
-    msg = null
-    displayEnd = (err) =>
-      if err?
-        console.error "got error", err
-        msg = @filter('i18n') 'err.importFailed', args: err
-      _.delay =>
-        @rootScope.$apply =>
-          message.close()
-          @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
-            # refresh all
-            @rootScope.$broadcast 'model-imported'
-      , 100
+      msg = null
+      displayEnd = (err) =>
+        if err?
+          console.error "got error", err
+          msg = @filter('i18n') 'err.importFailed', args: err
+        _.delay =>
+          @rootScope.$apply =>
+            message.close()
+            @dialog.messageBox(@filter('i18n')('ttl.import'), msg, [label: @filter('i18n') 'btn.ok']).result.then =>
+              # refresh all
+              @rootScope.$broadcast 'model-imported'
+        , 100
 
-    @import.fromFile filePath, (err, models, report) =>
-      return displayEnd err if err?
-      console.info "importation report:", report
-      msg = @filter('i18n') 'msg.importSuccess', args: report
+      @import.fromFile filePath, (err, models, report) =>
+        return displayEnd err if err?
+        console.info "importation report:", report
+        msg = @filter('i18n') 'msg.importSuccess', args: report
 
-      # get all existing dancers
-      @import.merge models, (err, report, conflicts) =>
-        return displayEnd err if err
-        console.info "merge report:", report #, conflicts.map ({existing, imported}) =>
-        #  "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
-        # resolve conflicts one by one
-        return displayEnd() if conflicts.length is 0
-        @dialog.modal(_.extend {
-            size: 'lg'
-            backdrop: 'static'
-            keyboard: false
-            resolve:
-              conflicts: => conflicts
-              byClass: => report.byClass
-          }, ConflictsController.declaration
-        ).result.then displayEnd
+        # get all existing dancers
+        @import.merge models, (err, report, conflicts) =>
+          return displayEnd err if err
+          console.info "merge report:", report #, conflicts.map ({existing, imported}) =>
+          #  "\n#{existing.constructor.name} (1. existing, 2. imported)\n#{JSON.stringify existing.toJSON()}\n#{JSON.stringify imported.toJSON()}"
+          # resolve conflicts one by one
+          return displayEnd() if conflicts.length is 0
+          @dialog.modal(_.extend {
+              size: 'lg'
+              backdrop: 'static'
+              keyboard: false
+              resolve:
+                conflicts: => conflicts
+                byClass: => report.byClass
+            }, ConflictsController.declaration
+          ).result.then displayEnd

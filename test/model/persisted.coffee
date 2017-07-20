@@ -1,8 +1,7 @@
-{expect} = require 'chai'
 _ = require 'lodash'
 {each} = require 'async'
-{init} = require '../../../app/script/model/tools/initializer'
-Persisted = require '../../../app/script/model/tools/persisted'
+{init} = require '../../app/src/model/tools/initializer'
+Persisted = require '../../app/src/model/tools/persisted'
 
 describe 'Persisted model tests', ->
 
