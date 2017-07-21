@@ -1,7 +1,16 @@
+require('coffee-script/register')
 assert = require 'power-assert'
-{generateId, getAttr, setAttr} = require '../app/src/util/common'
+{generateId, getAttr, setAttr, roundEuro} = require '../app/src/util/common'
 
 describe 'Common utils tests', ->
+
+  it 'should round to upper half euro', (done) ->
+    assert roundEuro(5.0) is 5.0
+    assert roundEuro(5.15) is 5.5
+    assert roundEuro(5.50) is 5.5
+    assert roundEuro(5.51) is 6.0
+    assert roundEuro(5.6) is 6.0
+    done()
 
   it 'should generateId() contains 12 characters', (done) ->
     id = generateId()

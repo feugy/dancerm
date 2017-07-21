@@ -14,13 +14,14 @@
     "build:compile": "coffee --no-header -bMo app/script app/src",
     "build:vendor": "node vendor.js",
     "build:watch": "coffee --no-header -bMwo app/script app/src",
+    "clean:coverage": "rimraf coverage .nyc_output",
     "clean:coffee": "rimraf app/script",
     "clean:vendor": "rimraf app/vendor app/src/style/css app/src/style/fonts/glyphicons*.* app/src/style/fonts/alfa-slab-one.ttf",
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "test": "run-s -s test:renderer",
-    "test:renderer": "electron-mocha --renderer test/**/*.coffee",
+    "test": "run-s -s clean:coverage test:renderer",
+    "test:renderer": "nyc electron-mocha --renderer test/**/*.coffee",
     "release": "run-s -s build release:builder",
     "release:builder": "electron-builder build -p always"
   },
@@ -40,6 +41,7 @@
     "xlsx.js": "2.3.1"
   },
   "devDependencies": {
+    "coffee-coverage": "feugy/coffee-coverage",
     "coffee-script": "1.12.6",
     "download": "6.2.5",
     "electron": "1.6.11",
@@ -49,6 +51,7 @@
     "espower-coffee": "1.1.0",
     "mkdirp": "0.5.1",
     "npm-run-all": "4.0.2",
+    "nyc": "11.0.3",
     "power-assert": "1.4.4",
     "rimraf": "2.5.4"
   },
@@ -73,6 +76,11 @@
     "app/src/style/fonts/glyphicons-halflings-regular.ttf": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf",
     "app/src/style/fonts/glyphicons-halflings-regular.svg": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg",
     "app/src/style/fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
+  },
+  "nyc": {
+    "reporter": ["lcov","text"],
+    "instrument": false,
+    "sourceMap": false
   },
   "build": {
     "productName": "DanceRM",

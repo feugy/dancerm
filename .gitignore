@@ -1,3 +1,4 @@
+.nyc_output/
 analysis/~*.xlsx
 analysis/ribas.flac
 analysis/*.pdf
@@ -13,6 +14,7 @@ installer/*.exe
 installer/Version.txt
 build/
 cache/
+coverage/
 dist/
 dev-app-update.yml
 *.json
