@@ -1,16 +1,16 @@
-{expect} = require 'chai'
+assert = require 'power-assert'
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
 {remove, mkdir} = require 'fs-extra'
-{init} = require '../../../app/script/model/tools/initializer'
-{getDbPath} = require '../../../app/script/util/common'
-Registration = require '../../../app/script/model/registration'
-Payment = require '../../../app/script/model/payment'
-Card = require '../../../app/script/model/card'
-Dancer = require '../../../app/script/model/dancer'
-Address = require '../../../app/script/model/address'
-DanceClass = require '../../../app/script/model/dance_class'
+{init} = require '../../app/src/model/tools/initializer'
+{getDbPath} = require '../../app/src/util/common'
+Registration = require '../../app/src/model/registration'
+Payment = require '../../app/src/model/payment'
+Card = require '../../app/src/model/card'
+Dancer = require '../../app/src/model/dancer'
+Address = require '../../app/src/model/address'
+DanceClass = require '../../app/src/model/dance_class'
 
 describe 'Card model tests', ->
 
@@ -18,15 +18,15 @@ describe 'Card model tests', ->
 
   beforeEach (done) -> Card.drop done
 
-  it 'should new card be created with default values', ->
+  it 'should new card be created with default values', (done) ->
     # when creating a card without values
     tested = new Card()
     # then an id was set
-    expect(tested).to.have.property('id').that.is.null
+    assert tested.id is null
     # then default values were set
-    expect(tested).to.have.property('knownBy').that.is.an('array').and.that.has.lengthOf 0
-    expect(tested).to.have.property('registrations').that.is.an('array').and.that.has.lengthOf 0
-    expect()
+    assert tested.knownBy.length is 0
+    assert tested.registrations.length is 0
+    done()
 
   it 'should card save raw values', (done) ->
     # givan some registrations and payments
@@ -80,11 +80,11 @@ describe 'Card model tests', ->
     # when creating a dancer with a clone to avoid modifications
     tested = new Card _.clone raw
     # then all defined attributes have been saved
-    expect(tested).to.have.property 'id'
+    assert tested.id is null
     # the card fields are available
-    expect(tested).to.have.property('knownBy').that.deep.equal ['something else', 'elders']
+    assert.deepStrictEqual tested.knownBy, ['something else', 'elders']
     # then the registrations are available
-    expect(tested).to.have.property('registrations').that.deep.equal [registration13, registration12]
+    assert.deepStrictEqual tested.registrations, [registration13, registration12]
     done()
 
   describe 'given registration with dancers', ->
@@ -135,14 +135,14 @@ describe 'Card model tests', ->
         async.each [2..4], (i, next) ->
           Dancer.find existing[i].id, (err, dancer) ->
             return next err if err?
-            expect(dancer).to.have.property('cardId').that.equal existing[0].id
+            assert dancer.cardId is existing[0].id
             next()
         , (err) ->
           return done err if err?
           # known by have been merge
-          expect(existing[0]).to.have.property('knownBy').that.deep.equal ['pagesjaunesFr', 'website', 'Groupon']
+          assert.deepStrictEqual existing[0].knownBy, ['pagesjaunesFr', 'website', 'Groupon']
           # registrations have been merged
-          expect(existing[0]).to.have.property('registrations').that.has.lengthOf 3
+          assert existing[0].registrations.length is 3
           for registration, i in [
               new Registration season: '2013/2014', charged: 500, period: 'year', payments:[
                 new Payment type: 'cash', value: 150, receipt: '2013-08-04', payer: 'Simonin'
@@ -157,10 +157,8 @@ describe 'Card model tests', ->
                 new Payment type: 'check',  value: 100, receipt: '2012-09-10', payer: 'Durand', bank: 'La Poste'
               ]
             ]
-            console.log(existing[0].registrations[i].toJSON())
-            console.log(registration.toJSON())
-            expect(existing[0].registrations[i].toJSON()).to.deep.equal registration.toJSON()
+            assert.deepStrictEqual _.omit(existing[0].registrations[i].toJSON(), 'created'), _.omit registration.toJSON(), 'created'
           # card does not exists any more
           Card.find existing[1].id, (err, card) ->
-            expect(err).to.have.property('message').that.equal "Card '#{existing[1].id}' not found"
+            assert err.message is "Card '#{existing[1].id}' not found"
             done()

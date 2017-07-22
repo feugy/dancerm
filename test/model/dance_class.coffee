@@ -1,28 +1,29 @@
-{expect} = require 'chai'
+assert = require 'power-assert'
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
-{init} = require '../../../app/script/model/tools/initializer'
-DanceClass = require '../../../app/script/model/dance_class'
+{init} = require '../../app/src/model/tools/initializer'
+DanceClass = require '../../app/src/model/dance_class'
 
 describe 'DanceClass model tests', ->
 
   before init
 
   beforeEach (done) -> DanceClass.drop done
-  
-  it 'should new dance class be created with default values', ->
+
+  it 'should new dance class be created with default values', (done) ->
     # when creating a dancer withou values
     tested = new DanceClass()
     # then all plain attributes have been set to default
-    expect(tested).to.have.property('start').that.equal 'Mon 08:00'
-    expect(tested).to.have.property('end').that.equal 'Mon 09:00'
-    expect(tested).to.have.property('teacher').that.is.null
-    expect(tested).to.have.property('hall').that.is.null
-    expect(tested).to.have.property('level').that.is.empty
-    expect(tested).to.have.property('kind').that.is.empty
-    expect(tested).to.have.property('season').that.is.empty
-    expect(tested).to.have.property('color').that.equal 'color1'
+    assert tested.start is 'Mon 08:00'
+    assert tested.end is 'Mon 09:00'
+    assert tested.teacher is null
+    assert tested.hall is null
+    assert tested.level is ''
+    assert tested.kind is ''
+    assert tested.season is ''
+    assert tested.color is 'color1'
+    done()
 
   it 'should dance class save raw values', (done) ->
     new DanceClass(
@@ -36,26 +37,27 @@ describe 'DanceClass model tests', ->
       color: 'color2'
     ).save (err, saved) ->
       return done err if err?
-      expect(saved).to.have.property('id').that.is.a 'string'
-      expect(saved).to.have.property('start').that.equal 'Wed 18:15'
-      expect(saved).to.have.property('end').that.equal 'Wed 19:15'
-      expect(saved).to.have.property('teacher').that.equal 'Anthony'
-      expect(saved).to.have.property('hall').that.equal 'Gratte-ciel 1'
-      expect(saved).to.have.property('level').that.equal '2'
-      expect(saved).to.have.property('kind').that.equal 'salsa'
-      expect(saved).to.have.property('season').that.equal '2013/2014'
-      expect(saved).to.have.property('color').that.equal 'color2'
+      assert typeof saved.id is 'string'
+      assert saved.start is 'Wed 18:15'
+      assert saved.end is 'Wed 19:15'
+      assert saved.teacher is 'Anthony'
+      assert saved.hall is 'Gratte-ciel 1'
+      assert saved.level is '2'
+      assert saved.kind is 'salsa'
+      assert saved.season is '2013/2014'
+      assert saved.color is 'color2'
 
       DanceClass.find saved.id, (err, result) ->
         return done err if err?
-        expect(result.toJSON()).to.deep.equal(saved.toJSON())
+        assert.deepStrictEqual result.toJSON(), saved.toJSON()
         done()
 
-  it 'should dance class not save unallowed values', ->
+  it 'should dance class not save unallowed values', (done) ->
     # when creating a dance class with unallowed attributes
     tested = new DanceClass unallowed: 'toto'
     # then the attribute was not reported and the dance class created
-    expect(tested).not.to.have.property 'unallowed'
+    assert not tested.unallowed?
+    done()
 
   it 'should planning be listed', (done) ->
     seasons = ['2014/2015', '2013/2014', '2012/2013']
@@ -70,7 +72,7 @@ describe 'DanceClass model tests', ->
       return done err if err?
       DanceClass.listSeasons (err, results) ->
         return done err if err?
-        expect(results).to.deep.equal seasons
+        assert.deepStrictEqual results, seasons
         done()
 
   it 'should planning be retreived', (done) ->
@@ -88,7 +90,7 @@ describe 'DanceClass model tests', ->
       return done err if err?
       DanceClass.getPlanning seasons[1], (err, results) ->
         return done err if err?
-        expect(results).to.have.lengthOf 2
-        expect(results[0]).to.have.property('id').that.equal classes[3].id
-        expect(results[1]).to.have.property('id').that.equal classes[2].id
+        assert results.length is 2
+        assert results[0].id is classes[3].id
+        assert results[1].id is classes[2].id
         done()

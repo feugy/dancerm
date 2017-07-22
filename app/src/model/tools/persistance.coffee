@@ -35,17 +35,18 @@ class Persistance
 
   constructor: ->
     @_queue = {}
+    dirname = __dirname.replace 'src', 'script'
     switch workerImpl
       when 'indexeddb'
-        @_worker = new window.Worker "#{__dirname}/indexeddb_worker.js?path=#{encodeURIComponent getDbPath()}"
+        @_worker = new window.Worker "#{dirname}/indexeddb_worker.js?path=#{encodeURIComponent getDbPath()}"
         @_worker.onmessage = ({data}) => @_onResult data
         @_worker.onerror = (err) =>
           err?.preventDefault()
           console.error "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
-          throw data
+          throw err
 
       when 'nedb', 'mongodb'
-        @_worker = fork "#{__dirname}/#{workerImpl}_worker.js"
+        @_worker = fork "#{dirname}/#{workerImpl}_worker.js"
         @_worker.on 'message', (data) =>
           return @_onResult data if data?.id
           if isA data, 'error'

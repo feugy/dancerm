@@ -1,18 +1,18 @@
-{expect} = require 'chai'
+assert = require 'power-assert'
 _ = require 'lodash'
 async = require 'async'
 moment = require 'moment'
-{currentSeason} = require '../../../app/script/util/common'
-{init} = require '../../../app/script/model/tools/initializer'
-Invoice = require '../../../app/script/model/invoice'
-InvoiceItem = require '../../../app/script/model/invoice_item'
-Dancer = require '../../../app/script/model/dancer'
-DanceClass = require '../../../app/script/model/dance_class'
-Address = require '../../../app/script/model/address'
-Registration = require '../../../app/script/model/registration'
-Payment = require '../../../app/script/model/payment'
-Card = require '../../../app/script/model/card'
-Persisted = require '../../../app/script/model/tools/persisted'
+{currentSeason} = require '../../app/src/util/common'
+{init} = require '../../app/src/model/tools/initializer'
+Invoice = require '../../app/src/model/invoice'
+InvoiceItem = require '../../app/src/model/invoice_item'
+Dancer = require '../../app/src/model/dancer'
+DanceClass = require '../../app/src/model/dance_class'
+Address = require '../../app/src/model/address'
+Registration = require '../../app/src/model/registration'
+Payment = require '../../app/src/model/payment'
+Card = require '../../app/src/model/card'
+Persisted = require '../../app/src/model/tools/persisted'
 
 describe 'Invoice  model tests', ->
 
@@ -55,24 +55,24 @@ describe 'Invoice  model tests', ->
     # when creating an invoice without values
     tested = new Invoice ref: '2016-02-001'
     # then an id was set
-    expect(tested).to.have.property('id').that.is.null
+    assert tested.id is null
     # then the application and due date were set
-    expect(tested).to.have.property 'date'
-    expect(tested.date.valueOf()).to.be.closeTo moment().valueOf(), 500
-    expect(tested).to.have.property 'dueDate'
-    expect(tested.dueDate.valueOf()).to.be.closeTo moment().add(60, 'days').valueOf(), 500
+    assert tested.date?
+    assert tested.date.isSame moment(), 'second'
+    assert tested.dueDate?
+    assert tested.dueDate.isSame moment().add(60, 'days'), 'second'
     # then default values were set
-    expect(tested).to.have.property('ref').that.equals '2016-02-001'
-    expect(tested).to.have.deep.property('customer.name').that.is.empty
-    expect(tested).to.have.deep.property('customer.street').that.is.empty
-    expect(tested).to.have.deep.property('customer.zipcode').that.is.empty
-    expect(tested).to.have.deep.property('customer.city').that.is.empty
-    expect(tested).to.have.property('items').that.is.empty
-    expect(tested).to.have.property('discount').that.equals 0
-    expect(tested).to.have.property('delayFee').that.equals 5
-    expect(tested).to.have.property('sent').that.is.null
-    expect(tested).to.have.property('cardId').that.is.null
-    expect(tested).to.have.property('season').that.is.null
+    assert tested.ref is '2016-02-001'
+    assert tested.customer.name is ''
+    assert tested.customer.street is ''
+    assert tested.customer.zipcode is ''
+    assert tested.customer.city is ''
+    assert.deepStrictEqual tested.items, []
+    assert tested.discount is 0
+    assert tested.delayFee is 5
+    assert tested.sent is null
+    assert tested.cardId is null
+    assert tested.season is null
     done()
 
   it 'should invoice save raw values', (done) ->
@@ -96,36 +96,36 @@ describe 'Invoice  model tests', ->
       cardId: card.id
     tested = new Invoice _.clone raw
 
-    expect(tested).to.have.property('id').that.is.null
-    expect(tested).to.have.property 'date'
-    expect(tested.date.valueOf()).to.be.closeTo moment(raw.date).valueOf(), 500
-    expect(tested).to.have.property 'dueDate'
-    expect(tested.dueDate.valueOf()).to.be.closeTo moment(raw.date).add(60, 'days').valueOf(), 500
-    expect(tested).to.have.property('ref').that.equals raw.ref
-    expect(tested).to.have.property('customer').that.deep.equals raw.customer
-    expect(tested).to.have.property('items').that.has.lengthOf 1
+    assert tested.id is null
+    assert tested.date?
+    assert tested.date.isSame moment(raw.date), 'second'
+    assert tested.dueDate?
+    assert tested.dueDate.isSame moment(raw.date).add(60, 'days'), 'second'
+    assert tested.ref is raw.ref
+    assert.deepStrictEqual tested.customer, raw.customer
+    assert tested.items.length is 1
     item = tested.items[0]
-    expect(item).to.be.an.instanceOf InvoiceItem
-    expect(item).to.have.property('name').that.equals raw.items[0].name
-    expect(item).to.have.property('price').that.equals raw.items[0].price
-    expect(item).to.have.property('quantity').that.equals 1
-    expect(item).to.have.property('vat').that.equals 0
-    expect(tested).to.have.property('discount').that.equals raw.discount
-    expect(tested).to.have.property('delayFee').that.equals raw.delayFee
-    expect(tested).to.have.property('sent').that.is.null
-    expect(tested).to.have.property('cardId').that.equals raw.cardId
+    assert item instanceof InvoiceItem
+    assert item.name is raw.items[0].name
+    assert item.price is raw.items[0].price
+    assert item.quantity is 1
+    assert item.vat is 0
+    assert tested.discount is raw.discount
+    assert tested.delayFee is raw.delayFee
+    assert tested.sent is null
+    assert tested.cardId is raw.cardId
 
     tested.save (err) ->
       return done err if err?
-      expect(tested).to.have.property('id').that.exist
-      expect(tested).to.have.property('_v').that.exist
-      expect(tested).to.have.property('items').that.has.lengthOf 1
+      assert tested.id?
+      assert tested._v?
+      assert tested.items.length is 1
       item = tested.items[0]
-      expect(item).to.be.an.instanceOf InvoiceItem
-      expect(item).to.have.property('name').that.equals raw.items[0].name
-      expect(item).to.have.property('price').that.equals raw.items[0].price
-      expect(item).to.have.property('quantity').that.equals 1
-      expect(item).to.have.property('vat').that.equals 0
+      assert item instanceof InvoiceItem
+      assert item.name is raw.items[0].name
+      assert item.price is raw.items[0].price
+      assert item.quantity is 1
+      assert item.vat is 0
       done()
 
   it 'should set customer details from dancer', (done) ->
@@ -137,12 +137,12 @@ describe 'Invoice  model tests', ->
         zipcode: 69001
         city: 'Lyon'
 
-    tested.setCustomer dancer1, (err) ->
+    tested.setCustomers [dancer1], (err) ->
       return done err if err?
-      expect(tested).to.have.deep.property('customer.name').that.equals 'M. Jean Dupond'
-      expect(tested).to.have.deep.property('customer.street').that.equals address1.street
-      expect(tested).to.have.deep.property('customer.city').that.equals address1.city
-      expect(tested).to.have.deep.property('customer.zipcode').that.equals address1.zipcode
+      assert tested.customer.name is 'M. Jean Dupond'
+      assert tested.customer.street is address1.street
+      assert tested.customer.city is address1.city
+      assert tested.customer.zipcode is address1.zipcode
       done()
 
   it 'should not erase address if new customer hasn\'t one', (done) ->
@@ -155,12 +155,12 @@ describe 'Invoice  model tests', ->
         city: 'Lyon'
     tested = new Invoice _.clone raw
 
-    tested.setCustomer dancer2, (err) ->
+    tested.setCustomers [dancer2], (err) ->
       return done err if err?
-      expect(tested).to.have.deep.property('customer.name').that.equals 'Mme. Julie Durand'
-      expect(tested).to.have.deep.property('customer.street').that.equals raw.customer.street
-      expect(tested).to.have.deep.property('customer.city').that.equals raw.customer.city
-      expect(tested).to.have.deep.property('customer.zipcode').that.equals raw.customer.zipcode
+      assert tested.customer.name is 'Mme. Julie Durand'
+      assert tested.customer.street is raw.customer.street
+      assert tested.customer.city is raw.customer.city
+      assert tested.customer.zipcode is raw.customer.zipcode
       done()
 
   describe 'given a set of existing references', () ->
@@ -196,92 +196,92 @@ describe 'Invoice  model tests', ->
     it 'should check that null refs are invalid', (done) ->
       Invoice.isRefValid null, {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that undefined refs are invalid', (done) ->
       Invoice.isRefValid undefined, {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that numerical refs are invalid', (done) ->
       Invoice.isRefValid 18, {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that refs without 4-digit year are invalid', (done) ->
       Invoice.isRefValid '16-05-001', {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that refs without 2-digit month are invalid', (done) ->
       Invoice.isRefValid '2016-5-001', {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that refs without rank month are invalid', (done) ->
       Invoice.isRefValid '2016-01', {}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should check that existing refs are invalid', (done) ->
       Invoice.isRefValid '2016-07-001', {ref:'2016-08-001', selectedTeacher: teacher1}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.false
+        assert isValid is false
         done()
 
     it 'should accept valid references formats', (done) ->
       Invoice.isRefValid '2017-07-001', {ref:'2016-08-001', selectedTeacher: teacher1}, (err, isValid) ->
         return done err if err?
-        expect(isValid).to.be.true
+        assert isValid is true
         done()
 
     it 'should get reference for an empty month', (done) ->
       Invoice.getNextRef 2016, 9, teacher1, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-09-001'
+        assert ref is '2016-09-001'
         done()
 
     it 'should get next reference for month with existing refs', (done) ->
       Invoice.getNextRef 2016, 8, teacher1, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-08-003'
+        assert ref is '2016-08-003'
         done()
 
     it 'should get next reference for month with existing refs for a different school', (done) ->
       Invoice.getNextRef 2016, 8, teacher2, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-08-002'
+        assert ref is '2016-08-002'
         done()
 
     it 'should get next reference for month with more than 999 refs', (done) ->
       Invoice.getNextRef 2016, 7, teacher1, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-07-1001'
+        assert ref is '2016-07-1001'
         done()
 
     it 'should ignore extra words when getting next reference', (done) ->
       Invoice.getNextRef 2016, 6, teacher1, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-06-011'
+        assert ref is '2016-06-011'
         done()
 
     it 'should ignore unparseable refs when getting next reference', (done) ->
       Invoice.getNextRef 2016, 5, teacher1, (err, ref) ->
         return done err if err?
-        expect(ref).to.equals '2016-05-090'
+        assert ref is '2016-05-090'
         done()
 
     it 'should check ref validity when saving new invoice', (done) ->
       saved = new Invoice ref: '2016-08-001', selectedTeacher: teacher1
       saved.save (err) ->
-        expect(err).to.exist
-        expect(err).to.have.property('message').that.includes 'misformated or already used'
+        assert err?
+        assert err.message.includes 'misformated or already used'
         done()
 
     it 'should can save the with the same ref', (done) ->
@@ -289,7 +289,7 @@ describe 'Invoice  model tests', ->
       saved.save (err) ->
         return done err if err?
         saved.save (err) ->
-          expect(err).not.to.exist
+          assert not err?
           done()
 
     it 'should can reuse same ref if school is different', (done) ->
@@ -297,5 +297,5 @@ describe 'Invoice  model tests', ->
       saved.save (err) ->
         return done err if err?
         saved.save (err) ->
-          expect(err).not.to.exist
+          assert not err?
           done()

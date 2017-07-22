@@ -1,20 +1,20 @@
-{expect} = require 'chai'
+assert = require 'power-assert'
 {each, map, eachSeries} = require 'async'
 _ = require 'lodash'
 path = require 'path'
 {exists, readFile, ensureDir, remove} = require 'fs-extra'
-Export = require '../../../app/script/service/export'
-Import = require '../../../app/script/service/import'
-{init} = require '../../../app/script/model/tools/initializer'
-Dancer = require '../../../app/script/model/dancer'
-Address = require '../../../app/script/model/address'
-Registration = require '../../../app/script/model/registration'
-Card = require '../../../app/script/model/card'
-DanceClass = require '../../../app/script/model/dance_class'
-Lesson = require '../../../app/script/model/lesson'
-Invoice = require '../../../app/script/model/invoice'
-InvoiceItem = require '../../../app/script/model/invoice_item'
-{getDbPath, generateId} = require '../../../app/script/util/common'
+Export = require '../../app/src/service/export'
+Import = require '../../app/src/service/import'
+{init} = require '../../app/src/model/tools/initializer'
+Dancer = require '../../app/src/model/dancer'
+Address = require '../../app/src/model/address'
+Registration = require '../../app/src/model/registration'
+Card = require '../../app/src/model/card'
+DanceClass = require '../../app/src/model/dance_class'
+Lesson = require '../../app/src/model/lesson'
+Invoice = require '../../app/src/model/invoice'
+InvoiceItem = require '../../app/src/model/invoice_item'
+{getDbPath, generateId} = require '../../app/src/util/common'
 
 describe 'Export service tests', ->
 
@@ -90,57 +90,57 @@ describe 'Export service tests', ->
   it 'should export base as compact format', (done) ->
     @timeout 30000
     # when exporting the list into a file
-    out = path.join __dirname, '..', '..', 'fixture', 'out.dump.json'
+    out = path.join __dirname, '..', 'fixture', 'out.dump.json'
     tested.dump out, (err) ->
       return done err if err?
       # then file exists
       exists out, (fileExists) =>
-        expect(fileExists).to.be.true
+        assert fileExists is true
         readFile out, {encoding: 'utf8'}, (err, content) =>
           return done err if err?
           json = null
           for clazz in [Address, Dancer, DanceClass, Card]
-            expect(content).to.include "------#{clazz.name}"
+            assert content.includes "------#{clazz.name}"
             for model in addresses.concat cards, dancers
               for attr, value of model.toJSON()
                 if attr in ['_v', 'zipcode'] or value is null
-                  expect(content).to.include "\"#{attr}\":#{value}"
+                  assert content.includes "\"#{attr}\":#{value}"
                 else if attr is 'knownBy'
-                  expect(content).to.include "\"#{attr}\":[#{if value.length then "\"#{value.join('","')}\"" else ''}]"
+                  assert content.includes "\"#{attr}\":[#{if value.length then "\"#{value.join('","')}\"" else ''}]"
                 else unless attr in ['registrations', 'danceClassIds', 'lessonIds']
-                  expect(content).to.include "\"#{attr}\":\"#{value}\""
+                  assert content.includes "\"#{attr}\":\"#{value}\""
           done()
 
   it 'should export dancers list into xlsx file', (done) ->
     # when exporting the list into a file
-    out = path.join(__dirname, '..', '..', 'fixture', 'out.export_1.xlsx')
+    out = path.join(__dirname, '..', 'fixture', 'out.export_1.xlsx')
     tested.toFile out, dancers, (err) ->
       return done err if err?
       # then file can be imported
       importer.fromFile out, (err, models) ->
         return done err if err?
-        expect((model for model in models when model instanceof Dancer)).to.have.lengthOf dancers.length
+        assert (model for model in models when model instanceof Dancer).length is dancers.length
         # then all dancers were properly extracted
         for expectedDancer in dancers
           dancer = _.find models, firstname: expectedDancer.firstname
-          expect(dancer, "#{expectedDancer.firstname} not found").to.exist
-          expect(JSON.stringify _.omit dancer.toJSON(), 'created', 'id', 'lessonIds', 'addressId', 'cardId', '_v').to.be.deep.equal JSON.stringify _.omit expectedDancer.toJSON(), 'created', 'id', 'lessonIds', 'addressId', 'cardId', '_v'
+          assert dancer?, "#{expectedDancer.firstname} not found"
+          assert.deepStrictEqual _.omit(dancer.toJSON(), 'created', 'id', 'lessonIds', 'addressId', 'cardId', '_v'), _.omit expectedDancer.toJSON(), 'created', 'id', 'lessonIds', 'addressId', 'cardId', '_v'
           # then their addresses were exported
           address = _.find models, id: dancer.addressId
           expectedAddress = _.find addresses, id: expectedDancer.addressId
           if expectedAddress?
-            expect(address, "#{expectedAddress.street} not found").to.exist
-            expect(JSON.stringify _.omit address.toJSON(), 'id', '_v').to.be.deep.equal JSON.stringify _.omit expectedAddress.toJSON(), 'id', '_v'
+            assert address?, "#{expectedAddress.street} not found"
+            assert.deepStrictEqual _.omit(address.toJSON(), 'id', '_v'), _.omit expectedAddress.toJSON(), 'id', '_v'
           else
             # unfound address has been generated
-            expect(address).to.exist
-            expect(address.city).to.be.empty
-            expect(address.zipcode).to.equal 69100
-            expect(address.street).to.be.empty
-            expect(address.phone).not.to.exist
+            assert address?
+            assert address.city is ''
+            assert address.zipcode is 69100
+            assert address.street is ''
+            assert not address.phone?
           # then their cards were exported
           card = _.find models, id: dancer.cardId
           expectedCard = _.find cards, id: expectedDancer.cardId
-          expect(card, "#{expectedCard.street} not found").to.exist
-          expect(JSON.stringify _.omit card.toJSON(), 'id', '_v', 'registrations').to.be.deep.equal JSON.stringify _.omit expectedCard.toJSON(), 'id', '_v', 'registrations'
+          assert card?, "#{expectedCard.street} not found"
+          assert.deepStrictEqual _.omit(card.toJSON(), 'id', '_v', 'registrations'), _.omit expectedCard.toJSON(), 'id', '_v', 'registrations'
         done()
