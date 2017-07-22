@@ -42,8 +42,10 @@ class Persistance
         @_worker.onmessage = ({data}) => @_onResult data
         @_worker.onerror = (err) =>
           err?.preventDefault()
+          console.log ">>>>> received error", err, err.id, err.message, err.stack
           console.error "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
-          throw err
+          #throw err
+          @_onResult id: err.id, err
 
       when 'nedb', 'mongodb'
         @_worker = fork "#{dirname}/#{workerImpl}_worker.js"

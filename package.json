@@ -17,11 +17,12 @@
     "clean:coverage": "rimraf coverage .nyc_output",
     "clean:coffee": "rimraf app/script",
     "clean:vendor": "rimraf app/vendor app/src/style/css app/src/style/fonts/glyphicons*.* app/src/style/fonts/alfa-slab-one.ttf",
+    "coverage": "echo coverage/lcov.info | coveralls",
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "test": "run-s -s clean:coverage test:renderer",
-    "test:renderer": "nyc electron-mocha --renderer test/**/*.coffee",
+    "test:renderer": "nyc electron-mocha --renderer test/**/conflicts.coffee",
     "release": "run-s -s build release:builder",
     "release:builder": "electron-builder build -p always"
   },
@@ -41,8 +42,9 @@
     "xlsx.js": "2.3.1"
   },
   "devDependencies": {
-    "coffee-coverage": "feugy/coffee-coverage",
+    "coffee-coverage": "feugy/coffee-coverage#8f333d",
     "coffee-script": "1.12.6",
+    "coveralls": "2.13.1",
     "download": "6.2.5",
     "electron": "1.6.11",
     "electron-builder": "19.13.0",
@@ -78,9 +80,10 @@
     "app/src/style/fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
   },
   "nyc": {
-    "reporter": ["lcov","text"],
-    "instrument": false,
-    "sourceMap": false
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   },
   "build": {
     "productName": "DanceRM",
