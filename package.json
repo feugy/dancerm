@@ -17,7 +17,7 @@
     "clean:coverage": "rimraf coverage .nyc_output",
     "clean:coffee": "rimraf app/script",
     "clean:vendor": "rimraf app/vendor app/src/style/css app/src/style/fonts/glyphicons*.* app/src/style/fonts/alfa-slab-one.ttf",
-    "coverage": "echo coverage/lcov.info | coveralls",
+    "coverage": "cat coverage/lcov.info | coveralls",
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
