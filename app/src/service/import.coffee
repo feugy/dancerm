@@ -117,11 +117,11 @@ module.exports = class Import
               Address: []
               Card: []
               Dancer: []
-            # extractionreport
+            # extraction report
             report =
               readTime: content.processTime
               modifiedBy: content.lastModifiedBy
-              modifiedOn: moment content.modified
+              modifiedOn: moment content.modified.toISOString().replace('T', ' ').replace '.000Z', ''
               worksheets: []
               errors: []
             start = Date.now()

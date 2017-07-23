@@ -70,7 +70,7 @@ describe 'Import service tests', ->
           assert.deepStrictEqual _.omit(model.toJSON(), ['id', 'created', 'registrations', '_v']), _.omit expected[i].toJSON(), ['id', 'created', 'registrations', '_v']
         # then report should contain all informations
         assert report.modifiedBy is 'Damien Feugas'
-        assert report.modifiedOn.isBetween '2013-09-04 07:54:00', '2013-09-04 07:55:00'
+        assert report.modifiedOn.isBetween '2013-09-04 05:54:00', '2013-09-04 05:55:00'
         assert report.worksheets.length is 3
         assert report.worksheets[0].extracted is 5
         assert report.worksheets[0].name is 'Feuil1'
@@ -135,7 +135,7 @@ describe 'Import service tests', ->
           assert.deepStrictEqual _.omit(model.toJSON(), ['id', 'created', 'registrations', '_v']), _.omit expected[i].toJSON(), ['id', 'created', 'registrations', '_v']
         # then report should contain all informations
         assert report.modifiedBy is 'Damien Feugas'
-        assert report.modifiedOn.isBetween '2013-08-24 17:07:00', '2013-08-24 17:08:00'
+        assert report.modifiedOn.isBetween '2013-08-24 15:07:00', '2013-08-24 15:08:00'
         assert report.worksheets.length is 3
         assert report.worksheets[0].extracted is 10
         assert report.worksheets[0].name is 'Feuil1'
