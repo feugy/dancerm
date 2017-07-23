@@ -22,7 +22,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "test": "run-s -s clean:coverage clean:coffee build:compile test:renderer",
-    "test:renderer": "nyc electron-mocha --renderer test/**/conflicts.coffee",
+    "test:renderer": "nyc electron-mocha --renderer test/**/*.coffee",
     "release": "run-s -s build release:builder",
     "release:builder": "electron-builder build -p always"
   },
