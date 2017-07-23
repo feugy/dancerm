@@ -21,7 +21,7 @@
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "test": "run-s -s clean:coverage test:renderer",
+    "test": "run-s -s clean:coverage clean:coffee build:compile test:renderer",
     "test:renderer": "nyc electron-mocha --renderer test/**/conflicts.coffee",
     "release": "run-s -s build release:builder",
     "release:builder": "electron-builder build -p always"
