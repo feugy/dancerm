@@ -29,7 +29,7 @@ DanceRM is a specialized Customer Relationship software built for Dance schools.
 
 - import > callstack when merging with distant mongo (works fine locally)
 
-[logo]: https://github.com/feugy/dancerm/raw/master/style/img/dancerm.png
+[logo]: https://github.com/feugy/dancerm/raw/master/app/style/img/dancerm.png
 [ci-badge]: https://travis-ci.org/feugy/dancerm.svg?branch=master
 [ci-link]: https://travis-ci.org/feugy/dancerm
 [coverage-badge]: https://coveralls.io/repos/github/feugy/dancerm/badge.svg?branch=master
