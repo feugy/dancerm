@@ -2,7 +2,7 @@
   "name": "dancerm",
   "version": "4.0.2",
   "author": "Feugy <damien.feugas@gmail.com>",
-  "description": "DanceRM is a very simple Customer Relationship Management adapted to dance schools",
+  "description": "DanceRM is a very simple Customer Relationship software specialized for dance schools",
   "repository": {
     "type": "git",
     "url": "https://github.com/feugy/dancerm.git"
