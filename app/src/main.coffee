@@ -4,6 +4,8 @@ windowManager = require 'electron-window-manager'
 {autoUpdater} = require 'electron-updater'
 {parallel} = require 'async'
 _ = require 'lodash'
+{resolve} = require 'path'
+{format} = require 'url'
 {dumpError, fixConsole} = require '../script/util/common'
 
 process.on 'uncaughtException', dumpError()
@@ -24,8 +26,28 @@ createWindow = ->
     height: 700
     resizable: true
     frame: false
+
   # true to hide it
   win.open '/app.html', true
+
+  # splash window
+  splash = new BrowserWindow
+    width: 400
+    height: 200
+    center: true
+    resizable: false
+    frame: false
+    alwaysOnTop: true
+    parent: win.object
+    modal: true
+    backgroundColor: '#201b21'
+
+  splash.loadURL format
+    pathname: resolve __dirname, '..', 'template', 'splash.html'
+    protocol: 'file:'
+    slashes: true
+
+  splash.webContents.openDevTools()
 
   # automatic update
   _.delay =>

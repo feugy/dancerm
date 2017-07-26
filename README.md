@@ -16,7 +16,6 @@ DanceRM is a specialized Customer Relationship software built for Dance schools.
 
 ## TODO
 
-- splash screen
 - hide empty days in planning
 - Invoice & Lesson conflicts
 - unit test for indexedDB operator support ($and, $lt, $gt, $lte, $gte)

@@ -174,10 +174,14 @@ buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', (err,
       height = +localStorage.getItem 'height'
       win.resize width, height
 
+    # starts the application
+    getColorsFromTheme()
+    angular.bootstrap $('body.app'), ['app']
+
     # we are ready: shows it !
     win.object.show()
     # local storage stores strings !
     win.maximize() if 'true' is localStorage.getItem 'maximized'
-    # starts the application
-    getColorsFromTheme()
-    angular.bootstrap $('body.app'), ['app']
+
+    # close splash screen
+    win.object.getChildWindows()[0]?.close()

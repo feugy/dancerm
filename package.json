@@ -16,7 +16,7 @@
     "build:watch": "coffee --no-header -bMwo app/script app/src",
     "clean:coverage": "rimraf coverage .nyc_output",
     "clean:coffee": "rimraf app/script",
-    "clean:vendor": "rimraf app/vendor app/src/style/css app/src/style/fonts/glyphicons*.* app/src/style/fonts/alfa-slab-one.ttf",
+    "clean:vendor": "rimraf app/vendor style/css/bootstrap.css style/css/nv.d3.css style/fonts/glyphicons*.* style/fonts/alfa-slab-one.ttf",
     "coverage": "cat coverage/lcov.info | coveralls",
     "dev": "run-s -s clean:coffee build:watch",
     "postinstall": "electron-builder install-app-deps",
@@ -70,14 +70,14 @@
     "app/vendor/angular-nvd3.js": "https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js",
     "app/vendor/ui-bootstrap-tpls.js": "http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.1.3.min.js",
     "app/vendor/angular-elastic.js": "https://raw.githubusercontent.com/monospaced/angular-elastic/master/elastic.js",
-    "app/src/style/css/bootstrap.css": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
-    "app/src/style/css/nv.d3.css": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.css",
-    "app/src/style/fonts/glyphicons-halflings-regular.eot": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot",
-    "app/src/style/fonts/glyphicons-halflings-regular.woff": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff",
-    "app/src/style/fonts/glyphicons-halflings-regular.woff2": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2",
-    "app/src/style/fonts/glyphicons-halflings-regular.ttf": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf",
-    "app/src/style/fonts/glyphicons-halflings-regular.svg": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg",
-    "app/src/style/fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
+    "style/css/bootstrap.css": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+    "style/css/nv.d3.css": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.css",
+    "fonts/glyphicons-halflings-regular.eot": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot",
+    "fonts/glyphicons-halflings-regular.woff": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff",
+    "fonts/glyphicons-halflings-regular.woff2": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2",
+    "fonts/glyphicons-halflings-regular.ttf": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf",
+    "fonts/glyphicons-halflings-regular.svg": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg",
+    "fonts/alfa-slab-one.ttf": "http://fonts.gstatic.com/s/alfaslabone/v5/Qx6FPcitRwTC_k88tLPc-SbsRidxnYrfzLNRqJkHfFo.ttf"
   },
   "nyc": {
     "reporter": [
