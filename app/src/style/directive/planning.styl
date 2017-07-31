@@ -22,6 +22,8 @@ for c, i in colors
   height 100%
   box-sizing border-box
   padding-bottom titleH + titleMrg + groupH + legendH
+  display flex
+  position relative
 
   .tooltip p
     margin 0
@@ -40,6 +42,9 @@ for c, i in colors
 
     .groups
       color transparent
+
+  .day
+    flex 1
 
   .day
   .time
@@ -118,9 +123,10 @@ for c, i in colors
       background-color linkColor
 
   .legend
-    margin-top 10px
-    text-align right
-    display block
+    position absolute
+    bottom 0
+    right 0
+    padding-top 10px
     height legendH
     color headingColor
     font-family headingFont
@@ -138,10 +144,10 @@ for c, i in colors
   .darken
     opacity .5
 
-for i in 2..7
+/*for i in 2..7
   .planning.days{i} .day
     // 6.5% for time
-    width unit((100 - 6.5) / i, '%')
+    width unit((100 - 6.5) / i, '%')*/
 
 for i in 6..24
   .planning.hours{i}

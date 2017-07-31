@@ -47,8 +47,6 @@ createWindow = ->
     protocol: 'file:'
     slashes: true
 
-  splash.webContents.openDevTools()
-
   # automatic update
   _.delay =>
     autoUpdater.logger = console

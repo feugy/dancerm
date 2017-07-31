@@ -63,7 +63,7 @@ module.exports =
     ['info', 'debug', 'warn', 'error', 'log'].forEach (method) ->
       original = global.console[method]
       global.console[method] = (args...) ->
-        appendFile logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
+        appendFileSync logFile, "#{moment().format 'DD/MM/YYYY HH:mm:ss'} - #{method} - #{args.map(format).join ' '}\n"
         original args...
 
   # Working instanceof operator. No inheritance, no custom types

@@ -1,6 +1,13 @@
 _ = require 'lodash'
 i18n = require '../labels/common'
 
+# Extract boolean value from attributes
+# @param name [String] parsed attribute name
+# @param attrs [Object] attributes hash
+# @param def [Boolean = true] default value
+parseBooleanAttr = (name, attrs, def = true) ->
+  if attrs[name]? then attrs[name]?.trim()?.toLowerCase() is 'true' else def
+
 class PlanningDirective
 
   # Controller dependencies
@@ -39,6 +46,9 @@ class PlanningDirective
   # right offset (percentage) applied to dance classes inside a given day
   widthOffset: 0
 
+  # Only show day columns that are not empty (contains at least one dance classe)
+  hideEmptyDays: true
+
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -54,8 +64,9 @@ class PlanningDirective
     @days = @scope.days or i18n.planning.weekDays
     @groupBy = attrs.groupBy or 'hall'
     @widthOffset = +attrs.widthOffset or 0
-    @shrinkHours = if attrs.shrinkHours? then attrs.shrinkHours.trim().toLowerCase() is 'true' else true
-    @clickableCells = if attrs.clickableCells? then attrs.clickableCells.trim().toLowerCase() is 'true' else false
+    @shrinkHours = parseBooleanAttr 'shrinkHours', attrs, true
+    @hideEmptyDays = parseBooleanAttr 'hideEmptyDays', attrs, false
+    @clickableCells = parseBooleanAttr 'clickableCells', attrs, false
 
     # click on quarter: select cell and trigger onCellClick handler
     @element.on 'click', '.quarter', (event) =>
@@ -216,6 +227,8 @@ class PlanningDirective
         @legend[color] = item unless color of @legend
         @_buildLegend() if legended is 0
     @hours = if @shrinkHours then [earliest..latest] else [8..22]
+    # hide empty days if required
+    @days = (day for day in @days when @groups[day]?.length > 0) if @hideEmptyDays and @scope.danceClasses?.length
 
   # **private**
   # Display each available dance class on the planning
@@ -291,6 +304,8 @@ module.exports = (app) ->
       groupBy: '@'
       # true to shrink displayed hours to the range that includes all danceClasses (default to true)
       shrinkHours: '@'
+      # true to hide days that don't contains any item, if at least one item exists (default to true)
+      hideEmptyDays: '@'
       # right offset (percentage) applied to dance classes inside a given day (default to 0)
       widthOffset: '@'
       # if true, click on cells trigger onCellClick (default to false)
