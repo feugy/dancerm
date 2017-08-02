@@ -7,7 +7,6 @@ DanceRM is a specialized Customer Relationship software built for Dance schools.
 
 ## Bugs
 
-- Invoice Ref unicity based on selected teacher
 - Migrate old invoice
   - items[].discount: null > 0
   - selectedSchool > selectedTeacher

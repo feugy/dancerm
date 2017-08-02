@@ -66,7 +66,8 @@ module.exports = class Import
           imported.save (err) ->
             if className is Invoice.name and err?.message?.includes 'is misformated or already used'
               # found an invoice reference already used
-              conflicts.push {existing: {ref: imported.ref}, imported}
+              report.byClass[className]--
+              conflicts.push {existing: {ref: imported.ref, selectedTeacher: imported.selectedTeacher}, imported}
               return next()
             next err
         else
@@ -107,9 +108,6 @@ module.exports = class Import
           try
             # jszip only accept base64 url encoded content
             content = xlsx data.toString 'base64'
-
-            # read at least one worksheet
-            return reject new Error "no worksheet found in file" unless content?.worksheets?.length > 0
 
             # TODO add lessons/invoice here ?
             # extracted models
@@ -161,9 +159,10 @@ module.exports = class Import
               # parse content
               content = JSON.parse data
               return done new Error "no dancers found in file" unless content?.dancers?.length > 0
-              dancers = ({dancer: new Dancer dancer} for dancer in content.dancers)
+              dancers = (new Dancer dancer for dancer in content.dancers)
               # and returns results
               report.extractTime = Date.now()-start-report.readTime
+              report.byClass = Dancer: dancers.length
               @_checkRelationnalConstraints dancers, report, (err, models) =>
                 return done err if err?
                 report.checkTime = Date.now()-start-report.extractTime
@@ -194,7 +193,7 @@ module.exports = class Import
         className = line.replace(Export.separator, '').trim()
         currentClass = classes[className]
         unless currentClass?
-          report.errors.push "line #{i}: unsupported model class #{className}"
+          report.errors.push "line #{i+1}: unsupported model class #{className}"
         else
           report.byClass[className] = 0
       else if currentClass?
@@ -203,7 +202,7 @@ module.exports = class Import
           models.push new currentClass JSON.parse line
           report.byClass[className]++
         catch err
-          report.errors.push "line #{i}: failed to parse model #{className}: #{err}"
+          report.errors.push "line #{i+1}: failed to parse model #{className}: #{err}"
     done null, models
 
   # **private**
@@ -335,7 +334,7 @@ module.exports = class Import
         colInitialized = true
         break
       # stop after 20 tries
-      break if row > 20
+      break if row >= 20
 
     # do not process if a mandatory column is missing
     return result.details = "Missing #{mandatory.join ', '} column" unless colInitialized
