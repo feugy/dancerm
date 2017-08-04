@@ -207,12 +207,13 @@ module.exports = class Import
 
   # **private**
   # Check that imported data does not contain relationnal errors
-  # - a dancer must have an address (creates it if it doesn't exists)
-  # - a dancer must have a card (creates it if it doesn't exists)
+  # - a dancer must have an address (creates otherwise)
+  # - a dancer must have a card (creates it otherwise)
   # - dancer's address must not be its card
-  # - dancer's lessons must exists (deletes reference if not)
-  # - registration's invoices must exists (deletes reference if not)
-  # - lesson's invoices must exists (deletes reference if not)
+  # - dancer's lessons must exists (deletes reference otherwise)
+  # - registration's invoices must exists (deletes reference otherwise)
+  # - lesson's invoices must exists (deletes reference otherwise)
+  # - lesson's dancer must exists (ignore lessons otherwise)
   #
   # @param imported [Array<Persisted>] imported models, cards, dance-classes, addresses and dancers
   # @param report [Object] extraction report, that will be filled with encountered errors
@@ -234,6 +235,7 @@ module.exports = class Import
       cardIds.push model.id if model.constructor.name is Card.name
       invoiceIds.push model.id if model.constructor.name is Invoice.name
       lessonIds.push model.id if model.constructor.name is Lesson.name
+      dancerIds.push model.id if model.constructor.name is Dancer.name
 
     # then merge with existing addresses, cards and invoices
     Address.findAllRaw (err, addresses) =>
@@ -248,43 +250,54 @@ module.exports = class Import
           Lesson.findAllRaw (err, lessons) =>
             return done err if err
             lessonIds.push lesson.id for lesson in lessons when not(lesson.id in lessonIds)
+            Dancer.findAllRaw (err, dancers) =>
+              return done err if err
+              dancerIds.push dancer.id for dancer in dancers when not(dancer.id in dancerIds)
 
-            added = []
-            for model in imported
-              # at last, creates address and card model for dancer that does not match existing on
-              switch model.constructor.name
-                when Dancer.name
-                  errMsg = "#{model.firstname} #{model.lastname} (#{model.id})"
-                  unless model.cardId in cardIds
-                    report.errors.push "created unexisting card (#{model.cardId}) for dancer #{errMsg}"
-                    card = new Card id: generateId()
-                    model.setCard card
-                    added.push card
-                  if not(model.addressId in addressIds) or model.addressId is model.cardId
-                    report.errors.push "created unexisting address (#{model.addressId}) for dancer #{errMsg}"
-                    addr = new Address id: generateId()
-                    model.setAddress addr
-                    added.push addr
-                  # avoid keeping references to unexisting lessons
-                  for id in model.lessonIds when not(id in lessonIds)
-                    report.errors.push "remove unexisting lesson reference (#{id}) for dancer #{errMsg}"
-                    model.lessonIds[i] = null
-                  model.lessonIds = model.lessonIds.filter (id) -> id?
+              added = []
+              ignored = []
+              for model in imported
+                # at last, creates address and card model for dancer that does not match existing on
+                switch model.constructor.name
+                  when Dancer.name
+                    errMsg = "#{model.firstname} #{model.lastname} (#{model.id})"
+                    unless model.cardId in cardIds
+                      report.errors.push "created unexisting card (#{model.cardId}) for dancer #{errMsg}"
+                      card = new Card id: model.cardId
+                      model.setCard card
+                      added.push card
+                    if not(model.addressId in addressIds) or model.addressId is model.cardId
+                      report.errors.push "created unexisting address (#{model.addressId}) for dancer #{errMsg}"
+                      addr = new Address id: model.addressId
+                      model.setAddress addr
+                      added.push addr
+                    # avoid keeping references to unexisting lessons
+                    for id, i in model.lessonIds when not(id in lessonIds)
+                      report.errors.push "remove unexisting lesson reference (#{id}) for dancer #{errMsg}"
+                      model.lessonIds[i] = null
+                    model.lessonIds = model.lessonIds.filter (id) -> id?
 
-                # avoid keeping references from lessons and registration to unexisting invoices
-                when Card.name
-                  for registration in model.registrations
-                    for id, i in registration.invoiceIds when not(id in invoiceIds)
-                      report.errors.push "remove unexisting invoice reference (#{id}) for registration #{model.season} of card #{model.id}"
-                      registration.invoiceIds[i] = null
-                    registration.invoiceIds = registration.invoiceIds.filter (id) -> id?
+                  # avoid keeping references from registration to unexisting invoices
+                  when Card.name
+                    for registration in model.registrations
+                      for id, i in registration.invoiceIds when not(id in invoiceIds)
+                        report.errors.push "remove unexisting invoice reference (#{id}) for registration #{model.season} of card #{model.id}"
+                        registration.invoiceIds[i] = null
+                      registration.invoiceIds = registration.invoiceIds.filter (id) -> id?
 
-                when Lesson.name
-                  unless model.invoiceId in invoiceIds
-                    report.errors.push "remove unexisting invoice reference (#{model.invoiceId}) for lesson of dancer #{model.dancerId} (#{model.id})"
-                    model.invoiceId = null
+                  when Lesson.name
+                    # ignore lessons that have no dancer related
+                    unless model.dancerId in dancerIds
+                      report.errors.push "ignore lesson from teacher #{model.selectedTeacher} at #{model.date.toString()} (#{model.id}) because dancer #{model.dancerId} couldn't be found"
+                      ignored.push model
+                    else if model.invoiceId and not(model.invoiceId in invoiceIds)
+                      # avoid keeping references from lessons to unexisting invoices
+                      report.errors.push "remove unexisting invoice reference (#{model.invoiceId}) for lesson of dancer #{model.dancerId} (#{model.id})"
+                      model.invoiceId = null
 
-            done null, imported.concat added
+              # Don't save ignored models (lessons without dancer)
+              results = _.without imported, ignored...
+              done null, results.concat added
 
   # **private**
   # Extract dancers from a given worksheet data matrix

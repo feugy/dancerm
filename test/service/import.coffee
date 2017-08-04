@@ -14,10 +14,11 @@ Registration = require '../../app/src/model/registration'
 Payment = require '../../app/src/model/payment'
 Address = require '../../app/src/model/address'
 Invoice = require '../../app/src/model/invoice'
+Lesson = require '../../app/src/model/lesson'
 
 fixtures = resolve __dirname, '..', 'fixture'
 
-describe 'Import service tests', ->
+describe 'Import service', ->
 
   before init
 
@@ -43,7 +44,7 @@ describe 'Import service tests', ->
       assert err?.message?.includes 'no such file or directory'
       done()
 
-  describe 'given xlsx files', ->
+  describe 'given xlsx files, fromFile()', ->
 
     it 'should fail on corrupted xlsx file', (done) ->
       tested.fromFile resolve(fixtures, 'v1-corrupted.xlsx'), (err) ->
@@ -72,34 +73,57 @@ describe 'Import service tests', ->
         new Address street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode:'69009'
         new Address street: '40 rue du rhône allée 5', city: 'Lyon', zipcode:'69007', phone:'0478613207'
         new Address street: '2 rue clément marrot', city: 'Lyon', zipcode:'69007'
+        new Address street: '31 rue séverine', city: 'Villeurbanne', zipcode:'69100'
+        new Address street: '15 rue henri barbusse', city: 'Villeurbanne', zipcode:'69100', phone: '0662885285'
+        new Address street: '145 avenue sidoine apollinaire', city: 'Lyon', zipcode:'69009'
+        new Address street: '40 rue du rhône allée 5', city: 'Lyon', zipcode:'69007', phone:'0478613207'
+        new Address street: '2 rue clément marrot', city: 'Lyon', zipcode:'69007'
         new Card()
         new Card knownBy: ['associationsBiennal']
         new Card knownBy: ['groupon']
         new Card knownBy: ['leaflets']
         new Card()
+        new Card knownBy: ['mouth']
+        new Card knownBy: ['directory']
+        new Card knownBy: ['pagesjaunesFr']
+        new Card knownBy: ['website']
+        new Card knownBy: ['searchEngine']
         new Dancer danceClassIds: [], title: 'Mlle', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
         new Dancer danceClassIds: [], title: 'Mlle', firstname:'Nelly', lastname:'Aguilar'
         new Dancer danceClassIds: [], title: 'Mlle', firstname:'Lila', lastname:'Ainine', birth: '1986-01-01', cellphone: '0640652009', email: 'lila.ainine@yahoo.fr'
         new Dancer danceClassIds: [], title: 'M.', firstname:'Raphaël', lastname:'Azoulay', birth: '1989-04-01', cellphone: '0631063774', email: 'rafystilmot@hotmail.fr'
         new Dancer danceClassIds: [], title: 'Mme', firstname:'Rachel', lastname:'Barbosa', birth: '1970-12-05', cellphone: '0617979688'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Emilie2', lastname:'Abraham2', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Nelly2', lastname:'Aguilar2'
+        new Dancer danceClassIds: [], title: 'Mlle', firstname:'Lila2', lastname:'Ainine2', birth: '1986-01-01', cellphone: '0640652009', email: 'lila.ainine@yahoo.fr'
+        new Dancer danceClassIds: [], title: 'M.', firstname:'Raphaël2', lastname:'Azoulay2', birth: '1989-04-01', cellphone: '0631063774', email: 'rafystilmot@hotmail.fr'
+        new Dancer danceClassIds: [], title: 'Mme', firstname:'Rachel2', lastname:'Barbosa2', birth: '1970-12-05'
       ]
       # links between models
-      links = [{}, {}, {}, {}, {},
+      links = [
         {}, {}, {}, {}, {},
-        {address: 0, card: 5},
-        {address: 1, card: 6},
-        {address: 2, card: 7},
-        {address: 3, card: 8},
-        {address: 4, card: 9}
+        {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {},
+        {address: 0, card: 10},
+        {address: 1, card: 11},
+        {address: 2, card: 12},
+        {address: 3, card: 13},
+        {address: 4, card: 14},
+        {address: 5, card: 15},
+        {address: 6, card: 16},
+        {address: 7, card: 17},
+        {address: 8, card: 18},
+        {address: 9, card: 19}
       ]
       tested.fromFile resolve(fixtures, 'v1-correct.xlsx'), (err, models, report) ->
         return done err if err?
         # then all models are present
         assert models.length is expected.length
         for model, i in models
-          if i < 5
+          if i < 10
             assert model instanceof Address
-          else if 5 <= i < 10
+          else if 10 <= i < 20
             assert model instanceof Card
           else
             assert model instanceof Dancer
@@ -108,14 +132,14 @@ describe 'Import service tests', ->
           assert.deepStrictEqual _.omit(model.toJSON(), ['id', 'created', 'registrations', '_v']), _.omit expected[i].toJSON(), ['id', 'created', 'registrations', '_v']
         # then report should contain all informations
         assert report.modifiedBy is 'Damien'
-        assert report.modifiedOn.isBetween '2017-08-02 16:00:00', '2017-08-02 20:00:00'
+        assert report.modifiedOn.isBetween '2017-08-03 08:00:00', '2017-08-03 20:00:00'
         assert report.worksheets.length is 3
         assert report.worksheets[0].extracted is 5
         assert report.worksheets[0].name is 'Feuil1'
         assert report.worksheets[0].details is null
-        assert report.worksheets[1].extracted is 0
+        assert report.worksheets[1].extracted is 5
         assert report.worksheets[1].name is 'Feuil2'
-        assert report.worksheets[1].details is 'Empty worksheet'
+        assert report.worksheets[1].details is null
         assert report.worksheets[2].extracted is 0
         assert report.worksheets[2].name is 'Feuil3'
         assert report.worksheets[2].details is 'Empty worksheet'
@@ -186,7 +210,7 @@ describe 'Import service tests', ->
         assert report.worksheets[2].details is 'Empty worksheet'
         done()
 
-  describe 'given v2 dump files', ->
+  describe 'given v2 dump files, fromFile()', ->
 
     it 'should fail on empty json v2 file', (done) ->
       tested.fromFile resolve(fixtures, 'v2-empty.json'), (err) ->
@@ -220,7 +244,7 @@ describe 'Import service tests', ->
           assert.deepStrictEqual _.unset(models[i].toJSON(), 'registrations[0].created'), _.unset expect.toJSON(), 'registrations[0].created'
         done()
 
-  describe 'given v3 dump files', ->
+  describe 'given v3 dump files, fromFile()', ->
 
     expected = [
       new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
@@ -282,7 +306,130 @@ describe 'Import service tests', ->
           assert.deepStrictEqual _.unset(model.toJSON(), 'registrations[0].created'), _.unset expected[i].toJSON(), 'registrations[0].created'
         done()
 
-  describe 'merge test', ->
+  describe '_checkRelationnalConstraints()', ->
+
+    it 'should create unexisting cards for dancers', (done) ->
+      report = errors: []
+      models = [
+        new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
+        new Dancer id: 'ea18ba8a36c9', _v: 0, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+      ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 1
+        assert report.errors[0].includes "created unexisting card (#{toSave[2].id})"
+        assert toSave.length is models.length + 1
+        assert toSave[2] instanceof Card
+        toSave[1].getCard (err, card) ->
+          return done err if err?
+          assert card is toSave[2]
+          done()
+
+    it 'should create unexisting addresses for dancers', (done) ->
+      report = errors: []
+      models = [
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
+          new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
+          new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
+        ]]
+        new Dancer id: 'ea18ba8a36c9', _v: 0, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+      ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 1
+        assert report.errors[0].includes "created unexisting address (#{toSave[2].id})"
+        assert toSave.length is models.length + 1
+        assert toSave[2] instanceof Address
+        toSave[1].getAddress (err, address) ->
+          return done err if err?
+          assert address is toSave[2]
+          done()
+
+    it 'should remove unexisting lesson referenced from dancers', (done) ->
+      report = errors: []
+      models = [
+        new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
+          new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
+          new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
+        ]]
+        new Dancer id: 'ea18ba8a36c9', _v: 0, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', lessonIds: ['8aefcf146b7f', '028b385ca56e', '861f4afe518e'], danceClassIds: ['043737c8e083'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+        new Lesson id: '028b385ca56e', dancerId: 'ea18ba8a36c9'
+      ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 2
+        assert report.errors[0].includes "remove unexisting lesson reference (8aefcf146b7f)"
+        assert report.errors[1].includes "remove unexisting lesson reference (861f4afe518e)"
+        assert toSave.length is models.length
+        assert.deepStrictEqual toSave[2].lessonIds, ['028b385ca56e']
+        assert
+        done()
+
+    it 'should remove unexisting invoice references from cards', (done) ->
+      report = errors: []
+      models = [
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
+          new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
+          new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
+        ], invoiceIds: ['1d28eb5b6fb0', '2d28eb5b6fb0']]
+        new Invoice id: '2d28eb5b6fb0', ref: '2017-08-045', season: '2013/2014', customer: name: 'Emilie Abraham', street: '1 cours Emile Zola', zipcode: '69100', city: 'Villeurbanne'
+      ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 1
+        assert report.errors[0].includes "remove unexisting invoice reference (1d28eb5b6fb0)"
+        assert toSave.length is models.length
+        assert.deepStrictEqual toSave[0].registrations[0].invoiceIds, ['2d28eb5b6fb0']
+        done()
+
+    it 'should remove unexisting invoice references from lessons', (done) ->
+      report = errors: []
+      models = [
+        # proper lesson
+        new Lesson id: '028b385ca56e', invoiceId: '2d28eb5b6fb0', dancerId: 'ea18ba8a36c9'
+        # unexisting invoice
+        new Lesson id: '128b385ca56e', invoiceId: '1d28eb5b6fb0', dancerId: 'ea18ba8a36c9'
+        new Invoice id: '2d28eb5b6fb0', ref: '2017-08-045', season: '2013/2014', customer: name: 'Emilie Abraham', street: '1 cours Emile Zola', zipcode: '69100', city: 'Villeurbanne'
+        new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
+          new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
+          new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
+        ]]
+        new Dancer id: 'ea18ba8a36c9', _v: 0, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+      ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 1
+        assert report.errors[0].includes "remove unexisting invoice reference (1d28eb5b6fb0)"
+        assert toSave.length is models.length
+        assert toSave[1].invoiceId is null
+        done()
+
+    it 'should ignore lessons without any dancers', (done) ->
+      report = errors: []
+      models = [
+        # references added dancer
+        new Lesson id: '028b385ca56e', dancerId: 'ea18ba8a36c9'
+        new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
+        new Card id: '40b728d54a0d', _v: 0, knownBy: ['pagesjaunesFr', 'website'], registrations: [new Registration season: '2013/2014', charged: 300, period: 'year', payments:[
+          new Payment type: 'cash',  value: 150, receipt: '2014-08-04', payer: 'Simonin'
+          new Payment type: 'check', value: 150, receipt: '2014-08-26', payer: 'Simonin', bank: 'La Poste'
+        ]]
+        # no dancer found
+        new Lesson id: '128b385ca56e', dancerId: '0a18ba8a36c9'
+        new Dancer id: 'ea18ba8a36c9', _v: 0, cardId: '40b728d54a0d', addressId: '5f3da4e6a884', danceClassIds: ['043737c8e083'], title: 'Mme', firstname:'Emilie', lastname:'Abraham', birth: '1991-01-01', cellphone: '0634144728', email: 'emilieab@live.fr'
+     ]
+      tested._checkRelationnalConstraints models, report, (err, toSave) ->
+        return done err if err?
+        assert report.errors.length is 1
+        assert report.errors[0].includes "ignore lesson from teacher 0 at"
+        assert report.errors[0].includes "(128b385ca56e) because dancer 0a18ba8a36c9 couldn't be found"
+        assert toSave.length is models.length - 1
+        assert -1 is toSave.indexOf models[3]
+        done()
+
+  describe 'merge()', ->
 
     existing = [
       new Address id: '5f3da4e6a884', _v: 0, street: '11 rue des teinturiers', zipcode: 69100, city: 'Villeurbanne', phone: '0954293032'
