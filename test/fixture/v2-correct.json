@@ -1,0 +1,6 @@
+{
+  "dancers": [
+    {"created":"2014-09-27T06:54:36.065Z","title":"Mme","firstname":"Emilie","lastname":"Abraham","cellphone":"0634144728","email":"emilieab@live.fr","birth":"1990-12-31T23:00:00.000Z","addressId":"5f3da4e6a884","cardId":"40b728d54a0d","danceClassIds":["043737c8e083"],"_v":0,"_id":"ea18ba8a36c9"},
+    {"created":"2014-09-27T06:54:37.146Z","title":"M.","firstname":"Raphaël","lastname":"Azoulay","cellphone":"0631063774","email":"rafystilmot@hotmail.fr","birth":"1988-12-31T23:00:00.000Z","addressId":"5f3da4e6a884","cardId":"40b728d54a0d","danceClassIds":["00acbfb5e7d6","043737c8e083"],"_v":1,"_id":"fcf3d43e1f6f"}
+  ]
+}
