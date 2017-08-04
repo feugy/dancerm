@@ -219,7 +219,8 @@ describe 'Import service', ->
 
     it 'should fail on misformated json v2 file', (done) ->
       tested.fromFile resolve(fixtures, 'v2-misformated.json'), (err) ->
-        assert err?.message?.includes 'Unexpected end of JSON input'
+        assert err?.message?.includes 'Unexpected'
+        assert err instanceof SyntaxError
         done()
 
     it 'should import dancers', (done) ->
@@ -294,9 +295,8 @@ describe 'Import service', ->
       tested.fromFile resolve(fixtures, 'v3-misformated.json'), (err, models, report) ->
         return done err if err?
         # then unknown model were detected
-        assert.deepStrictEqual report.errors, [
-          'line 6: failed to parse model Dancer: SyntaxError: Unexpected token \r in JSON at position 289'
-        ]
+        assert report.errors.length is 1
+        assert report.errors[0].includes 'line 6: failed to parse model Dancer: SyntaxError'
         # then all models are present
         assert.deepStrictEqual report.byClass, Address: 1, Card: 1, Dancer: 1, DanceClass: 2
         assert models.length is expected.length - 1
