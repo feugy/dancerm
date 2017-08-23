@@ -181,7 +181,8 @@ buildStyles ['dancerm', 'print'], localStorage.getItem('theme') or 'none', (err,
     # we are ready: shows it !
     win.object.show()
     # local storage stores strings !
-    win.maximize() if 'true' is localStorage.getItem 'maximized'
+    if 'true' is localStorage.getItem 'maximized'
+      _.defer => win.maximize()
 
     # close splash screen
     win.object.getChildWindows()[0]?.close()

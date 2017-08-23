@@ -1,5 +1,6 @@
 _ = require 'lodash'
 moment = require 'moment'
+windowManager = remote.require 'electron-window-manager'
 i18n = require '../labels/common'
 {version} = require '../../../package.json'
 
@@ -23,7 +24,7 @@ class AppMenuDirective
   # @param scope [Object] directive scope
   # @param element [DOM] directive root element
   constructor: () ->
-    @_win = win
+    @_win = windowManager.get 'main'
     @isMaximized = @_win.isMaximized
 
   # Application closure
@@ -37,7 +38,7 @@ class AppMenuDirective
   # Depending on maximized flag, restore or maximize application
   maximizeOrRestore: =>
     if @isMaximized
-      @_win.unmaximize()
+      @_win.object.unmaximize()
     else
       @_win.maximize()
     @isMaximized = not @isMaximized

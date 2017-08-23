@@ -635,7 +635,6 @@ module.exports = class CardController
           )
           tmp
       )
-      console.log JSON.stringify @required.regs[i], null, 2
       @required.regClasses[i] = if @required.regs[i].find((fields) => fields.length) then 'invalid' else ''
     missing
 

@@ -2,7 +2,7 @@ const download = require('download')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
 const {dirname} = require('path')
-const {frontDependencies} = require('./package.json')
+const {frontDependencies} = require('../package.json')
 
 // download frontend files
 Promise.all(Object.keys(frontDependencies).map(file => {
@@ -13,6 +13,7 @@ Promise.all(Object.keys(frontDependencies).map(file => {
         if (err) return reject(new Error(`failed to create folder for ${file}: ${err}`))
         fs.writeFile(file, data, err => {
           if (err) return reject(new Error(`failed to write ${file}: ${err}`))
+          console.log(`${file} written from ${url}`)
           resolve()
         })
       })

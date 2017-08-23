@@ -39,12 +39,13 @@ class Persistance
     switch workerImpl
       when 'indexeddb'
         @_worker = new window.Worker "#{dirname}/indexeddb_worker.js?path=#{encodeURIComponent getDbPath()}"
-        @_worker.onmessage = ({data}) => @_onResult data
+        @_worker.onmessage = (msg) =>
+          return @_onResult msg.data if msg.data?
+          console.error "unexpected message from persistance worker: #{JSON.stringify(msg)}"
+          @_onResult err: msg
         @_worker.onerror = (err) =>
           err?.preventDefault()
-          console.log ">>>>> received error", err, err.id, err.message, err.stack
           console.error "persistance worker (#{err?.lineno}:#{err?.colno}) #{err?.message}"
-          #throw err
           @_onResult id: err.id, err
 
       when 'nedb', 'mongodb'
