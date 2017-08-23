@@ -3,6 +3,7 @@ _ = require 'lodash'
 i18n = require '../labels/common'
 ConflictsController = require './conflicts'
 {buildStyles, getColorsFromTheme} = require '../util/common'
+{version} = require '../../../package.json'
 
 # Edit application settings
 module.exports = class SettingsController
@@ -70,7 +71,7 @@ module.exports = class SettingsController
     @about = [
       {title: 'DanceRM', image: "#{imgRoot}/dancerm.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Feugy'
-        @filter('i18n') 'lbl.version', args: version: require('../../../package.json').version
+        @filter('i18n') 'lbl.version', args: {version}
       ]}
       {title: 'Electron', image: "#{imgRoot}/electron.png", specs: [
         @filter('i18n') 'lbl.author', args: author: 'Github'

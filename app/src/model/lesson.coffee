@@ -32,8 +32,8 @@ module.exports = class Lesson extends Persisted
   # price and status if already invoiced
   price: 45
 
-  #link to a particular invoice (meanin it can't be invoiced anymore)
-  invoiceId: false
+  # link to a particular invoice (meaning it can't be invoiced anymore)
+  invoiceId: null
 
   # computed and read-only lesson start hour
   @property 'start',

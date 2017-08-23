@@ -57,6 +57,7 @@ module.exports = class SearchList extends EventEmitter
   # @param allowEmpty [Boolean] true to search for all if no condition given.
   performSearch: (allowEmpty = false) =>
     return if @_searchPending
+    # TODO: deydrate models (danceclass)
     console.log "search for", @criteria
     @emit 'search-start'
     # store into local storage for reload

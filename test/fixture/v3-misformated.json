@@ -1,0 +1,10 @@
+------MODELS------Address
+{"street":"11 rue des teinturiers","zipcode":69100,"city":"Villeurbanne","phone":"0954293032","_v":0,"_id":"5f3da4e6a884"}
+------MODELS------Card
+{"knownBy":["pagesjaunesFr","website"],"registrations":[{"season":"2013/2014","certificates":{},"charged":300,"period":"year","details":null,"payments":[{"type":"cash","value":150,"receipt":"2014-08-03T22:00:00.000Z","payer":"Simonin","bank":null,"details":null},{"type":"check","value":150,"receipt":"2014-08-25T22:00:00.000Z","payer":"Simonin","bank":"La Poste","details":null}]}],"_v":0,"_id":"40b728d54a0d"}
+------MODELS------Dancer
+{"created":"2014-09-27T06:54:36.065Z","title":"Mme","firstname":"Emilie","lastname":"Abraham","cellphone":"0634144728","email":"emilieab@live.fr","birth":"1990-12-31T23:00:00.000Z","addressId":"5f3da4e6a884","cardId":"40b728d54a0d","danceClassIds":["043737c8e083"],"_v":0,"_id":"ea18ba8a36
+{"created":"2014-09-27T06:54:37.146Z","title":"M.","firstname":"Raphaël","lastname":"Azoulay","cellphone":"0631063774","email":"rafystilmot@hotmail.fr","birth":"1988-12-31T23:00:00.000Z","addressId":"5f3da4e6a884","cardId":"40b728d54a0d","danceClassIds":["00acbfb5e7d6","043737c8e083"],"_v":1,"_id":"fcf3d43e1f6f"}
+------MODELS------DanceClass
+{"season":"2013/2014","kind":"Rock/Salsa","color":"color2","level":"confirmé","start":"Mon 20:00","end":"Mon 21:30","teacher":"Anthony","hall":"Croix-Luizet","_v":0,"_id":"00acbfb5e7d6"}
+{"season":"2013/2014","kind":"Danse sportive/Rock/Salsa","color":"color3","level":"2 8/12 ans","start":"Wed 17:30","end":"Wed 18:30","teacher":"Anthony","hall":"Gratte-ciel 2","_v":0,"_id":"043737c8e083"}
