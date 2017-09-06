@@ -41,10 +41,6 @@ class ListDirective
   # Displayed values, stored for sorting. Model id is used as key
   _sortedValues: {}
 
-  # **private**
-  # Flag to avoid concurrent renderings
-  _inProgress: false
-
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
@@ -71,8 +67,7 @@ class ListDirective
   # **private**
   # Entierly redraw the model's list
   _onRedrawList: (event) =>
-    return unless @columns? and @list? and not @_inProgress
-    @_inProgress = true
+    return unless @columns? and @list?
     @$el.empty().append @_renderHeader()
     body = $('<tbody class="hideable">').appendTo @$el
     @_waiting = 0
@@ -147,6 +142,8 @@ class ListDirective
   # @param store [Boolean] store value for sort
   # @return the rendered string
   _renderCell: (model, attr, col, value, sorter, store) =>
+    # early quit if invoked on an outdated model
+    return unless @_sortedValues[model.id]?
     html = ['<td data-col="', col, '" ']
     # sortable value might be different from displayed value
     unless @columns[col].selectable?
@@ -256,9 +253,9 @@ class ListDirective
 
   # **private**
   # Enable sort when waiting is finished
+  # Will early quit if rendering is still in progress
   _allValuesRendered: =>
     return unless @_waiting is 0
-    @_inProgress = false
     # sorting
     @_sortList @currentSort, @_isDesc
     @_updateRowOrder()
