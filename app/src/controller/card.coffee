@@ -284,7 +284,7 @@ module.exports = class CardController
   # Add a new registration for the current season to the edited dancer, or edit an existing one
   # Displays the registration dialog
   #
-  # @param dancer [Dancer] doncer for whom a registration is added
+  # @param dancer [Dancer] dancer for whom a registration is added
   addRegistration: (dancer) =>
     # display dialog to choose registration season and dance classes
     @dialog.modal(_.extend {
@@ -524,6 +524,7 @@ module.exports = class CardController
     @_previous[dancer.id] = dancer.toJSON()
     @_previous[address.id] = address.toJSON()
     @_onChange()
+    console.log "reset card controller"
 
   # **private**
   # Effectively loads a card, and get all other dancers of this card.
@@ -644,5 +645,4 @@ module.exports = class CardController
     @required[dancer.id] = [] for dancer in @dancers
     @required[address.id] = [] for address in @addresses
     @required.regClasses = ('' for registration in @card?.registrations or [])
-    for registration, i in @card?.registrations or []
-      @required.regs[i] = ([] for payment in registration.payments)
+    @required.regs = (([] for payment in registration.payments) for registration, i in @card?.registrations or [])
