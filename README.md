@@ -4,6 +4,16 @@
 
 DanceRM is a specialized Customer Relationship software built for Dance schools.
 
+## Crafting new release
+
+DanceRM is now using [electron-builder][builder] to publish new release.
+To publish a new one:
+
+1. change version in `package.json`
+2. push to github all changes, using PRs
+3. Create a github release, tag must be `package.json` version prefixed with `v`. Set title and description, then publish it.
+4. set GH_TOKEN has environment variable
+4. run `npm run release`
 
 ## Bugs
 
@@ -32,3 +42,5 @@ DanceRM is a specialized Customer Relationship software built for Dance schools.
 [ci-link]: https://travis-ci.org/feugy/dancerm
 [coverage-badge]: https://coveralls.io/repos/github/feugy/dancerm/badge.svg?branch=master
 [coverage-link]: https://coveralls.io/github/feugy/dancerm?branch=master
+[builder]: https://github.com/electron-userland/electron-builder
+[github-releases]: https://help.github.com/articles/creating-releases/
