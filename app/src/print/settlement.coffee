@@ -69,7 +69,9 @@ window.customClass = class Print
 
           remote.getCurrentWindow().show()
           window.print()
-          _.defer -> remote.getCurrentWindow().close()
+          _.delay ->
+            remote.getCurrentWindow().close()
+          , 100
 
   # Retrieve dance classes of a given dancer
   #

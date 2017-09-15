@@ -1,6 +1,6 @@
 {
   "name": "dancerm",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "author": "Feugy <damien.feugas@gmail.com>",
   "description": "DanceRM is a very simple Customer Relationship software specialized for dance schools",
   "repository": {
@@ -98,6 +98,7 @@
       "!dancerm*.json",
       "!usefull.md",
       "!log.txt",
+      "!**/coverage/*",
       "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests,powered-test,example,examples,*.d.ts}",
       "!**/node_modules/.bin",
       "!**/*.{o,hprof,orig,pyc,pyo,rbc}",
