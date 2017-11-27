@@ -31,6 +31,7 @@ To publish a new one:
 
 ## TODO Electron
 
+- use afterprint to close print previews
 - tests with spectron
 
 ## TODO MongoDB

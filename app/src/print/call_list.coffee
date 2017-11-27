@@ -49,9 +49,9 @@ window.customClass = class CallListPrint
     _.defer ->
       remote.getCurrentWindow().show()
       window.print()
-      _.delay ->
-        remote.getCurrentWindow().close()
-      , 100
+      ### _.delay ->
+        currentWindow.close()
+      , 100 ###
 
   # Display dance class title
   #

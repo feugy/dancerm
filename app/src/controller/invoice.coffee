@@ -141,9 +141,9 @@ class InvoiceController
       _.defer ->
         remote.getCurrentWindow().show()
         window.print()
-        _.delay ->
+        ### _.delay ->
           remote.getCurrentWindow().close()
-        , 100
+        , 100 ###
       return
 
     # redirect to invoice list if needded
