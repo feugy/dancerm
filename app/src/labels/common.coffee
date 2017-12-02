@@ -240,7 +240,7 @@ Voulez vous interrompre la résolution des conflits ?"""
   placeholder:
     searchCards: 'danceurs par nom/prénom'
     searchLessons: 'cours par année/mois/danceur'
-    searchInvoices: 'factures par année/mois/client'
+    searchInvoices: 'factures par ref/année/mois/client'
     selectSeason: 'saison...'
     selectTeacher: 'professeur...'
 
