@@ -38,6 +38,7 @@ module.exports = class SearchList extends EventEmitter
     super()
     @setMaxListeners 100
     @list = []
+    @_queued = null
 
     # reload from locale storage previous execution's search.
     @criteria = @conf[@_getStorageKey()] if @conf[@_getStorageKey()]?
@@ -56,37 +57,56 @@ module.exports = class SearchList extends EventEmitter
   #
   # @param allowEmpty [Boolean] true to search for all if no condition given.
   performSearch: (allowEmpty = false) =>
-    return if @_searchPending
-    # TODO: deydrate models (danceclass)
-    console.log "search for", @criteria
-    @emit 'search-start'
-    # store into local storage for reload
-    @conf[@_getStorageKey()] = @criteria
-    @conf.save()
-    # depending on criterias
-    conditions = @_parseCriteria()
-    console.log "criteria are", conditions
-    # clear list content, without reaffecting it
-    return @_displayResults [] if _.isEmpty(conditions) and not allowEmpty
-    @_searchPending = true
+    search = =>
+      # TODO: deydrate models (danceclass)
+      @criteria = @_queued.criteria
+      allowEmpty = @_queued.allowEmpty
+      @_queued = null
 
-    # now search for dancers
-    @constructor.ModelClass.findWhere conditions, (err, dancers) =>
-      @_searchPending = false
-      if err?
-        @dialog.messageBox i18n.ttl.search, _.template(i18n.err.search)(err), [label: i18n.btn.nok]
-        @emit 'search-end'
-      else
-        # sort and update list content, without reaffecting the list
-        @_displayResults _.sortBy dancers, @constructor.sort
-      @rootScope.$apply()
+      console.log "search for", @criteria
+      @emit 'search-start'
+      # store into local storage for reload
+      @conf[@_getStorageKey()] = @criteria
+      @conf.save()
+      # depending on criterias
+      conditions = @_parseCriteria()
+      console.log "criteria are", conditions
+      # clear list content, without reaffecting it
+      return @_displayResults [] if _.isEmpty(conditions) and not allowEmpty
+      @_searchPending = true
+
+      # now search for models
+      @constructor.ModelClass.findWhere conditions, (err, models) =>
+        @_searchPending = false
+
+        # immediatly run next search if needed
+        return search() if @_queued?
+        if err?
+          @dialog.messageBox i18n.ttl.search, _.template(i18n.err.search)(err), [label: i18n.btn.nok]
+          @emit 'search-end'
+        else
+          # sort and update list content, without reaffecting the list
+          @_displayResults _.sortBy models, @constructor.sort
+        @rootScope.$digest()
+
+    @_queued =
+      criteria: _.merge {}, @criteria
+      allowEmpty: allowEmpty
+
+    # use evalAsync to ensure search to be called after a possible
+    # digest (which would shadow the execution)
+    @rootScope.$evalAsync =>
+      search() unless @_searchPending
+
+
+
 
   # **private**
   # Replace classe's list with new results
   #
-  # @param results [Array<Dancer>] new list of dancers
+  # @param results [Array<Model>] new list of models
   _displayResults: (results) =>
-    console.log "got #{results.length} models"
     # do not update list variable because of bindings, and update content
     @list.splice.apply @list, [0, @list.length].concat results
+    console.log "got #{@list.length} models"
     @emit 'search-end'
