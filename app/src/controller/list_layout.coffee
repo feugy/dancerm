@@ -80,9 +80,9 @@ module.exports = class ListLayoutController extends ListController
         ).result.then (confirmed) =>
           return unless confirmed
           # if confirmed, effectively display the existing invoice
-          @state.go 'list.invoice', id: invoice.id
+          @state.go 'list.invoice', {invoice}
       # display the created invoice and refresh lesson list
-      @state.go 'list.invoice', id: invoice.id
+      @state.go 'list.invoice', {invoice}
       console.log "refresh lesson list"
       @performSearch()
       @scope.$apply()

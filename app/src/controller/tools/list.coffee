@@ -54,7 +54,9 @@ module.exports = class ListController
     if @service isnt listService
       @service = listService
       # Performs search using the selected service
-      @performSearch = debounce (=> @service.performSearch()), 500
+      @performSearch = debounce (=>
+        @service.performSearch()
+      ), 250
       @conf.searchService = @service.constructor.ModelClass.name.toLowerCase()
       @conf.save()
       @sort = @service.constructor.sort
@@ -101,6 +103,6 @@ module.exports = class ListController
     if model instanceof Dancer
       @state.go 'list.card', id: model.cardId
     else if model instanceof Invoice
-      @state.go 'list.invoice', id: model.id
+      @state.go 'list.invoice', invoice: model
     else if model instanceof Lesson
       @state.go 'lessons', id: model.id

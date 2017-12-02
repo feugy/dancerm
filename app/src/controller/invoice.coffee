@@ -146,15 +146,11 @@ class InvoiceController
         , 100 ###
       return
 
-    # redirect to invoice list if needded
-    return @back() unless stateParams.id?
-
-    @scope.listCtrl.actions = [@_actions.markAsSent]
+    # abort if no invoice parameter found
+    return unless stateParams.invoice?
 
     # load invoice to display values
-    Invoice.find stateParams.id, (err, invoice) =>
-      return console.error err if err?
-      @_onLoad invoice
+    @_onLoad stateParams.invoice
 
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
       return unless @hasChanged
@@ -172,7 +168,7 @@ class InvoiceController
         @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
-  back: => @state.go 'invoices'
+  back: => @state.go 'invoice'
 
   # restore previous values
   cancel: =>
@@ -358,7 +354,8 @@ class InvoiceController
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
-    next = [@_actions.markAsSent]
+    next = if @invoice.items?.length then [@_actions.markAsSent] else []
+    @scope.listCtrl.actions = [@_actions.markAsSent]
     if changed
       # can cancel only if already saved once
       next.unshift @_actions.cancel if @invoice._v > 0

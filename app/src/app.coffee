@@ -40,7 +40,9 @@ app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compi
       main: require('../script/controller/planning').declaration
 
   states.state 'list.invoice',
-    url: '/invoice/:id'
+    url: '/invoice'
+    params:
+      invoice: null
     views:
       main: require('../script/controller/invoice').declaration
 

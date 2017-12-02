@@ -467,7 +467,7 @@ module.exports = class CardController
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
-      @state.go 'list.invoice', id: invoice.id
+      @state.go 'list.invoice', {invoice}
 
   # Creates a new invoice for that registration, or updates the last one which is not sent
   # Save the card before
@@ -483,7 +483,7 @@ module.exports = class CardController
       # search for unsent invoices related to that card, and create a new one if needed
       makeInvoice @dancers, date, registration.season, teacher, (err, invoice) =>
         # there could be an error if invoice already exists, and invoice will be populated.
-        return @state.go 'list.invoice', id: invoice.id if invoice?
+        return @state.go 'list.invoice', {invoice} if invoice?
         # or just an error
         console.error err
 
@@ -553,7 +553,7 @@ module.exports = class CardController
       @required.regs = ([] for registration in @card.registrations)
       @required.regClasses = ('' for registration in @card.registrations)
       @invoices = (for registration in @card.registrations
-        invoices.filter(({season, sent}) -> season is registration.season and sent?).sort (a, b) -> a.sent.diff b.sent)
+        invoices.filter(({season, sent}) -> season is registration.season).sort (a, b) -> a.sent.diff b.sent)
 
       # get dance classes
       async.map @dancers, (dancer, next) ->
