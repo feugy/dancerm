@@ -1,4 +1,5 @@
 _ = require 'lodash'
+{isA} = require '../util/common'
 
 class ListDirective
 
@@ -169,7 +170,7 @@ class ListDirective
         html.push '><i class="glyphicon glyphicon-'
         html.push if value then 'ok' else 'exclamation-sign'
         html.push '"/>'
-      when 'sent', 'invoiced'
+      when 'sent', 'invoiced', 'isCredit'
         if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'
       else
         html.push unless @columns[col].selectable? then ">#{value}" else
@@ -246,10 +247,14 @@ class ListDirective
     @currentSort = column
     @_isDesc = isDesc
     # sort by displayed values, and get ordered indexes.
-    ordered = _.sortBy (values for id, values of @_sortedValues), column
+    ordered = (values for id, values of @_sortedValues).sort (a, b) =>
+      val1 = if @_isDesc then a[column] else b[column]
+      val2 = if @_isDesc then b[column] else a[column]
+      if isA val1, 'string' then val1.localeCompare val2, undefined, numeric: true else val1 - val2
+
     # order models with these indexes
     @list = (@list[_idx] for {_idx} in ordered)
-    @list.reverse() unless @_isDesc
+    # @list.reverse() unless @_isDesc
 
   # **private**
   # Enable sort when waiting is finished
