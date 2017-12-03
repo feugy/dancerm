@@ -42,6 +42,11 @@ module.exports = class ListController
   # @param state [Object] Angular's state provider
   # @param conf [Object] Configuration service
   constructor: (@scope, @cardList, @invoiceList, @lessonList, @state, @conf) ->
+    # select the relevant UI controls when search is triggered on an individual service
+    @cardList.on 'search-start', => @select @cardList, false
+    @invoiceList.on 'search-start', => @select @invoiceList, false
+    @lessonList.on 'search-start', => @select @lessonList, false
+
     @select switch @conf.searchService
       when 'invoice' then @invoiceList
       when 'lesson' then @lessonList
@@ -50,7 +55,8 @@ module.exports = class ListController
   # Pick a given service to search and handle search results
   #
   # @param listService [searchList] list service to select
-  select: (listService) =>
+  # @param refresh [boolean] for result refresh if true
+  select: (listService, refresh = true) =>
     if @service isnt listService
       @service = listService
       # Performs search using the selected service
@@ -81,7 +87,7 @@ module.exports = class ListController
       @placeholder = 'placeholder.searchLessons'
       @columns = @constructor.colSpec.lesson
     # refresh search
-    @performSearch()
+    @performSearch() if refresh
 
   # indicates whether a given service is active or not
   # @param kind [String] service kind (one of 'lesson', 'card', 'invoice')
