@@ -67,11 +67,9 @@ window.customClass = class Print
           window.document?.title = filter('i18n') 'ttl.print', args: names: @names
           rootScope.$apply()
 
-          remote.getCurrentWindow().show()
-          window.print()
-          _.delay ->
-            remote.getCurrentWindow().close()
-          , 100
+          win = remote.getCurrentWindow()
+          win.show()
+          win.webContents.print {}, => win.close()
 
   # Retrieve dance classes of a given dancer
   #

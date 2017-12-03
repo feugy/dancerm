@@ -139,11 +139,9 @@ class InvoiceController
     if isPrintCtx
       @_onLoad new Invoice JSON.parse windowManager.sharedData.fetch 'invoiceRaw'
       _.defer ->
-        remote.getCurrentWindow().show()
-        window.print()
-        ### _.delay ->
-          remote.getCurrentWindow().close()
-        , 100 ###
+        win = remote.getCurrentWindow()
+        win.show()
+        win.webContents.print {}, => win.close()
       return
 
     # abort if no invoice parameter found
@@ -265,23 +263,20 @@ class InvoiceController
   # Save current invoice and display print preview
   print: =>
     return @_preview.focus() if @_preview?
-    # save will be effective only it has changed
-    @save false, (err) =>
-      return console.error err if err?
 
-      windowManager.sharedData.set 'styles', global.styles.print
-      # for an unknown reason, sending @invoice, or even the JSON equivalent
-      # introduct serialization glitches in getter and setter.
-      windowManager.sharedData.set 'invoiceRaw', JSON.stringify @invoice.toJSON()
+    windowManager.sharedData.set 'styles', global.styles.print
+    # for an unknown reason, sending @invoice, or even the JSON equivalent
+    # introduct serialization glitches in getter and setter.
+    windowManager.sharedData.set 'invoiceRaw', JSON.stringify @invoice.toJSON()
 
-      # open hidden print window
-      @_preview = windowManager.createNew 'invoice', window.document.title, null, 'print'
-      @_preview.open '/invoice_print.html', true
-      @_preview.focus()
+    # open hidden print window
+    @_preview = windowManager.createNew 'invoice', window.document.title, null, 'print'
+    @_preview.open '/invoice_print.html', true
+    @_preview.focus()
 
-      @_preview.object.on 'closed', =>
-        # dereference the window object, to destroy it
-        @_preview = null
+    @_preview.object.on 'closed', =>
+      # dereference the window object, to destroy it
+      @_preview = null
 
   # Add a new item to the current invoice
   addItem: =>
@@ -355,7 +350,7 @@ class InvoiceController
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
     next = if @invoice.items?.length then [@_actions.markAsSent] else []
-    @scope.listCtrl.actions = [@_actions.markAsSent]
+    @scope.listCtrl?.actions = [@_actions.markAsSent]
     if changed
       # can cancel only if already saved once
       next.unshift @_actions.cancel if @invoice._v > 0
