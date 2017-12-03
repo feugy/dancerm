@@ -68,6 +68,9 @@ class InvoiceController
   # apply VAT or not
   withVat: false
 
+  # is credit or debit
+  isCredit: false
+
   # shortcut to @conf.teachers[@invoice.selectedTeacher]
   teacher: null
 
@@ -117,6 +120,7 @@ class InvoiceController
     @dueDate = null
     @suggestedRef = null
     @withVat = false
+    @isCredit = false
     @required =
       invoice: []
       items: []
@@ -301,6 +305,12 @@ class InvoiceController
       item.vat = if @withVat then @conf.vat else 0
     @_onChange 'item[0].vat'
 
+  # Change invoice type: credit or debit
+  changeCredit: =>
+    return unless @invoice
+    @invoice.isCredit = @isCredit
+    @_onChange 'isCredit'
+
   # check if field is missing or not
   #
   # @param field [String] field that is tested
@@ -337,6 +347,7 @@ class InvoiceController
     @_previous = @invoice.toJSON()
     # set vat depending on the first item content
     @withVat = @invoice.items.some (item) -> item.vat > 0
+    @isCredit = @invoice.isCredit
     console.log "load invoice #{@invoice.ref} (#{@invoice.id})"
     # reset changes and displays everything
     @_setChanged false

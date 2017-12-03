@@ -25,7 +25,7 @@
       <div class="date">
         <span>{{::'print.invoiceDate'|i18n}} {{ctrl.displayDate(ctrl.invoice.date)}}</span>
       </div>
-      <h1>{{'ttl.invoice'|i18n:{args:ctrl.invoice } }}</h1>
+      <h1>{{ctrl.isCredit ? 'ttl.credit' : 'ttl.invoice' |i18n:{args:ctrl.invoice} }}</h1>
       <div class="items ng-class:ctrl.hideItemDiscount ? 'hide-discount' : '';">
         <div class="header-line">
           <span class="name">{{::'lbl.designation'|i18n}}</span>
@@ -58,18 +58,18 @@
             <span>{{ctrl.invoice.taxTotal|number}}{{::'lbl.currency'|i18n}}</span>
           </div>
           <div class="total">
-            <span>{{::ctrl.withVat ? 'lbl.invoiceTotalWithVat' : 'lbl.invoiceTotal' |i18n}}</span>
+            <span>{{::ctrl.isCredit ? (ctrl.withVat ? 'lbl.creditTotalWithVat' : 'lbl.creditTotal') : (ctrl.withVat ? 'lbl.invoiceTotalWithVat' : 'lbl.invoiceTotal') |i18n}}</span>
             <span>{{ctrl.invoice.total|number}}{{::'lbl.currency'|i18n}}</span>
           </div>
         </span>
       </div>
-      <div class="due-date">
+      <div class="due-date" data-ng-if="!ctrl.isCredit">
         <span>{{::'print.invoiceDueDate'|i18n}} {{ctrl.displayDate(ctrl.invoice.dueDate)}}</span>
       </div>
-      <div class="delay">
+      <div class="delay" data-ng-if="!ctrl.isCredit">
         <span>{{'print.invoiceDelay'|i18n:{args: ctrl.invoice} }}</span>
       </div>
-      <div class="various" data-ng-if="!ctrl.withVat">
+      <div class="various" data-ng-if="!ctrl.withVat && !ctrl.isCredit">
         <span>{{'print.invoiceVarious'|i18n}}</span>
       </div>
     </div>
