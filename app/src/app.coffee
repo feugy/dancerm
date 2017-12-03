@@ -15,7 +15,7 @@ hasDump = false
 console.log "running with angular #{angular.version.full}"
 
 # declare main module that configures routing
-app = angular.module 'app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router', 'nvd3', 'monospaced.elastic']
+app = angular.module 'app', ['ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.router', 'nvd3']
 
 app.config ['$locationProvider', '$urlRouterProvider', '$stateProvider', '$compileProvider', (location, router, states, compile) ->
   # html5 mode cause problems when loading templates

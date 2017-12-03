@@ -17,8 +17,12 @@
           <p data-ng-if="!ctrl.withVat">{{ctrl.conf.noVatMention}}</p>
         </div>
         <div class="customer">
-          <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.name" rows="1"></textarea>
-          <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.street" rows="1"></textarea>
+          <p>
+            <textarea data-auto-height readonly data-ng-model="::ctrl.invoice.customer.name"></textarea>
+          </p>
+          <p>
+            <textarea data-auto-height readonly data-ng-model="::ctrl.invoice.customer.street"></textarea>
+          </p>
           <p>{{::ctrl.invoice.customer.zipcode}} {{::ctrl.invoice.customer.city}}</p>
         </div>
       </header>
@@ -81,7 +85,6 @@
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
     <script type="application/javascript" src="../vendor/angular-locale.fr.js"></script>
-    <script type="application/javascript" src="../vendor/angular-elastic.js"></script>
     <script type="application/javascript" src="../script/controller/invoice.js"></script>
     <script type="application/javascript" src="../script/print.js"></script>
   </body>

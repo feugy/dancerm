@@ -19,6 +19,10 @@ class InvoiceItemDirective
       setTimeout () =>
         angular.element(element[0].querySelector('.duty-free-input')).trigger 'blur'
       , 0
+    # global change handler, to catch all types of change (prefill, manual editing)
+    @scope.$watch 'ctrl.src', =>
+      @onChange?($field:'')
+    , true
 
   # Apply taxes (if defined) to a duty-free value
   #
@@ -59,9 +63,9 @@ module.exports = (app) ->
 <div class="invoice-item focusable" data-ng-class="ctrl.readOnly ? 'read-only' : ''">
   <button class="btn remove" data-ng-if="!ctrl.readOnly" data-ng-click="ctrl.onRemove()"><i class="glyphicon glyphicon-trash"/></button>
   <span class="name">
-    <textarea msd-elastic readonly data-ng-if="ctrl.readOnly" data-ng-model="::ctrl.src.name" rows="1"></textarea>
+    <textarea data-auto-height readonly data-ng-if="ctrl.readOnly" data-ng-model="::ctrl.src.name"></textarea>
     <span data-ng-if="!ctrl.readOnly" class="input-group" data-uib-dropdown keyboard-nav>
-      <textarea msd-elastic name="name" data-ng-model="ctrl.src.name" data-ng-change="ctrl.onChange({$field:'name'})" data-ng-class="ctrl.isRequired('name')" data-set-null rows="1"></textarea>
+      <textarea data-auto-height name="name" data-ng-model="ctrl.src.name" data-ng-class="ctrl.isRequired('name')" data-set-null></textarea>
       <a href="" class="input-group-addon" uib-dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
       <ul class="dropdown-menu">
         <li data-ng-repeat="option in ctrl.options">
@@ -73,15 +77,15 @@ module.exports = (app) ->
   </span>
   <span class="quantity">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.quantity}}</span>
-    <input type="number" name="quantity" data-ng-model="ctrl.src.quantity" data-ng-class="ctrl.isRequired('quantity')" data-ng-change="ctrl.onChange({$field:'quantity'})" data-ng-if="!ctrl.readOnly" data-set-zero/>
+    <input type="number" name="quantity" data-ng-model="ctrl.src.quantity" data-ng-class="ctrl.isRequired('quantity')" data-ng-if="!ctrl.readOnly" data-set-zero/>
   </span>
   <span class="price" data-ng-if="!ctrl.readOnly">
-    <filtered-input class="duty-free-input" type="number" name="price" data-parse="ctrl.applyTax" data-format="ctrl.removeTax" data-ng-model="ctrl.src.price" data-ng-class="ctrl.isRequired('price')" data-ng-change="ctrl.onChange({$field:'price'})" data-set-zero></filtered-input>{{'lbl.currency'|i18n}}
+    <filtered-input class="duty-free-input" type="number" name="price" data-parse="ctrl.applyTax" data-format="ctrl.removeTax" data-ng-model="ctrl.src.price" data-ng-class="ctrl.isRequired('price')" data-set-zero></filtered-input>{{'lbl.currency'|i18n}}
   </span>
   <span class="price" data-ng-if="ctrl.readOnly">{{::ctrl.removeTax(ctrl.src.price)}}{{'lbl.currency'|i18n}}</span>
   <span class="discount">
     <span data-ng-if="ctrl.readOnly">{{::ctrl.src.discount}}</span>
-    <input type="number" name="discount" data-ng-model="ctrl.src.discount" data-ng-class="ctrl.isRequired('discount')" data-ng-change="ctrl.onChange({$field:'discount'})" data-ng-if="!ctrl.readOnly" data-set-zero/>%
+    <input type="number" name="discount" data-ng-model="ctrl.src.discount" data-ng-class="ctrl.isRequired('discount')" data-ng-if="!ctrl.readOnly" data-set-zero/>%
   </span>
   <span class="vat" data-ng-if="ctrl.withVat">{{ctrl.vat|number}}%</span>
   <span class="total">{{ctrl.src.dutyFreeTotal|number}}{{'lbl.currency'|i18n}}</span>

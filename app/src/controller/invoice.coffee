@@ -360,6 +360,7 @@ class InvoiceController
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
+    return if @isReadOnly
     next = if @invoice.items?.length then [@_actions.markAsSent] else []
     @scope.listCtrl?.actions = [@_actions.markAsSent]
     if changed

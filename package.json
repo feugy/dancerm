@@ -70,7 +70,6 @@
     "app/vendor/nv.d3.js": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.js",
     "app/vendor/angular-nvd3.js": "https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js",
     "app/vendor/ui-bootstrap-tpls.js": "http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.min.js",
-    "app/vendor/angular-elastic.js": "https://raw.githubusercontent.com/monospaced/angular-elastic/master/elastic.js",
     "app/style/css/bootstrap.css": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
     "app/style/css/nv.d3.css": "https://raw.githubusercontent.com/novus/nvd3/v1.8.1/build/nv.d3.min.css",
     "app/style/fonts/glyphicons-halflings-regular.eot": "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot",

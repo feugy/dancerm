@@ -39,14 +39,13 @@
         ">
         <input class="uncheck" type="checkbox" data-ng-model="stamp.selected" data-ng-click="ctrl.stopEvent($event)"/>
         <div class="people" data-ng-repeat="dancer in ::stamp.dancers"><span class="title">{{::dancer.title}}</span>&nbsp;<span class="firstname">{{::dancer.firstname}}</span>&nbsp;<span class="lastname">{{::dancer.lastname}}</span></div>
-        <textarea msd-elastic data-ng-model="::stamp.street" class="street" rows="1" readonly></textarea>
+        <textarea data-auto-height data-ng-model="::stamp.street" class="street" readonly></textarea>
         <div><span class="zipcode">{{::stamp.zipcode}}</span>&nbsp;<span class="city">{{::stamp.city}}</span></div>
       </article>
     </div>
     <script type="application/javascript" src="../vendor/angular.js"></script>
     <script type="application/javascript" src="../vendor/angular-sanitize.js"></script>
     <script type="application/javascript" src="../vendor/angular-locale.fr.js"></script>
-    <script type="application/javascript" src="../vendor/angular-elastic.js"></script>
     <script type="application/javascript" src="../script/print/addresses.js"></script>
     <script type="application/javascript" src="../script/print.js"></script>
   </body>

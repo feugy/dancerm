@@ -37,7 +37,7 @@
           </div>
           <div class="form-group">
             <label>{{::'lbl.street'|i18n:{sep:true} }}</label>
-            <textarea msd-elastic data-ng-model="teacher.street" data-set-null data-ng-change="ctrl.onChangeTeachers()" rows="1"></textarea>
+            <textarea data-auto-height data-ng-model="teacher.street" data-set-null data-ng-change="ctrl.onChangeTeachers()"></textarea>
           </div>
           <div class="form-group">
             <label>{{::'lbl.zipcode'|i18n:{sep:true} }}</label><input type="number" name="zipcode" data-ng-model="teacher.zipcode" data-ng-change="ctrl.onChangeTeachers()" data-set-null/>
