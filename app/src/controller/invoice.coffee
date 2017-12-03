@@ -68,6 +68,9 @@ class InvoiceController
   # apply VAT or not
   withVat: false
 
+  # is credit or debit
+  isCredit: false
+
   # shortcut to @conf.teachers[@invoice.selectedTeacher]
   teacher: null
 
@@ -117,6 +120,7 @@ class InvoiceController
     @dueDate = null
     @suggestedRef = null
     @withVat = false
+    @isCredit = false
     @required =
       invoice: []
       items: []
@@ -139,22 +143,16 @@ class InvoiceController
     if isPrintCtx
       @_onLoad new Invoice JSON.parse windowManager.sharedData.fetch 'invoiceRaw'
       _.defer ->
-        remote.getCurrentWindow().show()
-        window.print()
-        ### _.delay ->
-          remote.getCurrentWindow().close()
-        , 100 ###
+        win = remote.getCurrentWindow()
+        win.show()
+        win.webContents.print {}, => win.close()
       return
 
-    # redirect to invoice list if needded
-    return @back() unless stateParams.id?
-
-    @scope.listCtrl.actions = [@_actions.markAsSent]
+    # abort if no invoice parameter found
+    return unless stateParams.invoice?
 
     # load invoice to display values
-    Invoice.find stateParams.id, (err, invoice) =>
-      return console.error err if err?
-      @_onLoad invoice
+    @_onLoad stateParams.invoice
 
     @rootScope.$on '$stateChangeStart', (event, toState, toParams) =>
       return unless @hasChanged
@@ -172,7 +170,7 @@ class InvoiceController
         @state.go toState.name, toParams
 
   # Goes back to list, after a confirmation if dancer has changed
-  back: => @state.go 'invoices'
+  back: => @state.go 'invoice'
 
   # restore previous values
   cancel: =>
@@ -269,23 +267,20 @@ class InvoiceController
   # Save current invoice and display print preview
   print: =>
     return @_preview.focus() if @_preview?
-    # save will be effective only it has changed
-    @save false, (err) =>
-      return console.error err if err?
 
-      windowManager.sharedData.set 'styles', global.styles.print
-      # for an unknown reason, sending @invoice, or even the JSON equivalent
-      # introduct serialization glitches in getter and setter.
-      windowManager.sharedData.set 'invoiceRaw', JSON.stringify @invoice.toJSON()
+    windowManager.sharedData.set 'styles', global.styles.print
+    # for an unknown reason, sending @invoice, or even the JSON equivalent
+    # introduct serialization glitches in getter and setter.
+    windowManager.sharedData.set 'invoiceRaw', JSON.stringify @invoice.toJSON()
 
-      # open hidden print window
-      @_preview = windowManager.createNew 'invoice', window.document.title, null, 'print'
-      @_preview.open '/invoice_print.html', true
-      @_preview.focus()
+    # open hidden print window
+    @_preview = windowManager.createNew 'invoice', window.document.title, null, 'print'
+    @_preview.open '/invoice_print.html', true
+    @_preview.focus()
 
-      @_preview.object.on 'closed', =>
-        # dereference the window object, to destroy it
-        @_preview = null
+    @_preview.object.on 'closed', =>
+      # dereference the window object, to destroy it
+      @_preview = null
 
   # Add a new item to the current invoice
   addItem: =>
@@ -309,6 +304,12 @@ class InvoiceController
     for item, i in @invoice.items
       item.vat = if @withVat then @conf.vat else 0
     @_onChange 'item[0].vat'
+
+  # Change invoice type: credit or debit
+  changeCredit: =>
+    return unless @invoice
+    @invoice.isCredit = @isCredit
+    @_onChange 'isCredit'
 
   # check if field is missing or not
   #
@@ -346,6 +347,7 @@ class InvoiceController
     @_previous = @invoice.toJSON()
     # set vat depending on the first item content
     @withVat = @invoice.items.some (item) -> item.vat > 0
+    @isCredit = @invoice.isCredit
     console.log "load invoice #{@invoice.ref} (#{@invoice.id})"
     # reset changes and displays everything
     @_setChanged false
@@ -358,7 +360,9 @@ class InvoiceController
   #
   # @param changed [Boolean] new hasChanged flag value
   _setChanged: (changed) =>
-    next = [@_actions.markAsSent]
+    return if @isReadOnly
+    next = if @invoice.items?.length then [@_actions.markAsSent] else []
+    @scope.listCtrl?.actions = [@_actions.markAsSent]
     if changed
       # can cancel only if already saved once
       next.unshift @_actions.cancel if @invoice._v > 0

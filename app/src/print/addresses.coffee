@@ -73,7 +73,5 @@ window.customClass = class Print
   print: =>
     # remove configuration and unselected stamps
     angular.element(document).find('body').addClass 'printing'
-    window.print()
-    ### _.delay ->
-      remote.getCurrentWindow().close()
-    , 100 ###
+    win = remote.getCurrentWindow()
+    win.webContents.print {}, => win.close()

@@ -399,6 +399,7 @@ body
     background headerBackground
     border-top 0
     display flex
+    align-items center
     margin-bottom 2em
 
     > h2
@@ -409,10 +410,13 @@ body
       line-height inherit
       padding 8px 1em
 
-    .with-vat
+    .invoice-buttons
       position absolute
       right 1em
-      top 1em
+
+      input[type=checkbox]:not(:checked)
+        line-height inherit
+        background-color rgba(white, 20%)
 
 .lessons
 

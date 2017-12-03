@@ -47,11 +47,10 @@ window.customClass = class CallListPrint
     @dates = (start.add(7, 'day').format @filter('i18n')('formats.callList') for i in [0..11])
 
     _.defer ->
-      remote.getCurrentWindow().show()
-      window.print()
-      ### _.delay ->
-        currentWindow.close()
-      , 100 ###
+      win = remote.getCurrentWindow()
+      win.show()
+      win.webContents.print {}, (result) =>
+        win.close()
 
   # Display dance class title
   #

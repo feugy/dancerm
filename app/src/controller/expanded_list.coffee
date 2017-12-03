@@ -98,6 +98,7 @@ module.exports = class ExpandedListController extends ListController
 
       @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacher', attr: ({selectedTeacher}) => @conf.teachers[selectedTeacher]?.owner},
         {name: 'ref', title: 'lbl.ref'},
+        {name: 'isCredit', title: 'lbl.isCredit'},
         {
           name: 'date'
           title: 'lbl.invoiceDate'

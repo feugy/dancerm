@@ -54,6 +54,10 @@ module.exports = class Invoice extends Persisted
 
   # invoice reference
   ref: null
+
+  # is a credit
+  isCredit: false
+
   # application and due date
   date: null
   dueDate: null
@@ -100,6 +104,7 @@ module.exports = class Invoice extends Persisted
     # set default values
     _.defaults raw,
       ref: null
+      isCredit: false
       date: moment()
       customer:
         name: ''

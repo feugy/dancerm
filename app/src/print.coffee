@@ -32,4 +32,4 @@ angular.element(window).on 'load', ->
   require('../script/util/filters')(app)
   require('../script/directive/invoice_item')(app)
 
-  angular.bootstrap doc.find('body'), ['printPreview', 'ngSanitize', 'monospaced.elastic']
+  angular.bootstrap doc.find('body'), ['printPreview', 'ngSanitize']

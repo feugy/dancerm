@@ -2,10 +2,11 @@
   <article class="focusable invoice-title" data-ng-if="!ctrl.invoice">
     <h2 class="title">{{'msg.selectInvoice'|i18n}}</h2>
   </article>
-  <article class="focusable invoice-title" data-ng-if="ctrl.invoice">
+  <article class="invoice-title" data-ng-if="ctrl.invoice">
     <h2 class="title">{{ctrl.isReadOnly ? 'ttl.invoiceDisplay' : 'ttl.invoiceEdition'|i18n:{args:{ref: ctrl.invoice.ref, owner: ctrl.teacher.owner} } }}</h2>
-    <div class="with-vat" data-ng-if="!ctrl.isReadOnly">
+    <div class="invoice-buttons" data-ng-if="!ctrl.isReadOnly">
       <label><input type="checkbox" data-ng-model="ctrl.withVat" data-ng-change="ctrl.changeVat()"/>{{::'lbl.withVat'|i18n}}</label>
+      <label><input type="checkbox" data-ng-model="ctrl.isCredit" data-ng-change="ctrl.changeCredit()"/>{{::'lbl.isCredit'|i18n}}</label>
     </div>
   </article>
   <div class="preview" data-ng-if="ctrl.invoice">
@@ -22,10 +23,10 @@
       </div>
       <div class="customer" data-ng-if="!ctrl.isReadOnly">
         <p>
-          <textarea msd-elastic data-ng-model="ctrl.invoice.customer.name" data-ng-class="ctrl.isRequired('name')" data-ng-change="ctrl._onChange('customer.name')" data-set-null rows="1"></textarea>
+          <textarea data-auto-height data-ng-model="ctrl.invoice.customer.name" data-ng-class="ctrl.isRequired('name')" data-ng-change="ctrl._onChange('customer.name')" data-set-null ></textarea>
         </p>
         <p>
-          <textarea msd-elastic data-ng-model="ctrl.invoice.customer.street" data-ng-class="ctrl.isRequired('street')" data-ng-change="ctrl._onChange('customer.street')" data-set-null rows="1"></textarea>
+          <textarea data-auto-height data-ng-model="ctrl.invoice.customer.street" data-ng-class="ctrl.isRequired('street')" data-ng-change="ctrl._onChange('customer.street')" data-set-null ></textarea>
         </p>
         <p class="zip-and-city">
           <input type="number" data-ng-model="ctrl.invoice.customer.zipcode" data-ng-class="ctrl.isRequired('zipcode')" data-ng-change="ctrl._onChange('customer.zipcode')" data-set-null/>
@@ -33,8 +34,12 @@
         </p>
       </div>
       <div class="customer" data-ng-if="ctrl.isReadOnly">
-        <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.name" rows="1"></textarea>
-        <textarea msd-elastic readonly data-ng-model="::ctrl.invoice.customer.street" rows="1"></textarea>
+        <p>
+          <textarea data-auto-height readonly data-ng-model="::ctrl.invoice.customer.name"></textarea>
+        </p>
+        <p>
+          <textarea data-auto-height readonly data-ng-model="::ctrl.invoice.customer.street"></textarea>
+        </p>
         <p>{{::ctrl.invoice.customer.zipcode}} {{::ctrl.invoice.customer.city}}</p>
       </div>
     </header>
@@ -57,11 +62,11 @@
       <span>{{::'print.invoiceDate'|i18n}} {{::ctrl.displayDate(ctrl.invoice.date)}}</span>
     </div>
     <h1 data-ng-if="!ctrl.isReadOnly">
-      {{'ttl.invoice'|i18n:{args:{ref:''} } }}
+      {{ctrl.isCredit ? 'ttl.credit' : 'ttl.invoice'|i18n:{args:{ref:''} } }}
       <input type="text" data-ng-model="ctrl.invoice.ref" data-ng-class="ctrl.isRequired('ref')" data-ng-change="ctrl._onChange('ref')"/>
       <span class="suggested" data-ng-show="ctrl.suggestedRef">{{'lbl.suggestedRef'|i18n:{args:{ref:ctrl.suggestedRef} } }}</span>
     </h1>
-    <h1 data-ng-if="ctrl.isReadOnly">{{'ttl.invoice'|i18n:{args:ctrl.invoice} }}</h1>
+    <h1 data-ng-if="ctrl.isReadOnly">{{ctrl.isCredit ? 'ttl.credit' : 'ttl.invoice' |i18n:{args:ctrl.invoice} }}</h1>
     <div class="items ng-class:ctrl.hideItemDiscount ? 'hide-discount' : '';">
       <div class="header-line">
         <span class="name">{{::'lbl.designation'|i18n}}</span>
@@ -101,18 +106,18 @@
           <span>{{ctrl.invoice.taxTotal|number}}{{::'lbl.currency'|i18n}}</span>
         </div>
         <div class="total">
-          <span>{{ctrl.withVat ? 'lbl.invoiceTotalWithVat' : 'lbl.invoiceTotal' |i18n}}</span>
+          <span>{{ctrl.isCredit ? (ctrl.withVat ? 'lbl.creditTotalWithVat' : 'lbl.creditTotal') : (ctrl.withVat ? 'lbl.invoiceTotalWithVat' : 'lbl.invoiceTotal') |i18n}}</span>
           <span>{{ctrl.invoice.total|number}}{{::'lbl.currency'|i18n}}</span>
         </div>
       </span>
     </div>
-    <div class="due-date">
+    <div class="due-date" data-ng-if="!ctrl.isCredit">
       <span>{{::'print.invoiceDueDate'|i18n}} {{ctrl.displayDate(ctrl.dueDate)}}</span>
     </div>
-    <div class="delay">
+    <div class="delay" data-ng-if="!ctrl.isCredit">
       <span>{{'print.invoiceDelay'|i18n:{args: ctrl.invoice} }}</span>
     </div>
-    <div class="various" data-ng-if="!ctrl.withVat">
+    <div class="various" data-ng-if="!ctrl.withVat && !ctrl.isCredit">
       <span>{{'print.invoiceVarious'|i18n}}</span>
     </div>
   </div>

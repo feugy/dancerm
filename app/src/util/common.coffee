@@ -217,10 +217,7 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
       Invoice.getNextRef date.year(), date.month() + 1, teacher, (err, ref) =>
         return done new Error "failed to get next ref for new invoice #{err.message}" if err?
         invoice.ref = ref
-        invoice.setCustomers dancers, =>
-          invoice.save (err) =>
-            return done new Error "failed to save new invoice #{invoice.toJSON()}: #{err.message}" if err?
-            done null, invoice
+        invoice.setCustomers dancers, => done null, invoice
 
   # Round a number to the upper half euro:
   # 5.0 -> 5.0

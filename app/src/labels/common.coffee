@@ -87,6 +87,8 @@ module.exports =
     classTooltip: '<p><%= kind %> (<%= level %>)</p><p><%= start %>~<%= end %></p>'
     currency: ' €'
     customer: 'Client'
+    creditTotal: 'Net à votre crédit'
+    creditTotalWithVat: 'Net à votre crédit TTC'
     danceClasses: 'Cours'
     danceClassesFor: 'Cours pour'
     dancer: 'Danceur(se)'
@@ -110,8 +112,9 @@ module.exports =
     invoiceDate: 'Emise le'
     importedValue: 'Valeur importée'
     invoiceItemLesson: 'Cours particulier'
-    invoiceTotal: 'Total'
-    invoiceTotalWithVat: 'Total TTC'
+    invoiceTotal: 'Net à payer'
+    invoiceTotalWithVat: 'Net à payer TTC'
+    isCredit: 'Avoir'
     json: 'Fichier JSON'
     knownBy: 'Connu par'
     lastname: 'Nom'
@@ -223,7 +226,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
-    removeLastDancer: "Vous allez supprimer définitivement la fiche de {{dancer.firstname}} {{dancer.lastname}}. Voulez vous vraiment continuer ?"
+    removeLastDancer: "Vous allez supprimer définitivement la fiche de {{firstname}} {{lastname}}. Voulez vous vraiment continuer ?"
     removeLesson: "Vous allez supprimer le cours particulier de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
     removePayment: "Vous allez supprimer le paiement par {{type}} de {{value}} € du {{receipt}}. Voulez-vous vraiment continuer ?"
@@ -240,7 +243,7 @@ Voulez vous interrompre la résolution des conflits ?"""
   placeholder:
     searchCards: 'danceurs par nom/prénom'
     searchLessons: 'cours par année/mois/danceur'
-    searchInvoices: 'factures par année/mois/client'
+    searchInvoices: 'factures par ref/année/mois/client'
     selectSeason: 'saison...'
     selectTeacher: 'professeur...'
 
@@ -440,6 +443,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     confirm: 'Confirmation'
     contact: 'Contact'
     currentWeek: '{{from}} au {{to}} {{monthAndYear}}'
+    credit: 'Avoir N°{{ref}}'
     danceClassesDistribution: 'Distibution des cours'
     dancerList: 'Liste des danseurs'
     dancer: 'Danseur'

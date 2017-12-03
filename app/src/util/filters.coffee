@@ -89,3 +89,25 @@ module.exports = (app) =>
         valid = not isNaN number
         controller.$setValidity 'notANumber', valid
         if valid then number else undefined
+
+  # attribute directive to automatically expand textarea height based on their content
+  # freely inspired from:
+  # - https://gist.github.com/thomseddon/4703968#gistcomment-1764568
+  # - https://github.com/hubertgrzeskowiak/angular-textarea-autoheight
+  app.directive 'autoHeight', ->
+    # needs a model
+    require: 'ngModel'
+    # applicable as attribute only
+    restrict: 'A'
+    # link function
+    link: (scope, element, attrs, controller) =>
+      attrs.rows = "1"
+      element.css overflow: 'hidden', resize: 'none'
+      updateHeight = () ->
+        # The elem.scrollHeight doesn't shrink automatically - it only grows.
+        # By setting it to 0px first, we ensure it grows to actual scrollHeight.
+        element.css height: '0px'
+        element.css height: "#{element[0].scrollHeight}px"
+
+      element.bind 'input', updateHeight
+      scope.$watch attrs.ngModel, updateHeight

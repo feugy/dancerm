@@ -1,5 +1,6 @@
 _ = require 'lodash'
 SearchList = require './tools/search_list'
+{invoiceRefFormat} = require '../util/common'
 
 # Service responsible for searching for invoices, and keep the list between states.
 # Triggers search.
@@ -26,15 +27,19 @@ module.exports = class InvoiceList extends SearchList
     conditions = {}
     # depending on criterias
     seed = @criteria.string or ''
-    # find by month
-    match = seed.match /^(\d{2})/
-    conditions.date = new RegExp "^\\d{4}-#{match[1]}" if match?
-    # or find by year
-    match = seed.match /^(\d{4})/
-    conditions.date = new RegExp "^#{match[1]}" if match?
-    # or find by month and year
-    match = seed.match /^(\d{4})[/\-\.](\d{2})/
-    conditions.date = new RegExp "^#{match[1]}-#{match[2]}" if match?
-    # or find by customer
-    conditions['customer.name'] = new RegExp seed, 'i' unless conditions.date? or seed.length < 3
+    # find by reference
+    if invoiceRefFormat.test seed
+      conditions.ref = seed
+    else
+      # find by month
+      match = seed.match /^(\d{2})/
+      conditions.date = new RegExp "^\\d{4}-#{match[1]}" if match?
+      # or find by year
+      match = seed.match /^(\d{4})/
+      conditions.date = new RegExp "^#{match[1]}" if match?
+      # or find by month and year
+      match = seed.match /^(\d{4})[/\-\.](\d{2})/
+      conditions.date = new RegExp "^#{match[1]}-#{match[2]}" if match?
+      # or find by customer
+      conditions['customer.name'] = new RegExp seed, 'i' unless conditions.date? or seed.length < 3
     conditions

@@ -9,8 +9,9 @@
 
   textarea
     resize vertical
-  &.read-only textarea
+  &.read-only textarea, textarea[readonly]
     resize none
+    padding 0
 
   .invoice-title
     border-top 2px solid headingColor
@@ -35,7 +36,7 @@
 
     input[type=checkbox]
       margin-right .5em
-      vertical-align -3px
+      vertical-align -2px
 
   .preview
     background white
@@ -157,7 +158,6 @@
       color black
       border-color transparent
 
-
     textarea[readonly]:hover
     textarea[readonly]:focus
       border-color transparent
@@ -230,8 +230,9 @@
           margin 0
 
         > p:first-child
+        > p:first-child > textarea
           font-weight bold
-          font-size 110
+          font-size fontSize * 1.2
 
     .due-date
     .delay
