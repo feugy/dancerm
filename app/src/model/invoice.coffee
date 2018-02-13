@@ -50,6 +50,11 @@ module.exports = class Invoice extends Persisted
         .map ([y, m, ref]) -> +ref
         .sort (a, b) -> a - b
       last = refs[refs.length-1] or 0
+      # search wholes in sequence
+      for c, i in refs when i > 0
+        if c - refs[i-1] isnt 1
+          last = refs[i-1]
+          break
       done null, "#{year}-#{_.padStart month, 2, '0'}-#{_.padStart last + 1, 3, '0'}"
 
   # invoice reference
@@ -159,7 +164,7 @@ module.exports = class Invoice extends Persisted
   # @option done err [Error] an error object or null if no error occured
   setCustomers: (dancers, done) =>
     return done null unless dancers? && dancers.length
-    @customer.name = ("#{dancer.title} #{dancer.firstname} #{dancer.lastname}" for dancer in dancers).join '\n'
+    @customer.name = ("#{dancer.title or ''} #{dancer.firstname or ''} #{dancer.lastname or ''}".trim() for dancer in dancers).join '\n'
     dancers[0].getAddress (err, address) =>
       return done err if err?
       Object.assign @customer, address.toJSON() if address?
