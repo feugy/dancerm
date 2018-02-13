@@ -553,7 +553,7 @@ module.exports = class CardController
       @required.regs = ([] for registration in @card.registrations)
       @required.regClasses = ('' for registration in @card.registrations)
       @invoices = (for registration in @card.registrations
-        invoices.filter(({season, sent}) -> season is registration.season).sort (a, b) -> a.sent.diff b.sent)
+        invoices.filter(({season, sent}) -> season is registration.season).sort (a, b) -> a.sent?.diff b.sent)
 
       # get dance classes
       async.map @dancers, (dancer, next) ->
