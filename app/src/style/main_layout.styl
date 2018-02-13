@@ -118,6 +118,7 @@ body
       cursor pointer
       text-overflow ellipsis
       overflow hidden
+      white-space nowrap
 
       .glyphicon
         margin-right 0.5em
@@ -158,11 +159,11 @@ body
 
   // tables  MUST have fixed width columns
   .table.dancers
-    for width, i in 30 35 15 20
+    for width, i in 30 34 12 12 12
       td:nth-child({i+1})
         width unit(width, '%')
       th:nth-child({i+1})
-        width unit((width - 2), '%')
+        width unit((width - 1), '%')
 
   .table.invoices
     for width, i in 18 26 44 12
@@ -219,8 +220,8 @@ body
 
     // tables  MUST have fixed width columns
     &.dancers
-      // title, firstname, lastname, certificate, payement, age, birth, known-by, phone, mobile, email, address
-      for col, i in 4em 7% 10% 4em 4em 3em 10% 10% 9em 9em 10%
+      // title, firstname, lastname, certificate, payement, due, age, birth, known-by, phone, mobile, email, address
+      for col, i in 4em 7% 10% 4em 4em 4em 3em 10% 10% 9em 9em 10%
         td:nth-child({i+1})
         th:nth-child({i+1})
           width col

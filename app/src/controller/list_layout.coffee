@@ -47,6 +47,12 @@ module.exports = class ListLayoutController extends ListController
           title: 'lbl.due'
           attr: (dancer, done) ->
             dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
+        },
+        {
+          name: 'period'
+          title: 'lbl.period'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.period or 'year'
         }
 
       @constructor.colSpec.invoice.push {name: 'teacher', title: 'lbl.teacherColumn', attr: (invoice) => @conf.teachers[invoice.selectedTeacher]?.owner},
