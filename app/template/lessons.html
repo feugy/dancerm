@@ -48,7 +48,7 @@
                 data-set-null
                 data-ng-class="ctrl.required.includes('dancer') && 'invalid'"
                 data-ng-model="ctrl.selectedDancer"
-                data-uib-typeahead="choice.firstname+' '+choice.lastname for choice in ctrl.search($viewValue) | limitTo:20"
+                data-uib-typeahead="((choice.firstname || '')+' '+(choice.lastname || '')).trim() for choice in ctrl.search($viewValue) | limitTo:20"
                 data-typeahead-min-length="3"
                 data-typeahead-on-select="ctrl.affectDancer($item)"/>
             </div>

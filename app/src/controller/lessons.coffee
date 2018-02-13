@@ -357,7 +357,7 @@ module.exports = class LessonsController
   # @return [String] formated name
   formatDancer: =>
     return "" unless @selectedDancer?
-    "#{@selectedDancer.firstname} #{@selectedDancer.lastname}"
+    "#{@selectedDancer.firstname or ''} #{@selectedDancer.lastname or ''}".trim()
 
   # Displays date and hour of a given lesson
   #
