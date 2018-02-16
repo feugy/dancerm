@@ -81,20 +81,6 @@ module.exports = class Persisted extends Base
 
   # **static**
   # Find a list of models from the storage provider that match given conditions
-  # Condition is an object, whose fields are path within the dancer, with their expected values.
-  # (interpreted in the same order)
-  # In path, dots are supported, and allow diving in sub object or sub array.
-  # An expected value may be a function, that will take as arguments the given value and it's model,
-  # and must returns a boolean.
-  #
-  # @param conditions [Object] keys define path, values are expected values
-  # @param done [Function] completion callback, invoked with arguments:
-  # @option done err [Error] an error object or null if no error occured
-  # @option done models [Array<Persisted>] an array (that may be empty) of matching models
-  @findWhere: (conditions, done) ->
-
-  # **static**
-  # Find a list of models from the storage provider that match given conditions
   # Condition is an object, whose fields are path within the instance, with their expected values.
   # (interpreted in the same order)
   # In path, dots are supported, and allow diving in sub object or sub array.

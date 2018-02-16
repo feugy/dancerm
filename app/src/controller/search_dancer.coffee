@@ -40,7 +40,7 @@ module.exports = class SearchController
   # @return formated name
   formatDancer: =>
     return "" unless @dancer?
-    "#{@dancer.firstname} #{@dancer.lastname}"
+    "#{@dancer.firstname or ''} #{@dancer.lastname or ''}".trim()
 
   # Search within existing dancers a match on lastname
   #

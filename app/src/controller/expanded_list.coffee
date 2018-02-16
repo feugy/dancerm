@@ -60,6 +60,12 @@ module.exports = class ExpandedListController extends ListController
             dancer.getLastRegistration (err, registration) -> done err, registration?.due() or 0
         },
         {
+          name: 'period'
+          title: 'lbl.period'
+          attr: (dancer, done) ->
+            dancer.getLastRegistration (err, registration) -> done err, registration?.period or 'year'
+        },
+        {
           name: 'age'
           title: 'lbl.age'
           attr: (dancer) ->

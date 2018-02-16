@@ -174,11 +174,13 @@ describe 'Invoice  model tests', ->
       {ref: '2016-07-001', selectedTeacher: teacher1}
       {ref: '2016-07-003', selectedTeacher: teacher1}
       {ref: '2016-07-010', selectedTeacher: teacher1}
-      {ref: '2016-07-1000', selectedTeacher: teacher1}
+      {ref: '2016-04-1000', selectedTeacher: teacher1}
       {ref: 'FR-2016-COL-06-JAZZ-10 custom', selectedTeacher: teacher1}
       {ref: '2016-05-unparseable', selectedTeacher: teacher1}
       {ref: '2016-05-89-90', selectedTeacher: teacher1}
       {ref: '2016-unparseable-90', selectedTeacher: teacher1}
+      {ref: '2016-10-001', selectedTeacher: teacher1}
+      {ref: '2016-10-004', selectedTeacher: teacher1}
     ]
 
     before (done) ->
@@ -260,9 +262,9 @@ describe 'Invoice  model tests', ->
         done()
 
     it 'should get next reference for month with more than 999 refs', (done) ->
-      Invoice.getNextRef 2016, 7, teacher1, (err, ref) ->
+      Invoice.getNextRef 2016, 4, teacher1, (err, ref) ->
         return done err if err?
-        assert ref is '2016-07-1001'
+        assert ref is '2016-04-1001'
         done()
 
     it 'should ignore extra words when getting next reference', (done) ->
@@ -275,6 +277,12 @@ describe 'Invoice  model tests', ->
       Invoice.getNextRef 2016, 5, teacher1, (err, ref) ->
         return done err if err?
         assert ref is '2016-05-090'
+        done()
+
+    it 'should find whole getting next reference', (done) ->
+      Invoice.getNextRef 2016, 10, teacher1, (err, ref) ->
+        return done err if err?
+        assert ref is '2016-10-002'
         done()
 
     it 'should check ref validity when saving new invoice', (done) ->

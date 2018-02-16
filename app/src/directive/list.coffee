@@ -91,7 +91,7 @@ class ListDirective
         html.push "<th #{if name? then "data-attr='#{name}'" else ''}>"
 
       if title
-        html.push @filter('i18n')(title)
+        html.push "<span title=\"#{@filter('i18n')(title)}\">#{@filter('i18n')(title)}</span>"
       else if selectable
         html.push '<input type="checkbox"/>'
       html.push '</th>'
@@ -169,6 +169,11 @@ class ListDirective
       when 'certified'
         html.push '><i class="glyphicon glyphicon-'
         html.push if value then 'ok' else 'exclamation-sign'
+        html.push '"/>'
+      when 'period'
+        html.push '><i class="glyphicon glyphicon-'
+        html.push if value is 'class' then 'stop' else if value is 'quarter' then 'th-large' else 'th'
+        html.push '" title="' + @filter('i18n')("periods.#{value}")
         html.push '"/>'
       when 'sent', 'invoiced', 'isCredit'
         if value then html.push '><i class="glyphicon glyphicon-ok"/>' else '/>'

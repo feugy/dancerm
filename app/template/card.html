@@ -40,8 +40,22 @@
       <span data-ng-class="ctrl.knownByOther ? 'selected' : ''" class="known-by-other"><input type="text" data-ng-model="ctrl.knownByOther" data-ng-change="ctrl.setKnownBy()"/><label>{{::'lbl.other'|i18n}}</label></span>
     </div>
   </article>
+  <!-- invoice without active registration -->
+  <article  data-ng-if="!ctrl.card.registrations.length">
+    <span class="btn-group invoice-without-registration hidable">
+      <span class="btn-group" data-uib-dropdown>
+        <a href="" class="btn glyphed dropdown-toggle" uib-dropdown-toggle><i class="glyphicon glyphicon-euro"/>{{::'btn.invoiceWithoutRegistration'|i18n}}<span class="caret"></span></a>
+        <ul class="dropdown-menu right">
+          <!-- don't order by teachers, or $index will be the wrong one ! -->
+          <li data-ng-repeat="teacher in ctrl.conf.teachers"><a href="" data-ng-click="ctrl.editInvoice($index)">{{::'btn.editInvoice'|i18n:{args:teacher} }}</a></li>
+          <li class="divider"></li>
+          <li data-ng-repeat="invoice in ctrl.allInvoices"><a href="" data-ng-click="ctrl.displayInvoice(invoice)">{{ctrl.conf.teachers[invoice.selectedTeacher].owner}} - {{invoice.ref}} - {{invoice.total}}{{'lbl.currency'|i18n}}</a></li>
+        </ul>
+      </span>
+    </span>
+  </article>
   <!-- registrations -->
-  <uib-tabset class="registration-tabs">
+  <uib-tabset class="registration-tabs" data-ng-if="ctrl.card.registrations.length">
     <uib-tab data-ng-repeat="registration in ctrl.card.registrations"
          data-heading="{{::registration.season}}"
          classes="{{ctrl.required.regClasses[$index]}}">
@@ -51,7 +65,7 @@
         data-invoices="ctrl.invoices[$index]"
         data-on-remove="ctrl.removeRegistration(model)"
         data-on-print-settlement="ctrl.printSettlement(registration, selectedTeacher)"
-        data-on-edit-invoice="ctrl.editInvoice(registration, teacher)"
+        data-on-edit-invoice="ctrl.editInvoice(teacher, registration)"
         data-on-display-invoice="ctrl.displayInvoice(invoice)"
         data-required-fields="ctrl.required.regs[$index]"
         data-on-change="ctrl._onChange('registrations['+$index+'].'+$field)"/>
