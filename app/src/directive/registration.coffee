@@ -43,6 +43,7 @@ class RegistrationDirective
   # @param element [DOM] directive root element
   # @param dialog [Object] Angular's dialog service
   # @param filter [Function] Angular's filters factory
+  # @param conf [Object] configuration service
   # @param rootScope [Object] Angular root scope
   constructor: (@scope, @element, @dialog, @filter, @conf, rootScope) ->
     @_updateRendering()

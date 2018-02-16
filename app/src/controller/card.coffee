@@ -12,13 +12,14 @@ Registration = require '../model/registration'
 Invoice = require '../model/invoice'
 RegisterController = require './register'
 SearchDancerController = require './search_dancer'
+{currentSeason} = require '../util/common'
 
 # Displays and edits a a dancer card, that is a bunch of dancers, their registrations and their classes
 # New registration may be added, and the corresponding directive will be consequently used.
 module.exports = class CardController
 
   # Controller dependencies
-  @$inject: ['$scope', '$rootScope', 'cardList', 'dialog', '$q', '$state', '$filter', '$stateParams']
+  @$inject: ['$scope', '$rootScope', 'cardList', 'conf', 'dialog', '$q', '$state', '$filter', '$stateParams']
 
   # Route declaration
   @declaration:
@@ -46,6 +47,9 @@ module.exports = class CardController
 
   # Angular's promise factory
   q: null
+
+  # Configuration service
+  conf: null
 
   # displayed card
   card: null
@@ -92,17 +96,19 @@ module.exports = class CardController
   # @param scope [Object] Controller's own scope, for change detection
   # @param rootscope [Object] Angular global scope for digest triggering
   # @param cardList [CardListService] service responsible for card list
+  # @param conf [Object] configuration service
   # @param dialog [Object] Angular dialog service
   # @param q [Object] Angular's promise factory
   # @param state [Object] Angular state provider
   # @param filter [Function] Angular's filter factory
   # @param stateParams [Object] invokation route parameters
-  constructor: (@scope, @rootScope, @cardList, @dialog, @q, @state, @filter, stateParams) ->
+  constructor: (@scope, @rootScope, @cardList, @conf, @dialog, @q, @state, @filter, stateParams) ->
     # initialize global change status
     @dancers = []
     @addresses = []
     @required = {}
     @invoices = []
+    @allInvoices = []
     @_modalOpened = false
     @_previous = {}
     @_removable = []
@@ -474,14 +480,14 @@ module.exports = class CardController
   #
   # @param registration [Registration] for which invoice is edited
   # @param teacher [Number] index of the selected teacher
-  editInvoice: (registration, teacher) =>
+  editInvoice: (teacher, registration = null) =>
     # save pending modifications
     @save true, (err) =>
       return console.error err if err?
       # new invoice date
-      date = registration.created or registration.payments[0]?.receipt or moment()
+      date = registration?.created or registration?.payments[0]?.receipt or moment()
       # search for unsent invoices related to that card, and create a new one if needed
-      makeInvoice @dancers, date, registration.season, teacher, (err, invoice) =>
+      makeInvoice @dancers, date, registration?.season or currentSeason(), teacher, (err, invoice) =>
         # there could be an error if invoice already exists, and invoice will be populated.
         return @state.go 'list.invoice', {invoice} if invoice?
         # or just an error
@@ -554,6 +560,7 @@ module.exports = class CardController
       @required.regClasses = ('' for registration in @card.registrations)
       @invoices = (for registration in @card.registrations
         invoices.filter(({season, sent}) -> season is registration.season).sort (a, b) -> a.sent?.diff b.sent)
+      @allInvoices = invoices.sort (a, b) -> a.sent?.diff b.sent
 
       # get dance classes
       async.map @dancers, (dancer, next) ->

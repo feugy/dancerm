@@ -18,6 +18,7 @@ module.exports =
     exportEmails: 'Copier les emails'
     ignore: 'Ne rien modifier'
     invoice: 'Factures'
+    invoiceWithoutRegistration: 'Factures hors inscriptions'
     import: 'Importer des données'
     lessons: 'Cours particuliers'
     markAsSent: 'Archiver'
