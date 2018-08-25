@@ -6,7 +6,7 @@ Dancer = require '../model/dancer'
 class DancerDirective
 
   # Controller dependencies
-  @$inject: ['$q']
+  @$inject: ['$scope', '$q']
 
   # Labels for rendering
   i18n: i18n
@@ -31,8 +31,9 @@ class DancerDirective
 
   # Controller constructor: bind methods and attributes to current scope
   #
+  # @param scope [Object] directive's scope
   # @param q [Object] Angular's promise factory
-  constructor: (@q) ->
+  constructor: (@scope, @q) ->
     @_reqInProgress = false
 
     @birthOpts =
@@ -44,7 +45,8 @@ class DancerDirective
 
     # reset birth date to dancer's one
     @birthOpts.open = false
-    @birthOpts.value = if @src?.birth?.isValid() then @src.birth.valueOf() else null
+    @scope.$watch 'ctrl.src.birth', =>
+      @birthOpts.value = if @src?.birth?.isValid() then @src.birth.valueOf() else null
 
   # Invoked by view to update dancer's title according to selected item
   #

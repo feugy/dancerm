@@ -1,8 +1,9 @@
 _ = require 'lodash'
 {dialog} = require('electron').remote
 i18n = require '../labels/common'
+DanceClass = require '../model/dance_class'
 ConflictsController = require './conflicts'
-{buildStyles, getColorsFromTheme} = require '../util/common'
+{buildStyles, getColorsFromTheme, extractDateDetails} = require '../util/common'
 {version} = require '../../../package.json'
 
 # Edit application settings
@@ -44,6 +45,18 @@ module.exports = class SettingsController
   # list of available theme
   themes: []
 
+  # List of available seasons
+  seasons: []
+
+  # currently edited season
+  currentSeason: null
+
+  # planning for currently edited season
+  planning: null
+
+  # currently edited (or added) dance slass in current planning
+  editedCourse: null
+
   # **private**
   # flag to temporary disable button while theme are building
   _building: false
@@ -64,6 +77,7 @@ module.exports = class SettingsController
     @conf.load () =>
       @vat = @conf.vat * 100
       @scope.$apply()
+    @planningDays = i18n.planning.days[...6]
     @themes = (label: i18n.themes[name], value: name for name of i18n.themes)
     @_building = false
     @_dumpDialogDisplayed = false
@@ -86,6 +100,18 @@ module.exports = class SettingsController
         @filter('i18n') 'lbl.version', args: version: '3.3.7'
       ]}
     ]
+    @seasons = []
+    @editedCourse = null
+    @halls = ['Gratte-ciel 1', 'Gratte-ciel 2', 'Croix-Luizet']
+
+    @rootScope.$on 'model-initialized', initPlannings = =>
+      DanceClass.listSeasons (err, seasons) =>
+        return console.error err if err?
+        @seasons = seasons
+        @onSelectSeason @seasons[0] unless @seasons.length is 0
+        @rootScope.$apply()
+    @rootScope.$on 'model-imported', initPlannings
+    initPlannings()
 
     # cancel navigation if asking for location
     if location.search()?.firstRun
@@ -134,6 +160,147 @@ module.exports = class SettingsController
       # TODO remove plannings, priceList, lessons, registrations, invoices
       @conf.teachers.splice idx, 1
       @onChangeTeachers()
+
+  # When a season is selected, shows its planning
+  #
+  # @param season [String] selected season
+  onSelectSeason: (season) =>
+    @currentSeason = season
+    DanceClass.getPlanning season, (err, planning) =>
+      return console.error err if err?
+      @planning = planning
+      @onSelectCourse null
+
+  # Add a new season to the season list, and loads it
+  onNewSeason: =>
+    # compute next season
+    [year] = @seasons[0].split '/'
+    @seasons.unshift "#{+year+1}/#{+year+2}"
+    @onSelectSeason @seasons[0]
+
+  # When a dance class is selected in the planning, update edition form.
+  # Discard pending changes on the previsouly edited course.
+  #
+  # @param course [Object] selected dance class
+  onSelectCourse: (course) =>
+    # Restore initial values. Will be a noop if saved
+    @onRestoreCourse @editedCourse
+    @editedCourse = course
+    @rootScope.$apply()
+
+  # Detect changes on currently edited course
+  #
+  # @param field [String] modified field
+  # @param value [*] for some field, the new selected value
+  onCourseChanged: (field, value) =>
+    return unless @editedCourse
+    if 'hall' is field
+      @editedCourse.hall = value
+    else if 'kind' is field
+      # search for similar kind
+      similar = @planning.find ({kind, id}) => kind is @editedCourse.kind && id isnt @editedCourse.id
+      @editedCourse.color = (
+        if similar?
+          similar.color
+        else
+          # compute first unused color
+          usedColors = @planning.reduce (colors, {color}) =>
+            num = +color.replace 'color', ''
+            colors.push num unless colors.includes num
+            colors
+          , []
+          last = _.sortBy(usedColors).pop()
+          "color#{if last? then last + 1 else 1}"
+      )
+
+  # When a given course is moved on planning, change its hour and date
+  #
+  # @param course [Object] moved course
+  # @param day [String] new day for this course
+  # @param hour [String] new hour for this course
+  # @param minutes [String] new minutes for this course
+  onDanceClassMoved: (course, day, hour, minutes) =>
+    duration = course.duration
+    # change start date, and updates the end by setting duration
+    course.start = "#{day} #{hour}:#{minutes}#{if minutes is 0 then '0' else ''}"
+    course.duration = duration
+    console.log "Moved course", course, "to #{day} #{hour}:#{minutes}"
+    @onSaveCourse course
+
+  # Create a new (unsaved) course for that season
+  #
+  # @param day [String] selected day, ie. Tue
+  # @param hour [String] selected hour and minutes, ie. 15:30
+  onCreateCourse: (day, hour) =>
+    created = new DanceClass
+      season: @currentSeason
+      start: "#{day} #{hour}"
+      hall: @halls[0]
+    created.duration = 60
+    @onSelectCourse created
+
+  # Save a given course to persist changes
+  #
+  # @param course [Object] saved course
+  onSaveCourse: (course) =>
+    return unless course?
+    course.save () =>
+      return console.error err if err?
+      console.log "Course saved", course
+      # reload the full season for newly created courses
+      @onSelectSeason @currentSeason
+
+  # Restore the given course to its previous values
+  #
+  # @param course [Object] selected dance class
+  onRestoreCourse: (course) =>
+    course.restore() if course?
+
+  # Show modal confirmation, then remove that course.
+  # Refresh planning after deletion, and reset edited course if applicable
+  #
+  # @param course [Object] removed course
+  onRemoveCourse: (course) =>
+    return unless course?
+    doRemove = =>
+      # remove that course
+      course.remove (err) =>
+        return console.error err if err?
+        @editedCourse = null if course is @editedCourse
+        # reset planning
+        @onSelectSeason @currentSeason
+
+    # get the number of registrations
+    course.getDancers (err, dancers = []) =>
+      if 0 is dancers.length
+        # removes immediately if there's no dancers
+        doRemove()
+      else
+        @dialog.messageBox(i18n.ttl.confirm, @filter('i18n')('msg.removeDanceClass', args: {
+            course...
+            dancers: dancers.length
+            start: @formatCourseStart course
+          }) , [
+            {label: i18n.btn.no, cssClass: 'btn-warning'}
+            {label: i18n.btn.yes, result: true}
+          ]
+        ).result.then (confirmed) => doRemove() if confirmed
+
+  # Detect changes on the edited course
+  #
+  # @returns [Boolean] true if there's an edited course, and it has pending changes
+  hasEditedCourseChanged: =>
+    return false unless @editedCourse
+    not _.isEqual @editedCourse.toJSON(), @editedCourse._raw
+
+  # Format course start hour for friendly users :)
+  #
+  # @param course [Object] the formated course
+  # @return [String] the formated start day and time
+  formatCourseStart: (course) =>
+    return unless course
+    {day, hour, minutes} = extractDateDetails course.start
+    "#{i18n.lbl[day]} #{hour}h#{if minutes > 0 then minutes else '00'}"
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into configuration, and button is temporary disabled while compiling

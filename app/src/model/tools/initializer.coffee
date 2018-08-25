@@ -248,7 +248,7 @@ plannings = [{
   ]
 }]
 
-# Merge existing and expected dance classes of a given planning
+# Add  hard coded dance classes unless exist already
 #
 # @param planning [Object] expected planning with season and classes properties
 # @param done [Function] completion callback, invoked with arguments:
@@ -261,8 +261,9 @@ mergePlanning = (planning, done) ->
   DanceClass.getPlanning planning.season, (err, danceClasses) ->
     return done err if err?
     old = _.invokeMap danceClasses, 'toJSON'
+    saved = []
 
-    # merge with existing classes, and add new ones
+    #  add new ones
     for newClass in planning.classes
       conditions = kind: newClass.kind
       if newClass._id?
@@ -272,25 +273,14 @@ mergePlanning = (planning, done) ->
       else
         conditions.start = newClass.start
       existing = _.find danceClasses, conditions
-      if existing?
-        _.extend existing, newClass
-      else
-        danceClasses.push new DanceClass _.extend {season: planning.season}, newClass
+      unless existing?
+        saved.push new DanceClass _.extend {season: planning.season}, newClass
 
-    # removes old ones
-    toRemove = (danceClass for danceClass in danceClasses when not _.find(planning.classes, kind: danceClass.kind, start: danceClass.start)?)
-    danceClasses = _.difference danceClasses, toRemove
-
-    return done null if _.isEqual old, _.invoke danceClasses, 'toJSON'
+    return done null unless saved.length > 0
     console.log "save #{planning.season} new classes"
-    async.each toRemove, (removed, next) ->
-      console.log 'remove class', danceClass.toJSON()
-      removed.remove next
-    , (err) ->
-      console.error 'failed to remove class', err if err?
-      async.each danceClasses, (danceClass, next) ->
-        danceClass.save next
-      , done
+    async.each saved, (danceClass, next) ->
+      danceClass.save next
+    , done
 
 merged = false
 

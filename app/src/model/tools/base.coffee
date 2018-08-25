@@ -6,7 +6,7 @@ module.exports = class Base
 
   # **static** **private**
   # transient fields are not serialized into JSON
-  @_transient = ['$$hashKey']
+  @_transient = ['$$hashKey', '_raw']
 
   # Creates a model from a set of raw JSON arguments
   # Default values will be applied, and only declared arguments are used
@@ -16,10 +16,13 @@ module.exports = class Base
   constructor: (raw = {}) ->
     # only allow awaited attributes
     allowed = (attr for attr, value of @ when not _.isFunction value)
-    raw = _.pick.apply _, [raw].concat allowed
+    @_raw = _.pick.apply _, [raw].concat allowed
+    @restore()
 
+  # Restore current attributes from raw values
+  restore: =>
     # eventually, define properties aiming at raw values
-    @[attr] = raw[attr] for attr of raw when not(attr in @constructor._transient)
+    @[attr] = @_raw[attr] for attr of @_raw when not(attr in @constructor._transient)
 
   # Returns a json representation of the current model.
   # Also operate on sub models

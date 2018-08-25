@@ -37,8 +37,13 @@ checkSingle = (expected, actual) ->
       value > expected.$gt
     else if expected.$gte
       value >= expected.$gte
-  # single check
-  actual is expected
+  # no operator
+  if Array.isArray actual
+    # at least one element is matching
+    actual.includes expected
+  else
+    # single check
+    actual is expected
 
 # Synchronously check if a raw model match given conditions
 # Conditions follows MongoDB's behaviour: it supports nested path, regexp values, $regex, $or, $and, $in, $gte, $gt, $lte, $lt operators

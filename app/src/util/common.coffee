@@ -232,3 +232,17 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
     floor = Math.floor num
     cents = Math.floor(100 * num) % 100
     if cents is 0 then floor else if cents <= 50 then floor + .5 else floor + 1
+
+  # Get day, hour and minutes of a given dance class/lesson date: "Mon 15:45"
+  #
+  # @param date [String] the parsed date
+  # @returns [Object] the parsed day, hour and minutes, or null
+  extractDateDetails: (date) ->
+    return null unless date?
+    day = date[0..2]
+    {
+      day
+      # gets start and end hours
+      hour: parseInt date.replace day, ''
+      minutes: parseInt date[date.indexOf(':')+1..]
+    }

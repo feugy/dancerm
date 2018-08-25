@@ -26,11 +26,12 @@ module.exports = class LessonList extends SearchList
 
   # initialise criteria
   constructor: (args...) ->
-    @criteria =
-      string: null
+    super args...
     @invoicable = []
     @invoiceTeacher = null
-    super args...
+    if _.isEmpty @criteria
+      @criteria =
+        string: null
 
   # **private**
   # Parse criteria to search options

@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "coffee-coverage": "feugy/coffee-coverage#8f333d",
-    "coffee-script": "1.12.7",
+    "coffeescript": "2.3.1",
     "coveralls": "3.0.2",
     "download": "7.1.0",
     "electron": "2.0.8",

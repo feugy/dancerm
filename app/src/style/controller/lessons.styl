@@ -1,3 +1,5 @@
+@require './card'
+
 /******************************************************************************
  * lessons management
  */
@@ -16,21 +18,7 @@
       padding 30px 15px 15px
 
   article
-    border-top 2px solid headingColor
-    position relative
-    padding 0 1em 1em
-    min-width 300px
-
-    > h2
-      background mainBackground
-      border-top none
-      display inline
-      left 25px
-      line-height 10px
-      font-size fontSize*1.6
-      padding 0 5px
-      position relative
-      top -10px
+    cardBox()
 
     > .content
       border-radius inputRadius
@@ -125,12 +113,3 @@
 
       .danceClass
         margin-right 1em
-
-      .quarter:hover
-        cursor pointer
-
-      .quarter:hover:not(.selected)
-      .quarter:hover + .quarter:not(.selected)
-      .quarter:hover + .quarter + .quarter:not(.selected)
-      .quarter:hover + .quarter + .quarter + .quarter:not(.selected)
-        background-color emphasisColor

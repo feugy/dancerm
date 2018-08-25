@@ -85,6 +85,7 @@ module.exports =
     choose: '---'
     city: 'Ville'
     classTooltip: '<p><%= kind %> (<%= level %>)</p><p><%= start %>~<%= end %></p>'
+    color: 'Couleur'
     currency: ' €'
     customer: 'Client'
     creditTotal: 'Net à votre crédit'
@@ -107,6 +108,7 @@ module.exports =
     firstname: 'Prénom'
     Fri: 'Vendredi'
     genericDanceClass: 'Abonnement danse'
+    hall: 'Salle'
     horizontalMargin: 'Marge horizontale (mm)'
     hours: 'Horaire'
     invoiceDate: 'Emise le'
@@ -116,11 +118,13 @@ module.exports =
     invoiceTotalWithVat: 'Net à payer TTC'
     isCredit: 'Avoir'
     json: 'Fichier JSON'
+    kind: 'Danse/Style'
     knownBy: 'Connu par'
     lastname: 'Nom'
     lessonDetails: 'Détails'
     lessonInvoiced: 'Facturé'
     lessonKind: 'Danse'
+    level: 'Niveau'
     Mon: 'Lundi'
     noValue: 'pas de valeur'
     noVatSetting: 'Mention si non applicable'
@@ -130,7 +134,7 @@ module.exports =
     payment: 'Réglement'
     paymentKind: 'Mode de réglement'
     payer: 'Par'
-    payerPrefix: 'Prefix de recherche par payeur'
+    payerPrefix: 'Prefixe de recherche par payeur'
     period: 'Périodicité'
     phone: 'Téléphone'
     price: 'Prix'
@@ -222,10 +226,11 @@ Voulez vous interrompre la résolution des conflits ?"""
   <p>{{errors.join('<br/>') || 'aucune'}}</p>
   """
     lessonListLength: ' cour(s) séléctionné(s)'
-    pickHour: 'Veuillez sélectionner un heure'
+    pickHour: 'Cliquez sur le planning pour sélectionner une heure'
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
+    removeDanceClass: "Vous allez définitivement supprimer le cours {{kind}} {{level}} du {{start}}. Il y a {{dancers}} inscrit(s). Voulez vous vraiment continuer ?"
     removeLastDancer: "Vous allez supprimer définitivement la fiche de {{firstname}} {{lastname}}. Voulez vous vraiment continuer ?"
     removeLesson: "Vous allez supprimer le cours particulier de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
@@ -427,6 +432,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
 
   # Tooltips
   tip:
+    newSeason: 'Ajouter la nouvelle saison'
     searchCards: 'Chercher des danceurs'
     searchLessons: 'Chercher des cours particuliers'
     searchInvoices: 'Chercher des factures'
@@ -450,6 +456,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     database: 'Base de données'
     duePayment: 'Impayés'
     dumping: 'Sauvegarde des données'
+    editCourse: 'Cours'
     editLesson: 'Cours particulier'
     editRegistration: 'Modification de l\'inscription'
     export: 'Exportation'
@@ -463,6 +470,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     knownByRepartition: 'Ils ont connus par...'
     missingCertificates: 'Certificats manquants'
     newRegistration: 'Nouvelle inscription'
+    planningSettings: 'Plannings'
     print: 'DanceRM : impression pour {{names}}'
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     removeError: 'Erreur de suppression'
@@ -470,6 +478,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     settlementPrint: "<p>Réglement</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
+    season: 'Saison'
     stats: '{{total}} danseurs'
     teacherSettings: 'Professeurs inscrits'
     updateInstalled: 'Mise à jour disponible'

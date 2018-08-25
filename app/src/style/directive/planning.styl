@@ -25,6 +25,17 @@ for c, i in colors
   display flex
   position relative
 
+  &.clickable-cell
+
+    .quarter:hover
+      cursor pointer
+
+    .quarter:hover//:not(.selected)
+    .quarter:hover + .quarter//:not(.selected)
+    .quarter:hover + .quarter + .quarter//:not(.selected)
+    .quarter:hover + .quarter + .quarter + .quarter//:not(.selected)
+      background-color emphasisColor
+
   .tooltip p
     margin 0
 
@@ -63,6 +74,9 @@ for c, i in colors
     box-sizing border-box
 
     &.selected
+      background-color linkColor
+
+    &.drop-target
       background-color linkColor
 
   // hour limit

@@ -1,6 +1,9 @@
 _ = require 'lodash'
 Persisted = require './tools/persisted'
 persistance = require './tools/persistance'
+{extractDateDetails} = require '../util/common'
+# because of circular dependency
+Dancer = null
 
 # ordered week days
 days =
@@ -13,6 +16,9 @@ days =
   sun: 6
 
 module.exports = class DanceClass extends Persisted
+
+  # extends transient fields
+  @_transient = Persisted._transient.concat ['duration']
 
   # corresponding season
   season: ''
@@ -29,6 +35,17 @@ module.exports = class DanceClass extends Persisted
   # Start/end hour and day: "ddd HH:mm"
   start: "Mon 08:00"
   end: "Mon 09:00"
+
+  # Computed duration. When modified, changes the end date
+  @property 'duration',
+    get: ->
+      startDetails = extractDateDetails @start
+      endDetails = extractDateDetails @end
+      endDetails.hour * 60 + endDetails.minutes - startDetails.hour * 60 - startDetails.minutes
+    set: (duration) ->
+      {day, hour, minutes} = extractDateDetails @start
+      newMinutes = minutes + duration
+      @end = "#{day} #{hour + Math.floor newMinutes / 60}:#{newMinutes % 60}#{if newMinutes % 60 is 0 then '0' else ''}"
 
   # Dance teacher and dancing hall
   teacher: null
@@ -50,6 +67,7 @@ module.exports = class DanceClass extends Persisted
       hall: null
     # fill attributes
     super(raw)
+    Dancer = require './dancer' unless Dancer?
 
   # List existing seasons, and returns them ordered (alphabetically)
   #
@@ -96,3 +114,11 @@ module.exports = class DanceClass extends Persisted
         if days[aDay] < days[bDay] then -1 else if days[aDay] > days[bDay] then 1 else
           if aHour < bHour then -1 else if aHour > bHour then 1 else
             if aQuarter < bQuarter then -1 else if aQuarter > bQuarter then 1 else 0
+
+  # Consult class' dancers. Do not cache the dancer list, and always performs a query
+  #
+  # @param done [Function] completion callback, invoked with arguments
+  # @option done err [Error] an error object or null if no error occured
+  # @option done dancers [Array<Dancer>] list (that may be empty) of class' dancers
+  getDancers: (done) =>
+    Dancer.findWhere {danceClassIds: @id}, done

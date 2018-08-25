@@ -20,13 +20,14 @@ module.exports = class CardList extends SearchList
 
   # Initialise criteria
   constructor: (args...) ->
-    @_preview = null
-    @criteria =
-      string: null
-      teachers: []
-      seasons: []
-      danceClasses: []
     super args...
+    @_preview = null
+    if _.isEmpty @criteria
+      @criteria =
+        string: null
+        teachers: []
+        seasons: []
+        danceClasses: []
 
   # @return true if the current list concerned a dance class
   canPrintCallList: =>

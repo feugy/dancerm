@@ -41,10 +41,8 @@ class LessonListDirective
     @groups = []
 
     # free listeners
-    @scope.$on '$destroy', =>
-      unwatch?()
-
-    @_onMakeGroups()
+    @scope.$on '$destroy', => unwatch?()
+    setTimeout @_onMakeGroups, 0
 
   # When a given model is selected or unselected, update the global selected array
   #
@@ -89,7 +87,7 @@ class LessonListDirective
       return console.error err if err?
       @groups.sort ({dancer: dancerA}, {dancer: dancerB}) ->
         if dancerA.lastname.toLowerCase() < dancerB.lastname.toLowerCase() then -1 else 1
-      @scope.$apply()
+      @scope.$apply() unless @scope.$$phase
 
 # The tags directive displays tags relative at search criteria
 module.exports = (app) ->
