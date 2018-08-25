@@ -29,6 +29,9 @@ To publish a new one:
 - Invoice & Lesson conflicts
 - unit test for indexedDB operator support ($and, $lt, $gt, $lte, $gte)
 - Mandatory fields that cannot be bypassed
+- Replace npm with yarn
+- Replace mocha with jest
+- Checkout lastest coffee-coverage
 
 ## TODO Electron
 
@@ -38,6 +41,7 @@ To publish a new one:
 ## TODO MongoDB
 
 - import > callstack when merging with distant mongo (works fine locally)
+- update to [driver version 3](https://github.com/mongodb/node-mongodb-native/blob/HEAD/CHANGES_3.0.0.md)
 
 [logo]: https://github.com/feugy/dancerm/raw/master/app/style/img/dancerm.png
 [ci-badge]: https://travis-ci.org/feugy/dancerm.svg?branch=master

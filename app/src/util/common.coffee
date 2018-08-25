@@ -1,7 +1,7 @@
 _ = require 'lodash'
 moment = require 'moment'
 {join, resolve} = require 'path'
-{appendFile, appendFileSync, readFile, existsSync} = require 'fs-extra'
+{appendFile, appendFileSync, readFile, pathExistsSync} = require 'fs-extra'
 {inspect} = require 'util'
 {map} = require 'async'
 {render} = require 'stylus'
@@ -162,9 +162,9 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
       readFile join(folder, "#{sheet}.styl"), 'utf8', (err, content) ->
         return next err if err?
         # adds themes variable if it exists
-        content = "@require 'themes/#{theme}_variable'\n#{content}" if existsSync join folder, 'themes', "#{theme}_variable.styl"
+        content = "@require 'themes/#{theme}_variable'\n#{content}" if pathExistsSync join folder, 'themes', "#{theme}_variable.styl"
         # adds theme override if it exists
-        content += "\n@require 'themes/#{theme}'" if existsSync join folder, 'themes', "#{theme}.styl"
+        content += "\n@require 'themes/#{theme}'" if pathExistsSync join folder, 'themes', "#{theme}.styl"
         # now add variables and compiles
         render "@require 'variable'\n#{content}",
           filename: "#{sheet}.css"
