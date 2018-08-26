@@ -92,7 +92,7 @@ module.exports = class Import
   fromFile: (filePath, done) =>
     return done new Error "no file selected" unless filePath?
     filePath = path.resolve path.normalize filePath
-    extension = mime.lookup filePath
+    extension = mime.getType path.extname filePath
 
     # check file size
     console.log "tries to open #{filePath}..."

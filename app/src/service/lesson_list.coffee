@@ -26,11 +26,12 @@ module.exports = class LessonList extends SearchList
 
   # initialise criteria
   constructor: (args...) ->
-    @criteria =
-      string: null
+    super args...
     @invoicable = []
     @invoiceTeacher = null
-    super args...
+    if _.isEmpty @criteria
+      @criteria =
+        string: null
 
   # **private**
   # Parse criteria to search options
@@ -81,16 +82,19 @@ module.exports = class LessonList extends SearchList
         # add one invoice item per different prices
         for price of prices
           invoice.items.push new InvoiceItem price: price, quantity: prices[price], name: i18n.lbl.invoiceItemLesson
-        # mark lessons as invoiced
-        each @invoicable, (lesson, next) ->
-          lesson.invoiceId = invoice.id
-          lesson.save next
-        , (err) =>
-          return done new Error "failed to update lessons: #{err}" if err
-          console.log "lessons #{@invoicable.map (l) -> l.id} associated to invoice #{invoice.id}"
-          @invoicable = []
-          @invoiceTeacher = null
-          invoice.save done
+        # save invoice first
+        invoice.save (err) =>
+          return done new Error "failed to save invoice: #{err}" if err
+          # mark lessons as invoiced
+          each @invoicable, (lesson, next) ->
+            lesson.invoiceId = invoice.id
+            lesson.save next
+          , (err) =>
+            return done new Error "failed to update lessons: #{err}" if err
+            console.log "lessons #{@invoicable.map (l) -> l.id} associated to invoice #{invoice.id}"
+            @invoicable = []
+            @invoiceTeacher = null
+            done null, invoice
 
   # Invoked when some lessons are selected, to evaluate if invoice could be generated
   #

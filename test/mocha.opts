@@ -1,5 +1,5 @@
---compilers coffee:coffee-script/register
+--require coffeescript/register
 --require coffee-coverage/register-istanbul
---require espower-coffee/guess
+--require scripts/coffee-espower
 --check-leaks
 --reporter spec

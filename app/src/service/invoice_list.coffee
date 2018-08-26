@@ -16,9 +16,10 @@ module.exports = class InvoiceList extends SearchList
 
   # Initialise criteria
   constructor: (args...) ->
-    @criteria =
-      string: null
     super args...
+    if _.isEmpty @criteria
+      @criteria =
+        string: null
 
   # **private**
   # Parse criteria to search options

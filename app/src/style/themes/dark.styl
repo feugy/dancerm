@@ -59,6 +59,40 @@ for color, i in colors
   > section:not(:first-child) > :not(aside)
     border-color darken(textColor, 50%)
 
+  .plannings
+
+    article
+      border 2px solid headerBackground
+      border-radius 0
+      margin 0 15px
+      padding 0
+
+      .container-fluid
+        margin 0.7em 1em
+
+      > h2
+        display block
+        background headerBackground
+        position static
+        padding 8px 1em
+        line-height 1.1em
+        font-size 150%
+        border none
+        color headingColor
+
+      > .btn-group
+        top 2px
+        right 2px
+
+      &:not(:hover) > .btn-group .btn
+      &:hover > .btn-group .btn
+        background primaryBtnBackground
+        box-shadow none
+        color btnColor
+
+        &:hover
+          background primaryBtnBackgroundHover
+
 .layout .actions
 
   .context li
@@ -136,7 +170,7 @@ for color, i in colors
     > .btn-group
       order 50
       position relative
-      right auto
+      right 5px
       top auto
       margin-bottom 10px
 
@@ -157,7 +191,7 @@ for color, i in colors
       display block
       position static
       padding 8px 1em
-      line-height 1.1em
+      line-height 1.2em
       font-size 150%
       border none
       color headingColor
@@ -176,6 +210,7 @@ for color, i in colors
       > .btn-group
       > .btn
         top -9px
+        right -2px
 
     .dancer
       margin-bottom 10px
@@ -248,7 +283,8 @@ for color, i in colors
 
   .tab-pane
     > article.registration > .btn-group
-      top -46px
+      top -50px
+      right 6px
 
     > article .card-dancer-classes
       margin 0
@@ -387,6 +423,13 @@ body
     border-color emphasisColor
     > p
       color emphasisColor
+
+  .btn-group
+    .btn + .btn
+    .btn + .btn-group
+    .btn-group + .btn,
+    .btn-group + .btn-group
+      margin-left 0
 
 .invoice
   > .preview

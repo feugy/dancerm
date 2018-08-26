@@ -46,7 +46,6 @@ class RegistrationDirective
   # @param conf [Object] configuration service
   # @param rootScope [Object] Angular root scope
   constructor: (@scope, @element, @dialog, @filter, @conf, rootScope) ->
-    @_updateRendering()
     unwatches = []
     unwatches.push @scope.$on 'dance-classes-changed', (event, dancer) =>
       @_updateRendering() if dancer in @dancers
@@ -57,6 +56,7 @@ class RegistrationDirective
       @registration.payments.splice.apply @registration.payments, [0, @registration.payments.length].concat @_previousPayments
 
     @scope.$on '$destroy', -> unwatch?() for unwatch in unwatches
+    setTimeout @_updateRendering, 0
 
   # Creates a new payment and adds it to the current registration
   addPayment: =>
@@ -82,6 +82,7 @@ class RegistrationDirective
   #
   # @param period [String] selected period
   setPeriod: (period) =>
+    return unless @registration?
     @registration.period = period
     @periodLabel = @i18n.periods[@registration.period]
     @_onChange 'period'
@@ -90,7 +91,7 @@ class RegistrationDirective
   #
   # @return a class reflecting balance state
   getBalanceState: =>
-    due = @registration.due()
+    due = @registration?.due()
     if  due > 0
       'balance-low'
     else if due is 0
@@ -135,12 +136,16 @@ class RegistrationDirective
         if classes.length > 0
           @classesPerDancer[dancer.id] = classes
 
-      # initialize required payment fields
-      @requiredFields = ([] for payment in @registration?.payments)
-      # make a copy for cancellation
-      @_previousPayments = (new Payment payment.toJSON() for payment in @registration?.payments)
+      if @registration?.payments?
+        # initialize required payment fields
+        @requiredFields = ([] for payment in @registration.payments)
+        # make a copy for cancellation
+        @_previousPayments = (new Payment payment.toJSON() for payment in @registration.payments)
+      else
+        @requiredFields = []
+        @_previousPayments = []
       # update rendering
-      @scope.$apply()
+      @scope.$apply() unless @scope.$$phase
 
   # **private**
   # Relay change events

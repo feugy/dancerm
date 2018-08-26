@@ -2,6 +2,37 @@
  * Card
  */
 
+cardBox()
+  border-top 2px solid headingColor
+  position relative
+  padding 0 1em 1em
+  min-width 300px
+
+  > h2
+    background mainBackground
+    border-top none
+    display inline
+    left 25px
+    line-height 10px
+    font-size fontSize*1.6
+    padding 0 5px
+    position relative
+    top -10px
+
+cardButtons(selector)
+  {selector} > .btn
+  {selector} > .btn-group
+    transition background focusDuration
+    position absolute
+    right 15px
+    top -18px
+
+  {selector} > .btn
+    box-shadow 0 0 0 3px mainBackground
+
+  {selector} > .btn-group
+    background mainBackground
+
 .card
   overflow-x hidden
   overflow-y auto
@@ -62,18 +93,7 @@
     padding 0 1em 1em
 
     for selector in "&" ".address" ".dancer"
-      {selector} > .btn
-      {selector} > .btn-group
-        transition background focusDuration
-        position absolute
-        right 15px
-        top -18px
-
-      {selector} > .btn
-        box-shadow 0 0 0 3px mainBackground
-
-      {selector} > .btn-group
-        background mainBackground
+      cardButtons(selector)
 
     for selector in ".address" ".dancer"
       {selector}:not(:hover) > .btn

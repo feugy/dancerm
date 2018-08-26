@@ -8,7 +8,7 @@ Dancer = null
 module.exports = class Lesson extends Persisted
 
   # extends transient fields
-  @_transient = Persisted._transient.concat ['_dancer']
+  @_transient = Persisted._transient.concat ['_dancer', 'start', 'end']
 
   # supported nested models
   @_nestedModels: [

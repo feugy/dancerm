@@ -140,13 +140,13 @@ module.exports = class Persisted extends Base
   # Build a persisted model
   # Initialize version to 0 and id to null
   constructor: (raw) ->
-    initCache @constructor.name
     raw._v = -1 unless raw._v?
     if raw._id?
       raw.id = raw._id
       delete raw._id
     raw.id = null unless raw.id?
     super raw
+    initCache @constructor.name
 
   # Save the current model into the persistance store.
   #
@@ -164,6 +164,7 @@ module.exports = class Persisted extends Base
       @id = raw.id
       @_v = raw._v
       cache[@constructor.name][raw.id] = @
+      @_raw = raw
       done null, @
 
   # Remove the current model from the persistance store.

@@ -5,7 +5,7 @@ i18n = require '../labels/common'
 class PaymentDirective
 
   # Controller dependencies
-  @$inject: []
+  @$inject: ['$scope']
 
   # Labels, for rendering
   i18n: i18n
@@ -24,17 +24,18 @@ class PaymentDirective
   # Controller constructor: bind methods and attributes to current scope
   #
   # @param scope [Object] directive scope
-  # @param element [DOM] directive root element
-  constructor: () ->
+  constructor: (@scope) ->
     @receiptOpts =
       showWeeks: false
       startingDay: 1
       showButtonBar: false
-    @setType @src?.type
 
     # reset receipt date to payement's one
     @receiptOpts.open = false
-    @receiptOpts.value = if @src?.receipt?.isValid() then @src.receipt.valueOf() else null
+    @scope.$watch 'ctrl.src.receipt', =>
+      @receiptOpts.value = if @src?.receipt?.isValid() then @src.receipt.valueOf() else null
+    @scope.$watch 'ctrl.src.type', =>
+      @setType @src?.type
 
   # check if field is missing or not
   #
@@ -50,13 +51,13 @@ class PaymentDirective
   setType: (type) =>
     @src?.type = type
     @typeLabel = @i18n.paymentTypes[@src?.type] or ''
-    @onChange $field: 'type'
+    @onChange? $field: 'type'
 
   # Invoked when date change in the date picker
   # Updates the dancer's birth date
   setReceipt: =>
     @src?.receipt = moment @receiptOpts.value
-    @onChange $field: 'receipt'
+    @onChange? $field: 'receipt'
 
   # Opens the birth selection popup
   #

@@ -31,11 +31,11 @@ module.exports = class SearchList extends EventEmitter
   # @param dialog [Object] Dialog service to display search errors
   # @param conf [Object] Configuration service
   constructor: (@rootScope, @dialog, @conf) ->
+    super()
     throw new Error "#{@constructor.name} must provide static property ModelClass" unless @constructor.ModelClass?
     throw new Error "#{@constructor.name} must provide static property sort" unless @constructor.sort?
     throw new Error "#{@constructor.name} must provide function _parseCriteria" unless @_parseCriteria?
 
-    super()
     @setMaxListeners 100
     @list = []
     @_queued = null

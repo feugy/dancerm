@@ -1,9 +1,52 @@
+@require './card'
+
 /******************************************************************************
  * Settings
  */
 
+
 .settings.main
   overflow-y auto
+
+  .plannings
+
+    .planning
+      height 700px
+
+    nav
+      text-align center
+
+    .flex-row
+      display flex
+      align-items flex-start
+
+    article
+      cardBox()
+      cardButtons('&')
+      min-width 400px
+      margin-left 10px
+
+      .row
+        margin-bottom 0.5em
+
+      .control-label
+        text-align right
+        cursor default
+        margin-top 5px
+
+      .btn-group
+      .control-label + div
+        padding-left 0
+
+      .value
+        margin-top 5px
+        padding-left 8px
+
+      input[type=number]
+        flex-grow 0
+        margin-right .5em
+        text-align right
+        width 4em
 
   .teacher-grid
     justify-content space-around

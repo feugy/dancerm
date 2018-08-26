@@ -77,6 +77,77 @@
       </form>
     </section>
     <section>
+      <aside><h2>{{::'ttl.planningSettings'|i18n}}</h2></aside>
+      <div class="plannings">
+        <nav>
+          {{'ttl.season'|i18n:{sep:true} }}
+          <div class="btn-group" data-uib-dropdown keyboard-nav>
+            <button class="btn dropdown-toggle" uib-dropdown-toggle>{{ctrl.currentSeason}}<span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li data-ng-repeat="season in ctrl.seasons"><a href="" data-ng-click="ctrl.onSelectSeason(season)">{{::season}}</a></li>
+            </ul>
+            <a href="" class="btn new-season" data-ng-click="ctrl.onNewSeason()" title="{{::'tip.newSeason'|i18n}}"><i class="glyphicon glyphicon-plus"/></a>
+          </div>
+        </nav>
+        <div class="flex-row">
+          <div
+            data-planning
+            data-clickable-cells="true"
+            data-src="ctrl.planning"
+            data-shrink-hours="false"
+            data-days="ctrl.planningDays"
+            data-on-click="ctrl.onSelectCourse(danceClasses[0])"
+            data-on-cell-click="ctrl.onCreateCourse(day, hour)"
+            data-on-move="ctrl.onDanceClassMoved(danceClass, day, hour, minutes)" />
+          <article class="focusable">
+            <div class="btn-group">
+              <a href="" class="btn save glyphed" data-ng-class="!ctrl.hasEditedCourseChanged() && 'disabled'" data-ng-click="ctrl.onSaveCourse(ctrl.editedCourse)"><i class="glyphicon glyphicon-floppy-disk"/>{{::'btn.save'|i18n}}</a>
+              <a href="" class="btn restore glyphed" data-ng-class="!ctrl.hasEditedCourseChanged() && 'disabled'" data-ng-click="ctrl.onRestoreCourse(ctrl.editedCourse)"><i class="glyphicon glyphicon-ban-circle"/>{{::'btn.cancel'|i18n}}</a>
+              <a href="" class="btn remove" data-ng-class="ctrl.editedCourse === null && 'disabled'" data-ng-click="ctrl.onRemoveCourse(ctrl.editedCourse)"><i class="glyphicon glyphicon-trash"/></a>
+            </div>
+            <h2>{{::'ttl.editCourse'|i18n}}</h2>
+            <div class="container-fluid" data-ng-if="ctrl.editedCourse == null">{{'msg.pickHour'|i18n}}</div>
+            <div class="container-fluid" data-ng-if="ctrl.editedCourse != null">
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.hours'|i18n:{sep:true} }}</label><span class="value col-md-8">{{ctrl.formatCourseStart(ctrl.editedCourse)}}</span>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.hall'|i18n:{sep:true} }}</label>
+                <div class="btn-group col-md-8" data-uib-dropdown keyboard-nav>
+                  <button class="btn dropdown-toggle" uib-dropdown-toggle>{{ctrl.editedCourse.hall||ctrl.halls[0]}}<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li data-ng-repeat="value in ctrl.halls"><a href="" data-ng-click="ctrl.onCourseChanged('hall', value)">{{value}}</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.duration'|i18n:{sep:true} }}</label>
+                <div class="col-md-8">
+                  <input type="number" name="duration" data-ng-model="ctrl.editedCourse.duration" data-ng-change="ctrl.onCourseChanged('duration')"/>{{::'lbl.durationUnit'|i18n}}
+                </div>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.kind'|i18n:{sep:true} }}</label>
+                <input class="col-md-8" type="text" name="kind" data-ng-model="ctrl.editedCourse.kind" data-ng-change="ctrl.onCourseChanged('kind')"/>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.level'|i18n:{sep:true} }}</label>
+                <input class="col-md-8" type="text" name="level" data-ng-model="ctrl.editedCourse.level" data-ng-change="ctrl.onCourseChanged('level')"/>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.teacher'|i18n:{sep:true} }}</label>
+                <input class="col-md-8" type="text" name="teacher" data-ng-model="ctrl.editedCourse.teacher" data-ng-change="ctrl.onCourseChanged('teacher')"/>
+              </div>
+              <div class="row">
+                <label class="control-label col-md-4">{{::'lbl.color'|i18n:{sep:true} }}</label>
+                <input class="col-md-8" type="text" name="color" data-ng-model="ctrl.editedCourse.color" data-ng-change="ctrl.onCourseChanged('color')"/>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section>
       <aside><h2>{{::'ttl.interface'|i18n}}</h2></aside>
       <form class="form-horizontal">
         <div class="form-group">

@@ -1,5 +1,6 @@
 _ = require 'lodash'
 i18n = require '../labels/common'
+{extractDateDetails} = require '../util/common'
 
 # Extract boolean value from attributes
 # @param name [String] parsed attribute name
@@ -61,12 +62,15 @@ class PlanningDirective
     @groups = {}
     @hours = []
     @legend = {}
+    @moved = null
     @days = @scope.days or i18n.planning.weekDays
     @groupBy = attrs.groupBy or 'hall'
     @widthOffset = +attrs.widthOffset or 0
     @shrinkHours = parseBooleanAttr 'shrinkHours', attrs, true
     @hideEmptyDays = parseBooleanAttr 'hideEmptyDays', attrs, false
     @clickableCells = parseBooleanAttr 'clickableCells', attrs, false
+
+    @element.addClass 'clickable-cell' if @clickableCells
 
     # click on quarter: select cell and trigger onCellClick handler
     @element.on 'click', '.quarter', (event) =>
@@ -111,6 +115,53 @@ class PlanningDirective
         # invoke click handler
         @scope.onClick $event: event, danceClasses: _.filter @scope.danceClasses, color:color
 
+    @element.on 'dragstart', '.danceClass', (event) =>
+      return unless @clickableCells?
+      elem = $(event.target).closest '.danceClass'
+      @moved = {
+        elem
+        position: elem.offset()
+        id: elem.data 'id'
+      }
+      event.originalEvent.dataTransfer.setDragImage new Image(), 0, 0
+
+    @element.on 'drag', (event) =>
+      return unless @moved?
+      @moved.elem.offset top: event.originalEvent.clientY + 5, left: event.originalEvent.clientX - @moved.elem.outerWidth() / 2
+
+    @element.on 'dragover', (event) =>
+      # required to complete the operation
+      event.preventDefault()
+
+    @element.on 'dragenter', '.day .quarter', (event) =>
+      return unless @moved?
+      $(event.target).closest('.quarter').addClass 'drop-target'
+
+    @element.on 'dragleave', '.day .quarter', (event) =>
+      return unless @moved?
+      $(event.target).closest('.quarter').removeClass 'drop-target'
+
+    @element.on 'drop', '.day .quarter', (event) =>
+      return unless @moved?
+      event.preventDefault()
+      quarter = $(event.target).closest '.quarter'
+      danceClass =  _.find @scope.danceClasses, id: @moved.id
+      return unless danceClass?
+      @moved.success = @scope.onMove?({
+        $event: event
+        danceClass
+        day: quarter.closest('.day').data 'day'
+        hour: quarter.data 'hour'
+        minutes: 15 * quarter.data 'quarter'
+      }) or false
+
+    @element.on 'dragend', (event) =>
+      @element.find('.drop-target').removeClass 'drop-target'
+      return unless @moved?
+      # restore initial position
+      @moved.elem.offset @moved.position unless @moved.success
+      @moved = null
+
     # free listeners
     @scope.$on '$destroy', =>
       unwatch?() for unwatch in unwatches
@@ -118,7 +169,7 @@ class PlanningDirective
 
     # now, displays dance classes
     unwatches = [
-      @scope.$watch 'danceClasses', @_displayClasses
+      @scope.$watch 'danceClasses', @_displayClasses, true
       @scope.$watchCollection 'selected', () =>
         return unless @scope.selected?
         @element.find('.selected').removeClass 'selected'
@@ -174,7 +225,7 @@ class PlanningDirective
     for day in @days
       html.push "<div class='day' data-day='#{day}'><div class='title'>#{i18n.lbl[day]}</div><div class='groups'>"
       if @groups[day]?
-        html.push "<span data-group='#{group}'></span>" for group in @groups[day]
+        html.push "<span class='group' data-group='#{group}'></span>" for group in @groups[day]
       html.push "</div>"
       # add quarter from the earliest to the latest hours
       for hour in @hours
@@ -243,18 +294,15 @@ class PlanningDirective
 
     # positionnate each course in their respective day and group
     @scope.danceClasses.forEach (course) =>
+      # gets start and end hours
+      sDetails = extractDateDetails course.start
+      eDetails = extractDateDetails course.end
       day = course.start[0..2]
 
-      # gets start and end hours
-      sHour = parseInt course.start.replace day, ''
-      sQuarter = Math.round parseInt(course.start[course.start.indexOf(':')+1..])/15
-      eHour = parseInt course.end.replace day, ''
-      eQuarter = Math.round parseInt(course.end[course.end.indexOf(':')+1..])/15
-
       # gets horizontal positionning
-      column = @days.indexOf(day)+2
-      start = @element.find(".day:nth-child(#{column}) > [data-hour='#{sHour}'][data-quarter='#{sQuarter}']")
-      end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eHour}'][data-quarter='#{eQuarter}']")
+      column = @days.indexOf(sDetails.day)+2
+      start = @element.find(".day:nth-child(#{column}) > [data-hour='#{sDetails.hour}'][data-quarter='#{Math.round sDetails.minutes / 15}']")
+      end = @element.find(".day:nth-child(#{column}) > [data-hour='#{eDetails.hour}'][data-quarter='#{Math.round eDetails.minutes / 15}']")
 
       # do not process unless we found a place
       unless start[0]?
@@ -268,7 +316,7 @@ class PlanningDirective
           # and eventually positionates the rendering inside the right day
           className = "danceClass #{legend}"
           className += ' selected' if @scope.selected?.find ({id}) -> id is course.id
-          render = @compile("""<div class="#{className}" data-id="#{course.id}"
+          render = @compile("""<div #{if @clickableCells then 'draggable="true"' else ''} class="#{className}" data-id="#{course.id}"
               data-uib-tooltip-html='#{JSON.stringify(tooltip).replace /'/g, '&#39;'}' data-uib-tooltip-popup-delay="200"
               data-uib-tooltip-animation="true"
               data-uib-tooltip-append-to-body="true">#{title}</div>""") @scope
@@ -323,3 +371,6 @@ module.exports = (app) ->
       getLegend: '&'
       # function taht returns a label for a given group (first parameter)
       getGroup: '&'
+      # event handler for dance class moves. Moved model as 'danceClass' parameter, and 'day', 'hour' and 'minutes'
+      # indicating the new slot
+      onMove: '&'

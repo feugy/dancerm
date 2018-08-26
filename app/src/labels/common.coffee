@@ -85,6 +85,7 @@ module.exports =
     choose: '---'
     city: 'Ville'
     classTooltip: '<p><%= kind %> (<%= level %>)</p><p><%= start %>~<%= end %></p>'
+    color: 'Couleur'
     currency: ' €'
     customer: 'Client'
     creditTotal: 'Net à votre crédit'
@@ -107,6 +108,7 @@ module.exports =
     firstname: 'Prénom'
     Fri: 'Vendredi'
     genericDanceClass: 'Abonnement danse'
+    hall: 'Salle'
     horizontalMargin: 'Marge horizontale (mm)'
     hours: 'Horaire'
     invoiceDate: 'Emise le'
@@ -116,11 +118,13 @@ module.exports =
     invoiceTotalWithVat: 'Net à payer TTC'
     isCredit: 'Avoir'
     json: 'Fichier JSON'
+    kind: 'Danse/Style'
     knownBy: 'Connu par'
     lastname: 'Nom'
     lessonDetails: 'Détails'
     lessonInvoiced: 'Facturé'
     lessonKind: 'Danse'
+    level: 'Niveau'
     Mon: 'Lundi'
     noValue: 'pas de valeur'
     noVatSetting: 'Mention si non applicable'
@@ -130,7 +134,7 @@ module.exports =
     payment: 'Réglement'
     paymentKind: 'Mode de réglement'
     payer: 'Par'
-    payerPrefix: 'Prefix de recherche par payeur'
+    payerPrefix: 'Prefixe de recherche par payeur'
     period: 'Périodicité'
     phone: 'Téléphone'
     price: 'Prix'
@@ -214,7 +218,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     emptyLessonList: 'Aucun cour particulier pour ces critères'
     exportEmails: "<p>La liste des email suivante à été copiée dans le presse papier :</p><p><%= emails %></p>"
     exporting: 'Export en cours, veuillez patienter...'
-    invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent lui être ajoutés. Voulez vous editer la facture en cours ?'
+    invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent pas lui être ajoutés. Voulez vous editer la facture en cours ?'
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: """<p>{{byClass.Dancer || 'aucun'}} danseur(s), {{byClass.Card || 'aucune'}} fiche(s), {{byClass.Address || 'aucune'}} addresse(s), {{byClass.Invoice || 'aucune'}} facture(s), {{byClass.DanceClass || 'aucun'}} cour(s) et {{byClass.Lesson || 'aucun'}} cour(s) particulier(s) ont été importé(s) avec succès.</p>
@@ -222,10 +226,12 @@ Voulez vous interrompre la résolution des conflits ?"""
   <p>{{errors.join('<br/>') || 'aucune'}}</p>
   """
     lessonListLength: ' cour(s) séléctionné(s)'
-    pickHour: 'Veuillez sélectionner un heure'
+    pickHour: 'Cliquez sur le planning pour sélectionner une heure'
+    readOnlyLesson: "Ce cours à déjà été facturé, il ne peut être modifié."
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
+    removeDanceClass: "Vous allez définitivement supprimer le cours {{kind}} {{level}} du {{start}}. Il y a {{dancers}} inscrit(s). Voulez vous vraiment continuer ?"
     removeLastDancer: "Vous allez supprimer définitivement la fiche de {{firstname}} {{lastname}}. Voulez vous vraiment continuer ?"
     removeLesson: "Vous allez supprimer le cours particulier de {{firstname}} {{lastname}} du {{date}}. Voulez-vous vraiment continuer ?"
     removeRegistration: "Vous allez supprimer les inscriptions et paiements de l'année {{season}}. Voulez-vous vraiment continuer ?"
@@ -303,110 +309,6 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
 
   priceList:
     default: [{category: 'Aucun prix défini'}]
-    '2016/2017': [
-      {category: 'Adultes, 1 an'}
-      {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
-      {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, '2 cours Zumba'}
-      {category: 'Adultes, 1 trimestre'}
-      {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
-      {category: 'Cours'}
-      {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
-      {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
-      {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
-      {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
-      {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
-      {category: 'Enfant/ados, 1 an'}
-      {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
-      {category: 'Enfant/ados, 1 trimestre'}
-      {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
-      {category: 'Compétiteurs'}
-      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
-      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
-      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
-      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
-      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
-      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
-    ]
-    '2017/2018': [
-      {category: 'Adultes, 1 an'}
-      {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
-      {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, '2 cours Zumba'}
-      {category: 'Adultes, 1 trimestre'}
-      {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
-      {category: 'Cours'}
-      {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
-      {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
-      {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
-      {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
-      {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
-      {category: 'Enfant/ados, 1 an'}
-      {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
-      {category: 'Enfant/ados, 1 trimestre'}
-      {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
-      {category: 'Compétiteurs'}
-      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
-      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
-      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
-      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
-      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
-      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
-    ]
 
   # different ways to learn the school existence
   knownByMeanings:
@@ -427,6 +329,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
 
   # Tooltips
   tip:
+    newSeason: 'Ajouter la nouvelle saison'
     searchCards: 'Chercher des danceurs'
     searchLessons: 'Chercher des cours particuliers'
     searchInvoices: 'Chercher des factures'
@@ -450,11 +353,13 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     database: 'Base de données'
     duePayment: 'Impayés'
     dumping: 'Sauvegarde des données'
+    editCourse: 'Cours'
     editLesson: 'Cours particulier'
     editRegistration: 'Modification de l\'inscription'
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
+    invalidOperation: 'Opération invalide'
     invoice: 'Facture N°{{ref}}'
     invoiceDisplay: '{{owner}} - Facture archivée N°{{ref}}'
     invoiceEdition: '{{owner}} - Edition de la facture N°{{ref}}'
@@ -463,6 +368,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     knownByRepartition: 'Ils ont connus par...'
     missingCertificates: 'Certificats manquants'
     newRegistration: 'Nouvelle inscription'
+    planningSettings: 'Plannings'
     print: 'DanceRM : impression pour {{names}}'
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     removeError: 'Erreur de suppression'
@@ -470,6 +376,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     settlementPrint: "<p>Réglement</p><p>{{registration.season}}</p>"
     search: 'Recherche de danseurs'
     searchDancer: 'Fusionner deux fiches'
+    season: 'Saison'
     stats: '{{total}} danseurs'
     teacherSettings: 'Professeurs inscrits'
     updateInstalled: 'Mise à jour disponible'

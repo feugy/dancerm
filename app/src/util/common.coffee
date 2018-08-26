@@ -1,7 +1,7 @@
 _ = require 'lodash'
 moment = require 'moment'
 {join, resolve} = require 'path'
-{appendFile, appendFileSync, readFile, existsSync} = require 'fs-extra'
+{appendFile, appendFileSync, readFile, pathExistsSync} = require 'fs-extra'
 {inspect} = require 'util'
 {map} = require 'async'
 {render} = require 'stylus'
@@ -162,9 +162,9 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
       readFile join(folder, "#{sheet}.styl"), 'utf8', (err, content) ->
         return next err if err?
         # adds themes variable if it exists
-        content = "@require 'themes/#{theme}_variable'\n#{content}" if existsSync join folder, 'themes', "#{theme}_variable.styl"
+        content = "@require 'themes/#{theme}_variable'\n#{content}" if pathExistsSync join folder, 'themes', "#{theme}_variable.styl"
         # adds theme override if it exists
-        content += "\n@require 'themes/#{theme}'" if existsSync join folder, 'themes', "#{theme}.styl"
+        content += "\n@require 'themes/#{theme}'" if pathExistsSync join folder, 'themes', "#{theme}.styl"
         # now add variables and compiles
         render "@require 'variable'\n#{content}",
           filename: "#{sheet}.css"
@@ -232,3 +232,17 @@ Received at #{moment().format 'DD/MM/YYYY HH:mm:ss'}
     floor = Math.floor num
     cents = Math.floor(100 * num) % 100
     if cents is 0 then floor else if cents <= 50 then floor + .5 else floor + 1
+
+  # Get day, hour and minutes of a given dance class/lesson date: "Mon 15:45"
+  #
+  # @param date [String] the parsed date
+  # @returns [Object] the parsed day, hour and minutes, or null
+  extractDateDetails: (date) ->
+    return null unless date?
+    day = date[0..2]
+    {
+      day
+      # gets start and end hours
+      hour: parseInt date.replace day, ''
+      minutes: parseInt date[date.indexOf(':')+1..]
+    }
