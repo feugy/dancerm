@@ -102,8 +102,9 @@ getStore = (name, write, done) ->
 
   # initialize database
   # v1 includes stores 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'
-  # v2 adds store 'Invoice' and 'Lesson'
-  request = indexedDB.open path, 2
+  # v2 adds stores for 'Invoice' and 'Lesson'
+  # v3 adds store for 'PriceList'
+  request = indexedDB.open path, 3
 
   request.onsuccess = ->
     db = request.result
@@ -114,7 +115,7 @@ getStore = (name, write, done) ->
     done request.error
 
   request.onupgradeneeded = ({target}) ->
-    for name in ['Lesson', 'Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested'] when !target.result.objectStoreNames.contains name
+    for name in ['Lesson', 'Invoice', 'Dancer', 'Address', 'Card', 'DanceClass', 'Tested', 'PriceList'] when !target.result.objectStoreNames.contains name
       target.result.createObjectStore name, keyPath: 'id'
 
 # Worker message receiver

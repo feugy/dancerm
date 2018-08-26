@@ -67,10 +67,10 @@ module.exports = (app) ->
     <span data-ng-if="!ctrl.readOnly" class="input-group" data-uib-dropdown keyboard-nav>
       <textarea data-auto-height name="name" data-ng-model="ctrl.src.name" data-ng-class="ctrl.isRequired('name')" data-set-null></textarea>
       <a href="" class="input-group-addon" uib-dropdown-toggle><i class="glyphicon glyphicon-triangle-bottom"></i></a>
-      <ul class="dropdown-menu">
-        <li data-ng-repeat="option in ctrl.options">
-          <a href="" data-ng-if="!option.category" data-ng-click="ctrl.prefill(option)">{{option.label || option.name}}</a>
-          <span data-ng-if="option.category" class="category">{{option.category}}</span>
+      <ul class="dropdown-menu price-list">
+        <li data-ng-repeat="price in ctrl.priceList.flatList()">
+          <a href="" data-ng-if="!price.category" data-ng-click="ctrl.prefill(price)">{{price.label || price.name}}</a>
+          <span data-ng-if="price.category" class="category">{{price.category}}</span>
         </li>
       </ul>
     </span>
@@ -106,8 +106,8 @@ module.exports = (app) ->
       src: '='
       # array of missing fields
       requiredFields: '='
-      # different options to prefill src. The 'label' attribute might be used as option content
-      options: '=?'
+      # the price list used to prefill src.
+      priceList: '=?'
       # read-only flag.
       readOnly: '=?'
       # Vat column flag.

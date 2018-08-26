@@ -7,6 +7,7 @@ isPrintCtx = global.isPrintCtx or false
 i18n = require "../#{if isPrintCtx then 'script/' else ''}labels/common"
 Invoice = require "../#{if isPrintCtx then 'script/' else ''}model/invoice"
 InvoiceItem = require "../#{if isPrintCtx then 'script/' else ''}model/invoice_item"
+PriceList = require "../#{if isPrintCtx then 'script/' else ''}model/price_list"
 {invoiceRefExtract} = require "../#{if isPrintCtx then 'script/' else ''}util/common"
 
 # Simple validation function that check if a given value is defined and acceptable
@@ -326,7 +327,7 @@ class InvoiceController
     @invoice.changeDate @_previous.date
     @dateOpts.value = @invoice.date.valueOf()
     @_previous = @invoice.toJSON()
-    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
+    PriceList.findForSeason @invoice.season, (err, list) => @priceList = list or []
     @_setChanged false
 
   # **private**
@@ -335,7 +336,7 @@ class InvoiceController
   _onLoad: (invoice) =>
     @invoice = invoice
     @teacher = @conf.teachers[@invoice.selectedTeacher]
-    @priceList = @i18n.priceList[@invoice.season] or @i18n.priceList.default
+    PriceList.findForSeason @invoice.season, (err, list) => @priceList = list or []
     @dueDate = @invoice.dueDate
     @isReadOnly = @invoice.sent?
     @dateOpts.value = @invoice.date.valueOf()

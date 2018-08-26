@@ -2,7 +2,7 @@
 {fork} = require 'child_process'
 
 reqId = 1
-# other possible: indexeddb & nedb. The later one does not support importing 8000 models
+# possible options: indexeddb & mongodb & nedb. The later one does not support importing 8000 models
 workerImpl = 'indexeddb'
 
 # Recursively walk down an object, replacing its regexp values per an array
