@@ -29,9 +29,11 @@ To publish a new one:
 - Invoice & Lesson conflicts
 - unit test for indexedDB operator support ($and, $lt, $gt, $lte, $gte)
 - Mandatory fields that cannot be bypassed
-- Replace npm with yarn
 - Replace mocha with jest
-- Checkout lastest coffee-coverage
+- Get the [coffee-coverage PR](https://github.com/benbria/coffee-coverage/pull/87) merged.
+   Until that don't forget to manually compile coffee to js after dependency updates:
+   > cd node_moduldes/coffee-coverage
+   > npm run build
 
 ## TODO Electron
 
