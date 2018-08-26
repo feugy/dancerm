@@ -218,7 +218,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     emptyLessonList: 'Aucun cour particulier pour ces critères'
     exportEmails: "<p>La liste des email suivante à été copiée dans le presse papier :</p><p><%= emails %></p>"
     exporting: 'Export en cours, veuillez patienter...'
-    invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent lui être ajoutés. Voulez vous editer la facture en cours ?'
+    invoiceAlreadyExist: 'Une facture est déjà en cours d\'edition pour ce(tte) danceur(euse), et les cours particuliers ne peuvent pas lui être ajoutés. Voulez vous editer la facture en cours ?'
     invoiceListLength: ' facture(s) séléctionnée(s)'
     importing: 'Importation en cours, veuillez patienter...'
     importSuccess: """<p>{{byClass.Dancer || 'aucun'}} danseur(s), {{byClass.Card || 'aucune'}} fiche(s), {{byClass.Address || 'aucune'}} addresse(s), {{byClass.Invoice || 'aucune'}} facture(s), {{byClass.DanceClass || 'aucun'}} cour(s) et {{byClass.Lesson || 'aucun'}} cour(s) particulier(s) ont été importé(s) avec succès.</p>
@@ -227,6 +227,7 @@ Voulez vous interrompre la résolution des conflits ?"""
   """
     lessonListLength: ' cour(s) séléctionné(s)'
     pickHour: 'Cliquez sur le planning pour sélectionner une heure'
+    readOnlyLesson: "Ce cours à déjà été facturé, il ne peut être modifié."
     registrationSeason: "Choissiez l'année et le(s) cours : "
     removeAddress: "Vous allez supprimer l'address de {{dancer.firstname}} {{dancer.lastname}}. Il sa nouvelle addresse sera {{address.street}} {{address.zipcode}} {{address.city}}. Voulez-vous vraiment continuer ?"
     removeDancer: "Vous allez supprimer {{firstname}} {{lastname}}. La suppression ne sera définitive que lorsque vous enregistrez la fiche. Voulez vous vraiment continuer ?"
@@ -462,6 +463,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     export: 'Exportation'
     generalInfo: 'Information'
     import: 'Importation'
+    invalidOperation: 'Opération invalide'
     invoice: 'Facture N°{{ref}}'
     invoiceDisplay: '{{owner}} - Facture archivée N°{{ref}}'
     invoiceEdition: '{{owner}} - Edition de la facture N°{{ref}}'

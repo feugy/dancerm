@@ -219,6 +219,7 @@ module.exports = class SettingsController
   # @param day [String] new day for this course
   # @param hour [String] new hour for this course
   # @param minutes [String] new minutes for this course
+  # @returns [Boolean] to complete the move in planning directive
   onDanceClassMoved: (course, day, hour, minutes) =>
     duration = course.duration
     # change start date, and updates the end by setting duration
@@ -226,6 +227,7 @@ module.exports = class SettingsController
     course.duration = duration
     console.log "Moved course", course, "to #{day} #{hour}:#{minutes}"
     @onSaveCourse course
+    true
 
   # Create a new (unsaved) course for that season
   #

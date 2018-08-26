@@ -411,6 +411,33 @@ module.exports = class LessonsController
         @_setChanged false
         @scope.$apply() unless @scope.$$phase
 
+  # When a given lesson is moved on planning, change its hour and date
+  #
+  # @param course [Object] moved course
+  # @param day [String] new day for this course
+  # @param hour [String] new hour for this course
+  # @param minutes [String] new minutes for this course
+  # @returns [Boolean] true to complete the move in planning directive, false to cancel it
+  moveLesson: (lesson, day, hour, minutes) =>
+    if not lesson? or lesson.invoiceId?
+      @dialog.messageBox(@i18n.ttl.invalidOperation, @i18n.msg.readOnlyLesson, [
+          {label: @i18n.btn.ok}
+        ]
+      )
+      return false
+    # update date (duration will not be modified) and save
+    lesson.date = @startDay.clone().add(toDayOffset(day), 'd').hours(+hour).minutes(+minutes).seconds(0).milliseconds(0)
+    lesson.save (err) =>
+      if err?
+        console.error err
+        return @dialog.messageBox(@i18n.ttl.saveError, err.message, [
+            {label: @i18n.btn.ok}
+          ]
+        ).result.then done
+      console.log "Moved lesson #{lesson.id} to #{lesson.date}"
+      @scope.$apply() unless @scope.$$phase
+    true
+
   # Display current week title
   # @returns [String] current week title with from and to dates
   currentWeek: =>

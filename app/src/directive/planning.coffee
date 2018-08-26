@@ -147,17 +147,16 @@ class PlanningDirective
       quarter = $(event.target).closest '.quarter'
       danceClass =  _.find @scope.danceClasses, id: @moved.id
       return unless danceClass?
-      @moved.success = true
-
-      @scope.onMove {
+      @moved.success = @scope.onMove?({
         $event: event
         danceClass
         day: quarter.closest('.day').data 'day'
         hour: quarter.data 'hour'
         minutes: 15 * quarter.data 'quarter'
-      }
+      }) or false
 
     @element.on 'dragend', (event) =>
+      @element.find('.drop-target').removeClass 'drop-target'
       return unless @moved?
       # restore initial position
       @moved.elem.offset @moved.position unless @moved.success
