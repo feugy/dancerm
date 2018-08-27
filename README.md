@@ -13,7 +13,7 @@ To publish a new one:
 2. push to github all changes, using PRs
 3. Create a github release, tag must be `package.json` version prefixed with `v`. Set title and description, then _save it as draft_.
 4. set GH_TOKEN has environment variable
-5. run `npm run release`
+5. run `yarn release`
 6. go back to github, and publish your release
 
 ## Bugs

@@ -4,6 +4,76 @@ async = require 'async'
 {ensureFile} = require 'fs-extra'
 {getDbPath} = require '../../util/common'
 
+priceCategories = [{
+  category: 'Adultes, 1 an',
+  prices: [
+    {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
+    {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
+    {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
+    {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
+    {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
+    {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
+    {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
+    {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
+    {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
+    {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, label: '2 cours Zumba'}
+  ]
+}, {
+  category: 'Adultes, 1 trimestre',
+  prices: [
+    {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
+    {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
+    {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
+    {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
+    {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
+    {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
+    {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
+    {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
+    {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
+  ]
+}, {
+  category: 'Cours',
+  prices: [
+    {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
+    {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
+    {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
+    {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
+    {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
+  ]
+}, {
+  category: 'Enfant/ados, 1 an',
+  prices: [
+    {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
+    {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
+    {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
+    {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
+    {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
+    {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
+    {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
+  ]
+}, {
+  category: 'Enfant/ados, 1 trimestre',
+  prices: [
+    {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
+    {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
+    {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
+    {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
+    {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
+    {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
+    {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
+  ]
+}, {
+  category: 'Compétiteurs',
+  prices: [
+    {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
+    {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
+    {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
+    {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
+    {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
+    {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
+  ]
+}]
+
 plannings = [{
   season: '2013/2014'
   classes: [
@@ -199,75 +269,6 @@ plannings = [{
     {kind:'Danse sportive', color:'color8', level:'1', start:'Fri 18:00', end:'Fri 19:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: '999e81618dd1'}
     {kind:'Danse sportive', color:'color8', level:'2', start:'Fri 19:00', end:'Fri 20:00', teacher:'Diana', hall:'Gratte-ciel 1', _id: 'a354b697168d'}
   ]
-  priceCategories: [{
-    category: 'Adultes, 1 an',
-    prices: [
-      {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
-      {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, '2 cours Zumba'}
-    ]
-  }, {
-    category: 'Adultes, 1 trimestre',
-    prices: [
-      {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
-    ]
-  }, {
-    category: 'Cours',
-    prices: [
-      {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
-      {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
-      {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
-      {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
-      {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 an',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 trimestre',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Compétiteurs',
-    prices: [
-      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
-      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
-      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
-      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
-      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
-      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
-    ]
-  }]
 }, {
   season: '2017/2018'
   classes: [
@@ -314,76 +315,7 @@ plannings = [{
 
     {kind:'Salsa/Bachata', color:'color8', level:'niveau 1', start:'Thu 20:00', end:'Thu 21:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'fa8d7b7c8578'}
     {kind:'Salsa/Bachata', color:'color8', level:'niveau 2', start:'Thu 21:00', end:'Thu 22:00', teacher:'Anthony', hall:'Gratte-ciel 2', _id:'a56e2966dac9'}
-  ],
-  priceCategories: [{
-    category: 'Adultes, 1 an',
-    prices: [
-      {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
-      {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, '2 cours Zumba'}
-    ]
-  }, {
-    category: 'Adultes, 1 trimestre',
-    prices: [
-      {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
-    ]
-  }, {
-    category: 'Cours',
-    prices: [
-      {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
-      {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
-      {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
-      {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
-      {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 an',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 trimestre',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Compétiteurs',
-    prices: [
-      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
-      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
-      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
-      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
-      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
-      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
-    ]
-  }]
+  ]
 }, {
   season: '2018/2019'
   classes: [
@@ -426,76 +358,7 @@ plannings = [{
     {kind: 'Danse sportive', color: 'color7', level: 'Enfait', start: 'Thu 17:30', end: 'Thu 19:00', hall: 'Gratte-ciel 2', _id: '41ca179b2c9e'}
     {kind: 'Danse sportive', color: 'color7', level: 'Solo team', start: 'Thu 19:00', end: 'Thu 20:30', hall: 'Gratte-ciel 2', _id: '93a76e12cc3d'}
     {kind: 'Danse sportive', color: 'color7', level: 'Compétiteurs Standards', start: 'Thu 20:30', end: 'Thu 22:00', hall: 'Gratte-ciel 1', _id: '295644a384a7'}
-  ],
-  priceCategories: [{
-    category: 'Adultes, 1 an',
-    prices: [
-      {name: 'Forfait 1h adulte', price: 283, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte', price: 507, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant', price: 260, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte', price: 382, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant', price: 353, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte', price: 481, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte', price: 862, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte', price: 565, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte', price: 649, quantity: 1, label: '1h30 + 1h30'}
-      {name: 'Forfait Zumba 2 cours', price: 360, quantity: 1, '2 cours Zumba'}
-    ]
-  }, {
-    category: 'Adultes, 1 trimestre',
-    prices: [
-      {name: 'Forfait 1h adulte - trimestre', price: 105, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h adulte - trimestre', price: 194, quantity: 2, label: '1h (couple)'}
-      {name: 'Forfait 1h étudiant - trimestre', price: 97, quantity: 1, label: '1h (étudiant)'}
-      {name: 'Forfait 1h30 adulte - trimestre', price: 143, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h30 étudiant - trimestre', price: 132, quantity: 1, label: '1h30 (étudiant)'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 178, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h + 1h adulte - trimestre', price: 330, quantity: 2, label: '1h + 1h (couple)'}
-      {name: 'Forfait 1h + 1h30 adulte - trimestre', price: 211, quantity: 1, label: '1h + 1h30'}
-      {name: 'Forfait 1h30 + 1h30 adulte - trimestre', price: 243, quantity: 1, label: '1h30 + 1h30'}
-    ]
-  }, {
-    category: 'Cours',
-    prices: [
-      {name: 'Cours 1h adulte', price: 12, quantity: 1, label: '1h adulte'}
-      {name: 'Cours 1h30 adulte', price: 14, quantity: 1, label: '1h30 adulte'}
-      {name: 'Cours particulier 1 ou 2 personnes', price: 43, quantity: 1, label: 'CP 1/2 personnes'}
-      {name: 'Cours particulier 3 personnes', price: 52, quantity: 1, label: 'CP 3 personnes'}
-      {name: 'Cours particulier 4 personnes', price: 66, quantity: 1, label: 'CP 4 personnes'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 an',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ado', price: 191, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ado', price: 254, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ado', price: 343, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ado', price: 379, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ado', price: 432, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ado', price: 454, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ado', price: 508, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Enfant/ados, 1 trimestre',
-    prices: [
-      {name: 'Forfait 45 minutes enfants/ados - trimestre', price: 72, quantity: 1, label: '45 minutes'}
-      {name: 'Forfait 1h enfants/ados - trimestre', price: 95, quantity: 1, label: '1h'}
-      {name: 'Forfait 1h30 enfants/ados - trimestre', price: 128, quantity: 1, label: '1h30'}
-      {name: 'Forfait 1h + 45 minutes enfants/ados - trimestre', price: 142, quantity: 1, label: '1h + 45 minutes'}
-      {name: 'Forfait 1h + 1h enfants/ados - trimestre', price: 161, quantity: 1, label: '1h + 1h'}
-      {name: 'Forfait 1h30 + 45 minutes enfants/ados - trimestre', price: 170, quantity: 1, label: '1h30 + 45 minutes'}
-      {name: 'Forfait 1h + 1h30 enfants/ados - trimestre', price: 190, quantity: 1, label: '1h + 1h30'}
-    ]
-  }, {
-    category: 'Compétiteurs',
-    prices: [
-      {name: 'Entainements dirigés latine (D, E, F)', price: 320, quantity: 1, label: 'latine D,E,F'}
-      {name: 'Entainements dirigés & libres latine (A, B, C)', price: 360, quantity: 1, label: 'latine A,B,C'}
-      {name: 'Entainements dirigés standard (D, E, F)', price: 260, quantity: 1, label: 'standard D,E,F'}
-      {name: 'Entainements dirigés & libres standard (A, B, C)', price: 360, quantity: 1, label: 'standard A,B,C'}
-      {name: 'Entainements dirigés & libres 10 dances (A, B, C)', price: 420, quantity: 1, label: '10 danses'}
-      {name: 'Entrainement seul', price: 12, quantity: 1, label: 'cours seul'}
-    ]
-  }]
+  ]
 }]
 
 # Add  hard coded dance classes unless exist already
@@ -507,8 +370,6 @@ mergePlanning = (planning, done) ->
   console.log "check planning #{planning.season}"
   # lazy request to avoid circular dependencies between persisted and initializer
   DanceClass = require('../dance_class')
-  PriceList = require('../price_list')
-  PriceCategory = require('../price_category')
 
   DanceClass.getPlanning planning.season, (err, danceClasses) ->
     return done err if err?
@@ -528,27 +389,11 @@ mergePlanning = (planning, done) ->
       unless existing?
         saved.push new DanceClass _.extend {season: planning.season}, newClass
 
-    PriceList.findForSeason planning.season, (err, priceList) =>
-      return done err if err?
-
-      if planning.priceCategories?
-        # add missing prices categories in price list
-        for {category, prices} in planning.priceCategories
-          existing = _.find priceList.categories, {category}
-          # but do not inspect the prices themselves
-          priceList.categories.push new PriceCategory {category, prices} unless existing?
-          # remove the default, empty category if some where added
-          priceList.categories.shift() if priceList.categories.length > 1 and priceList.categories[0].prices.length is 0
-        console.log planning.season, priceList.toJSON().categories
-        unless JSON.stringify(priceList.toJSON().categories) isnt JSON.stringify planning.priceCategories
-          console.log "save #{planning.season} new price list", priceList.toJSON().categories
-          saved.push priceList
-
-      return done null unless saved.length > 0
-      console.log "save #{planning.season} new classes"
-      async.each saved, (persisted, next) ->
-        persisted.save next
-      , done
+    return done null unless saved.length > 0
+    console.log "save #{planning.season} new classes"
+    async.each saved, (persisted, next) ->
+      persisted.save next
+    , done
 
 merged = false
 
@@ -563,7 +408,30 @@ module.exports =
   init: (done) ->
     return done() if merged
     merged = true
+
+    # lazy request to avoid circular dependencies between persisted and initializer
+    PriceList = require('../price_list')
+    PriceCategory = require('../price_category')
+
     # update planning for seasons
     async.each plannings, (planning, next) ->
       mergePlanning planning, next
-    , done
+    , (err) ->
+      return done err if err?
+
+      # update price list
+      console.log "check price list"
+      PriceList.findSingle (err, priceList) =>
+        return done err if err?
+        return done null if _.isEqual priceList.toJSON().categories, priceCategories
+
+        # add missing prices categories in price list
+        for {category, prices} in priceCategories
+          existing = _.find priceList.categories, {category}
+          # but do not inspect the prices themselves
+          priceList.categories.push new PriceCategory {category, prices} unless existing?
+          # remove the default, empty category if some where added
+          priceList.categories.shift() if priceList.categories.length > 1 and priceList.categories[0].prices.length is 0
+
+        console.log "save price list", priceList.toJSON().categories
+        priceList.save done
