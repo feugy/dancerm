@@ -149,6 +149,8 @@ class InvoiceController
         win.webContents.print {}, => win.close()
       return
 
+    PriceList.findSingle (err, list) => @priceList = list or []
+
     # abort if no invoice parameter found
     return unless stateParams.invoice?
 
@@ -327,7 +329,6 @@ class InvoiceController
     @invoice.changeDate @_previous.date
     @dateOpts.value = @invoice.date.valueOf()
     @_previous = @invoice.toJSON()
-    PriceList.findForSeason @invoice.season, (err, list) => @priceList = list or []
     @_setChanged false
 
   # **private**
@@ -336,7 +337,6 @@ class InvoiceController
   _onLoad: (invoice) =>
     @invoice = invoice
     @teacher = @conf.teachers[@invoice.selectedTeacher]
-    PriceList.findForSeason @invoice.season, (err, list) => @priceList = list or []
     @dueDate = @invoice.dueDate
     @isReadOnly = @invoice.sent?
     @dateOpts.value = @invoice.date.valueOf()

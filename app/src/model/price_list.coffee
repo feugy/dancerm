@@ -3,24 +3,20 @@ Persisted = require './tools/persisted'
 PriceCategory = require './price_category'
 i18n = require '../labels/common'
 
-# Price list is a set of price categories for a given season
+# Price list is a set of price categories
 # Persisted in database
 module.exports = class PriceList extends Persisted
 
   # **static**
-  # Find price list by season, defaulting to an empty list
+  # Find the unic price list, defaulting to an empty list
   #
-  # @param season [String] season for which price list is searched
   # @param done [Function] completion callback, invoked with arguments:
   # @option done err [Error] an error object or null if no error occured
   # @option done priceList [PriceList] the corresponding price list
-  @findForSeason: (season, done) ->
-    @findWhere {season}, (err, list) =>
+  @findSingle: (done) ->
+    @findWhere {}, (err, list) =>
       return done err if err?
-      return done null, if list?.length > 0 then list[0] else new PriceList {season, categories: i18n.priceList.default}
-
-  # corresponding season
-  season: ''
+      return done null, if list?.length > 0 then list[0] else new PriceList categories: i18n.priceList.default
 
   # List of price categories
   categories: []
@@ -31,7 +27,6 @@ module.exports = class PriceList extends Persisted
   constructor: (raw = {}) ->
     # set default values
     _.defaults raw,
-      season: ''
       categories: []
 
     # enrich object attributes
