@@ -44,7 +44,9 @@ class InvoiceItemDirective
   #
   # @param option {Object} option assigned to current edited values
   prefill: (option) =>
-    Object.assign @src, option, label: undefined
+    @src.name = option.name
+    @src.quantity = option.quantity
+    @src.price = option.price
 
   # check if field is missing or not
   #
