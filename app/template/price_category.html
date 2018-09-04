@@ -1,0 +1,28 @@
+<div class="price-category-tab">
+  <uib-tab>
+    <uib-tab-heading class="focusable">
+      <input type="text" name="category"  data-auto-width data-ng-model="ctrl.model.category" data-set-null data-ng-change="ctrl.onItemChange({$field: 'category'})"/>
+      <a href="" class="btn remove" data-ng-click="ctrl.onRemove({model: ctrl.model})"><i class="glyphicon glyphicon-trash"/></a>
+    </uib-tab-heading>
+    <div class="price-category">
+      <h3>
+        <span>{{::'lbl.priceName'|i18n}}</span>
+        <span>{{::'lbl.price'|i18n}}</span>
+        <span>{{::'lbl.quantity'|i18n}}</span>
+        <span>{{::'lbl.priceLabel'|i18n}}</span>
+        <span/>
+      </h3>
+      <div data-ng-repeat="price in ctrl.model.prices" class="focusable">
+        <input type="text" name="name" data-ng-model="price.name" data-ng-class="ctrl.isRequired('name', $index)" data-ng-change="ctrl.onItemChange({$field:'name', $index})" data-set-null/>
+        <div class="input-group price">
+          <input type="text" name="price" data-ng-model="price.price" data-ng-class="ctrl.isRequired('price', $index)" data-ng-change="ctrl.onItemChange({$field:'name', $index})" data-set-null/>
+          <div class="input-group-addon">{{::'lbl.currency'|i18n}}</div>
+        </div>
+        <input type="text" name="quantity" data-ng-model="price.quantity" data-ng-class="ctrl.isRequired('quantity', $index)" data-ng-change="ctrl.onItemChange({$field:'name', $index})" data-set-null/>
+        <input type="text" name="label" data-ng-model="price.label" data-ng-class="ctrl.isRequired('label', $index)" data-ng-change="ctrl.onItemChange({$field:'name', $index})" data-set-null/>
+        <a href="" class="btn remove-price" data-ng-click="ctrl.removePrice($index)"><i class="glyphicon glyphicon-trash"/></a>
+      </div>
+    </div>
+    <a href="" class="btn add-price" data-ng-click="ctrl.addPrice()"><i class="glyphicon glyphicon-plus"/></a>
+  </uib-tab>    
+</div>

@@ -64,7 +64,6 @@ for color, i in colors
     article
       border 2px solid headerBackground
       border-radius 0
-      margin 0 15px
       padding 0
 
       .container-fluid
@@ -92,6 +91,51 @@ for color, i in colors
 
         &:hover
           background primaryBtnBackgroundHover
+  
+  .price-list .nav-tabs
+    border none
+    padding 10px 10px 0
+    margin-top 0
+    flex-wrap nowrap
+    overflow-y hidden
+    overflow-x auto
+    background headerBackground // colors[7]
+
+    .add
+      height auto
+      position relative
+      bottom auto
+
+    .price-category-tab 
+      bottom 0
+      margin-left 0
+
+      .uib-tab
+        padding-top 0
+
+        > a
+          position static
+          line-height inherit
+          border-radius 0
+          border-color transparent
+          color darken(headingColor, 70%)
+          margin-left 0
+
+        input
+          padding 5px 1em
+
+        input:not(:hover):not(:focus):not(.invalid)
+        input:not(:hover):not(:focus):not(.ng-invalid)
+          background-color transparent
+
+        &.active
+          input:not(:hover):not(:focus):not(.invalid)
+          input:not(:hover):not(:focus):not(.ng-invalid)
+            background-color mainBackground
+            color headingColor
+
+        .remove:before
+          display none
 
 .layout .actions
 

@@ -111,3 +111,25 @@ module.exports = (app) =>
 
       element.bind 'input', updateHeight
       scope.$watch attrs.ngModel, updateHeight
+
+  # attribute directive to automatically make input fits its content
+  # freely inspired from:
+  # - https://stackoverflow.com/a/21015393/1182976
+  app.directive 'autoWidth', ->
+    # needs a model
+    require: 'ngModel'
+    # applicable as attribute only
+    restrict: 'A'
+    # link function
+    link: (scope, element, attrs, controller) =>
+      canvas = document.createElement 'canvas'
+      scope.$watch attrs.ngModel, () ->
+        setTimeout () ->
+          input = element[0]
+          ctx = canvas.getContext '2d'
+          text = if input.value.length then input.value else input.placeholder
+          style = window.getComputedStyle input
+          padding = +style.paddingLeft.replace('px', '') + +style.paddingRight.replace 'px', ''
+          ctx.font = style.font
+          element.css width: "#{padding + 2 + ctx.measureText(text).width}px"
+        , 0

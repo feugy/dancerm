@@ -8,10 +8,46 @@
 .settings.main
   overflow-y auto
 
+  .price-list
+
+    .nav-tabs
+      border-bottom 2px solid headingColor
+      padding-left 10px
+      display flex
+      flex-direction row
+      margin-top -15px
+
+    .tab-content
+      padding-top 5px
+
+    .add
+      height 29px
+      position relative
+      bottom -26px
+
+      &:before, &:after
+        content ''
+        display inline-block
+        height 1.5em
+        width 5px
+        right -6px
+        background mainBackground
+        position absolute
+
+      &:after
+        left -6px
+        right auto
+    
+    .add-price
+      margin .3em
+
   .plannings
 
     .planning
       height 700px
+      min-width 600px
+      flex 1
+      margin-bottom 30px
 
     nav
       text-align center
@@ -19,6 +55,8 @@
     .flex-row
       display flex
       align-items flex-start
+      flex-wrap wrap
+      justify-content center
 
     article
       cardBox()
@@ -66,7 +104,8 @@
       padding 1em
 
       .remove
-        float left
+        float right
+        margin-left 0.8em
 
       .form-group
         display flex

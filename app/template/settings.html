@@ -90,8 +90,7 @@
           </div>
         </nav>
         <div class="flex-row">
-          <div
-            data-planning
+          <planning
             data-clickable-cells="true"
             data-src="ctrl.planning"
             data-shrink-hours="false"
@@ -145,6 +144,15 @@
             </div>
           </article>
         </div>
+      </div>
+    </section>
+    <section>
+      <aside><h2>{{::'ttl.priceList'|i18n}}</h2></aside>
+      <div class="price-list">
+        <uib-tabset>
+          <price-category data-src="category" data-ng-repeat="category in ctrl.priceList.categories" on-remove="ctrl.removePriceCategory(model)" on-change="ctrl.savePriceList()"/>
+          <a href="" class="btn add" data-ng-click="ctrl.addPriceCategory()"><i class="glyphicon glyphicon-plus"/></a>
+        </uib-tabset>
       </div>
     </section>
     <section>

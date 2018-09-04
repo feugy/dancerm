@@ -1,0 +1,99 @@
+
+.price-category-tab
+  display inline-block
+  margin-left 10px
+  bottom -15px
+  position relative
+
+  .uib-tab
+    float none
+    display inline-block
+    padding-top 10px
+
+    .focusable:not(:hover) .btn.remove
+      background transparent
+      color transparent
+      border-color transparent
+
+    input
+      font-family headingFont
+      font-size fontSize*1.2
+      width max-content
+
+      &:not(:hover):not(:focus):not(.invalid)
+      &:not(:hover):not(:focus):not(.ng-invalid)
+        background-color mainBackground
+        color rgba(textColor, 50%)
+
+    &.active
+      input:not(:hover):not(:focus):not(.invalid)
+      input:not(:hover):not(:focus):not(.ng-invalid)
+        color headingColor
+
+    .remove
+      margin -4px 12px 0 0
+
+      &:after
+        content ''
+        position absolute
+        display inline-block
+        width 7px
+        height 19px
+        right 5px
+
+      &:before
+        content ''
+        display inline-block
+        height 1.5em
+        width 4px
+        right 51px
+        background mainBackground
+        position absolute
+
+.price-category
+  margin-top 15px
+
+  > *
+    display flex
+    flex-flow row
+
+    > *
+      flex 1
+
+    :nth-child(2)
+      flex none
+      width 106px
+
+    :nth-child(3)
+      flex none
+      width 65px
+
+    :nth-child(5)
+      flex none
+      width 45px
+
+  h3
+    text-align center
+    background headerBackground
+    color headerColor
+    border none
+    line-height 30px
+    margin 5px 0
+
+    > *
+      font-family headingFont
+
+  input
+    margin 0 4px
+    height 28px
+    min-width 0
+
+  .input-group
+    flex none
+
+    > input
+      width 65px
+
+  input[name="price"]
+  input[name="quantity"]
+    text-align right

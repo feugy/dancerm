@@ -72,6 +72,7 @@ require('../script/directive/lesson_list')(app)
 require('../script/directive/list')(app)
 require('../script/directive/planning')(app)
 require('../script/directive/payment')(app)
+require('../script/directive/price_category')(app)
 require('../script/directive/tags')(app)
 require('../script/directive/registration')(app)
 

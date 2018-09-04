@@ -68,33 +68,8 @@ body
  * Left Column
  */
 
-.column-and-main > .column
-  transition width animationDuration
-  // list will take all available vertical space
-  display flex
-  flex-flow column
-
-  .centred-buttons
-    text-align center
-    margin-bottom 10px
-
-  .input-group input::-webkit-input-placeholder
-    font-style italic
-
-  .search-toggle
-    display flex
-    justify-content center
-    margin-top .5em
-
-    .btn:focus
-      box-shadow none
-
-  .list-length
-    color headingColor
-    text-align center
-    display block
-    margin 1em 0
-
+.column-and-main 
+  
   .table
     flex 1
     margin 0
@@ -176,6 +151,33 @@ body
       td:nth-child({i+1})
       th:nth-child({i+1})
         width unit(width, '%')
+  
+.column-and-main > .column
+  transition width animationDuration
+  // list will take all available vertical space
+  display flex
+  flex-flow column
+
+  .centred-buttons
+    text-align center
+    margin-bottom 10px
+
+  .input-group input::-webkit-input-placeholder
+    font-style italic
+
+  .search-toggle
+    display flex
+    justify-content center
+    margin-top .5em
+
+    .btn:focus
+      box-shadow none
+
+  .list-length
+    color headingColor
+    text-align center
+    display block
+    margin 1em 0
 
 .column-and-main > .column.expanded
 

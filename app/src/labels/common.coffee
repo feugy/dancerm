@@ -126,6 +126,7 @@ module.exports =
     lessonKind: 'Danse'
     level: 'Niveau'
     Mon: 'Lundi'
+    newPriceCategory: 'A remplir'
     noValue: 'pas de valeur'
     noVatSetting: 'Mention si non applicable'
     noVatMention: 'Non Soumis à T.V.A. Article C.G.I. 261, 4-4°b'
@@ -138,6 +139,8 @@ module.exports =
     period: 'Périodicité'
     phone: 'Téléphone'
     price: 'Prix'
+    priceLabel: 'Libellé (liste)'
+    priceName: 'Nom du tarif'
     quantity: 'Qté.'
     rate: 'Tarif'
     receipt: 'Encaissement'
@@ -209,6 +212,7 @@ Voulez vous interrompre la résolution des conflits ?"""
     configureTeachers: "Pour pouvoir éditer des factures, DanceRM à besoin de connaitre les coordonnéess, le Siret et éventuellement le numéro de TVA des proffesseurs"
     confirmGoBack: "Toutes les modifications non enregistrées vont être perdues. Voulez-vous vraiment continuer ?"
     confirmMarkAsSent: "Une fois archivée, la facture ne pourra plus être editée. Voulez-vous vraiment continuer ?"
+    confirmPriceListRemoval: "Voulez vous vraiment supprimer la catégorie {{category}} et tous les tarifs associés ?"
     dancerListLength: ' danseur(s) séléctionné(s)'
     dumpData: "DanceRM réalise à chaque utilisation une sauvegarde externe de ses données. Merci de choisir l'emplacement de cette sauvegarde sur votre disque dur."
     dumping: 'Sauvegarde externe en cours, veuillez patienter...'
@@ -369,6 +373,7 @@ De même, les parents qui viennent chercher les enfants sont priés de bien voul
     missingCertificates: 'Certificats manquants'
     newRegistration: 'Nouvelle inscription'
     planningSettings: 'Plannings'
+    priceList: 'List des tarifs'
     print: 'DanceRM : impression pour {{names}}'
     resolveConflict: "Résolution de conflit {{rank+1}}/{{conflicts.length}}"
     removeError: 'Erreur de suppression'

@@ -2,6 +2,8 @@ _ = require 'lodash'
 {dialog} = require('electron').remote
 i18n = require '../labels/common'
 DanceClass = require '../model/dance_class'
+PriceList = require '../model/price_list'
+PriceCategory = require '../model/price_category'
 ConflictsController = require './conflicts'
 {buildStyles, getColorsFromTheme, extractDateDetails} = require '../util/common'
 {version} = require '../../../package.json'
@@ -56,6 +58,9 @@ module.exports = class SettingsController
 
   # currently edited (or added) dance slass in current planning
   editedCourse: null
+
+  # currently edited price list
+  priceList: null
 
   # **private**
   # flag to temporary disable button while theme are building
@@ -112,6 +117,10 @@ module.exports = class SettingsController
         @rootScope.$apply()
     @rootScope.$on 'model-imported', initPlannings
     initPlannings()
+
+    PriceList.findSingle (err, priceList) => 
+      return console.log err if err?
+      @priceList = priceList
 
     # cancel navigation if asking for location
     if location.search()?.firstRun
@@ -292,7 +301,7 @@ module.exports = class SettingsController
   #
   # @returns [Boolean] true if there's an edited course, and it has pending changes
   hasEditedCourseChanged: =>
-    return false unless @editedCourse
+    return false unless @editedCourse?
     not _.isEqual @editedCourse.toJSON(), @editedCourse._raw
 
   # Format course start hour for friendly users :)
@@ -300,9 +309,38 @@ module.exports = class SettingsController
   # @param course [Object] the formated course
   # @return [String] the formated start day and time
   formatCourseStart: (course) =>
-    return unless course
+    return unless course?
     {day, hour, minutes} = extractDateDetails course.start
     "#{i18n.lbl[day]} #{hour}h#{if minutes > 0 then minutes else '00'}"
+
+  # Adds a new price category to current price list
+  addPriceCategory: () => 
+    return unless @priceList?
+    @priceList.categories.push new PriceCategory category: i18n.lbl.newPriceCategory
+    @savePriceList()
+
+  # Removes an existing price category from price list
+  #
+  # @param removed [PriceCategory] the removed price category
+  removePriceCategory: (removed) =>
+    return unless @priceList?
+    idx = @priceList.categories.indexOf removed
+    return unless idx >= 0
+    @dialog.messageBox(i18n.ttl.confirm, @filter('i18n')('msg.confirmPriceListRemoval', args: removed), [
+        {label: i18n.btn.no, cssClass: 'btn-warning'}
+        {label: i18n.btn.yes, result: true}
+      ]
+    ).result.then (confirmed) =>
+      return unless confirmed
+      # if confirmed, effectively go on desired state
+      @priceList.categories.splice idx, 1
+      @savePriceList()
+
+  # Save price list with its current state
+  savePriceList: () =>
+    return unless @priceList?
+    @priceList.save (err) => 
+      console.log "Failed to save price list: #{err}" if err?
 
   # According to the selected theme, rebuild styles and apply them.
   # New theme is saved into configuration, and button is temporary disabled while compiling

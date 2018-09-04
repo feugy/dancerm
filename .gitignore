@@ -6,7 +6,7 @@ app/script
 app/style
 app/vendor
 data-test/
-node_modules
+node_modules*
 test/fixture/out.*
 test/script
 test/vendor
