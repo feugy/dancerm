@@ -1,26 +1,20 @@
-import adapter from "@sveltejs/adapter-static";
-import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import adapter from '@sveltejs/adapter-node'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
 const config = {
-  preprocess: vitePreprocess(),
-  kit: {
-    adapter: adapter({
-      pages: ".vite/renderer/main_window",
-    }),
-    router: {
-      type: "hash",
-    },
-    csp: {
+	preprocess: vitePreprocess(),
+	kit: {
+		adapter: adapter(),
+		csp: {
 			directives: {
 				'script-src': ['self']
 			},
-			// must be specified with either the `report-uri` or `report-to` directives, or both
 			reportOnly: {
 				'script-src': ['self'],
 				'report-uri': ['/']
 			}
 		}
-  },
-};
+	}
+}
 
-export default config;
+export default config

@@ -1,0 +1,228 @@
+import { DatabaseSync, type SQLOutputValue } from 'node:sqlite'
+import { getCurrentVersion, type Migration, migrateToLatest } from '$lib/server/utils/migrations'
+import { buildUpsert, whereIn } from '$lib/server/utils/sqlite'
+import { getLogger, type Logger } from '$lib/utils/logger'
+import type { DBConf, Page, PartialWithReq } from '$lib/utils/types'
+import * as migrations from './migrations'
+
+let _db: DatabaseSync | null = null
+
+/**
+ * Connects to database, creating file if it does not exist, applying migrations up to latest, and
+ * storing database conneciton as a global variable.
+ * @param conf database configuration
+ * @param logger Logger used
+ * @param migrate If true, applies migrations to latest version
+ */
+async function connect(conf: DBConf, logger: Logger, migrate: boolean) {
+	if (!_db) {
+		logger.debug({ conf }, 'connecting...')
+		_db = new DatabaseSync(conf.filename)
+		_db.exec('PRAGMA journal_mode = WAL')
+		if (migrate) {
+			logger.debug({ conf }, 'migrating to latest...')
+			await migrateToLatest(
+				_db,
+				Object.keys(migrations).map(
+					(name) =>
+						// biome-ignore lint/performance/noDynamicNamespaceImportAccess: we intentionally use dynamic access
+						({ name, ...migrations[name as keyof typeof migrations] }) as Migration
+				)
+			)
+		}
+		const version = await getCurrentVersion(_db)
+		logger.info({ conf, version }, `database connection ready on version ${version}`)
+	}
+	return _db
+}
+
+/**
+ * Base class for all database models, provides CRUD operations on a single SQLite table.
+ */
+export abstract class AbstractModel<T extends { id: string | number }> {
+	/** Model name, used at table name. */
+	name: string
+
+	/** Logger specific to this model class. */
+	logger: Logger
+
+	/** Database connection. */
+	db: DatabaseSync | null = null
+
+	/** Release database connection (useful during tests). */
+	static release() {
+		if (_db) {
+			_db.close()
+			_db = null
+		}
+	}
+
+	/** Builds a model manager, that can handle records of a given SQL table. */
+	constructor({ name }: { name: string }) {
+		if (!name) {
+			throw new Error('every model needs a name')
+		}
+		this.name = name
+		this.logger = getLogger(`models/${this.name}`)
+	}
+
+	/**
+	 * Connects to SQLite database, getting a database connection and applying migrations if needed.
+	 * @param configuration configuration to the database.
+	 * @param migrate If true, applies migrations to latest version
+	 */
+	async init(configuration?: DBConf, migrate = true) {
+		if (!configuration) {
+			throw new Error(`${this.name} model must be initialized with a database configuration`)
+		}
+		this.db = await connect(configuration, this.logger, migrate)
+		this.logger.debug(
+			{ configuration, name: this.name },
+			`${this.name} model connected to database`
+		)
+	}
+
+	/**
+	 * Lists models within table, with pagination and sort.
+	 * Also supports searches, when the searched text is provided.
+	 * @param args List arguments, including:
+	 * @param args.from 0-based index of the first result
+	 * @param args.size Maximum number of records returned after first results
+	 * @param args.sort Column used for sorting. Use + for ascending order (default) or - for descending
+	 * @returns a given page of models
+	 */
+	async list({
+		from = 0,
+		size = 10,
+		sort = 'id'
+	}: {
+		from?: number
+		size?: number
+		sort?: string
+	} = {}) {
+		if (!this.db) throw new Error('model not initialized')
+		const [, rawDir, rawSort] = sort.match(/(-|\+)?(.+)/) as [unknown, string, string]
+		const direction = rawDir || '+'
+
+		const query = `SELECT * FROM ${this.name} WHERE 1=1 ORDER BY ${rawSort} ${direction === '+' ? 'asc' : 'desc'} LIMIT :size OFFSET :from`
+		const countQuery = `SELECT COUNT(*) AS count FROM ${this.name} WHERE 1=1`
+
+		const params = { size, from }
+		const results = this.db.prepare(query).all(params).map(this.makeDeserializer())
+		const total = this.db.prepare(countQuery).get()?.count ?? 0
+		this.logger.debug(
+			{ total, from, size, rawSort, direction, hitCount: results.length },
+			'returned list page'
+		)
+		return {
+			total,
+			from,
+			size,
+			sort: `${direction}${rawSort}`,
+			results
+		} as Page<T>
+	}
+
+	/**
+	 * @returns the total number of models.
+	 */
+	async count() {
+		if (!this.db) throw new Error('model not initialized')
+		return this.db.prepare(`SELECT COUNT(*) AS count FROM ${this.name}`).get()?.count ?? 0
+	}
+
+	/**
+	 * Get a single model by its id.
+	 * @param id Desired id
+	 * @returns matching model, or null
+	 */
+	async getById(id: T['id']) {
+		const result = this.db?.prepare(`SELECT * FROM ${this.name} WHERE id = :id`).get({ id })
+		this.logger.debug({ id, found: Boolean(result) }, 'fetch by id')
+		if (!result) {
+			return null
+		}
+		return this.makeDeserializer()(result)
+	}
+
+	/**
+	 * Get several models by their id.
+	 * Ids that do not match any model are simply ignored.
+	 * _Note_: does not guarantee that result ordering will match input ordering.
+	 * @param ids Desired ids
+	 * @returns array of matching model (may be empty)
+	 */
+	async getByIds(ids: T['id'][]) {
+		const results =
+			this.db
+				?.prepare(`SELECT * FROM ${this.name} WHERE ${whereIn('id', ids)}`)
+				.all(...ids)
+				?.map(this.makeDeserializer()) ?? []
+		this.logger.debug({ ids, hitCount: results.length }, 'fetch by ids')
+		return results
+	}
+
+	/**
+	 * Saves given model to database.
+	 * It creates new record when needed, and updates existing ones (based on provided id).
+	 * Partial update is supported: incoming data is merged with previous.
+	 * @param data Single or array of saved (partial) models
+	 */
+	async save(data: PartialWithReq<T, 'id'> | PartialWithReq<T, 'id'>[]): Promise<unknown> {
+		if (!this.db) throw new Error('model not initialized')
+		const input = Array.isArray(data) ? data : [data]
+		this.logger.debug({ data: input }, 'saving')
+		const saved = input.map(this.makeSerializer())
+		const upsert = this.db.prepare(buildUpsert(this.name, saved, true))
+		const results = new Array(saved.length)
+		for (const [i, model] of saved.entries()) {
+			results[i] = upsert.get(model)
+		}
+		return results.map(this.makeDeserializer())
+	}
+
+	/**
+	 * Removes models by their ids.
+	 * Unmatching ids will be simply ignored
+	 * @param ids Ids of removed models
+	 * @returns list (may be empty) of removed models
+	 */
+	async removeByIds(ids: T['id'][]): Promise<T[]> {
+		if (!this.db) throw new Error('model not initialized')
+		this.logger.debug({ ids }, 'removing')
+		const previous = this.db
+			.prepare(`SELECT * FROM ${this.name} WHERE ${whereIn('id', ids)}`)
+			.all(...ids)
+		this.db.prepare(`DELETE FROM ${this.name} WHERE ${whereIn('id', ids)}`).run(...ids)
+		return previous.map(this.makeDeserializer())
+	}
+
+	/** Deletes all models in table!! */
+	async reset() {
+		this.db?.exec(`DELETE FROM ${this.name}`)
+		this.logger.info('table truncated')
+	}
+
+	/**
+	 * Internal function intended to subclasses, to customize deserialization.
+	 * Default implementation parses data from json columns.
+	 * @returns a deserialization function that takes database row and return parsed model
+	 */
+	protected makeDeserializer() {
+		return (input: Record<string, SQLOutputValue>): T => {
+			return { ...input } as unknown as T
+		}
+	}
+
+	/**
+	 * Internal function intended to subclasses, to customize serialization.
+	 * Default implementation stringifies data to json columns.
+	 * **Note** the returned object must not contain undefined values for columns
+	 * @returns a serialization function that takes model and returns database row
+	 */
+	protected makeSerializer() {
+		return (input: Partial<T>) => {
+			return input as unknown as Record<string, SQLOutputValue>
+		}
+	}
+}
