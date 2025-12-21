@@ -1,16 +1,38 @@
 import type { DatabaseSync } from 'node:sqlite'
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { faker } from '@faker-js/faker'
-import { cleanTestTB, initTestDB, serializedModels } from '$lib/tests/database'
-import type { DBConf } from '$lib/utils/types'
+import { DateTime } from 'luxon'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { whereIn } from '$lib/server/utils/sqlite'
+import {
+	addVersion,
+	cleanTestTB,
+	initTestDB,
+	serializeModel,
+	serializeModels
+} from '$lib/tests/database'
+import type { DBConf } from '$lib/utils/types'
 import { AbstractModel } from './abstract-model'
 
 const modelName = 'test'
 
-class Test extends AbstractModel<{ tags: unknown; name?: string; id: number }> {
+class Test extends AbstractModel<{
+	id: number
+	_v: number
+	name: string | null
+	birth: Date | null
+	prefs: Record<string, unknown> | null
+}> {
 	constructor() {
-		super({ name: modelName })
+		super({
+			table: modelName,
+			columns: [
+				{ name: 'id', type: 'auto' },
+				{ name: '_v', type: 'auto' },
+				{ name: 'name', type: 'auto' },
+				{ name: 'birth', type: 'date' },
+				{ name: 'prefs', type: 'json' }
+			]
+		})
 	}
 }
 
@@ -55,19 +77,36 @@ describe('Abstract model', () => {
 		const tested = new Test()
 		const name = faker.person.fullName()
 		const models = [
-			{ id: faker.number.int(), name },
-			{ id: faker.number.int(), name: faker.person.fullName() },
+			{ id: faker.number.int(), _v: 4, name, birth: null, prefs: null },
 			{
 				id: faker.number.int(),
-				name: `${name} ${faker.person.fullName()}`
+				_v: 1,
+				name: faker.person.fullName(),
+				birth: faker.date.past(),
+				prefs: null
 			},
-			{ id: faker.number.int(), name: faker.person.fullName() }
+			{
+				id: faker.number.int(),
+				_v: 2,
+				name: `${name} ${faker.person.fullName()}`,
+				birth: null,
+				prefs: { likes: 'music' }
+			},
+			{
+				id: faker.number.int(),
+				_v: 1,
+				name: faker.person.fullName(),
+				birth: faker.date.past(),
+				prefs: { subsribed: true }
+			}
 		]
 
 		beforeEach(async () => {
-			db.exec(`CREATE TABLE ${modelName} (id BIGINT PRIMARY KEY, name TEXT)`)
-			const insert = db.prepare(`INSERT INTO ${modelName} VALUES (:id, :name)`)
-			for (const model of models) {
+			db.exec(
+				`CREATE TABLE ${modelName} (id BIGINT PRIMARY KEY, _v INTEGER DEFAULT 1, name TEXT, birth DATETIME, prefs BLOB)`
+			)
+			const insert = db.prepare(`INSERT INTO ${modelName} VALUES (:id, :_v, :name, :birth, :prefs)`)
+			for (const model of serializeModels(models, tested)) {
 				insert.run(model)
 			}
 			await tested.init(conf)
@@ -91,38 +130,119 @@ describe('Abstract model', () => {
 			it('adds single model', async () => {
 				const model = {
 					id: faker.number.int(),
-					name: faker.person.fullName()
+					name: faker.person.fullName(),
+					birth: faker.date.past(),
+					prefs: { likes: 'music', subscribed: true }
 				}
 
-				expect(await tested.save(model)).toEqual([model])
+				expect(await tested.save(model)).toEqual([addVersion(model)])
 				expect(db.prepare(`SELECT * FROM ${modelName} WHERE id=:id`).get({ id: model.id })).toEqual(
-					serializedModels([model], tested)[0]
+					serializeModel(model, tested)
 				)
 			})
 
 			it('adds multiple models', async () => {
 				const models = [
-					{ id: faker.number.int(), name: faker.person.fullName() },
-					{ id: faker.number.int(), name: faker.person.fullName() }
+					{ id: faker.number.int(), name: faker.person.fullName(), birth: null, prefs: null },
+					{
+						id: faker.number.int(),
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { likes: 'music', subscribed: true }
+					}
 				]
 
-				expect(await tested.save(models)).toEqual(models)
+				expect(await tested.save(models)).toEqual(models.map((model) => addVersion(model, 1)))
 				expect(
 					db
 						.prepare(`SELECT * FROM ${modelName} WHERE ${whereIn('id', models)}`)
 						.all(...models.map(({ id }) => id))
-				).toEqual(expect.arrayContaining(serializedModels(models, tested)))
+				).toEqual(expect.arrayContaining(serializeModels(models, tested).map(addVersion)))
 			})
 
 			it('update existing models', async () => {
 				const originals = [
 					{
 						id: faker.number.int(),
-						name: faker.person.fullName()
+						_v: 3,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
 					},
 					{
 						id: faker.number.int(),
-						name: faker.person.fullName()
+						_v: 10,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: null
+					},
+					{
+						id: faker.number.int(),
+						_v: 4,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: null
+					}
+				]
+				const models = [
+					{
+						id: originals[0].id,
+						birth: DateTime.fromJSDate(originals[0].birth).plus({ days: 1 }).toJSDate()
+					},
+					{
+						id: originals[1].id,
+						name: `${originals[1].name}-new`
+					},
+					{
+						id: originals[2].id,
+						prefs: { subscribed: true }
+					}
+				]
+				for (const original of serializeModels(originals, tested)) {
+					db.prepare(`INSERT INTO ${modelName} VALUES (:id, :_v, :name, :birth, :prefs)`).run(
+						original
+					)
+				}
+
+				expect(await tested.save(models)).toEqual(
+					models.map((model, i) => ({ ...originals[i], ...model, _v: originals[i]._v + 1 }))
+				)
+				expect(
+					db
+						.prepare(`SELECT * FROM ${modelName} WHERE ${whereIn('id', models)}`)
+						.all(...models.map(({ id }) => id))
+				).toEqual(
+					expect.arrayContaining(
+						serializeModels(
+							models.map((model, i) => ({ ...originals[i], ...model, _v: originals[i]._v + 1 })),
+							tested
+						)
+					)
+				)
+			})
+
+			it('partially updates existing models', async () => {
+				const originals = [
+					{
+						id: faker.number.int(),
+						_v: 3,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
+					},
+					{
+						id: faker.number.int(),
+						_v: 10,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
+					},
+					{
+						id: faker.number.int(),
+						_v: 4,
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
 					}
 				]
 				const models = [
@@ -130,25 +250,83 @@ describe('Abstract model', () => {
 						id: originals[0].id,
 						name: `${originals[0].name}-new`
 					},
-					{ id: originals[1].id, name: `${originals[1].name}-new` }
+					{
+						id: originals[1].id,
+						birth: DateTime.fromJSDate(originals[1].birth).plus({ days: -1 }).toJSDate()
+					},
+					{
+						id: originals[2].id,
+						prefs: { likes: 'dancing' }
+					}
 				]
-				for (const original of originals) {
-					db.prepare(`INSERT INTO ${modelName} VALUES (:id, :name)`).run(original)
+				for (const original of serializeModels(originals, tested)) {
+					db.prepare(`INSERT INTO ${modelName} VALUES (:id, :_v, :name, :birth, :prefs)`).run(
+						original
+					)
 				}
 
-				expect(await tested.save(models)).toEqual(models)
+				expect(await tested.save(models)).toEqual(
+					models.map((model, i) => ({ ...originals[i], ...model, _v: originals[i]._v + 1 }))
+				)
 				expect(
 					db
 						.prepare(`SELECT * FROM ${modelName} WHERE ${whereIn('id', models)}`)
 						.all(...models.map(({ id }) => id))
 				).toEqual(
 					expect.arrayContaining(
-						serializedModels(
-							models.map((model, i) => ({ ...originals[i], ...model })),
+						serializeModels(
+							models.map((model, i) => ({ ...originals[i], ...model, _v: originals[i]._v + 1 })),
 							tested
 						)
 					)
 				)
+			})
+
+			it('can set existing property to null', async () => {
+				const originals = [
+					{
+						id: faker.number.int(),
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
+					},
+					{
+						id: faker.number.int(),
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
+					},
+					{
+						id: faker.number.int(),
+						name: faker.person.fullName(),
+						birth: faker.date.past(),
+						prefs: { subscribed: false }
+					}
+				]
+				const results = [
+					{ ...originals[0], _v: 2, name: null },
+					{ ...originals[1], _v: 2, birth: null },
+					{ ...originals[2], _v: 2, prefs: null }
+				]
+
+				for (const original of serializeModels(originals, tested)) {
+					db.prepare(`INSERT INTO ${modelName} VALUES (:id, :_v, :name, :birth, :prefs)`).run(
+						original
+					)
+				}
+
+				expect(
+					await tested.save([
+						{ id: originals[0].id, name: null },
+						{ id: originals[1].id, birth: null },
+						{ id: originals[2].id, prefs: null }
+					])
+				).toEqual(results)
+				expect(
+					db
+						.prepare(`SELECT * FROM ${modelName} WHERE ${whereIn('id', results)}`)
+						.all(...results.map(({ id }) => id))
+				).toEqual(expect.arrayContaining(serializeModels(results, tested)))
 			})
 		})
 

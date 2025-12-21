@@ -1,8 +1,9 @@
-import { DatabaseSync } from 'node:sqlite'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { DatabaseSync } from 'node:sqlite'
 import { AbstractModel } from '$lib/server/models/abstract-model'
+import { makeSerializer } from '$lib/server/utils/sqlite'
 import type { DBConf } from '$lib/utils/types'
 
 export async function initTestDB() {
@@ -17,17 +18,21 @@ export async function cleanTestTB(conf: DBConf) {
 	await rm(conf.filename, { force: true })
 }
 
-export function serializedModel<T extends { id: number }>(
+export function serializeModel<T extends { id: number; _v: number }>(
 	model: Record<string, unknown>,
-	_modelClass: AbstractModel<T>
+	modelClass: AbstractModel<T>
 ) {
-	const serialized: Record<string, unknown> = { ...model }
-	return serialized
+	return addVersion(makeSerializer(modelClass)(model), (model as { _v: number })._v)
 }
 
-export function serializedModels<T extends { id: number }>(
+export function serializeModels<T extends { id: number; _v: number }>(
 	models: Record<string, unknown>[],
 	modelClass: AbstractModel<T>
 ) {
-	return models.map((model) => serializedModel(model, modelClass))
+	const serialize = makeSerializer(modelClass)
+	return models.map((m) => addVersion(serialize(m), (m as { _v: number })._v))
+}
+
+export function addVersion<T>(model: T, _v = 1): T {
+	return { _v, ...model }
 }

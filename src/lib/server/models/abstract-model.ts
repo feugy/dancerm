@@ -1,8 +1,14 @@
 import { DatabaseSync, type SQLOutputValue } from 'node:sqlite'
 import { getCurrentVersion, type Migration, migrateToLatest } from '$lib/server/utils/migrations'
-import { buildUpsert, whereIn } from '$lib/server/utils/sqlite'
+import {
+	buildSelect,
+	buildUpsert,
+	makeDeserializer,
+	makeSerializer,
+	whereIn
+} from '$lib/server/utils/sqlite'
 import { getLogger, type Logger } from '$lib/utils/logger'
-import type { DBConf, Page, PartialWithReq } from '$lib/utils/types'
+import type { Column, DBConf, Page, PartialWithReq } from '$lib/utils/types'
 import * as migrations from './migrations'
 
 let _db: DatabaseSync | null = null
@@ -39,15 +45,18 @@ async function connect(conf: DBConf, logger: Logger, migrate: boolean) {
 /**
  * Base class for all database models, provides CRUD operations on a single SQLite table.
  */
-export abstract class AbstractModel<T extends { id: string | number }> {
+export abstract class AbstractModel<T extends { id: string | number; _v: number }> {
 	/** Model name, used at table name. */
-	name: string
+	table: string
 
 	/** Logger specific to this model class. */
 	logger: Logger
 
 	/** Database connection. */
 	db: DatabaseSync | null = null
+
+	/** Column definition with types.  */
+	columns: Column[]
 
 	/** Release database connection (useful during tests). */
 	static release() {
@@ -58,12 +67,19 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	}
 
 	/** Builds a model manager, that can handle records of a given SQL table. */
-	constructor({ name }: { name: string }) {
-		if (!name) {
+	constructor({
+		table,
+		columns
+	}: {
+		table: string
+		columns: Column[]
+	}) {
+		if (!table) {
 			throw new Error('every model needs a name')
 		}
-		this.name = name
-		this.logger = getLogger(`models/${this.name}`)
+		this.table = table
+		this.logger = getLogger(`models/${this.table}`)
+		this.columns = columns
 	}
 
 	/**
@@ -73,13 +89,9 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 */
 	async init(configuration?: DBConf, migrate = true) {
 		if (!configuration) {
-			throw new Error(`${this.name} model must be initialized with a database configuration`)
+			throw new Error(`${this.table} model must be initialized with a database configuration`)
 		}
 		this.db = await connect(configuration, this.logger, migrate)
-		this.logger.debug(
-			{ configuration, name: this.name },
-			`${this.name} model connected to database`
-		)
 	}
 
 	/**
@@ -104,13 +116,18 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 		const [, rawDir, rawSort] = sort.match(/(-|\+)?(.+)/) as [unknown, string, string]
 		const direction = rawDir || '+'
 
-		const query = `SELECT * FROM ${this.name} WHERE 1=1 ORDER BY ${rawSort} ${direction === '+' ? 'asc' : 'desc'} LIMIT :size OFFSET :from`
-		const countQuery = `SELECT COUNT(*) AS count FROM ${this.name} WHERE 1=1`
+		const query = `${buildSelect(this.table, this.columns)} WHERE 1=1 ORDER BY ${this.table}.${rawSort} ${direction === '+' ? 'asc' : 'desc'} LIMIT :size OFFSET :from`
+		const countQuery = `SELECT COUNT(*) AS count FROM ${this.table} WHERE 1=1`
 
 		const params = { size, from }
-		const results = this.db.prepare(query).all(params).map(this.makeDeserializer())
+		this.logger.debug({ query, countQuery, from, size, rawSort, direction }, 'list models')
+		const deserialize = makeDeserializer<T>(this, true)
+		const results = this.db
+			.prepare(query)
+			.all(params)
+			.map((model) => deserialize(model) as T)
 		const total = this.db.prepare(countQuery).get()?.count ?? 0
-		this.logger.debug(
+		this.logger.info(
 			{ total, from, size, rawSort, direction, hitCount: results.length },
 			'returned list page'
 		)
@@ -128,7 +145,7 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 */
 	async count() {
 		if (!this.db) throw new Error('model not initialized')
-		return this.db.prepare(`SELECT COUNT(*) AS count FROM ${this.name}`).get()?.count ?? 0
+		return this.db.prepare(`SELECT COUNT(*) AS count FROM ${this.table}`).get()?.count ?? 0
 	}
 
 	/**
@@ -137,12 +154,15 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 * @returns matching model, or null
 	 */
 	async getById(id: T['id']) {
-		const result = this.db?.prepare(`SELECT * FROM ${this.name} WHERE id = :id`).get({ id })
-		this.logger.debug({ id, found: Boolean(result) }, 'fetch by id')
+		if (!this.db) throw new Error('model not initialized')
+		const query = `${buildSelect(this.table, this.columns)} WHERE ${this.table}.id = :id`
+		this.logger.debug({ query, id }, 'get model by id')
+		const result = this.db.prepare(query).get({ id })
+		this.logger.info({ id, found: Boolean(result) }, 'fetch by id')
 		if (!result) {
 			return null
 		}
-		return this.makeDeserializer()(result)
+		return makeDeserializer<T>(this, true)(result)
 	}
 
 	/**
@@ -152,14 +172,17 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 * @param ids Desired ids
 	 * @returns array of matching model (may be empty)
 	 */
-	async getByIds(ids: T['id'][]) {
+	async getByIds(ids: T['id'][]): Promise<T[]> {
+		if (!this.db) throw new Error('model not initialized')
+		const query = `${buildSelect(this.table, this.columns)} WHERE ${whereIn(`${this.table}.id`, ids)}`
+		this.logger.debug({ query, ids }, 'get models by ids')
 		const results =
 			this.db
-				?.prepare(`SELECT * FROM ${this.name} WHERE ${whereIn('id', ids)}`)
+				?.prepare(query)
 				.all(...ids)
-				?.map(this.makeDeserializer()) ?? []
-		this.logger.debug({ ids, hitCount: results.length }, 'fetch by ids')
-		return results
+				?.map((data) => makeDeserializer<T>(this, true)(data)) ?? []
+		this.logger.info({ ids, hitCount: results.length }, 'fetch by ids')
+		return results as unknown as T[]
 	}
 
 	/**
@@ -168,17 +191,21 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 * Partial update is supported: incoming data is merged with previous.
 	 * @param data Single or array of saved (partial) models
 	 */
-	async save(data: PartialWithReq<T, 'id'> | PartialWithReq<T, 'id'>[]): Promise<unknown> {
+	async save(data: PartialWithReq<T, 'id'> | PartialWithReq<T, 'id'>[]): Promise<T[]> {
 		if (!this.db) throw new Error('model not initialized')
 		const input = Array.isArray(data) ? data : [data]
-		this.logger.debug({ data: input }, 'saving')
-		const saved = input.map(this.makeSerializer())
-		const upsert = this.db.prepare(buildUpsert(this.name, saved, true))
-		const results = new Array(saved.length)
-		for (const [i, model] of saved.entries()) {
-			results[i] = upsert.get(model)
+		this.logger.info({ data: input }, 'saving')
+		const query = buildUpsert(this.table, this.columns, true)
+		const upsert = this.db.prepare(query)
+		const results = new Array(input.length)
+		const deserializer = makeDeserializer<T>(this)
+		const serializer = makeSerializer<T>(this)
+		for (const [i, model] of input.entries()) {
+			const saved = serializer(model)
+			this.logger.debug({ query, input, saved }, 'save model')
+			results[i] = deserializer(upsert.get(saved) as Record<string, SQLOutputValue>, model)
 		}
-		return results.map(this.makeDeserializer())
+		return results
 	}
 
 	/**
@@ -189,40 +216,17 @@ export abstract class AbstractModel<T extends { id: string | number }> {
 	 */
 	async removeByIds(ids: T['id'][]): Promise<T[]> {
 		if (!this.db) throw new Error('model not initialized')
-		this.logger.debug({ ids }, 'removing')
-		const previous = this.db
-			.prepare(`SELECT * FROM ${this.name} WHERE ${whereIn('id', ids)}`)
-			.all(...ids)
-		this.db.prepare(`DELETE FROM ${this.name} WHERE ${whereIn('id', ids)}`).run(...ids)
-		return previous.map(this.makeDeserializer())
+		const query = `DELETE FROM ${this.table} WHERE ${whereIn('id', ids)}`
+		this.logger.debug({ query, ids }, 'remove models by ids')
+		this.logger.info({ ids }, 'removing')
+		const previous = this.getByIds(ids)
+		this.db.prepare(query).run(...ids)
+		return previous
 	}
 
 	/** Deletes all models in table!! */
 	async reset() {
-		this.db?.exec(`DELETE FROM ${this.name}`)
+		this.db?.exec(`DELETE FROM ${this.table}`)
 		this.logger.info('table truncated')
-	}
-
-	/**
-	 * Internal function intended to subclasses, to customize deserialization.
-	 * Default implementation parses data from json columns.
-	 * @returns a deserialization function that takes database row and return parsed model
-	 */
-	protected makeDeserializer() {
-		return (input: Record<string, SQLOutputValue>): T => {
-			return { ...input } as unknown as T
-		}
-	}
-
-	/**
-	 * Internal function intended to subclasses, to customize serialization.
-	 * Default implementation stringifies data to json columns.
-	 * **Note** the returned object must not contain undefined values for columns
-	 * @returns a serialization function that takes model and returns database row
-	 */
-	protected makeSerializer() {
-		return (input: Partial<T>) => {
-			return input as unknown as Record<string, SQLOutputValue>
-		}
 	}
 }

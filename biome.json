@@ -44,7 +44,7 @@
 						"useConst": "off",
 						"useImportType": "off"
 					},
-
+					"complexity": { "noStaticOnlyClass": "off" },
 					"correctness": {
 						"noUnusedVariables": "off",
 						"noUnusedImports": "off"

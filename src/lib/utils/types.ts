@@ -1,6 +1,20 @@
 import v from '@vinejs/vine'
 import type { Infer } from '@vinejs/vine/types'
 
+/** Database column definition with types. */
+export type Column =
+	| {
+			name: string
+			/* use 'auto' to keep SQLite type affinity, 'date' for ISO string <-> Date, 'json' for JSON string <-> object */
+			type: 'auto' | 'date' | 'json'
+	  }
+	| {
+			name: string
+			/* use 'reference' for foreign key reference to another table */
+			type: 'reference'
+			model: { table: string; columns: Column[] }
+	  }
+
 /** A page of list results. */
 export interface Page<T> {
 	/** Total number of models. */

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { describe, expect, it } from 'vitest'
+import type { Column } from '$lib/utils/types'
 import { buildUpsert, whereIn } from './sqlite'
 
 describe('whereIn()', () => {
@@ -14,51 +15,18 @@ describe('whereIn()', () => {
 })
 
 describe('buildUpsert()', () => {
-	it('throws on empty array', () => {
-		const table = faker.database.column()
-		expect(() => buildUpsert(table, [])).toThrow(`Can not upsert in ${table} without models`)
-	})
-
 	it('does not include id in upserted fields', () => {
 		const table = faker.database.column()
-		const models = [
-			{
-				id: faker.string.uuid(),
-				f1: faker.string.alpha(),
-				f2: faker.number.int()
-			},
-			{
-				id: faker.string.uuid(),
-				f1: faker.string.alpha(),
-				f2: faker.number.int()
-			}
+		const columns: Column[] = [
+			{ name: 'id', type: 'auto' },
+			{ name: 'f1', type: 'auto' },
+			{ name: 'f2', type: 'auto' }
 		]
-		expect(buildUpsert(table, models)).toEqual(`INSERT INTO ${table} (id, f1, f2) 
+		expect(buildUpsert(table, columns)).toEqual(`INSERT INTO ${table} (id, f1, f2) 
 VALUES (:id, :f1, :f2)
 ON CONFLICT(id) DO UPDATE SET
-f1=coalesce(excluded.f1, NULL),
-f2=coalesce(excluded.f2, NULL)`)
-	})
-
-	it('includes all fields of all models without duplicates', () => {
-		const table = faker.database.column()
-		const models = [
-			{
-				id: faker.string.uuid(),
-				f1: faker.string.alpha(),
-				f2: faker.number.int()
-			},
-			{
-				id: faker.string.uuid(),
-				f2: faker.number.int(),
-				f3: faker.string.alpha()
-			}
-		]
-		expect(buildUpsert(table, models)).toEqual(`INSERT INTO ${table} (id, f1, f2, f3) 
-VALUES (:id, :f1, :f2, :f3)
-ON CONFLICT(id) DO UPDATE SET
-f1=coalesce(excluded.f1, NULL),
-f2=coalesce(excluded.f2, NULL),
-f3=coalesce(excluded.f3, NULL)`)
+f1=if(excluded.f1='', f1, excluded.f1),
+f2=if(excluded.f2='', f2, excluded.f2),
+_v=_v+1`)
 	})
 })

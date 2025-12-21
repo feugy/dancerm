@@ -3,6 +3,11 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
 const config = {
 	preprocess: vitePreprocess(),
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
+	},
 	kit: {
 		adapter: adapter(),
 		csp: {
@@ -13,6 +18,9 @@ const config = {
 				'script-src': ['self'],
 				'report-uri': ['/']
 			}
+		},
+		experimental: {
+			remoteFunctions: true
 		}
 	}
 }

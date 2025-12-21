@@ -1,4 +1,7 @@
+import { buildSelect, makeDeserializer } from '$lib/server/utils/sqlite'
 import { AbstractModel } from './abstract-model'
+import { type Address, addressesModel } from './address'
+import { type Card, cardsModel } from './card'
 
 export interface Dancer {
 	id: string
@@ -10,15 +13,41 @@ export interface Dancer {
 	cellphone: string | null
 	email: string | null
 	birth: Date | null
+	address: Address | null
+	card: Card
 }
 
-/**
- * Base class for all models containing references to tracks: Albums, Artists, Playlists.
- * Computes references automatically, and ensures reference integrity.
- */
 export class DancersModel extends AbstractModel<Dancer> {
 	constructor() {
-		super({ name: 'Dancer' })
+		super({
+			table: 'dancer',
+			columns: [
+				{ name: 'id', type: 'auto' },
+				{ name: '_v', type: 'auto' },
+				{ name: 'created', type: 'date' },
+				{ name: 'title', type: 'auto' },
+				{ name: 'firstname', type: 'auto' },
+				{ name: 'lastname', type: 'auto' },
+				{ name: 'cellphone', type: 'auto' },
+				{ name: 'email', type: 'auto' },
+				{ name: 'birth', type: 'date' },
+				{ name: 'addressId', type: 'reference', model: addressesModel },
+				{ name: 'cardId', type: 'reference', model: cardsModel }
+			]
+		})
+	}
+
+	async listByCard(cardId: string) {
+		if (!this.db) throw new Error('model not initialized')
+		const query = `${buildSelect(this.table, this.columns)} WHERE ${this.table}.cardId = :cardId`
+		this.logger.debug({ query, cardId }, 'list models by card')
+		const deserialize = makeDeserializer<Dancer>(this, true)
+		const result = this.db
+			.prepare(query)
+			.all({ cardId })
+			.map((model) => deserialize(model) as Dancer)
+		this.logger.info({ cardId, length: result.length }, 'list by card')
+		return result
 	}
 }
 

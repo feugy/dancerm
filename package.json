@@ -7,53 +7,55 @@
 	"scripts": {
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"dev": "vite --open",
 		"make": "vite build && electron-forge make",
 		"package": "vite build && electron-forge package",
 		"prepare": "svelte-kit sync || echo ''",
 		"publish": "electron-forge publish",
 		"start": "electron-forge start",
-		"test": "vitest"
+		"test": "NODE_OPTIONS='--disable-warning=ExperimentalWarning' vitest"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.4",
-		"@electron-forge/cli": "^7.9.0",
-		"@electron-forge/maker-zip": "^7.9.0",
-		"@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
-		"@electron-forge/plugin-fuses": "^7.9.0",
-		"@electron-forge/plugin-vite": "^7.9.0",
+		"@biomejs/biome": "^2.3.10",
+		"@electron-forge/cli": "^7.10.2",
+		"@electron-forge/maker-zip": "^7.10.2",
+		"@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
+		"@electron-forge/plugin-fuses": "^7.10.2",
+		"@electron-forge/plugin-vite": "^7.10.2",
 		"@electron/fuses": "^2.0.0",
-		"@faker-js/faker": "^10.0.0",
-		"@sveltejs/adapter-node": "^5.3.2",
-		"@sveltejs/kit": "^2.42.2",
-		"@sveltejs/vite-plugin-svelte": "^6.2.0",
-		"@tailwindcss/forms": "^0.5.10",
-		"@tailwindcss/typography": "^0.5.18",
-		"@tailwindcss/vite": "^4.1.13",
-		"@testing-library/jest-dom": "^6.8.0",
-		"@testing-library/svelte": "^5.2.8",
+		"@faker-js/faker": "^10.1.0",
+		"@sveltejs/adapter-node": "^5.4.0",
+		"@sveltejs/kit": "^2.49.2",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"@tailwindcss/forms": "^0.5.11",
+		"@tailwindcss/typography": "^0.5.19",
+		"@tailwindcss/vite": "^4.1.18",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/svelte": "^5.2.10",
 		"@types/electron-squirrel-startup": "^1.0.2",
-		"@types/node": "^24.5.2",
-		"@vinejs/vine": "^3.0.1",
-		"electron": "^38.1.2",
-		"jsdom": "^27.0.0",
-		"svelte": "^5.39.3",
-		"svelte-check": "^4.3.1",
-		"tailwindcss": "^4.1.13",
-		"typescript": "^5.9.2",
-		"vite": "^7.1.6",
-		"vitest": "^3.2.4"
+		"@types/luxon": "^3.7.1",
+		"@types/node": "^25.0.3",
+		"@vinejs/vine": "^4.2.0",
+		"electron": "^39.2.7",
+		"jsdom": "^27.3.0",
+		"svelte": "^5.46.0",
+		"svelte-check": "^4.3.5",
+		"tailwindcss": "^4.1.18",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.0",
+		"vitest": "^4.0.16"
 	},
 	"dependencies": {
-		"electron-squirrel-startup": "^1.0.1"
+		"daisyui": "^5.5.14",
+		"electron-squirrel-startup": "^1.0.1",
+		"luxon": "^3.7.2",
+		"valibot": "^1.2.0"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild",
 			"electron",
 			"electron-winstaller"
-		],
-		"patchedDependencies": {
-			"@sveltejs/kit": "patches/@sveltejs__kit.patch"
-		}
+		]
 	}
 }
