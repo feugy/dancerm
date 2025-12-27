@@ -1,6 +1,6 @@
 <script lang="ts">
-  // https://heroicons.com/outline pencil-square
-  let props = $props();
+// https://heroicons.com/outline pencil-square
+const props = $props()
 </script>
 
 <svg
@@ -9,7 +9,7 @@
   viewBox="0 0 24 24"
   stroke-width="1.5"
   stroke="currentColor"
-  class="size-6"
+  class="size-6 ${props.class ?? ''}"
   {...props}
 >
   <path

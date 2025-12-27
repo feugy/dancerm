@@ -58,3 +58,11 @@ export type DBConf = Infer<typeof dbConfSchema>
 export type PartialWithReq<Type, Key extends keyof Type> = Partial<Type> & {
 	[P in Key]-?: Type[P]
 }
+
+/** Properties of edition components' onchange events. */
+export interface OnChangeProps<T> {
+	value: T
+	modified: boolean
+	saving: boolean
+	save: () => void
+}

@@ -1,23 +1,43 @@
 <script lang="ts">
-  import { saveDancer } from "$lib/dancers.remote";
-  import type { Address, Dancer } from "$lib/server/models";
+import SaveIcon from '$lib/components/icons/pencil.svelte'
+import { saveDancer } from '$lib/dancers.remote'
+import type { Address, Dancer } from '$lib/server/models'
 
-  let {
-    addressId,
-    dancerId,
-  }: { addressId: Address["id"]; dancerId: Dancer["id"] } = $props();
+const {
+	value,
+	onchange,
+	dancerId
+}: {
+	value?: Address
+	dancerId: Dancer['id']
+	onchange?: (args: { value: Address; modified: boolean }) => void
+} = $props()
 
-  const save = $derived(saveDancer.for(dancerId));
+const form = $derived(saveDancer.for(dancerId))
+
+const modified = $derived(
+	form?.fields.address?.street.value() !== (value?.street ?? '') ||
+		form?.fields.address?.zipcode.value() !== (value?.zipcode ?? 0) ||
+		form?.fields.address?.city.value() !== (value?.city ?? '') ||
+		form?.fields.address?.phone.value() !== (value?.phone ?? '')
+)
+
+$effect(() => {
+	if (!value) return
+	onchange?.({ value, modified })
+})
 </script>
 
 <span class="flex flex-col gap-6 flex-1">
-  <h1 class="card-title pt-4">Adresse</h1>
-  <input type="hidden" name="address.id" value={addressId} />
+  <h1 class="card-title pt-4">
+    Adresse {#if modified}<SaveIcon class="size-4" />{/if}
+  </h1>
+  <input type="hidden" name="address.id" value={value?.id} />
   <label class="floating-label">
     <span>Voie</span>
     <input
       class="input w-full capitalize"
-      {...save.fields.address.street.as("text")}
+      {...form.fields.address.street.as("text")}
     />
   </label>
   <span class="flex gap-6"
@@ -25,16 +45,16 @@
       <span>Code postal</span>
       <input
         class="input w-full capitalize"
-        {...save.fields.address.zipcode.as("number")}
+        {...form.fields.address.zipcode.as("number")}
       />
     </label>
     <label class="floating-label flex-1">
       <span>Ville</span>
-      <input class="input w-full" {...save.fields.address.city.as("text")} />
+      <input class="input w-full" {...form.fields.address.city.as("text")} />
     </label></span
   >
   <label class="floating-label">
     <span>Téléphone</span>
-    <input class="input w-full" {...save.fields.address.phone.as("text")} />
+    <input class="input w-full" {...form.fields.address.phone.as("text")} />
   </label>
 </span>

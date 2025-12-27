@@ -1,21 +1,45 @@
 <script lang="ts">
-  import { saveDancer } from "$lib/dancers.remote";
-  import type { Dancer } from "$lib/server/models";
+import SaveIcon from '$lib/components/icons/pencil.svelte'
+import { saveDancer } from '$lib/dancers.remote'
+import type { Dancer } from '$lib/server/models'
+import { dateToDateInput } from '$lib/utils/forms'
 
-  let { dancerId }: { dancerId?: Dancer["id"] } = $props();
-  const loading = $derived(dancerId === undefined);
-  const save = $derived(dancerId ? saveDancer.for(dancerId) : undefined);
+const {
+	value,
+	onchange
+}: {
+	value?: Dancer
+	onchange?: (ags: { value: Dancer; modified: boolean }) => void
+} = $props()
+const loading = $derived(value?.id === undefined)
+const form = $derived(value?.id ? saveDancer.for(value.id) : undefined)
+
+const modified = $derived(
+	form?.fields.title.value() !== value?.title ||
+		form?.fields.firstname.value() !== (value?.firstname ?? '') ||
+		form?.fields.lastname.value() !== (value?.lastname ?? '') ||
+		form?.fields.cellphone.value() !== (value?.cellphone ?? '') ||
+		form?.fields.email.value() !== (value?.email ?? '') ||
+		form?.fields.birth.value() !== (dateToDateInput(value?.birth) ?? '')
+)
+
+$effect(() => {
+	if (!value) return
+	onchange?.({ value, modified })
+})
 </script>
 
 <span class="flex flex-col gap-6 flex-1">
-  <h1 class="card-title pt-4">Danseur</h1>
-  <input type="hidden" name="id" value={save?.fields.id.value()} />
+  <h1 class="card-title pt-4">
+    Danseur {#if modified}<SaveIcon class="size-4" />{/if}
+  </h1>
+  <input type="hidden" name="id" value={form?.fields.id.value()} />
   <span class="flex gap-6">
     <select
       class="select w-20"
       class:skeleton={loading}
       disabled={loading}
-      {...save?.fields.title.as("select")}
+      {...form?.fields.title.as("select")}
     >
       <option disabled selected>Civilité:</option>
       <option>M.</option>
@@ -29,7 +53,7 @@
         class="input w-full capitalize"
         class:skeleton={loading}
         disabled={loading}
-        {...save?.fields.firstname.as("text")}
+        {...form?.fields.firstname.as("text")}
       />
     </label>
   </span>
@@ -39,7 +63,7 @@
       class="input w-full capitalize"
       class:skeleton={loading}
       disabled={loading}
-      {...save?.fields.lastname.as("text")}
+      {...form?.fields.lastname.as("text")}
     />
   </label>
   <label class="floating-label">
@@ -47,7 +71,7 @@
     <input
       class:skeleton={loading}
       disabled={loading}
-      {...save?.fields.cellphone.as("text")}
+      {...form?.fields.cellphone.as("text")}
       class="input w-full"
     />
   </label>
@@ -56,7 +80,7 @@
     <input
       class:skeleton={loading}
       disabled={loading}
-      {...save?.fields.email.as("email")}
+      {...form?.fields.email.as("email")}
       class="input w-full"
     />
   </label>
@@ -65,7 +89,7 @@
     <input
       class:skeleton={loading}
       disabled={loading}
-      {...save?.fields.birth.as("date")}
+      {...form?.fields.birth.as("date")}
       class="input w-full"
     />
   </label>

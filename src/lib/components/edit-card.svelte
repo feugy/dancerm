@@ -1,39 +1,54 @@
 <script lang="ts">
-  import { saveCard } from "$lib/cards.remote";
-  import SaveIcon from "$lib/components/icons/save.svelte";
-  import KnownBy from "$lib/components/known-by.svelte";
-  import type { Card } from "$lib/server/models";
+import { saveCard } from '$lib/cards.remote'
+import KnownBy from '$lib/components/known-by.svelte'
+import type { Card } from '$lib/server/models'
+import type { OnChangeProps } from '$lib/utils/types'
 
-  let { value }: { value?: Card } = $props();
+const {
+	value,
+	onchange
+}: {
+	value?: Card
+	onchange?: (props: OnChangeProps<Card>) => void
+} = $props()
 
-  const save = $derived(value ? saveCard.for(value.id) : undefined);
+let formNode: HTMLFormElement | null = null
+const form = $derived(value ? saveCard.for(value.id) : undefined)
+let isKnownByChanged = $state(false)
 
-  $effect(() => {
-    if (!value || !save) return;
+$effect(() => {
+	if (!value || !form) return
 
-    save.fields.set({
-      ...value,
-      knownBy: value.knownBy ?? [],
-    });
-  });
+	form.fields.set({
+		...value,
+		knownBy: value.knownBy ?? []
+	})
+})
 
-  const isModified = $derived(
-    save?.fields.knownBy.value()?.toSorted().join() !==
-      value?.knownBy?.toSorted().join()
-  );
+$effect(() => {
+	if (!value) return
+	onchange?.({
+		value,
+		modified: isKnownByChanged,
+		saving: (form?.pending ?? 0) > 0,
+		save: isKnownByChanged ? () => formNode?.requestSubmit() : () => void 0
+	})
+})
 </script>
 
-<form class="card bg-base-100 border border-primary" {...save}>
-  <KnownBy cardId={value?.id} />
+<form
+  bind:this={formNode}
+  class="card bg-base-100 border border-primary"
+  {...form}
+>
+  <KnownBy
+    {value}
+    onchange={({ modified }) => {
+      isKnownByChanged = modified;
+    }}
+  />
 
-  {#each save?.fields.allIssues() as issue}
+  {#each form?.fields.allIssues() as issue}
     <p>{issue.message}</p>
   {/each}
-  <button
-    disabled={!isModified || !save || save.pending > 0}
-    class="btn btn-primary m-2"
-  >
-    {#if save?.pending}<span class="loading loading-spinner size-5"></span>
-    {:else}<SaveIcon class="size-5" />{/if}Save</button
-  >
 </form>
