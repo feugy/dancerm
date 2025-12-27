@@ -8,7 +8,11 @@ inutile?? dans package.json
 
 # To Do
 
-- ajouter un danseur sur une carte existante.
 - supprimer un danseur.
 - ajouter une adresse différente pour un danseur.
 - supprimer une adresse différente d'un danseur.
+- afficher les plannings
+- lister les inscriptions d'un danseur pour une année
+- ajouter une inscription d'un danseur sur une annés donnée
+- supprimer une inscription
+- lister les danseurs insrcrit dans un cours

@@ -2,7 +2,14 @@ import { redirect } from '@sveltejs/kit'
 import * as v from 'valibot'
 import { form, query } from '$app/server'
 import { DATABASE_PATH } from '$env/static/private'
-import { addressesModel, cardsModel, dancersModel, init } from '$lib/server/models'
+import {
+	type Address,
+	addressesModel,
+	type Card,
+	cardsModel,
+	dancersModel,
+	init
+} from '$lib/server/models'
 
 const filename = DATABASE_PATH
 
@@ -51,8 +58,20 @@ export const saveDancer = form(
 
 	async (data) => {
 		await init({ filename })
-		const card = data.card ? (await cardsModel.save(data.card))[0] : undefined
-		const address = data.address ? (await addressesModel.save(data.address))[0] : undefined
+		let card: Card | undefined
+		if (data.card) {
+			card =
+				(Object.keys(data.card).length === 1
+					? await cardsModel.getById(data.card.id)
+					: (await cardsModel.save(data.card))[0]) ?? undefined
+		}
+		let address: Address | undefined
+		if (data.address) {
+			address =
+				(Object.keys(data.address).length === 1
+					? await addressesModel.getById(data.address.id)
+					: (await addressesModel.save(data.address))[0]) ?? undefined
+		}
 
 		const [saved] = await dancersModel.save({
 			...data,

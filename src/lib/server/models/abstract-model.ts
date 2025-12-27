@@ -105,7 +105,7 @@ export abstract class AbstractModel<T extends { id: string | number; _v: number 
 	 */
 	async list({
 		from = 0,
-		size = 10,
+		size = 20,
 		sort = 'id'
 	}: {
 		from?: number

@@ -3,16 +3,21 @@ import { SvelteMap } from 'svelte/reactivity'
 import EditCard from '$lib/components/edit-card.svelte'
 import EditDancer from '$lib/components/edit-dancer.svelte'
 import SaveIcon from '$lib/components/icons/pencil-square.svelte'
+import AddIcon from '$lib/components/icons/user-plus.svelte'
 import { getDancer, getRelatedDancers } from '$lib/dancers.remote.js'
 import type { Card } from '$lib/server/models/card.js'
 import type { Dancer } from '$lib/server/models/dancer.js'
 import type { OnChangeProps } from '$lib/utils/types.js'
 
-let { params } = $props()
+const { params } = $props()
+
+const states = new SvelteMap<string, OnChangeProps<Dancer | Card>>()
+
+const addedDancers = $state<Dancer[]>([])
 
 const dancerPromise = $derived(getDancer(params.id))
-let states = new SvelteMap<string, OnChangeProps<Dancer | Card>>()
-let buttonProps = $derived.by(() => {
+
+const buttonProps = $derived.by(() => {
 	const props = { disabled: true, saving: false }
 	for (const [, state] of states) {
 		if (state.saving) {
@@ -34,6 +39,23 @@ function triggerSaves() {
 	for (const { save } of states.values()) {
 		save()
 	}
+	addedDancers.splice(0, addedDancers.length)
+}
+
+async function addDancer() {
+	addedDancers.push({
+		id: crypto.randomUUID(),
+		card: (await dancerPromise).card,
+		_v: 0,
+		created: new Date(),
+		title: null,
+		firstname: null,
+		lastname: null,
+		birth: null,
+		email: null,
+		cellphone: null,
+		address: null
+	})
 }
 </script>
 
@@ -63,7 +85,18 @@ function triggerSaves() {
           />
         {/if}
       {/each}
+      {#each addedDancers as added}
+        <EditDancer
+          value={added}
+          mainAddressId={dancer.address?.id}
+          onchange={handleChange}
+          isNew
+        />
+      {/each}
     {/await}
+    <button class="btn btn-primary m-2" onclick={addDancer}>
+      <AddIcon />
+    </button>
   </div>
   {#await dancerPromise}
     <EditCard />

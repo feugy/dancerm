@@ -9,11 +9,13 @@ import DancerFields from './dancer-fields.svelte'
 const {
 	value,
 	onchange,
-	mainAddressId
+	mainAddressId,
+	isNew = false
 }: {
 	value?: Dancer
 	mainAddressId?: Address['id']
 	onchange?: (props: OnChangeProps<Dancer>) => void
+	isNew?: boolean
 } = $props()
 
 let formNode: HTMLFormElement | null = null
@@ -64,6 +66,10 @@ $effect(() => {
 >
   <div class="card-body flex-col pt-0 gap-6">
     <div class="flex gap-6">
+			{#if isNew} 
+				<input type="hidden" name="card.id" value={value?.card.id} />
+				<input type="hidden" name="address.id" value={mainAddressId} />
+			{/if}
       <DancerFields
         {value}
         onchange={({ modified }) => {
