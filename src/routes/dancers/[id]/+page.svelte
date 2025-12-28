@@ -1,62 +1,70 @@
 <script lang="ts">
-import { SvelteMap } from 'svelte/reactivity'
-import EditCard from '$lib/components/edit-card.svelte'
-import EditDancer from '$lib/components/edit-dancer.svelte'
-import SaveIcon from '$lib/components/icons/pencil-square.svelte'
-import AddIcon from '$lib/components/icons/user-plus.svelte'
-import { getDancer, getRelatedDancers } from '$lib/dancers.remote.js'
-import type { Card } from '$lib/server/models/card.js'
-import type { Dancer } from '$lib/server/models/dancer.js'
-import type { OnChangeProps } from '$lib/utils/types.js'
+	import { SvelteMap } from 'svelte/reactivity'
+	import { goto } from '$app/navigation'
+	import EditCard from '$lib/components/edit-card.svelte'
+	import EditDancer from '$lib/components/edit-dancer.svelte'
+	import SaveIcon from '$lib/components/icons/pencil-square.svelte'
+	import AddIcon from '$lib/components/icons/user-plus.svelte'
+	import { deleteDancer, getDancer, getRelatedDancers } from '$lib/dancers.remote.js'
+	import type { Card } from '$lib/server/models/card.js'
+	import type { Dancer } from '$lib/server/models/dancer.js'
+	import type { OnChangeProps } from '$lib/utils/types.js'
 
-const { params } = $props()
+	const { params } = $props()
 
-const states = new SvelteMap<string, OnChangeProps<Dancer | Card>>()
+	const states = new SvelteMap<string, OnChangeProps<Dancer | Card>>()
 
-const addedDancers = $state<Dancer[]>([])
+	const addedDancers = $state<Dancer[]>([])
 
-const dancerPromise = $derived(getDancer(params.id))
+	const dancerPromise = $derived(getDancer(params.id))
 
-const buttonProps = $derived.by(() => {
-	const props = { disabled: true, saving: false }
-	for (const [, state] of states) {
-		if (state.saving) {
-			props.disabled = true
-			props.saving = true
+	const buttonProps = $derived.by(() => {
+		const props = { disabled: true, saving: false }
+		for (const [, state] of states) {
+			if (state.saving) {
+				props.disabled = true
+				props.saving = true
+			}
+			if (state.modified) {
+				props.disabled = false
+			}
 		}
-		if (state.modified) {
-			props.disabled = false
-		}
-	}
-	return props
-})
-
-function handleChange<T extends Dancer | Card>(args: OnChangeProps<T>) {
-	states.set(args.value.id, args)
-}
-
-function triggerSaves() {
-	for (const { save } of states.values()) {
-		save()
-	}
-	addedDancers.splice(0, addedDancers.length)
-}
-
-async function addDancer() {
-	addedDancers.push({
-		id: crypto.randomUUID(),
-		card: (await dancerPromise).card,
-		_v: 0,
-		created: new Date(),
-		title: null,
-		firstname: null,
-		lastname: null,
-		birth: null,
-		email: null,
-		cellphone: null,
-		address: null
+		return props
 	})
-}
+
+	function handleChange<T extends Dancer | Card>(args: OnChangeProps<T>) {
+		states.set(args.value.id, args)
+	}
+
+	function triggerSaves() {
+		for (const { save } of states.values()) {
+			save()
+		}
+		addedDancers.splice(0, addedDancers.length)
+	}
+
+	async function addDancer() {
+		addedDancers.push({
+			id: crypto.randomUUID(),
+			card: (await dancerPromise).card,
+			_v: 0,
+			created: new Date(),
+			title: null,
+			firstname: null,
+			lastname: null,
+			birth: null,
+			email: null,
+			cellphone: null,
+			address: null
+		})
+	}
+
+	async function handleDelete({ value }: { value: Dancer }) {
+		await deleteDancer(value)
+		if (value.id === (await dancerPromise).id) {
+			goto('/')
+		}
+	}
 </script>
 
 <a href="/" class="text-blue-500 hover:underline mb-4 inline-block">Back</a>
@@ -75,13 +83,14 @@ async function addDancer() {
     {#await dancerPromise}
       <EditDancer />
     {:then dancer}
-      <EditDancer value={dancer} onchange={handleChange} />
+      <EditDancer value={dancer} onchange={handleChange} ondelete={handleDelete}/>
       {#each await getRelatedDancers(dancer.card.id) as related}
         {#if related.id !== dancer.id}
           <EditDancer
             value={related}
             mainAddressId={dancer.address?.id}
             onchange={handleChange}
+						ondelete={handleDelete}
           />
         {/if}
       {/each}
@@ -90,11 +99,10 @@ async function addDancer() {
           value={added}
           mainAddressId={dancer.address?.id}
           onchange={handleChange}
-          isNew
         />
       {/each}
     {/await}
-    <button class="btn btn-primary m-2" onclick={addDancer}>
+    <button class="btn btn-primary btn-square btn-xl rounded-lg" onclick={addDancer}>
       <AddIcon />
     </button>
   </div>

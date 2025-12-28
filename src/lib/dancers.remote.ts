@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit'
 import * as v from 'valibot'
-import { form, query } from '$app/server'
+import { command, form, query } from '$app/server'
 import { DATABASE_PATH } from '$env/static/private'
 import {
 	type Address,
@@ -88,6 +88,41 @@ export const saveDancer = form(
 			getDancer(dancerId).set(result)
 			getRelatedDancers(cardId).set(await dancersModel.listByCard(cardId))
 			return result
+		}
+	}
+)
+
+export const deleteDancer = command(
+	v.object({
+		id: v.string(),
+		address: v.nullish(
+			v.object({
+				id: v.string()
+			})
+		),
+		card: v.optional(
+			v.object({
+				id: v.string()
+			})
+		)
+	}),
+	async (data) => {
+		await init({ filename })
+		await dancersModel.removeByIds([data.id])
+		const addressId = data.address?.id
+		if (addressId) {
+			const related = await dancersModel.listByAddress(addressId)
+			if (related.length === 0) {
+				await addressesModel.removeByIds([addressId])
+			}
+		}
+		const cardId = data.card?.id
+		if (cardId) {
+			getRelatedDancers(cardId).refresh()
+			const related = await dancersModel.listByCard(cardId)
+			if (related.length === 0) {
+				await cardsModel.removeByIds([cardId])
+			}
 		}
 	}
 )

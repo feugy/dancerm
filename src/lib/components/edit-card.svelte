@@ -1,39 +1,39 @@
 <script lang="ts">
-import { saveCard } from '$lib/cards.remote'
-import KnownBy from '$lib/components/known-by.svelte'
-import type { Card } from '$lib/server/models'
-import type { OnChangeProps } from '$lib/utils/types'
+	import { saveCard } from '$lib/cards.remote'
+	import KnownBy from '$lib/components/known-by.svelte'
+	import type { Card } from '$lib/server/models'
+	import type { OnChangeProps } from '$lib/utils/types'
 
-const {
-	value,
-	onchange
-}: {
-	value?: Card
-	onchange?: (props: OnChangeProps<Card>) => void
-} = $props()
-
-let formNode: HTMLFormElement | null = null
-const form = $derived(value ? saveCard.for(value.id) : undefined)
-let isKnownByChanged = $state(false)
-
-$effect(() => {
-	if (!value || !form) return
-
-	form.fields.set({
-		...value,
-		knownBy: value.knownBy ?? []
-	})
-})
-
-$effect(() => {
-	if (!value) return
-	onchange?.({
+	const {
 		value,
-		modified: isKnownByChanged,
-		saving: (form?.pending ?? 0) > 0,
-		save: isKnownByChanged ? () => formNode?.requestSubmit() : () => void 0
+		onchange
+	}: {
+		value?: Card
+		onchange?: (props: OnChangeProps<Card>) => void
+	} = $props()
+
+	let formNode: HTMLFormElement | null = null
+	const form = $derived(value ? saveCard.for(value.id) : undefined)
+	let isKnownByChanged = $state(false)
+
+	$effect(() => {
+		if (!value || !form) return
+
+		form.fields.set({
+			...value,
+			knownBy: value.knownBy ?? []
+		})
 	})
-})
+
+	$effect(() => {
+		if (!value) return
+		onchange?.({
+			value,
+			modified: isKnownByChanged,
+			saving: (form?.pending ?? 0) > 0,
+			save: isKnownByChanged ? () => formNode?.requestSubmit() : () => void 0
+		})
+	})
 </script>
 
 <form

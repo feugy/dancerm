@@ -49,6 +49,19 @@ export class DancersModel extends AbstractModel<Dancer> {
 		this.logger.info({ cardId, length: result.length }, 'list by card')
 		return result
 	}
+
+	async listByAddress(addressId: string) {
+		if (!this.db) throw new Error('model not initialized')
+		const query = `${buildSelect(this.table, this.columns)} WHERE ${this.table}.addressId = :addressId`
+		this.logger.debug({ query, addressId }, 'list models by address')
+		const deserialize = makeDeserializer<Dancer>(this, true)
+		const result = this.db
+			.prepare(query)
+			.all({ addressId })
+			.map((model) => deserialize(model) as Dancer)
+		this.logger.info({ addressId, length: result.length }, 'list by address')
+		return result
+	}
 }
 
 export const dancersModel = new DancersModel()

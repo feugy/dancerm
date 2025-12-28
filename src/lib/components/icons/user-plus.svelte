@@ -1,6 +1,6 @@
 <script lang="ts">
-// https://heroicons.com/outline user-plus
-const props = $props()
+	// https://heroicons.com/outline user-plus
+	const props = $props()
 </script>
 
 <svg

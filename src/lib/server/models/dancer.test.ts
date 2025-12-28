@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { cleanTestTB, initTestDB } from '$lib/tests/database'
 import type { DBConf } from '$lib/utils/types'
-import { addressesModel } from './address'
+import { type Address, addressesModel } from './address'
 import { type Card, cardsModel } from './card'
 import { type Dancer, DancersModel, dancersModel } from './dancer'
 
@@ -196,6 +196,104 @@ describe('Dancers model', () => {
 		it('throws error when model not initialized', async () => {
 			const uninitializedModel = new DancersModel()
 			await expect(() => uninitializedModel.listByCard('card-id')).rejects.toThrow(
+				'model not initialized'
+			)
+		})
+	})
+
+	describe('listByAddress()', () => {
+		let address1: Address
+		let address2: Address
+		let card1: Card
+		let card2: Card
+
+		beforeEach(async () => {
+			;[card1, card2] = await cardsModel.save([
+				{
+					id: faker.number.int().toString(),
+					knownBy: [],
+					registrations: []
+				},
+				{
+					id: faker.number.int().toString(),
+					knownBy: [],
+					registrations: []
+				}
+			])
+			;[address1, address2] = await addressesModel.save([
+				{
+					id: faker.number.int().toString(),
+					street: faker.location.street(),
+					zipcode: Number(faker.location.zipCode()),
+					city: faker.location.city(),
+					phone: faker.phone.number()
+				},
+				{
+					id: faker.number.int().toString(),
+					street: faker.location.street(),
+					zipcode: Number(faker.location.zipCode()),
+					city: faker.location.city(),
+					phone: faker.phone.number()
+				}
+			])
+		})
+
+		it('returns dancers with specific address', async () => {
+			const [dancer1, dancer2, dancer3] = await dancersModel.save([
+				{
+					id: faker.number.int().toString(),
+					_v: 1,
+					created: new Date(),
+					title: 'M.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					address: address1,
+					card: card1
+				},
+				{
+					id: faker.number.int().toString(),
+					_v: 1,
+					created: new Date(),
+					title: 'Mme.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					address: address1,
+					card: card2
+				},
+				{
+					id: faker.number.int().toString(),
+					_v: 1,
+					created: new Date(),
+					title: 'M.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					address: address2,
+					card: card2
+				}
+			])
+
+			const result = await dancersModel.listByAddress(address1.id)
+			expect(result).toHaveLength(2)
+			expect(result).toEqual(expect.arrayContaining([dancer1, dancer2]))
+			expect(result).not.toEqual(expect.arrayContaining([dancer3]))
+		})
+
+		it('returns empty array when no dancers found for address', async () => {
+			expect(await dancersModel.listByAddress('non-existent-address-id')).toEqual([])
+		})
+
+		it('throws error when model not initialized', async () => {
+			const uninitializedModel = new DancersModel()
+			await expect(() => uninitializedModel.listByAddress('address-id')).rejects.toThrow(
 				'model not initialized'
 			)
 		})

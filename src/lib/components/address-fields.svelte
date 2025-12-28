@@ -1,35 +1,35 @@
 <script lang="ts">
-import SaveIcon from '$lib/components/icons/pencil.svelte'
-import { saveDancer } from '$lib/dancers.remote'
-import type { Address, Dancer } from '$lib/server/models'
+	import SaveIcon from '$lib/components/icons/pencil.svelte'
+	import { saveDancer } from '$lib/dancers.remote'
+	import type { Address, Dancer } from '$lib/server/models'
 
-const {
-	value,
-	onchange,
-	dancerId
-}: {
-	value?: Address
-	dancerId: Dancer['id']
-	onchange?: (args: { value: Address; modified: boolean }) => void
-} = $props()
+	const {
+		value,
+		onchange,
+		dancerId
+	}: {
+		value?: Address
+		dancerId: Dancer['id']
+		onchange?: (args: { value: Address; modified: boolean }) => void
+	} = $props()
 
-const form = $derived(saveDancer.for(dancerId))
+	const form = $derived(saveDancer.for(dancerId))
 
-const modified = $derived(
-	form?.fields.address?.street.value() !== (value?.street ?? '') ||
-		form?.fields.address?.zipcode.value() !== (value?.zipcode ?? 0) ||
-		form?.fields.address?.city.value() !== (value?.city ?? '') ||
-		form?.fields.address?.phone.value() !== (value?.phone ?? '')
-)
+	const modified = $derived(
+		form?.fields.address?.street.value() !== (value?.street ?? '') ||
+			form?.fields.address?.zipcode.value() !== (value?.zipcode ?? 0) ||
+			form?.fields.address?.city.value() !== (value?.city ?? '') ||
+			form?.fields.address?.phone.value() !== (value?.phone ?? '')
+	)
 
-$effect(() => {
-	if (!value) return
-	onchange?.({ value, modified })
-})
+	$effect(() => {
+		if (!value) return
+		onchange?.({ value, modified })
+	})
 </script>
 
 <span class="flex flex-col gap-6 flex-1">
-  <h1 class="card-title pt-4">
+  <h1 class="card-title mt-4 h-8">
     Adresse {#if modified}<SaveIcon class="size-4" />{/if}
   </h1>
   <input type="hidden" name="address.id" value={value?.id} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { getDancers } from '$lib/dancers.remote'
+	import { getDancers } from '$lib/dancers.remote'
 </script>
 
 {#await getDancers()}
