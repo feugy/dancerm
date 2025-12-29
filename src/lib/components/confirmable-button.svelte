@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	import type { HTMLButtonAttributes } from 'svelte/elements'
+	import type { ButtonProps } from '$lib/components/button.svelte'
+	import Button from '$lib/components/button.svelte'
 
-	interface ConfirmableButtonProps extends HTMLButtonAttributes {
-		children?: Snippet
+	interface ConfirmableButtonProps extends ButtonProps {
 		heading: Snippet
 		content: Snippet
 		confirmAction: Snippet
@@ -11,12 +11,10 @@
 	}
 
 	const {
-		class: className,
 		heading,
 		content,
 		cancelAction,
 		confirmAction,
-		children,
 		onclick,
 		...props
 	}: ConfirmableButtonProps = $props()
@@ -34,15 +32,15 @@
 	}
 </script>
 
-<button class="btn {className}" onclick={open} {...props}>{@render children?.()}</button>
+<Button onclick={open} {...props}/>
 <dialog bind:this={modal} class="modal font-normal text-base">
   <div class="modal-box">
     <h3 class="text-lg font-bold">{@render heading()}</h3>
     <p class="py-4">{@render content()}</p>
     <div class="modal-action">
       <form method="dialog" class="contents">
-        <button class="btn">{@render cancelAction()}</button>
-        <button class="btn btn-primary" onclick={confirm}>{@render confirmAction()}</button>
+        <Button>{@render cancelAction()}</Button>
+        <Button class="btn-primary" onclick={confirm}>{@render confirmAction()}</Button>
       </form>
     </div>
   </div>

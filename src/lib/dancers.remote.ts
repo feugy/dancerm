@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit'
+import { error, redirect } from '@sveltejs/kit'
 import * as v from 'valibot'
 import { command, form, query } from '$app/server'
 import { DATABASE_PATH } from '$env/static/private'
@@ -56,26 +56,26 @@ export const saveDancer = form(
 		)
 	}),
 
-	async (data) => {
+	async (dancer) => {
 		await init({ filename })
 		let card: Card | undefined
-		if (data.card) {
+		if (dancer.card) {
 			card =
-				(Object.keys(data.card).length === 1
-					? await cardsModel.getById(data.card.id)
-					: (await cardsModel.save(data.card))[0]) ?? undefined
+				(Object.keys(dancer.card).length === 1
+					? await cardsModel.getById(dancer.card.id)
+					: (await cardsModel.save(dancer.card))[0]) ?? undefined
 		}
 		let address: Address | undefined
-		if (data.address) {
+		if (dancer.address) {
 			address =
-				(Object.keys(data.address).length === 1
-					? await addressesModel.getById(data.address.id)
-					: (await addressesModel.save(data.address))[0]) ?? undefined
+				(Object.keys(dancer.address).length === 1
+					? await addressesModel.getById(dancer.address.id)
+					: (await addressesModel.save(dancer.address))[0]) ?? undefined
 		}
 
 		const [saved] = await dancersModel.save({
-			...data,
-			birth: data.birth ? new Date(data.birth) : null,
+			...dancer,
+			birth: dancer.birth ? new Date(dancer.birth) : null,
 			address,
 			card
 		})
@@ -106,23 +106,68 @@ export const deleteDancer = command(
 			})
 		)
 	}),
-	async (data) => {
+	async (dancer) => {
 		await init({ filename })
-		await dancersModel.removeByIds([data.id])
-		const addressId = data.address?.id
+		await dancersModel.removeByIds([dancer.id])
+		const addressId = dancer.address?.id
 		if (addressId) {
 			const related = await dancersModel.listByAddress(addressId)
 			if (related.length === 0) {
 				await addressesModel.removeByIds([addressId])
 			}
 		}
-		const cardId = data.card?.id
+		const cardId = dancer.card?.id
 		if (cardId) {
 			getRelatedDancers(cardId).refresh()
 			const related = await dancersModel.listByCard(cardId)
 			if (related.length === 0) {
 				await cardsModel.removeByIds([cardId])
 			}
+		}
+	}
+)
+
+export const removeFromAddress = command(
+	v.object({
+		dancer: v.object({
+			id: v.string(),
+			address: v.nullish(
+				v.object({
+					id: v.string()
+				})
+			),
+			card: v.optional(
+				v.object({
+					id: v.string()
+				})
+			)
+		}),
+		newAddressId: v.string()
+	}),
+	async ({ dancer, newAddressId }) => {
+		await init({ filename })
+		const address = await addressesModel.getById(newAddressId)
+		if (!address) {
+			error(400, { message: `No address found with id ${newAddressId}` })
+		}
+
+		const oldAddressId = dancer.address?.id
+		const related = await dancersModel.listByAddress(oldAddressId ?? '')
+		if (!oldAddressId || related.every(({ id }) => id !== dancer.id)) {
+			error(400, { message: `Dancer is not assigned to old address id ${oldAddressId}` })
+		}
+
+		let card: Card | undefined
+		if (dancer.card) {
+			card = (await cardsModel.getById(dancer.card.id)) ?? undefined
+		}
+		const saved = (await dancersModel.save({ ...dancer, card, address }))[0]
+		getDancer(dancer.id).set(saved)
+		if (card?.id) {
+			getRelatedDancers(card.id).refresh()
+		}
+		if (related.length === 1) {
+			await addressesModel.removeByIds([oldAddressId])
 		}
 	}
 )

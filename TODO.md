@@ -8,7 +8,6 @@ inutile?? dans package.json
 
 # To Do
 
-- supprimer une adresse différente d'un danseur.
 - afficher les plannings
 - lister les inscriptions d'un danseur pour une année
 - ajouter une inscription d'un danseur sur une annés donnée

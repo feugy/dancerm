@@ -1,13 +1,20 @@
 <script lang="ts">
 	import { SvelteMap } from 'svelte/reactivity'
 	import { goto } from '$app/navigation'
+	import Button from '$lib/components/button.svelte'
 	import EditCard from '$lib/components/edit-card.svelte'
 	import EditDancer from '$lib/components/edit-dancer.svelte'
 	import SaveIcon from '$lib/components/icons/pencil-square.svelte'
 	import AddIcon from '$lib/components/icons/user-plus.svelte'
-	import { deleteDancer, getDancer, getRelatedDancers } from '$lib/dancers.remote.js'
+	import {
+		deleteDancer,
+		getDancer,
+		getRelatedDancers,
+		removeFromAddress
+	} from '$lib/dancers.remote.js'
 	import type { Card } from '$lib/server/models/card.js'
 	import type { Dancer } from '$lib/server/models/dancer.js'
+	import { isNew } from '$lib/utils/models.js'
 	import type { OnChangeProps } from '$lib/utils/types.js'
 
 	const { params } = $props()
@@ -44,18 +51,19 @@
 	}
 
 	async function addDancer() {
+		const { card, address } = await dancerPromise
 		addedDancers.push({
 			id: crypto.randomUUID(),
-			card: (await dancerPromise).card,
 			_v: 0,
+			card,
+			address,
 			created: new Date(),
 			title: null,
 			firstname: null,
 			lastname: null,
 			birth: null,
 			email: null,
-			cellphone: null,
-			address: null
+			cellphone: null
 		})
 	}
 
@@ -65,32 +73,41 @@
 			goto('/')
 		}
 	}
+
+	async function removeAddress({ value: dancer }: { value: Dancer }) {
+		const { address, card } = await dancerPromise
+		if (!isNew(dancer) && address) {
+			await removeFromAddress({ dancer: { ...dancer, card }, newAddressId: address.id })
+		}
+		dancer.address = address
+	}
 </script>
 
 <a href="/" class="text-blue-500 hover:underline mb-4 inline-block">Back</a>
 
-<button
+<Button
   disabled={buttonProps.disabled}
-  class="btn btn-primary m-2"
+  class="btn-primary m-2"
   onclick={triggerSaves}
+	
 >
   {#if buttonProps.saving}<span class="loading loading-spinner size-5"
     ></span>{:else}<SaveIcon class="size-5" />{/if}
-  Save</button
->
+  Save</Button>
 <div class="flex flex-col p-2 gap-2">
   <div class="flex gap-2">
     {#await dancerPromise}
       <EditDancer />
     {:then dancer}
-      <EditDancer value={dancer} onchange={handleChange} ondelete={handleDelete}/>
+      <EditDancer value={dancer} onChange={handleChange} onDelete={handleDelete}/>
       {#each await getRelatedDancers(dancer.card.id) as related}
         {#if related.id !== dancer.id}
           <EditDancer
             value={related}
             mainAddressId={dancer.address?.id}
-            onchange={handleChange}
-						ondelete={handleDelete}
+            onChange={handleChange}
+            onDelete={handleDelete}
+						onRemoveAddress={removeAddress}
           />
         {/if}
       {/each}
@@ -98,17 +115,18 @@
         <EditDancer
           value={added}
           mainAddressId={dancer.address?.id}
-          onchange={handleChange}
+          onChange={handleChange}
+					onRemoveAddress={removeAddress}
         />
       {/each}
     {/await}
-    <button class="btn btn-primary btn-square btn-xl rounded-lg" onclick={addDancer}>
+    <Button class="btn-primary btn-square btn-xl rounded-lg" onclick={addDancer} title="Ajouter un danseur">
       <AddIcon />
-    </button>
+    </Button>
   </div>
   {#await dancerPromise}
     <EditCard />
   {:then dancer}
-    <EditCard value={dancer.card} onchange={handleChange} />
+    <EditCard value={dancer.card} onChange={handleChange} />
   {/await}
 </div>

@@ -6,10 +6,10 @@
 
 	const {
 		value,
-		onchange
+		onChange
 	}: {
 		value?: Card
-		onchange?: (props: OnChangeProps<Card>) => void
+		onChange?: (props: OnChangeProps<Card>) => void
 	} = $props()
 
 	let formNode: HTMLFormElement | null = null
@@ -27,7 +27,7 @@
 
 	$effect(() => {
 		if (!value) return
-		onchange?.({
+		onChange?.({
 			value,
 			modified: isKnownByChanged,
 			saving: (form?.pending ?? 0) > 0,
@@ -43,7 +43,7 @@
 >
   <KnownBy
     {value}
-    onchange={({ modified }) => {
+    onChange={({ modified }) => {
       isKnownByChanged = modified;
     }}
   />

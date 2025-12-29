@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/button.svelte'
 	import ConfirmableButton from '$lib/components/confirmable-button.svelte'
 	import LetterIcon from '$lib/components/icons/letter.svelte'
 	import SaveIcon from '$lib/components/icons/pencil.svelte'
@@ -11,15 +12,15 @@
 	const {
 		value,
 		hasOwnAddress = true,
-		onchange,
-		ondelete,
-		onaddaddress
+		onChange,
+		onDelete,
+		onAddAddress
 	}: {
 		value?: Dancer
 		hasOwnAddress?: boolean
-		onchange?: (args: { value: Dancer; modified: boolean }) => void
-		ondelete?: (args: { value: Dancer }) => void
-		onaddaddress?: (args: { value: Dancer }) => void
+		onChange?: (args: { value: Dancer; modified: boolean }) => void
+		onDelete?: (args: { value: Dancer }) => void
+		onAddAddress?: (args: { value: Dancer }) => void
 	} = $props()
 	const loading = $derived(value?.id === undefined)
 	const form = $derived(value?.id ? saveDancer.for(value.id) : undefined)
@@ -35,20 +36,20 @@
 
 	$effect(() => {
 		if (!value) return
-		onchange?.({ value, modified })
+		onChange?.({ value, modified })
 	})
 
 	function remove(event: Event) {
 		event.preventDefault()
 		if (value) {
-			ondelete?.({ value })
+			onDelete?.({ value })
 		}
 	}
 
 	function addAddress(event: Event) {
 		event.preventDefault()
 		if (value) {
-			onaddaddress?.({ value })
+			onAddAddress?.({ value })
 		}
 	}
 </script>
@@ -57,15 +58,17 @@
   <h1 class="card-title mt-4 flex w-full h-8 items-center">
     <span class="flex-1">Danseur {#if modified}<SaveIcon class="size-4 inline-block" />{/if}</span>
     {#if !hasOwnAddress}
-      <button 
-        class="btn btn-ghost btn-square btn-sm hover:btn-secondary"  
-        onclick={addAddress}>
+      <Button 
+        class="btn-ghost btn-square btn-sm hover:btn-secondary"  
+        onclick={addAddress}
+        title="Ajouter une adresse">
         <LetterIcon class="size-4"/>
-      </button>
+      </Button>
     {/if}
     {#if value && !isNew(value)}<ConfirmableButton
-class="btn-square btn-ghost btn-sm hover:btn-error"
-  onclick={remove}
+      class="btn-square btn-ghost btn-sm hover:btn-error"
+      onclick={remove}
+      title="Supprimer le danseur"
 >
   <RemoveIcon class="size-4" />
   {#snippet heading ()}

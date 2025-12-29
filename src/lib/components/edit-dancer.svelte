@@ -9,14 +9,16 @@
 
 	const {
 		value,
-		onchange,
-		ondelete,
+		onChange,
+		onDelete,
+		onRemoveAddress,
 		mainAddressId
 	}: {
 		value?: Dancer
 		mainAddressId?: Address['id']
-		onchange?: (props: OnChangeProps<Dancer>) => void
-		ondelete?: (args: { value: Dancer }) => void
+		onChange?: (props: OnChangeProps<Dancer>) => void
+		onDelete?: (args: { value: Dancer }) => void
+		onRemoveAddress?: (args: { value: Dancer }) => void
 	} = $props()
 
 	let formNode: HTMLFormElement | null = null
@@ -56,7 +58,7 @@
 	$effect(() => {
 		if (!value) return
 		const modified = isDancerChanged || isAddressChanged
-		onchange?.({
+		onChange?.({
 			value,
 			modified,
 			saving: (form?.pending ?? 0) > 0,
@@ -75,6 +77,11 @@
 			phone: ''
 		})
 	}
+
+	function removeAddress() {
+		if (!value) return
+		onRemoveAddress?.({ value })
+	}
 </script>
 
 <form
@@ -91,19 +98,21 @@
       <DancerFields
         {value}
 				{hasOwnAddress}
-        onchange={({ modified }) => {
+        onChange={({ modified }) => {
           isDancerChanged = modified;
         }}
-				{ondelete}
-				onaddaddress={addAddress}
+				{onDelete}
+				onAddAddress={addAddress}
       />
       {#if value?.address && hasOwnAddress}
         <AddressFields
           value={value.address}
           dancerId={value.id}
-          onchange={({ modified }) => {
+					canDelete={Boolean(mainAddressId) && mainAddressId !== value.address.id}
+          onChange={({ modified }) => {
             isAddressChanged = modified;
           }}
+					onDelete={removeAddress}
         />
       {/if}
     </div>

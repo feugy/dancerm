@@ -18,10 +18,10 @@
 
 	const {
 		value,
-		onchange
+		onChange
 	}: {
 		value?: Card
-		onchange?: (args: { value: Card; modified: boolean }) => void
+		onChange?: (args: { value: Card; modified: boolean }) => void
 	} = $props()
 	const loading = $derived(value?.id === undefined)
 	const form = $derived(value?.id ? saveCard.for(value.id) : undefined)
@@ -32,7 +32,7 @@
 
 	$effect(() => {
 		if (!value) return
-		onchange?.({ value, modified })
+		onChange?.({ value, modified })
 	})
 </script>
 
