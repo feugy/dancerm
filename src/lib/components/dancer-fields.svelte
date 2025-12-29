@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ConfirmableButton from '$lib/components/confirmable-button.svelte'
+	import LetterIcon from '$lib/components/icons/letter.svelte'
 	import SaveIcon from '$lib/components/icons/pencil.svelte'
 	import RemoveIcon from '$lib/components/icons/trash.svelte'
 	import { saveDancer } from '$lib/dancers.remote'
@@ -9,12 +10,16 @@
 
 	const {
 		value,
+		hasOwnAddress = true,
 		onchange,
-		ondelete
+		ondelete,
+		onaddaddress
 	}: {
 		value?: Dancer
+		hasOwnAddress?: boolean
 		onchange?: (args: { value: Dancer; modified: boolean }) => void
 		ondelete?: (args: { value: Dancer }) => void
+		onaddaddress?: (args: { value: Dancer }) => void
 	} = $props()
 	const loading = $derived(value?.id === undefined)
 	const form = $derived(value?.id ? saveDancer.for(value.id) : undefined)
@@ -39,11 +44,25 @@
 			ondelete?.({ value })
 		}
 	}
+
+	function addAddress(event: Event) {
+		event.preventDefault()
+		if (value) {
+			onaddaddress?.({ value })
+		}
+	}
 </script>
 
 <span class="flex flex-col gap-6 flex-1">
   <h1 class="card-title mt-4 flex w-full h-8 items-center">
     <span class="flex-1">Danseur {#if modified}<SaveIcon class="size-4 inline-block" />{/if}</span>
+    {#if !hasOwnAddress}
+      <button 
+        class="btn btn-ghost btn-square btn-sm hover:btn-secondary"  
+        onclick={addAddress}>
+        <LetterIcon class="size-4"/>
+      </button>
+    {/if}
     {#if value && !isNew(value)}<ConfirmableButton
 class="btn-square btn-ghost btn-sm hover:btn-error"
   onclick={remove}

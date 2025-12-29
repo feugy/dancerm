@@ -26,7 +26,7 @@ describe('Dancers model', () => {
 		beforeEach(async () => {
 			card = (
 				await cardsModel.save({
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					knownBy: [],
 					registrations: []
 				})
@@ -35,7 +35,7 @@ describe('Dancers model', () => {
 
 		it('adds new dancer', async () => {
 			const result: Dancer = {
-				id: faker.number.int().toString(),
+				id: faker.string.uuid(),
 				_v: 1,
 				created: new Date(),
 				title: 'M.',
@@ -49,22 +49,22 @@ describe('Dancers model', () => {
 			}
 
 			expect(await dancersModel.save(result)).toEqual([{ ...result }])
-			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 			expect(await dancersModel.getById(result.id)).toEqual(result)
+			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 		})
 
 		it('adds new dancer on an existing address', async () => {
 			const [address] = await addressesModel.save({
-				id: faker.number.int().toString(),
+				id: faker.string.uuid(),
 				_v: 1,
 				street: faker.location.streetAddress(),
-				zipcode: parseInt(faker.location.zipCode(), 10),
+				zipcode: faker.number.int(),
 				city: faker.location.city(),
 				phone: faker.phone.number()
 			})
 
 			const result: Dancer = {
-				id: faker.number.int().toString(),
+				id: faker.string.uuid(),
 				_v: 1,
 				created: new Date(),
 				title: 'M.',
@@ -78,23 +78,23 @@ describe('Dancers model', () => {
 			}
 
 			expect(await dancersModel.save(result)).toEqual([result])
-			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 			expect(await dancersModel.getById(result.id)).toEqual(result)
+			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 		})
 
 		it('keeps omitted fields', async () => {
 			const [address] = await addressesModel.save({
-				id: faker.number.int().toString(),
+				id: faker.string.uuid(),
 				_v: 1,
 				street: faker.location.streetAddress(),
-				zipcode: parseInt(faker.location.zipCode(), 10),
+				zipcode: faker.number.int(),
 				city: faker.location.city(),
 				phone: faker.phone.number()
 			})
 
 			const dancer = (
 				await dancersModel.save({
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'M.',
@@ -116,8 +116,8 @@ describe('Dancers model', () => {
 					firstname: newFirstname
 				})
 			).toEqual([{ ...result, address: null, card: null }]) // address is null because of partial save
-			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 			expect(await dancersModel.getById(dancer.id)).toEqual(result)
+			expect((await dancersModel.list()).results).toEqual(expect.arrayContaining([result]))
 		})
 	})
 
@@ -128,12 +128,12 @@ describe('Dancers model', () => {
 		beforeEach(async () => {
 			;[card1, card2] = await cardsModel.save([
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					knownBy: [],
 					registrations: []
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					knownBy: [],
 					registrations: []
 				}
@@ -143,7 +143,7 @@ describe('Dancers model', () => {
 		it('returns dancers with specific card', async () => {
 			const [dancer1, dancer2, dancer3] = await dancersModel.save([
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'M.',
@@ -156,7 +156,7 @@ describe('Dancers model', () => {
 					card: card1
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'Mme.',
@@ -169,7 +169,7 @@ describe('Dancers model', () => {
 					card: card1
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'M.',
@@ -210,28 +210,28 @@ describe('Dancers model', () => {
 		beforeEach(async () => {
 			;[card1, card2] = await cardsModel.save([
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					knownBy: [],
 					registrations: []
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					knownBy: [],
 					registrations: []
 				}
 			])
 			;[address1, address2] = await addressesModel.save([
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					street: faker.location.street(),
-					zipcode: Number(faker.location.zipCode()),
+					zipcode: faker.number.int(),
 					city: faker.location.city(),
 					phone: faker.phone.number()
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					street: faker.location.street(),
-					zipcode: Number(faker.location.zipCode()),
+					zipcode: faker.number.int(),
 					city: faker.location.city(),
 					phone: faker.phone.number()
 				}
@@ -241,7 +241,7 @@ describe('Dancers model', () => {
 		it('returns dancers with specific address', async () => {
 			const [dancer1, dancer2, dancer3] = await dancersModel.save([
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'M.',
@@ -254,7 +254,7 @@ describe('Dancers model', () => {
 					card: card1
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'Mme.',
@@ -267,7 +267,7 @@ describe('Dancers model', () => {
 					card: card2
 				},
 				{
-					id: faker.number.int().toString(),
+					id: faker.string.uuid(),
 					_v: 1,
 					created: new Date(),
 					title: 'M.',

@@ -47,6 +47,11 @@
 
 	let isDancerChanged = $state(false)
 	let isAddressChanged = $state(false)
+	const hasOwnAddress = $derived(
+		Boolean(value?.address) &&
+			(value?.address?.id !== mainAddressId ||
+				value?.address?.id !== form?.fields.address.id.value())
+	)
 
 	$effect(() => {
 		if (!value) return
@@ -58,6 +63,18 @@
 			save: modified ? () => formNode?.requestSubmit() : () => void 0
 		})
 	})
+
+	function addAddress() {
+		if (!form) return
+
+		form.fields.address.set({
+			id: crypto.randomUUID(),
+			street: '',
+			zipcode: 0,
+			city: '',
+			phone: ''
+		})
+	}
 </script>
 
 <form
@@ -73,12 +90,14 @@
 			{/if}
       <DancerFields
         {value}
+				{hasOwnAddress}
         onchange={({ modified }) => {
           isDancerChanged = modified;
         }}
 				{ondelete}
+				onaddaddress={addAddress}
       />
-      {#if value?.address && value.address.id !== mainAddressId}
+      {#if value?.address && hasOwnAddress}
         <AddressFields
           value={value.address}
           dancerId={value.id}

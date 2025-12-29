@@ -16,7 +16,8 @@
 	const form = $derived(saveDancer.for(dancerId))
 
 	const modified = $derived(
-		form?.fields.address?.street.value() !== (value?.street ?? '') ||
+		form?.fields.address?.id.value() !== (value?.id ?? '') ||
+			form?.fields.address?.street.value() !== (value?.street ?? '') ||
 			form?.fields.address?.zipcode.value() !== (value?.zipcode ?? 0) ||
 			form?.fields.address?.city.value() !== (value?.city ?? '') ||
 			form?.fields.address?.phone.value() !== (value?.phone ?? '')
@@ -32,7 +33,7 @@
   <h1 class="card-title mt-4 h-8">
     Adresse {#if modified}<SaveIcon class="size-4" />{/if}
   </h1>
-  <input type="hidden" name="address.id" value={value?.id} />
+  <input type="hidden" name="address.id" value={form.fields.address.id.value()} />
   <label class="floating-label">
     <span>Voie</span>
     <input
