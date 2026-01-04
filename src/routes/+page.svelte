@@ -2,6 +2,8 @@
 	import { getDancers } from '$lib/dancers.remote'
 </script>
 
+
+<a href="/planning" class="text-blue-500 hover:underline mb-4 inline-block">Planning</a>
 {#await getDancers()}
   <p>Chargement...</p>
 {:then dancers}
