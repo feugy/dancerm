@@ -10,12 +10,18 @@ import {
 	dancersModel,
 	init
 } from '$lib/server/models'
+import { isNew } from './utils/models'
 
 const filename = DATABASE_PATH
 
 export const getDancers = query(async () => {
 	await init({ filename })
 	return dancersModel.list()
+})
+
+export const listDanceClassDancers = query(v.string(), async (danceClassId: string) => {
+	await init({ filename })
+	return dancersModel.listByDanceClass(danceClassId)
 })
 
 export const getDancer = query(v.string(), async (id: string) => {
@@ -33,6 +39,7 @@ export const getRelatedDancers = query(v.string(), async (cardId: string) => {
 export const saveDancer = form(
 	v.object({
 		id: v.string(),
+		_v: v.number(),
 		title: v.pipe(v.string(), v.nonEmpty()),
 		firstname: v.string(),
 		lastname: v.optional(v.string()),
@@ -74,6 +81,7 @@ export const saveDancer = form(
 		}
 
 		const [saved] = await dancersModel.save({
+			danceClassIds: isNew(dancer) ? [] : undefined,
 			...dancer,
 			birth: dancer.birth ? new Date(dancer.birth) : null,
 			address,

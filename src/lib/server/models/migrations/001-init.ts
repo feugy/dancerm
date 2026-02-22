@@ -29,7 +29,8 @@ CREATE TABLE dancer (
 	email TEXT,
 	birth DATETIME,
 	cardId TEXT,
-	addressId TEXT
+	addressId TEXT,
+	danceClassIds BLOB NOT NULL
 )`)
 	db.exec(`
 CREATE TABLE danceclass (
@@ -68,17 +69,17 @@ INSERT INTO card (knownBy, registrations, id, _v) VALUES
   (jsonb('[]'), jsonb('[{"created":"2018-09-04T13:37:05.479Z","season":"2018/2019","certificates":{},"charged":254,"period":"year","details":null,"payments":[{"type":"check","value":254,"receipt":"2018-07-01T13:37:15.444Z","payer":"LAUGIER","bank":null,"details":null}],"invoiceIds":[]}]'), '67fe1f5402a3', 2)`)
 
 	db.exec(`
-INSERT INTO dancer (created, title, firstname, lastname, cellphone, email, birth, id, addressId, cardId, _v) VALUES
-	('2016-10-05T11:45:58.682Z', 'Mme', 'Leona', 'Lika', '0675718640', 'adelinalika@hotmail.com', '2009-08-16T22:00:00.000Z', '0006b11481cf', '6f1f21897fe6', 'd292733a4246', 2),
-	('2023-09-04T14:12:23.796Z', 'Mlle', 'MAXINE', 'NAZARET', '0625300536', 'aureliacalistri@gmail.com', '2018-05-06T22:00:00.000Z', '0026c924cbd7', '0e5c70835a2e', '7396a6525739' ,4),
-	('2023-09-04T14:10:52.727Z', 'Mlle', 'ROMY', 'NAZARET', '0625300536', 'aureliacalistri@gmail.com', '2015-11-07T23:00:00.000Z', '519ff5f922cc', '0e5c70835a2e', '7396a6525739', 4),
-	('2016-10-11T16:13:07.529Z', 'M.', 'Laurence', 'Chevalerias', '0770428726', 'laurence.chevalerias@hotmail.fr', '1989-03-19T23:00:00.000Z', '002a17ba0fce', '70f84cf40958', 'fe6c8f922d12', 3),
-	('2016-10-11T16:15:07.583Z', 'M.', 'Sebastien', 'Pruvost', '0668835652', 'sebastien.pruvost@hotmail.fr', '1982-01-14T23:00:00.000Z', 'd1009c3902cf', '70f84cf40958', 'fe6c8f922d12', 3),
-	('2019-09-13T14:22:47.199Z', 'Mlle', 'LORY', 'CORBION', '0647404945', 'corbion.lory@gmail.com', '1998-12-25T23:00:00.000Z', '00453a0ae07e', '095d17c43a77', 'e4fb35de0f62', 7),
-	('2013-09-02T10:23:29.405Z', 'Mlle', 'Elyä', 'Ouattara',null, 'yainaithembela@hotmail.fr', '2003-12-31T23:00:00.000Z', '004c9f991e4c', 'ca2f55e23d4a', 'bc2ce47d943a', 5),
-	('2013-09-02T10:23:42.152Z', 'Mlle', 'Alison', 'Blaszczyk', '625152824',null, '1992-12-31T23:00:00.000Z', '00764ebfbf2b', '9267b765d193','079971a60cb1', 5),
-	('2022-09-07T18:51:35.423Z', 'Mme', 'LAURIANE', 'AGNELOT', '0625906470', 'laurianea48@gmail.com', '1999-07-02T22:00:00.000Z', '0098ddd350e0', 'f131d7a9302d','4b7f945202cb', 9),
-	('2018-09-04T13:35:04.452Z', 'Mlle', 'MAEVA', 'FARHAT', '0658145873', 'sonia.laugier@laposte.net', '2006-07-19T13:36:03.260Z', '00b200720f1d', 'b262a9c7d050','67fe1f5402a3', 2)`)
+INSERT INTO dancer (created, title, firstname, lastname, cellphone, email, birth, id, addressId, cardId, danceClassIds, _v) VALUES
+	('2016-10-05T11:45:58.682Z', 'Mme', 'Leona', 'Lika', '0675718640', 'adelinalika@hotmail.com', '2009-08-16T22:00:00.000Z', '0006b11481cf', '6f1f21897fe6', 'd292733a4246', jsonb('["7e81429fdfc5"]'), 2),
+	('2023-09-04T14:12:23.796Z', 'Mlle', 'MAXINE', 'NAZARET', '0625300536', 'aureliacalistri@gmail.com', '2018-05-06T22:00:00.000Z', '0026c924cbd7', '0e5c70835a2e', '7396a6525739', jsonb('["005ab736eecd"]'),4),
+	('2023-09-04T14:10:52.727Z', 'Mlle', 'ROMY', 'NAZARET', '0625300536', 'aureliacalistri@gmail.com', '2015-11-07T23:00:00.000Z', '519ff5f922cc', '0e5c70835a2e', '7396a6525739', jsonb('["ae1983fde34b"]'), 4),
+	('2016-10-11T16:13:07.529Z', 'M.', 'Laurence', 'Chevalerias', '0770428726', 'laurence.chevalerias@hotmail.fr', '1989-03-19T23:00:00.000Z', '002a17ba0fce', '70f84cf40958', 'fe6c8f922d12', jsonb('["eac2d4176b15"]'), 3),
+	('2016-10-11T16:15:07.583Z', 'M.', 'Sebastien', 'Pruvost', '0668835652', 'sebastien.pruvost@hotmail.fr', '1982-01-14T23:00:00.000Z', 'd1009c3902cf', '70f84cf40958', 'fe6c8f922d12', jsonb('["eac2d4176b15"]'), 3),
+	('2019-09-13T14:22:47.199Z', 'Mlle', 'LORY', 'CORBION', '0647404945', 'corbion.lory@gmail.com', '1998-12-25T23:00:00.000Z', '00453a0ae07e', '095d17c43a77', 'e4fb35de0f62', jsonb('["bbde956ee009","a0eb6ce18c98","ade7321e45de","6dd8cb499a1e","475104b03813","1d41ee02d7af","45f2ee564a55","db3dbcd7e760","cb959a2a222d"]'), 7),
+	('2013-09-02T10:23:29.405Z', 'Mlle', 'Elyä', 'Ouattara',null, 'yainaithembela@hotmail.fr', '2003-12-31T23:00:00.000Z', '004c9f991e4c', 'ca2f55e23d4a', 'bc2ce47d943a', jsonb('[]'), 5),
+	('2013-09-02T10:23:42.152Z', 'Mlle', 'Alison', 'Blaszczyk', '625152824',null, '1992-12-31T23:00:00.000Z', '00764ebfbf2b', '9267b765d193','079971a60cb1', jsonb('[]'), 5),
+	('2022-09-07T18:51:35.423Z', 'Mme', 'LAURIANE', 'AGNELOT', '0625906470', 'laurianea48@gmail.com', '1999-07-02T22:00:00.000Z', '0098ddd350e0', 'f131d7a9302d','4b7f945202cb', jsonb('["7290011e52a3","30a7ddd73b08","5aebf12e8c3e","7f877279e4c3","5fbc577400a6","72ac77ab0663","30f1d91c42b9","98eecc4d8564","c19730d1953d","901741c6ece8"]'), 9),
+	('2018-09-04T13:35:04.452Z', 'Mlle', 'MAEVA', 'FARHAT', '0658145873', 'sonia.laugier@laposte.net', '2006-07-19T13:36:03.260Z', '00b200720f1d', 'b262a9c7d050','67fe1f5402a3', jsonb('["b27eff833661"]'), 2)`)
 
 	db.exec(`
 INSERT INTO danceclass (season, kind, color, level, start, end, teacher, room, id, _v) VALUES

@@ -15,6 +15,7 @@ export interface Dancer {
 	birth: Date | null
 	address: Address | null
 	card: Card
+	danceClassIds: string[]
 }
 
 export class DancersModel extends AbstractModel<Dancer> {
@@ -32,7 +33,8 @@ export class DancersModel extends AbstractModel<Dancer> {
 				{ name: 'email', type: 'auto' },
 				{ name: 'birth', type: 'date' },
 				{ name: 'addressId', type: 'reference', model: addressesModel },
-				{ name: 'cardId', type: 'reference', model: cardsModel }
+				{ name: 'cardId', type: 'reference', model: cardsModel },
+				{ name: 'danceClassIds', type: 'json' }
 			]
 		})
 	}
@@ -60,6 +62,19 @@ export class DancersModel extends AbstractModel<Dancer> {
 			.all({ addressId })
 			.map((model) => deserialize(model) as Dancer)
 		this.logger.info({ addressId, length: result.length }, 'list by address')
+		return result
+	}
+
+	async listByDanceClass(danceClassId: string) {
+		if (!this.db) throw new Error('model not initialized')
+		const query = `${buildSelect(this.table, this.columns)}, json_each(${this.table}.danceClassIds, '$') WHERE json_each.value = :danceClassId`
+		this.logger.debug({ query, danceClassId }, 'list models by dance class')
+		const deserialize = makeDeserializer<Dancer>(this, true)
+		const result = this.db
+			.prepare(query)
+			.all({ danceClassId })
+			.map((model) => deserialize(model) as Dancer)
+		this.logger.info({ danceClassId, length: result.length }, 'list by dance class')
 		return result
 	}
 }

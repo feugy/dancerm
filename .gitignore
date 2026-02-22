@@ -29,3 +29,4 @@ vite.config.ts.timestamp-*
 .vite
 
 out
+src/lib/server/models/migrations/danceRM.json

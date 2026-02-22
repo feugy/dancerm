@@ -103,7 +103,7 @@ export function makeDeserializer<T>(
 /**
  * Internal function intended to subclasses, to customize serialization.
  * Default implementation stringifies data to json columns.
- * Undefined values are converted to empty strings, so the upsert logic will reuse exiscting values,
+ * Undefined values are converted to empty strings, so the upsert logic will reuse existing values,
  * while null values will be stored as NULL in database.
  * **Note** the returned object must not contain undefined values for columns
  * @returns a serialization function that takes model and returns database row

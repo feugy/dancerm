@@ -4,6 +4,7 @@ import { cleanTestTB, initTestDB } from '$lib/tests/database'
 import type { DBConf } from '$lib/utils/types'
 import { type Address, addressesModel } from './address'
 import { type Card, cardsModel } from './card'
+import { type DanceClass, danceClassesModel } from './dance-class'
 import { type Dancer, DancersModel, dancersModel } from './dancer'
 
 describe('Dancers model', () => {
@@ -13,6 +14,7 @@ describe('Dancers model', () => {
 		await dancersModel.init(conf)
 		await cardsModel.init(conf, false)
 		await addressesModel.init(conf, false)
+		await danceClassesModel.init(conf, false)
 	})
 
 	afterEach(async () => {
@@ -45,7 +47,8 @@ describe('Dancers model', () => {
 				email: faker.internet.email(),
 				birth: faker.date.past(),
 				address: null,
-				card
+				card,
+				danceClassIds: []
 			}
 
 			expect(await dancersModel.save(result)).toEqual([{ ...result }])
@@ -74,7 +77,8 @@ describe('Dancers model', () => {
 				email: faker.internet.email(),
 				birth: faker.date.past(),
 				address,
-				card
+				card,
+				danceClassIds: []
 			}
 
 			expect(await dancersModel.save(result)).toEqual([result])
@@ -104,7 +108,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address,
-					card
+					card,
+					danceClassIds: []
 				})
 			)[0]
 
@@ -153,7 +158,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: null,
-					card: card1
+					card: card1,
+					danceClassIds: []
 				},
 				{
 					id: faker.string.uuid(),
@@ -166,7 +172,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: null,
-					card: card1
+					card: card1,
+					danceClassIds: []
 				},
 				{
 					id: faker.string.uuid(),
@@ -179,7 +186,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: null,
-					card: card2
+					card: card2,
+					danceClassIds: []
 				}
 			])
 
@@ -251,7 +259,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: address1,
-					card: card1
+					card: card1,
+					danceClassIds: []
 				},
 				{
 					id: faker.string.uuid(),
@@ -264,7 +273,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: address1,
-					card: card2
+					card: card2,
+					danceClassIds: []
 				},
 				{
 					id: faker.string.uuid(),
@@ -277,7 +287,8 @@ describe('Dancers model', () => {
 					email: faker.internet.email(),
 					birth: faker.date.past(),
 					address: address2,
-					card: card2
+					card: card2,
+					danceClassIds: []
 				}
 			])
 
@@ -294,6 +305,104 @@ describe('Dancers model', () => {
 		it('throws error when model not initialized', async () => {
 			const uninitializedModel = new DancersModel()
 			await expect(() => uninitializedModel.listByAddress('address-id')).rejects.toThrow(
+				'model not initialized'
+			)
+		})
+	})
+
+	describe('listByDanceClass()', () => {
+		let danceClass1: DanceClass
+		let danceClass2: DanceClass
+		let card1: Card
+		let card2: Card
+
+		beforeEach(async () => {
+			;[card1, card2] = await cardsModel.save([
+				{
+					id: faker.string.uuid(),
+					knownBy: [],
+					registrations: []
+				},
+				{
+					id: faker.string.uuid(),
+					knownBy: [],
+					registrations: []
+				}
+			])
+			;[danceClass1, danceClass2] = await danceClassesModel.save([
+				{
+					id: faker.string.uuid(),
+					season: faker.number.int({ min: 2020, max: 2030 }).toString(),
+					kind: faker.word.noun(),
+					level: faker.word.adjective()
+				},
+				{
+					id: faker.string.uuid(),
+					season: faker.number.int({ min: 2020, max: 2030 }).toString(),
+					kind: faker.word.noun(),
+					level: faker.word.adjective()
+				}
+			])
+		})
+
+		it('returns dancers of a given class', async () => {
+			const [dancer1, dancer2, dancer3] = await dancersModel.save([
+				{
+					id: faker.string.uuid(),
+					_v: 1,
+					created: new Date(),
+					title: 'M.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					card: card1,
+					danceClassIds: [danceClass1.id]
+				},
+				{
+					id: faker.string.uuid(),
+					_v: 1,
+					created: new Date(),
+					title: 'Mme.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					card: card2,
+					danceClassIds: [danceClass2.id]
+				},
+				{
+					id: faker.string.uuid(),
+					_v: 1,
+					created: new Date(),
+					title: 'M.',
+					firstname: faker.person.firstName(),
+					lastname: faker.person.lastName(),
+					cellphone: faker.phone.number(),
+					email: faker.internet.email(),
+					birth: faker.date.past(),
+					card: card2,
+					danceClassIds: [danceClass1.id]
+				}
+			])
+
+			let result = await dancersModel.listByDanceClass(danceClass1.id)
+			expect(result).toHaveLength(2)
+			expect(result).toEqual(expect.arrayContaining([dancer1, dancer3]))
+			result = await dancersModel.listByDanceClass(danceClass2.id)
+			expect(result).toHaveLength(1)
+			expect(result).toEqual(expect.arrayContaining([dancer2]))
+		})
+
+		it('returns empty array when no dancers found for dance class', async () => {
+			expect(await dancersModel.listByDanceClass('non-existent-dance-class-id')).toEqual([])
+		})
+
+		it('throws error when model not initialized', async () => {
+			const uninitializedModel = new DancersModel()
+			await expect(() => uninitializedModel.listByDanceClass('dance-class-id')).rejects.toThrow(
 				'model not initialized'
 			)
 		})

@@ -57,7 +57,7 @@
 
 	$effect(() => {
 		if (!value) return
-		const modified = isDancerChanged || isAddressChanged
+		const modified = isDancerChanged || (hasOwnAddress ? isAddressChanged : false)
 		onChange?.({
 			value,
 			modified,
@@ -95,6 +95,7 @@
 				<input type="hidden" name="card.id" value={value?.card.id} />
 				<input type="hidden" name="address.id" value={mainAddressId} />
 			{/if}
+			<input type="hidden" name="n:_v" value={value?._v} />
       <DancerFields
         {value}
 				{hasOwnAddress}

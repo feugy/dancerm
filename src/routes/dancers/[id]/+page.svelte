@@ -63,7 +63,8 @@
 			lastname: null,
 			birth: null,
 			email: null,
-			cellphone: null
+			cellphone: null,
+			danceClassIds: []
 		})
 	}
 
